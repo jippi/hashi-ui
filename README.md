@@ -1,8 +1,6 @@
 Nomad UI
 ========
 
-# Description
-
 An awesome user interface for an awesome scheduler, plain and simple :-)
 
 # Usage
