@@ -1,0 +1,277 @@
+.sidebar{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 260px;
+    display: block;
+    z-index: 1;
+    color: #fff;
+    font-weight: 200;
+
+
+    .sidebar-wrapper{
+        position: relative;
+        z-index: 4;
+
+        height: calc(100vh - 64px);
+
+        > .nav{
+            margin-top: 20px;
+        }
+
+        > .user ~ .nav{
+            margin-top: 0;
+        }
+
+        .dropdown .dropdown-backdrop{
+            display: none !important;
+        }
+
+    }
+
+    .sidebar-background{
+        background-image: url('../img/nomad.jpg');
+        position: absolute;
+        z-index: 1;
+        height: 100%;
+        width: 100%;
+        display: block;
+        top: 0;
+        left: 0;
+        background-size: cover;
+        background-position: center center;
+    }
+
+    .nav{
+
+        li{
+            > a{
+                color: #FFFFFF;
+                margin: 5px 15px;
+                opacity: .86;
+                border-radius: $border-radius-base;
+            }
+
+            &:hover > a{
+                background: rgba(255,255,255,0.13);
+                opacity: 1;
+                color: #FFFFFF;
+            }
+
+            &.active > a{
+                color: #FFFFFF;
+                opacity: 1;
+                background: rgba(255,255,255,0.23);
+
+            }
+        }
+
+        [data-toggle="collapse"] ~ div > ul > li > a{
+            padding-left: 60px;
+        }
+
+        p{
+            margin: 0;
+            line-height: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+
+            .caret{
+                float: right;
+                margin-top: 12px;
+            }
+        }
+
+        i{
+            font-size: 28px;
+            float: left;
+            margin-right: 15px;
+            line-height: 30px;
+            width: 30px;
+            text-align: center;
+        }
+    }
+
+}
+
+.sidebar,
+.bootstrap-navbar{
+    .logo{
+        padding: $navbar-padding-a;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        z-index: 4;
+
+        p{
+            float: left;
+            font-size: 20px;
+            margin: 10px 10px;
+            color: $white-color;
+            line-height: 20px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        .logo-text{
+            text-transform: uppercase;
+            padding: 6px $padding-zero;
+            display: block;
+            font-size: $font-size-large;
+            color: $white-color;
+            font-weight: $font-weight-normal;
+            line-height: 30px;
+            text-align: center;
+        }
+
+        .logo-image{
+            float: left;
+            height: 40px;
+            width: 40px;
+            margin: 0 10px;
+        }
+
+        .logo-round{
+            border-radius: 50%;
+            display: block;
+            overflow: hidden;
+
+            img{
+                width: 100%;
+            }
+        }
+
+
+    }
+
+    .user{
+        border-bottom: 1px solid rgba($white-color, 0.20);
+        padding: 20px 0;
+
+        .photo{
+            width: 80px;
+            height: 80px;
+            overflow: hidden;
+            border-radius: 50%;
+            border: 4px solid rgba($white-color, .3);
+            margin: 0 auto;
+
+            img{
+                width: 100%;
+            }
+        }
+
+        a{
+            text-align: center;
+            color: $white-color;
+            padding: $padding-base-vertical $padding-large-vertical;
+            text-align: center;
+            display: block;
+        }
+    }
+
+    &:after,
+    &:before{
+        display: block;
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 2;
+    }
+
+    &:before{
+        opacity: .50;
+        background: #000000;
+    }
+
+    &:after{
+       @include line-gradient($black-color-top, rgba($black-color-bottom,.7));
+       z-index: 3;
+       opacity: 1;
+    }
+
+    &[data-image]:after,
+    &.has-image:after{
+        opacity: .95;
+    }
+
+    // colors for the sidebar with an image
+    &[data-color="blue"]:after{
+        @include line-gradient($color-blue, rgba($blue-color-bottom,.7));
+    }
+    &[data-color="azure"]:after{
+        @include line-gradient($color-azure, rgba($azure-color-bottom,.7));
+    }
+    &[data-color="green"]:after{
+        @include line-gradient($color-green, rgba($green-color-bottom,.7));
+    }
+    &[data-color="nomad-green"]:after{
+        @include line-gradient($color-nomad-green, rgba($nomad-green-color-bottom,.7));
+    }
+    &[data-color="orange"]:after{
+        @include line-gradient($color-orange, rgba($orange-color-bottom,.7));
+    }
+    &[data-color="red"]:after{
+        @include line-gradient($color-red, rgba($red-color-bottom,.7));
+    }
+    &[data-color="purple"]:after{
+        @include line-gradient($color-purple, rgba($purple-color-bottom,.7));
+    }
+}
+
+
+.main-panel{
+    background: $smoke-bg;
+    position: relative;
+    z-index: 2;
+    float: right;
+    width: $sidebar-width;
+    min-height: 100%;
+
+    > .content{
+        padding: 30px 15px;
+        min-height: calc(100% - 136px);
+    }
+
+    > .content-no-padding{
+        padding: 0;
+    }
+
+    > .footer{
+        border-top: 1px solid #e7e7e7;
+    }
+
+    .navbar{
+        margin-bottom: 0;
+    }
+}
+
+.sidebar,
+.main-panel{
+    max-height: 100%;
+    height: 100%;
+    -webkit-transition-property: top,bottom;
+    transition-property: top,bottom;
+    -webkit-transition-duration: .2s,.2s;
+    transition-duration: .2s,.2s;
+    -webkit-transition-timing-function: linear,linear;
+    transition-timing-function: linear,linear;
+    -webkit-overflow-scrolling: touch;
+}
+
+// windows os settings
+.sidebar .sidebar-wrapper,
+.main-panel{
+    overflow: hidden;
+}
+
+// mac os settings
+.mac-os{
+    .sidebar .sidebar-wrapper,
+    .main-panel{
+        overflow: auto;
+    }
+}

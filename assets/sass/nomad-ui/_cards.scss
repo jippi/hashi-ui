@@ -1,0 +1,318 @@
+.card{
+    border-radius: $border-radius-base;
+    box-shadow: 0 1px 2px rgba(0,0,0,.05),0 0 0 1px rgba(63,63,68,.1);
+    background-color: #FFFFFF;
+    margin-bottom: 30px;
+
+/*
+    background-image: url('https://images.unsplash.com/photo-1438978280647-f359d95ebda4?q=80&fm=jpg&s=73cb1239b517411534379c92660b2660');
+    background-size: cover;
+    z-index: 1;
+
+    &:before{
+        position: absolute;
+        width: 94%;
+        left: 3%;
+        height: 95%;
+        z-index: 0;
+        background-color: red;
+        display: block;
+        border-radius: 6px;
+        content: "";
+        box-shadow: 0 3px 40px rgba(0, 0, 0, 0.2);
+        top: 24px;
+    }
+*/
+
+    .image{
+        width: 100%;
+        overflow: hidden;
+        height: 260px;
+        border-radius: $border-radius-base $border-radius-base 0 0;
+        position: relative;
+        -webkit-transform-style: preserve-3d;
+        -moz-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+
+        img {
+            width: 100%;
+        }
+    }
+    .filter{
+        position: absolute;
+        z-index: 2;
+        background-color: rgba(0,0,0,.68);
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+
+        @include opacity(0);
+
+        .btn{
+            @include vertical-align();
+        }
+    }
+    &:hover .filter{
+        @include opacity(1);
+    }
+    .btn-hover{
+        @include opacity(0);
+    }
+    &:hover .btn-hover{
+        @include opacity(1);
+    }
+    .map {
+        height: 280px;
+        border-radius: $border-radius-base;
+
+        &.map-big{
+          height: 420px;
+        }
+    }
+    .content{
+        padding: $padding-default-horizontal;
+    }
+    .content-file{
+        white-space: pre;
+    }
+    .content-no-padding{
+        padding: 0;
+
+        .map{
+            margin-top: $padding-default-horizontal;
+            border-radius: 0;
+        }
+    }
+    .content-full-width{
+        padding: $padding-default-horizontal 0;
+    }
+
+    .header{
+        padding: $padding-default-horizontal $padding-default-horizontal 0px;
+        color: $black-color;
+        font-weight: $font-weight-light;
+        font-size: $font-size-h4;
+
+
+    }
+    .category,
+    .form-group label{
+        font-size: $font-size-base;
+        font-weight: $font-weight-normal;
+        color: $default-color;
+        margin-bottom: 0px;
+
+        &.error{
+            text-transform: none;
+            color: $danger-color;
+        }
+        i{
+            font-size: $font-paragraph;
+        }
+    }
+
+    .form-group label{
+        font-size: $font-size-small;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+
+    .title{
+        margin: $none;
+        color: $black-color;
+        font-weight: $font-weight-light;
+    }
+    .avatar{
+        width: 30px;
+        height: 30px;
+        overflow: hidden;
+        border-radius: 50%;
+        margin-right: 5px;
+    }
+    .description{
+        font-size: $font-size-base;
+        color: #333;
+    }
+    .footer{
+        padding: 0 $padding-default-horizontal $padding-default-vertical;
+        background-color: $transparent-bg;
+        line-height: 30px;
+
+        .form-group label{
+            margin-bottom: 0;
+        }
+
+        .legend{
+            padding: 5px 0;
+        }
+
+        hr{
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+    }
+    .stats{
+        color: #a9a9a9;
+    }
+/*
+    .footer div{
+        display: inline-block;
+    }
+*/
+
+    .author{
+        font-size: $font-size-small;
+        font-weight: $font-weight-bold;
+        text-transform: uppercase;
+    }
+    .author i{
+        font-size: $font-size-base;
+    }
+    h6{
+        font-size: $font-size-small;
+        margin: 0;
+    }
+    &.card-separator:after{
+        height: 100%;
+        right: -15px;
+        top: 0;
+        width: 1px;
+        background-color: $medium-gray;
+        content: "";
+        position: absolute;
+    }
+
+    .ct-chart{
+        margin: 30px 0 30px;
+        height: 245px;
+    }
+
+
+    //custom properties for tables that are inside cards
+    .table{
+        margin-bottom: 0;
+
+        tbody .bs-checkbox input,
+        thead .bs-checkbox .th-inner{
+                padding-left: 15px;
+        }
+
+        tbody td:last-child,
+        thead th:last-child{
+            padding-right: 15px;
+        }
+
+        tbody td.bs-checkbox:first-child{
+            padding-left: 23px !important;
+        }
+    }
+
+    .alert{
+        border-radius: $border-radius-base;
+        position: relative;
+
+        &.alert-with-icon{
+            padding-left: 65px;
+        }
+    }
+
+    &.card-plain{
+        background-color: transparent !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+
+        .image{
+            border-radius: 4px;
+        }
+    }
+}
+.card-user{
+    .image{
+        height: 110px;
+    }
+    .image-plain{
+        height: 0;
+        margin-top: 110px;
+    }
+    .author{
+        text-align: center;
+        text-transform: none;
+        margin-top: -70px;
+    }
+    .avatar{
+        width: 124px;
+        height: 124px;
+        border: 5px solid #FFFFFF;
+        position: relative;
+        margin-bottom: 15px;
+
+        &.border-gray{
+            border-color: #EEEEEE;
+        }
+    }
+    .title{
+        line-height: 24px;
+    }
+    .content{
+        min-height: 240px;
+    }
+}
+
+.card-user,
+.card-price{
+    .footer{
+        padding: 5px 15px 10px;
+    }
+    hr{
+        margin: 5px 15px;
+    }
+}
+
+
+.card-wizard{
+    border-radius: $border-radius-extreme;
+
+    .nav-pills{
+        margin-left: -$padding-default-horizontal;
+        margin-right: -$padding-default-horizontal;
+        margin-top: 10px;
+        margin-bottom: 10px;
+
+        > li{
+
+            > a{
+                text-align: center;
+                border: none;
+                background-color: $dark-gray;
+                color: $white-color;
+                text-transform: uppercase;
+
+                &:hover,
+                &:focus{
+                    background-color: $dark-gray;
+                    outline: 0 !important;
+                }
+            }
+
+            &:first-child > a,
+            &:last-child > a{
+                border-radius: 0;
+            }
+        }
+    }
+
+    .btn-finish{
+        display: none;
+    }
+
+    .header{
+        padding-top: ($padding-default-vertical + 15);
+        padding-bottom: ($padding-default-vertical);
+    }
+
+    .footer{
+        padding-bottom: ($padding-default-vertical + 5);
+    }
+}

@@ -1,0 +1,50 @@
+// variables and mixins
+@import "nomad-ui/variables";
+@import "nomad-ui/mixins";
+
+//plugins css
+@import "nomad-ui/plugins/animate";
+@import "nomad-ui/plugins/sweetalert2";
+
+@import "nomad-ui/plugins/jquery.jvectormap";
+@import "nomad-ui/plugins/datatable";
+@import "nomad-ui/plugins/fullcalendar";
+@import "nomad-ui/plugins/chartist";
+@import "nomad-ui/plugins/bootstrap-select";
+@import "nomad-ui/plugins/perfect-scrollbar";
+
+// Core CSS
+@import "nomad-ui/typography";
+@import "nomad-ui/misc";
+@import "nomad-ui/sidebar-and-main-panel";
+@import "nomad-ui/buttons";
+@import "nomad-ui/inputs";
+@import "nomad-ui/progress-bars";
+@import "nomad-ui/sliders";
+@import "nomad-ui/forms";
+@import "nomad-ui/alerts";
+@import "nomad-ui/tables";
+@import "nomad-ui/tags";
+@import "nomad-ui/tooltips-and-popovers";
+@import "nomad-ui/checkbox-radio-switch";
+@import "nomad-ui/navbars";
+@import "nomad-ui/footers";
+
+// Fancy Stuff
+@import "nomad-ui/social-buttons";
+@import "nomad-ui/dropdown";
+
+@import "nomad-ui/cards";
+
+@import "nomad-ui/collapse";
+@import "nomad-ui/carousel";
+
+@import "nomad-ui/plugins/datetime-picker";
+
+// SCSS for Pages
+@import "nomad-ui/pages.scss";
+
+// Responsive adjustments
+@import "nomad-ui/responsive";
+
+@import "nomad-ui/tabs-navs-pagination";

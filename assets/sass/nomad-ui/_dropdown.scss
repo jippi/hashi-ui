@@ -1,0 +1,176 @@
+.dropdown-menu{
+    margin: 0;
+    padding: 0;
+    border-radius: $border-radius-extreme;
+    z-index: 9000;
+    @include box-shadow($dropdown-shadow);
+
+    > li > a {
+       padding: $padding-base-vertical $padding-base-horizontal;
+       color: #333333;
+
+       img{
+           margin-top: -3px;
+       }
+    }
+    > li > a:focus{
+        outline: 0 !important;
+    }
+
+    .btn-group.select &{
+        min-width: 100%;
+    }
+
+    > li:first-child > a{
+       margin-top: 5px;
+       border-top-left-radius: $border-radius-small;
+       border-top-right-radius: $border-radius-small;
+    }
+
+    > li:last-child > a{
+        margin-bottom: 5px;
+        border-bottom-left-radius: $border-radius-small;
+        border-bottom-right-radius: $border-radius-small;
+    }
+
+    .select & > li:first-child > a{
+        border-radius: 0;
+        border-bottom: 0 none;
+    }
+
+    > li > a:hover,
+    > li > a:focus,
+    > li.selected > a{
+        background-color: $smoke-bg;
+        color: #333333;
+        opacity: 1;
+        text-decoration: none;
+    }
+
+    > .active > a,
+    > .active > a:focus,
+    > .active > a:hover,{
+        background-color: $light-blue;
+        color: #333333;
+    }
+
+    &:before{
+        border-bottom: 11px solid rgba(0, 0, 0, 0.2);
+        border-left: 11px solid rgba(0, 0, 0, 0);
+        border-right: 11px solid rgba(0, 0, 0, 0);
+        content: "";
+        display: inline-block;
+        position: absolute;
+        left: 12px;
+        top: -11px;
+    }
+    &:after {
+        border-bottom: 11px solid #FFFFFF;
+        border-left: 11px solid rgba(0, 0, 0, 0);
+        border-right: 11px solid rgba(0, 0, 0, 0);
+        content: "";
+        display: inline-block;
+        position: absolute;
+        left: 12px;
+        top: -10px;
+    }
+
+    .pull-right &:before{
+        left: auto;
+        right: 12px;
+    }
+    .pull-right &:after{
+        left: auto;
+        right: 12px;
+    }
+
+    .dropup &:before{
+        border-bottom: none;
+        border-top: 11px solid rgba(0, 0, 0, 0.2);
+        border-left: 11px solid rgba(0, 0, 0, 0);
+        border-right: 11px solid rgba(0, 0, 0, 0);
+        content: "";
+        display: inline-block;
+        position: absolute;
+        left: 12px;
+        top: auto;
+        bottom: -11px;
+    }
+    .dropup &:after {
+        border-bottom: none;
+        border-top: 11px solid #FFFFFF;
+        border-left: 11px solid rgba(0, 0, 0, 0);
+        border-right: 11px solid rgba(0, 0, 0, 0);
+        content: "";
+        display: inline-block;
+        position: absolute;
+        left: 12px;
+        top: auto;
+        bottom: -10px;
+    }
+
+    &.dropdown-blue > li > a:hover,
+    &.dropdown-blue > li > a:focus,
+    &.dropdown-blue > li.selected > a{
+        background-color: $light-blue;
+    }
+    &.dropdown-azure > li > a:hover,
+    &.dropdown-azure > li > a:focus,
+    &.dropdown-azure > li.selected > a{
+        background-color: $light-azure;
+    }
+    &.dropdown-green > li > a:hover,
+    &.dropdown-green > li > a:focus,
+    &.dropdown-green > li.selected > a{
+        background-color: $light-green;
+    }
+    &.dropdown-orange > li > a:hover,
+    &.dropdown-orange > li > a:focus,
+    &.dropdown-orange > li.selected > a{
+        background-color: $light-orange;
+    }
+    &.dropdown-red > li > a:hover,
+    &.dropdown-red > li > a:focus,
+    &.dropdown-red > li.selected > a{
+        background-color: $light-red;
+    }
+
+    & > li.disabled > a{
+        background-color: transparent !important;
+        opacity: .5;
+    }
+}
+
+.dropdown-with-icons{
+    > li > a{
+        padding-left: 0px;
+        line-height: 28px;
+    }
+
+    .dropdown-menu{
+        min-width: 180px;
+
+        i{
+            text-align: center;
+            line-height: 28px;
+            float: left;
+
+            &[class^="pe-"]{
+                 font-size: 24px;
+                 width: 46px;
+            }
+            &[class^="fa"]{
+                font-size: 14px;
+                width: 38px;
+            }
+        }
+    }
+}
+
+//fix bug for the select items in btn-group
+.btn-group.select{
+    overflow: hidden;
+}
+.btn-group.select.open{
+    overflow: visible;
+}

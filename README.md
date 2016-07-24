@@ -1,0 +1,40 @@
+Nomad UI
+========
+
+# Description
+
+An awesome user interface for an awesome scheduler, plain and simple :-)
+
+# Usage
+
+The easiest way to run nomad-ui is through Docker. This way you won't have to
+install any dependencies. Run the following command to start a webserver that
+will serve the application.
+
+```
+docker run -e NOMAD_ADDR=... NOMAD_PORT=... -p 8000:3000 iverberk/nomad-ui
+```
+
+NOMAD_ADDR and NOMAD_PORT should point to the correct location of your Nomad
+server. If you have a Node environment you can also build the production version
+yourself with:
+
+```
+npm install
+NODE_ENV=production webpack -p --progress
+```
+
+This requires that the webpack command is available somewhere in your path. The
+resulting files will be stored in the dist/ folder.
+
+# Development
+
+Just run ```npm start``` and start developing. Hot reloading is enabled, so any
+will be visible in the browser immediately. Unfortunately there are no tests yet.
+
+If you would like to contribute please open a pull-request.
+
+# Credits
+
+The awesome dashboard theme is created by [Creative Tim](www.creative-tim.com)
+and can be found [here](http://www.creative-tim.com/product/light-bootstrap-dashboard)

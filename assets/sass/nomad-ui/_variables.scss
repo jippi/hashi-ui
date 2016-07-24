@@ -1,0 +1,323 @@
+// General Colors
+
+
+$color-azure:           #23CCEF;
+$color-purple:          #9368E9;
+$color-red:             #FB404B;
+$color-green:           #87CB16;
+$color-nomad-green:     #449b82;
+$color-orange:          #FFA534;
+$color-blue:            #447DF7;
+$color-black:           #5e5e5e;
+
+
+/*      light colors         */
+
+$light-blue:                 rgba($color-blue, .2);
+$light-azure:                rgba($color-azure, .2);
+$light-green:                rgba($color-green, .2);
+$light-orange:               rgba($color-orange, .2);
+$light-red:                  rgba($color-red, .2);
+
+
+$default-color:              #888888 !default;
+
+$black-color:                #333333 !default;
+$black-hr:                   #444444 !default;
+
+$light-gray:                 #E3E3E3 !default;
+$medium-gray:                #DDDDDD !default;
+$placeholder-gray:           #C3C3C3 !default;
+$medium-dark-gray:           #AAAAAA !default;
+$dark-gray:                  #9A9A9A !default;
+
+// Gradients colors
+
+$default-color-top:	                #d9d9d9;
+$default-color-bottom:              #909297;
+
+$blue-color-top: 		            #4087ea;
+$blue-color-bottom: 	            #533ce1;
+
+$azure-color-top:   	            #45c0fd;
+$azure-color-bottom:            	#4091ff;
+
+$green-color-top: 	                #a1eb3a;
+$green-color-bottom: 	            #6dc030;
+
+$nomad-green-color-bottom: 	        #739873;
+
+$orange-color-top: 	                #ffb33b;
+$orange-color-bottom: 	            #ec1657;
+
+$red-color-top: 	                #ff3b30;
+$red-color-bottom: 	                #bb0502;
+
+$purple-color-top: 	                #df55e1;
+$purple-color-bottom: 	            #943bea;
+
+$pink-color-top: 		            #ff2a63;
+$pink-color-bottom: 	            #ff2e2e;
+
+$black-color-top:	 	            #787878;
+$black-color-bottom: 	            #343434;
+
+
+$social-facebook: 			        #3b5998;
+$social-twitter: 			        #55acee;
+$social-pinterest: 			        #cc2127;
+$social-google: 			        #dd4b39;
+$social-linkedin: 			        #0976b4;
+$social-dribbble: 			        #ea4c89;
+$social-github: 			        #333333;
+$social-youtube: 			        #e52d27;
+$social-stumbleupon: 		        #eb4924;
+$social-reddit: 			        #ff4500;
+$social-tumblr: 			        #35465c;
+$social-behance: 			        #1769ff;
+
+
+$filter-blue:         darken($color-blue, 10%);
+$filter-azure:        darken($color-azure, 10%);
+$filter-green:        darken($color-green, 10%);
+$filter-orange:       darken($color-orange, 10%);
+$filter-red:          darken($color-red, 10%);
+
+
+$white-navbar:              rgba(#FFFFFF, .96);
+$blue-navbar:               lighten($color-blue, 10%);
+$azure-navbar:              lighten($color-azure, 15%);
+$green-navbar:              lighten($color-green, 10%);
+$orange-navbar:             lighten($color-orange, 10%);
+$red-navbar:                lighten($color-red, 10%);
+
+
+
+
+//== Buttons
+//
+//## For each of Bootstrap's buttons, define text, background and border color.
+
+$none:                       0   !default;
+$border-thin:                1px !default;
+$border-thick:               2px !default;
+
+$white-color:                #FFFFFF !default;
+$white-bg:                   #FFFFFF !default;
+
+$smoke-bg:                   #EFEFEF !default;
+
+$black-bg:                   rgba(30,30,30,.97) !default;
+
+$transparent-bg:             transparent !default;
+
+
+$default-bg:                 $default-color !default;
+$default-states-color:       darken($default-color, 6%) !default;
+
+$primary-color:              $color-blue !default;
+$primary-bg:                 $color-blue !default;
+$primary-states-color:       darken($color-blue, 5%) !default;
+
+$info-color:                 #449b82 !default;
+$info-bg:                    $color-azure !default;
+$info-states-color:          darken(#449b82, 6%) !default;
+
+$success-color:              $color-green !default;
+$success-bg:                 $color-green !default;
+$success-states-color:       darken($color-green, 5%) !default;
+
+$warning-color:              $color-orange !default;
+$warning-bg:                 $color-orange !default;
+$warning-states-color:       darken($color-orange, 7%) !default;
+
+
+$danger-color:               $color-red !default;
+$danger-bg:                  $color-red !default;
+$danger-states-color:        darken($color-red, 8%) !default;
+
+$link-disabled-color:        #666666 !default;
+
+
+//== Components
+//
+
+$padding-default-vertical:     10px !default;
+$padding-default-horizontal:   15px !default;
+
+
+$padding-base-vertical:         8px !default;
+$padding-base-horizontal:      16px !default;
+
+$padding-round-vertical:        8px !default;
+$padding-round-horizontal:     16px !default;
+
+$padding-simple-vertical:      9px !default;
+$padding-simple-horizontal:    16px !default;
+
+$padding-large-vertical:       14px !default;
+$padding-large-horizontal:     30px !default;
+
+$padding-small-vertical:        5px !default;
+$padding-small-horizontal:     10px !default;
+
+$padding-xs-vertical:           1px !default;
+$padding-xs-horizontal:         5px !default;
+
+$padding-label-vertical:        2px !default;
+$padding-label-horizontal:     12px !default;
+
+$margin-large-vertical:        30px !default;
+$margin-base-vertical:         15px !default;
+
+$margin-base:                  15px !default;
+
+$padding-zero:                   0px !default;
+
+$margin-bottom:                0 0 10px 0 !default;
+$border-radius-small:           3px !default;
+$border-radius-base:            4px !default;
+$border-radius-large:           6px !default;
+$border-radius-extreme:        10px !default;
+
+$border-radius-large-top:      $border-radius-large $border-radius-large 0 0 !default;
+$border-radius-large-bottom:   0 0 $border-radius-large $border-radius-large !default;
+
+$btn-round-radius:             30px !default;
+
+$height-base:                  40px !default;
+
+$font-size-base:               14px !default;
+$font-size-small:              12px !default;
+$font-size-medium:             16px !default;
+$font-size-large:              18px !default;
+$font-size-large-navbar:       20px !default;
+
+$font-size-h1:                 52px !default;
+$font-size-h2:                 36px !default;
+$font-size-h3:                 28px !default;
+$font-size-h4:                 22px !default;
+$font-size-h5:                 18px !default;
+$font-size-h6:                 14px !default;
+$font-paragraph:               16px !default;
+$font-size-navbar:             16px !default;
+$font-size-small:              12px !default;
+
+$font-weight-light:          300 !default;
+$font-weight-normal:         400 !default;
+$font-weight-semi:           500 !default;
+$font-weight-bold:           600 !default;
+
+$line-height-general:          1.5 !default;
+$line-height:                 20px !default;
+$line-height-lg:              54px !default;
+
+$sidebar-width:               calc(100% - 260px) !default;
+
+
+$border-radius-top:        10px 10px 0 0 !default;
+$border-radius-bottom:     0 0 10px 10px !default;
+
+$dropdown-shadow:          1px 2px 3px rgba(0, 0, 0, 0.125);
+
+$general-transition-time:  300ms !default;
+
+$slow-transition-time:           370ms !default;
+$dropdown-coordinates:      29px -50px !default;
+
+$fast-transition-time:           150ms !default;
+$ultra-fast-transition-time:      60ms  !default;
+
+$select-coordinates:         50% -40px !default;
+
+$transition-linear:                                   linear !default;
+$transition-bezier:         cubic-bezier(0.34, 1.61, 0.7, 1) !default;
+$transition-ease:           ease 0s;
+$transition-ease-in:              ease-in !default;
+$transition-ease-out:             ease-out !default;
+
+
+$navbar-padding-a:               10px 15px;
+$navbar-margin-a:                10px  3px;
+
+$padding-social-a:               10px  5px;
+
+$navbar-margin-a-btn:            15px 3px;
+$navbar-margin-a-btn-round:      16px 3px;
+
+$navbar-padding-a-icons:         6px 15px;
+$navbar-margin-a-icons:          6px  3px;
+
+$navbar-padding-brand:           15px 15px;
+$navbar-margin-brand:             5px  0px;
+
+$navbar-margin-brand-icons:      12px auto;
+
+$navbar-margin-btn:              15px  3px;
+
+$height-icon:					 64px !default;
+$width-icon:					 64px !default;
+$padding-icon:					 12px !default;
+$border-radius-icon:		     15px !default;
+
+$size-icon: 					 64px;
+$size-icon-sm: 					 32px;
+
+$height-icon-sm:				 32px;
+$width-icon-sm:					 32px;
+$padding-icon-sm:			     4px;
+$border-radius-icon-sm:			 7px;
+
+$height-icon-message:			 40px;
+$width-icon-message:			 40px;
+
+$height-icon-message-sm: 		 20px;
+$width-icon-message-sm:			 20px;
+
+
+
+$topbar-x:             topbar-x !default;
+$topbar-back:          topbar-back !default;
+$bottombar-x:          bottombar-x !default;
+$bottombar-back:       bottombar-back !default;
+
+
+
+//== Media queries breakpoints
+//
+//## Define the breakpoints at which your layout will change, adapting to different screen sizes.
+
+// Extra small screen / phone
+//** Deprecated `$screen-xs` as of v3.0.1
+$screen-xs:                  480px !default;
+//** Deprecated `$screen-xs-min` as of v3.2.0
+$screen-xs-min:              $screen-xs !default;
+//** Deprecated `$screen-phone` as of v3.0.1
+$screen-phone:               $screen-xs-min !default;
+
+// Small screen / tablet
+//** Deprecated `$screen-sm` as of v3.0.1
+$screen-sm:                  768px !default;
+$screen-sm-min:              $screen-sm !default;
+//** Deprecated `$screen-tablet` as of v3.0.1
+$screen-tablet:              $screen-sm-min !default;
+
+// Medium screen / desktop
+//** Deprecated `$screen-md` as of v3.0.1
+$screen-md:                  992px !default;
+$screen-md-min:              $screen-md !default;
+//** Deprecated `$screen-desktop` as of v3.0.1
+$screen-desktop:             $screen-md-min !default;
+
+// Large screen / wide desktop
+//** Deprecated `$screen-lg` as of v3.0.1
+$screen-lg:                  1200px !default;
+$screen-lg-min:              $screen-lg !default;
+//** Deprecated `$screen-lg-desktop` as of v3.0.1
+$screen-lg-desktop:          $screen-lg-min !default;
+
+// So media queries don't overlap when required, provide a maximum
+$screen-xs-max:              ($screen-sm-min - 1) !default;
+$screen-sm-max:              ($screen-md-min - 1) !default;
+$screen-md-max:              ($screen-lg-min - 1) !default;
+

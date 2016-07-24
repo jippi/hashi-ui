@@ -1,0 +1,4 @@
+*
+!config/lighttpd.conf
+!run.sh
+!dist
