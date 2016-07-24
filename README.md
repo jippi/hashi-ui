@@ -15,7 +15,10 @@ will serve the application.
 docker run -e NOMAD_ADDR=... NOMAD_PORT=... -p 8000:3000 iverberk/nomad-ui
 ```
 
-NOMAD_ADDR and NOMAD_PORT should point to the correct location of your Nomad
+The user interface will be accessible on localhost, port 8000. Adjust the Docker
+run parameters as needed.
+
+NOMAD_ADDR (IP or DNS name) and NOMAD_PORT should point to the correct location of your Nomad
 server. If you have a Node environment you can also build the production version
 yourself with:
 
@@ -25,12 +28,14 @@ NODE_ENV=production webpack -p --progress
 ```
 
 This requires that the webpack command is available somewhere in your path. The
-resulting files will be stored in the dist/ folder.
+resulting files will be stored in the dist/ folder and can be served by any webserver.
+You will have to adjust the value in config/settings.prod.json to the correct URL for
+the Nomad API.
 
 # Development
 
 Just run ```npm start``` and start developing. Hot reloading is enabled, so any
-will be visible in the browser immediately. Unfortunately there are no tests yet.
+changes will be visible in the browser immediately. Unfortunately there are no tests yet.
 
 If you would like to contribute please open a pull-request.
 
