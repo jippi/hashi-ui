@@ -14,11 +14,12 @@ install any dependencies. Run the following command to start a webserver that
 will serve the application.
 
 ```
-docker run -e NOMAD_ADDR=... -e NOMAD_PORT=4646 -p 8000:3000 iverberk/nomad-ui
+docker run -e NOMAD_ADDR=... -p 8000:3000 iverberk/nomad-ui
 ```
 
 The user interface will be accessible on localhost, port 8000. Adjust the Docker
-run parameters as needed.
+run parameters as needed. If you need to change the port that Nomad is listening
+on, you can use the additional ```-e NOMAD_PORT=...``` environment variable.
 
 NOMAD_ADDR (IP or DNS name) and NOMAD_PORT should point to the correct location of your Nomad
 server. If you have a Node environment you can also build the production version
