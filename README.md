@@ -40,4 +40,4 @@ If you would like to contribute please open a pull-request.
 # Credits
 
 The awesome dashboard theme is created by [Creative Tim](www.creative-tim.com)
-and can be found [here](http://www.creative-tim.com/product/light-bootstrap-dashboard)
+and can be found [here](http://www.creative-tim.com/product/light-bootstrap-dashboard-pro)
