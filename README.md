@@ -4,6 +4,8 @@ Nomad UI
 An awesome user interface for an awesome scheduler, plain and simple :-)
 
 ![Nomad UI](http://www.ivoverberk.nl/dl/nomad-ui.jpg)
+![Nomad UI](http://www.ivoverberk.nl/dl/nomad-ui-2.jpg)
+![Nomad UI](http://www.ivoverberk.nl/dl/nomad-ui-3.jpg)
 
 # Usage
 
@@ -34,7 +36,7 @@ the Nomad API.
 
 # Development
 
-Just run ```npm start``` and start developing. Hot reloading is enabled, so any
+Just run ```npm install``` and ```npm start``` and start developing. Hot reloading is enabled, so any
 changes will be visible in the browser immediately. Unfortunately there are no tests yet.
 
 If you would like to contribute please open a pull-request.
