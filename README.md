@@ -3,6 +3,8 @@ Nomad UI
 
 An awesome user interface for an awesome scheduler, plain and simple :-)
 
+![Nomad UI](http://www.ivoverberk.nl/dl/nomad-ui.jpg)
+
 # Usage
 
 The easiest way to run nomad-ui is through Docker. This way you won't have to
