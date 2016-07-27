@@ -9,6 +9,16 @@ An awesome user interface for an awesome scheduler, plain and simple :-)
 
 # Usage
 
+Since Nomad UI is a web-based application it needs to connect to the Nomad server directly. In order to make this work you need to enable CORS for the Nomad server. You can use the following config as an example:
+
+```
+http_api_response_headers {
+  Access-Control-Allow-Origin   = "*"
+  Access-Control-Expose-Headers = "x-nomad-index"
+  Access-Control-Allow-Methods  = "GET, POST, OPTIONS"
+}
+```
+
 The easiest way to run nomad-ui is through Docker. This way you won't have to
 install any dependencies. Run the following command to start a webserver that
 will serve the application.
