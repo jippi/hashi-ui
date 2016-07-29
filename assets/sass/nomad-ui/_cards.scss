@@ -75,7 +75,8 @@
         padding: $padding-default-horizontal;
     }
     .content-file{
-        white-space: pre;
+        font-family: "Courier New", monospace;
+        white-space: pre-wrap;
     }
     .content-no-padding{
         padding: 0;

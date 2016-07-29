@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import Tabs from '../components/tabs'
 
-import { FETCH_EVAL, STOP_WATCHING_EVAL } from '../sagas/evaluation';
+import { WATCH_EVAL, UNWATCH_EVAL } from '../sagas/event';
 
 class Evaluation extends Component {
 
@@ -26,19 +26,21 @@ class Evaluation extends Component {
 
     componentWillMount() {
         this.props.dispatch({
-            type: FETCH_EVAL,
-            id: this.props.params['evalId']
+            type: WATCH_EVAL,
+            payload: this.props.params['evalId']
         });
     }
 
     componentWillUnmount() {
         this.props.dispatch({
-            type: STOP_WATCHING_EVAL,
-            id: this.props.params['evalId']
+            type: UNWATCH_EVAL,
+            payload: this.props.params['evalId']
         });
     }
 
     render() {
+        if (this.props.evaluation == null) return(null);
+
         const path = this.props.location.pathname
         const tabSlug = path.split('/').pop()
         const basePath = path.substring(0, path.lastIndexOf("/"))

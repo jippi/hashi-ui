@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { FETCH_DIR, FETCH_FILE } from '../../sagas/filesystem'
-import { FETCH_NODE } from '../../sagas/node'
+
+import { FETCH_NODE, FETCH_DIR, UNWATCH_FILE, WATCH_FILE } from '../../sagas/event'
 
 import Table from '../table'
 
@@ -12,7 +12,24 @@ class AllocFiles extends Component {
 
         const path = this.findAllocNode(this.props) ? '/' : ''
 
-        this.state = { path };
+        if (path === '/') {
+            this.props.dispatch({
+                type: FETCH_DIR,
+                payload: {
+                    addr: props.node.HTTPAddr,
+                    path: '/',
+                    allocID: props.allocation.ID
+                }
+            })
+        }
+        this.state = { path: path, contents: '', file: '/' };
+    }
+
+    componentWillUnmount() {
+        this.props.dispatch({
+            type: UNWATCH_FILE,
+            payload: this.state.file
+        })
     }
 
     findAllocNode(props) {
@@ -25,11 +42,10 @@ class AllocFiles extends Component {
         if (node === undefined) return false
 
         // Fetch the correct node information if the alloc node changed
-        if (node.ID !== props.node.ID) {
+        if (props.node == null || node.ID !== props.node.ID) {
             this.props.dispatch({
                 type: FETCH_NODE,
-                id: node.ID,
-                watch: false
+                payload: node.ID
             })
             return false
         }
@@ -41,11 +57,19 @@ class AllocFiles extends Component {
     componentWillReceiveProps(nextProps) {
         if (!this.findAllocNode(nextProps)) return
 
+        let path = this.state.path
+        let contents = this.state.contents
+
         // The node information was fetched, so transition to the root path
         // if we are initialising.
         if (this.state.path === '') {
-            this.setState({ 'path': '/' })
+            path = '/'
         }
+
+        if (nextProps.file.Offset !== this.props.file.Offset) {
+            contents += nextProps.file.Data
+        }
+        this.setState({ ...this.state, 'path': path, 'contents': contents })
     }
 
     componentWillUpdate(nextProps, nextState) {
@@ -53,9 +77,11 @@ class AllocFiles extends Component {
         if (this.state.path !== nextState.path) {
             this.props.dispatch({
                 type: FETCH_DIR,
-                client: nextProps.node.HTTPAddr,
-                path: nextState.path,
-                alloc: nextProps.allocation.ID
+                payload: {
+                    addr: nextProps.node.HTTPAddr,
+                    path: nextState.path,
+                    allocID: nextProps.allocation.ID
+                }
             })
         }
     }
@@ -68,14 +94,24 @@ class AllocFiles extends Component {
             } else {
                 path =`${this.state.path}${file.Name}/`
             }
-            this.setState({ path })
+            this.setState({ ...this.state, path: path })
         } else {
-            this.props.dispatch({
-                type: FETCH_FILE,
-                client: this.props.node.HTTPAddr,
-                path: this.state.path + file.Name,
-                alloc: this.props.allocation.ID
-            })
+            const filePath = this.state.path + file.Name
+            if (filePath !== this.state.file) {
+                this.props.dispatch({
+                    type: UNWATCH_FILE,
+                    payload: this.state.file
+                })
+                this.props.dispatch({
+                    type: WATCH_FILE,
+                    payload: {
+                        addr: this.props.node.HTTPAddr,
+                        path: filePath,
+                        allocID: this.props.allocation.ID
+                    }
+                })
+                this.setState({ ...this.state, contents: '', file: filePath })
+            }
         }
     }
 
@@ -111,10 +147,10 @@ class AllocFiles extends Component {
                     </div>
                     <div className="col-md-9">
                         <div className="card">
-                            <div className="header">File: {this.props.file.path}</div>
+                            <div className="header">File: {this.props.file.File}</div>
                             <hr />
                             <div className="content content-file">
-                                {this.props.file.text}
+                                {this.state.contents}
                             </div>
                         </div>
                     </div>

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import Tabs from '../components/tabs'
 
-import { FETCH_ALLOC, STOP_WATCHING_ALLOC } from '../sagas/allocation';
+import { WATCH_ALLOC, UNWATCH_ALLOC } from '../sagas/event';
 
 class Allocation extends Component {
 
@@ -30,19 +30,21 @@ class Allocation extends Component {
 
     componentWillMount() {
         this.props.dispatch({
-            type: FETCH_ALLOC,
-            id: this.props.params['allocId']
+            type: WATCH_ALLOC,
+            payload: this.props.params['allocId']
         });
     }
 
     componentWillUnmount() {
         this.props.dispatch({
-            type: STOP_WATCHING_ALLOC,
-            id: this.props.params['allocId']
+            type: UNWATCH_ALLOC,
+            payload: this.props.params['allocId']
         });
     }
 
     render() {
+        if (this.props.allocation == null) return(null);
+
         const path = this.props.location.pathname
         const tabSlug = path.split('/').pop()
         const basePath = path.substring(0, path.lastIndexOf("/"))
