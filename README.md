@@ -32,7 +32,7 @@ run parameters as needed. If you need to change the port that Nomad is listening
 on, you can use the additional ```-e NOMAD_PORT=...``` environment variable.
 
 NOMAD_ADDR (IP or DNS name) and NOMAD_PORT should point to the correct location of your Nomad
-server. If you have a Node environment you can also build the production version
+server. It is also possible to specify the listening port for the lighttpd server that is running in the Docker container with ```-e PORT=...```. If you have a Node environment you can also build the production version
 yourself with:
 
 ```
