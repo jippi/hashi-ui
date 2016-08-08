@@ -11,7 +11,7 @@ An awesome user interface for an awesome scheduler, plain and simple :-)
 
 Download the latest release from the Github repository and start it with:
 ```
-NOMAD_ADDR=... NOMAD_PORT=4646 ./nomad-ui
+NOMAD_ADDR=... NOMAD_PORT=4646 ./nomad-ui-${operating system}
 ```
 This will start the nomad-ui server. The frontend can be accessed on port 3000
 by default. You can override this with the PORT environment variable.
