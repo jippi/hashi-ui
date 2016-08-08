@@ -46,7 +46,7 @@ resulting files will be stored in the dist/ folder and can be served by any webs
 2. Build the backend server
 
 ```
-(optional) install go-bindata (instructions [here](https://github.com/elazarl/go-bindata-assetfs#readme))
+install go-bindata (instructions: https://github.com/elazarl/go-bindata-assetfs#readme)
 go-bindata-assetfs dist/...
 mv bindata_assetfs.go backend/
 cd backend/
