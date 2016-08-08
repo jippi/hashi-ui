@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
@@ -12,7 +14,15 @@ func main() {
 
 	broadcast := make(chan *Action)
 
-	nomad := NewNomad("http://192.168.250.100:4646", broadcast)
+	nomadAddr := os.Getenv("NOMAD_ADDR")
+	if nomadAddr == "" {
+		log.Fatalf("Please provide NOMAD_ADDR in the environment, which points to the Nomad server.")
+	}
+	nomadPort := os.Getenv("NOMAD_PORT")
+	if nomadPort == "" {
+		nomadPort = "4646"
+	}
+	nomad := NewNomad(fmt.Sprintf("http://%s:%s", nomadAddr, nomadPort), broadcast)
 	go nomad.watchAllocs()
 	go nomad.watchEvals()
 	go nomad.watchNodes()
@@ -22,8 +32,12 @@ func main() {
 	go hub.Run()
 
 	router.HandleFunc("/ws", hub.Handler)
-	// router.PathPrefix("/").Handler(http.FileServer(assetFS()))
+	router.PathPrefix("/").Handler(http.FileServer(assetFS()))
 
 	log.Println("Starting server...")
-	log.Fatal(http.ListenAndServe(":6464", router))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), router))
 }
