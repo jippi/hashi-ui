@@ -1,11 +1,5 @@
-FROM alpine:3.4
+FROM scratch
 
-RUN apk --no-cache add lighttpd
+ADD ./backend/nomad-ui-linux /nomad-ui
 
-COPY ./config/lighttpd.conf /lighttpd.conf
-COPY ./dist/ /nomad-ui
-COPY ./run.sh /nomad-ui/run.sh
-
-WORKDIR /nomad-ui
-
-CMD ["/nomad-ui/run.sh"]
+CMD ["/nomad-ui"]

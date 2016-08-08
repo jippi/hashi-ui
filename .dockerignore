@@ -1,4 +1,2 @@
 *
-!config/lighttpd.conf
-!run.sh
-!dist
+!backend/nomad-ui-linux
