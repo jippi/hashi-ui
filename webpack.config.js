@@ -149,7 +149,7 @@ if (process.env.NODE_ENV === 'production') {
             'webpack/hot/only-dev-server',
             './src/main.js'
         ],
-        devtool: 'eval',
+        devtool: 'cheap-module-eval-source-map',
         plugins: [
             new HtmlWebpackPlugin({
                 title: 'Nomad UI',

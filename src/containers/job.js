@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import Tabs from '../components/tabs'
 
-import { FETCH_JOB, STOP_WATCHING_JOB } from '../sagas/job';
+import { WATCH_JOB, UNWATCH_JOB } from '../sagas/event';
 
 class Job extends Component {
 
@@ -34,19 +34,21 @@ class Job extends Component {
 
     componentWillMount() {
         this.props.dispatch({
-            type: FETCH_JOB,
-            id: this.props.params['jobId']
+            type: WATCH_JOB,
+            payload: this.props.params['jobId']
         });
     }
 
     componentWillUnmount() {
         this.props.dispatch({
-            type: STOP_WATCHING_JOB,
-            id: this.props.params['jobId']
+            type: UNWATCH_JOB,
+            payload: this.props.params['jobId']
         });
     }
 
     render() {
+        if (this.props.job == null) return(null);
+
         const path = this.props.location.pathname
         const tabSlug = path.split('/').pop()
         const basePath = path.substring(0, path.lastIndexOf("/"))

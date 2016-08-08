@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import Tabs from '../components/tabs'
 
-import { FETCH_NODE, STOP_WATCHING_NODE } from '../sagas/node';
+import { WATCH_NODE, UNWATCH_NODE } from '../sagas/event';
 
 class Node extends Component {
 
@@ -26,19 +26,21 @@ class Node extends Component {
 
     componentWillMount() {
         this.props.dispatch({
-            type: FETCH_NODE,
-            id: this.props.params['nodeId']
+            type: WATCH_NODE,
+            payload: this.props.params['nodeId']
         });
     }
 
     componentWillUnmount() {
         this.props.dispatch({
-            type: STOP_WATCHING_NODE,
-            id: this.props.params['nodeId']
+            type: UNWATCH_NODE,
+            payload: this.props.params['nodeId']
         });
     }
 
     render() {
+        if (this.props.node == null) return(null);
+
         const path = this.props.location.pathname
         const tabSlug = path.split('/').pop()
         const basePath = path.substring(0, path.lastIndexOf("/"))
