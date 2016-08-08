@@ -5,8 +5,6 @@ const autoprefixer = require('autoprefixer');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-var settings = require('./config/settings.dev.json')
-
 var webpackConfig = {
     output: {
         path: path.join(__dirname, 'dist/'),
@@ -59,11 +57,7 @@ var webpackConfig = {
 }
 
 if (process.env.NODE_ENV === 'production') {
-    settings = require('./config/settings.prod.json')
     webpackConfig = merge(webpackConfig, {
-        externals: {
-            'settings': JSON.stringify(settings)
-        },
         output: {
             filename: '[name].[chunkhash].js',
             chunkFilename: '[name].[chunkhash].chunks.js'
@@ -138,9 +132,6 @@ if (process.env.NODE_ENV === 'production') {
     })
 } else {
     webpackConfig = merge(webpackConfig, {
-        externals: {
-            'settings': JSON.stringify(settings)
-        },
         output: {
             filename: 'bundle.js'
         },
