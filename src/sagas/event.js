@@ -6,6 +6,12 @@ export const FETCHED_JOB = 'FETCHED_JOB';
 export const WATCH_JOB = 'WATCH_JOB';
 export const UNWATCH_JOB = 'UNWATCH_JOB';
 
+export const FETCHED_MEMBERS = 'FETCHED_MEMBERS';
+export const FETCHED_MEMBER = 'FETCHED_MEMBER';
+export const FETCH_MEMBER = 'FETCH_MEMBER';
+export const WATCH_MEMBER = 'WATCH_MEMBER';
+export const UNWATCH_MEMBER = 'UNWATCH_MEMBER';
+
 export const FETCHED_NODES = 'FETCHED_NODES';
 export const FETCHED_NODE = 'FETCHED_NODE';
 export const FETCH_NODE = 'FETCH_NODE';
@@ -62,6 +68,9 @@ function* write(socket) {
             WATCH_NODE,
             UNWATCH_NODE,
             FETCH_NODE,
+            WATCH_MEMBER,
+            UNWATCH_MEMBER,
+            FETCH_MEMBER,
             FETCH_DIR,
             WATCH_FILE,
             UNWATCH_FILE,

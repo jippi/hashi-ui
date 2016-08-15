@@ -79,6 +79,8 @@ func (c *Connection) readPump() {
 
 func (c *Connection) process(action Action) {
 	switch action.Type {
+	case fetchMember:
+		c.fetchMember(action)
 	case fetchNode:
 		c.fetchNode(action)
 	case fetchDir:
@@ -89,11 +91,15 @@ func (c *Connection) process(action Action) {
 		go c.watchAlloc(action)
 	case watchEval:
 		go c.watchEval(action)
+	case watchMember:
+		go c.watchMember(action)
 	case watchNode:
 		go c.watchNode(action)
 	case watchFile:
 		go c.watchFile(action)
 	case unwatchEval:
+		fallthrough
+	case unwatchMember:
 		fallthrough
 	case unwatchNode:
 		fallthrough
@@ -186,6 +192,50 @@ func (c *Connection) watchEval(action Action) {
 				waitIndex = q.WaitIndex
 			}
 			q = &api.QueryOptions{WaitIndex: waitIndex, WaitTime: 10 * time.Second}
+		}
+	}
+}
+
+func (c *Connection) fetchMember(action Action) {
+	memberID := action.Payload.(string)
+	member, err := c.hub.nomad.MemberWithID(memberID)
+	if err != nil {
+		log.Errorf("websocket: unable to fetch member %q: %s", memberID, err)
+		return
+	}
+
+	c.send <- &Action{Type: fetchedMember, Payload: member}
+}
+
+
+func (c *Connection) watchMember(action Action) {
+	memberID := action.Payload.(string)
+
+	defer func() {
+		c.watches.Remove(memberID)
+		log.Infof("Stopped watching member with id: %s", memberID)
+	}()
+	c.watches.Add(memberID)
+
+	log.Infof("Started watching member with id: %s", memberID)
+
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+		default:
+			member, err := c.hub.nomad.MemberWithID(memberID)
+			if err != nil {
+				log.Errorf("connection: unable to fetch member info: %s", err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+			if !c.watches.Has(memberID) {
+				return
+			}
+			c.send <- &Action{Type: fetchedMember, Payload: member}
+
+			time.Sleep(1 * time.Second)
 		}
 	}
 }

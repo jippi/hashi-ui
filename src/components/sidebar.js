@@ -17,6 +17,12 @@ const Sidebar = ({ location }) => {
                             <p>Cluster</p>
                         </Link>
                     </li>
+                    <li className={location.pathname === '/members' ? 'active' : ''}>
+                        <Link to={{ pathname: '/members' }}>
+                            <i className="pe-7s-share" />
+                            <p>Members</p>
+                        </Link>
+                    </li>
                     <li className={location.pathname === '/jobs' ? 'active' : ''}>
                         <Link to={{ pathname: '/jobs' }}>
                             <i className="pe-7s-menu" />
