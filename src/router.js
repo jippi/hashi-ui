@@ -27,12 +27,24 @@ import Node from './containers/node';
 import NodeInfo from './components/node/info';
 import NodeRaw from './components/node/raw';
 
+import Members from './containers/members';
+import Member from './containers/member';
+import MemberInfo from './components/member/info';
+import MemberRaw from './components/member/raw';
+
 const AppRouter = () => {
     return (
        <Router history={hashHistory}>
             <Route path="/" component={App}>
                 <IndexRedirect to="/cluster" />
                 <Route path="/cluster" component={Cluster} />
+
+                <Route path="/members" component={Members} />
+                <Route path="/members/:memberId" component={Member}>
+                    <IndexRedirect to="/members/:memberId/info" />
+                    <Route path="/members/:memberId/info" component={MemberInfo} />
+                    <Route path="/members/:memberId/raw" component={MemberRaw} />
+                </Route>
 
                 <Route path="/jobs" component={Jobs} />
                 <Route path="/jobs/:jobId" component={Job}>
