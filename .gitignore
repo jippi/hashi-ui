@@ -7,3 +7,6 @@ bindata_assetfs.go
 
 # PyCharm & WebStorm
 .idea
+
+# Glide
+glide.lock
