@@ -16,7 +16,7 @@ func main() {
 
 	nomadAddr := os.Getenv("NOMAD_ADDR")
 	if nomadAddr == "" {
-		log.Fatalf("Please provide NOMAD_ADDR in the environment, which points to the Nomad server.")
+		log.Fatal("Please provide NOMAD_ADDR in the environment, which points to the Nomad server.")
 	}
 	nomadPort := os.Getenv("NOMAD_PORT")
 	if nomadPort == "" {
