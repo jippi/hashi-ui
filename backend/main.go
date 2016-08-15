@@ -72,6 +72,9 @@ func main() {
 	router.HandleFunc(path.Join(cfg.Endpoint, "ws"), hub.Handler)
 	router.PathPrefix(cfg.Endpoint).Handler(http.FileServer(assetFS()))
 
-	log.Println("Starting server...")
-	log.Fatal(http.ListenAndServe(cfg.ListenAddress, router))
+	log.Println("Listening on", cfg.ListenAddress)
+	err := http.ListenAndServe(cfg.ListenAddress, router)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
