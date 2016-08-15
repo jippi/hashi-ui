@@ -1,14 +1,27 @@
 package main
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/op/go-logging"
 	"syscall"
 	"path"
 	"flag"
+	"os"
 )
+
+var log = logging.MustGetLogger("nomad-ui")
+
+func init() {
+	var format = logging.MustStringFormatter(
+		`%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{color:reset} %{message}`,
+	)
+
+	logBackend := logging.NewLogBackend(os.Stderr, "", 0)
+	backend2Formatter := logging.NewBackendFormatter(logBackend, format)
+	logging.SetBackend(backend2Formatter)
+}
 
 type Config struct {
 	Address       string
@@ -72,7 +85,7 @@ func main() {
 	router.HandleFunc(path.Join(cfg.Endpoint, "ws"), hub.Handler)
 	router.PathPrefix(cfg.Endpoint).Handler(http.FileServer(assetFS()))
 
-	log.Println("Listening on", cfg.ListenAddress)
+	log.Infof("Listening on %s", cfg.ListenAddress)
 	err := http.ListenAndServe(cfg.ListenAddress, router)
 	if err != nil {
 		log.Fatal(err)
