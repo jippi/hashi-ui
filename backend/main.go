@@ -1,15 +1,16 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/gorilla/mux"
-	"github.com/op/go-logging"
 	"syscall"
 	"path"
 	"flag"
 	"os"
 	"fmt"
+
+	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/op/go-logging"
 )
 
 var log = logging.MustGetLogger("nomad-ui")
