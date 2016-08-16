@@ -11,10 +11,10 @@ An awesome user interface for an awesome scheduler, plain and simple :-)
 
 Download the latest release from the Github repository and start it with:
 ```
-NOMAD_ADDR=... NOMAD_PORT=4646 ./nomad-ui-${operating system}
+./nomad-ui-${operating system}
 ```
-This will start the nomad-ui server. The frontend can be accessed on port 3000
-by default. You can override this with the PORT environment variable.
+This will start the nomad-ui server. The frontend can be accessed on port `3000`
+by default. You can override this with the `-web.listen-address`.
 
 Another way to run nomad-ui is through Docker. Run the following command to
 start a webserver that will serve the application.
@@ -24,14 +24,13 @@ docker run -e NOMAD_ADDR=... -p 8000:3000 iverberk/nomad-ui:0.1.0
 ```
 Check the releases page on Github to see which version is current.
 
-The user interface will be accessible on localhost, port 8000. Adjust the Docker
+The user interface will be accessible on localhost, port `8000`. Adjust the Docker
 run parameters as needed. If you need to change the port that Nomad is listening
-on, you can use the additional ```-e NOMAD_PORT=...``` environment variable.
+on, you should do it with ```-e NOMAD_ADDR``` environment variable that contains
+both hostname and port.
 
-NOMAD_ADDR (IP or DNS name) and NOMAD_PORT should point to the correct location
-of your Nomad server. It is also possible to specify the listening port for the
-server that is running in the Docker container with ```-e PORT=...```. If you
-have a Node and Go environment you can also build the production version yourself.
+NOMAD_ADDR (IP or DNS name) should point to the correct location of your Nomad server.
+If you have a Node and Go environment you can also build the production version yourself.
 
 1. Build the webapp
 
