@@ -1,0 +1,42 @@
+sudo: required
+
+language: node_js
+node_js:
+  - 4.4.7
+
+env:
+  global:
+    - NODE_ENV=development
+    - GOPKG=github.com/iverberk/nomad-ui
+    - GOBUILD="linux-amd64 windows-amd64 darwin-amd64"
+
+before_install:
+  - GIMME_OUTPUT=$(gimme 1.6.3) && eval "$GIMME_OUTPUT"
+  - export GOPATH=${HOME}/gopath
+  - export PATH=${HOME}/gopath/bin:${PATH}
+  - mkdir -p ${HOME}/gopath/src/${GOPKG}
+  - rsync -az ${TRAVIS_BUILD_DIR}/ ${HOME}/gopath/src/${GOPKG}/
+  - export TRAVIS_BUILD_DIR=${HOME}/gopath/src/${GOPKG}
+  - cd ${HOME}/gopath/src/${GOPKG}
+  - go version
+
+install:
+  - mkdir -p ${GOPATH}/bin
+  - curl https://glide.sh/get | sh
+  - glide --version
+
+script:
+  - GOBUILD=${GOBUILD} make all
+  - ls -la build
+
+deploy:
+  provider: releases
+  api_key: ${GITHUB_API_KEY}
+  file:
+    - build/nomad-ui-linux-amd64
+    - build/nomad-ui-windows-amd64
+    - build/nomad-ui-darwin-amd64
+  skip_cleanup: true
+  overwrite: true
+  on:
+    branch: release
