@@ -21,7 +21,10 @@ func init() {
 	)
 
 	logBackend := logging.NewLogBackend(os.Stderr, "", 0)
-	backend2Formatter := logging.NewBackendFormatter(logBackend, format)
+
+	logBackendLeveled := logging.AddModuleLevel(logBackend)
+	logBackendLeveled.SetLevel(logging.INFO, "")
+	backend2Formatter := logging.NewBackendFormatter(logBackendLeveled, format)
 	logging.SetBackend(backend2Formatter)
 }
 
@@ -34,7 +37,7 @@ type Config struct {
 func DefaultConfig() *Config {
 	return &Config{
 		Address: "http://127.0.0.1:4646",
-		ListenAddress: ":3000",
+		ListenAddress: "0.0.0.0:3000",
 		Endpoint: "/",
 	}
 }
@@ -75,11 +78,18 @@ func (c *Config) Parse() {
 func main() {
 	cfg := DefaultConfig()
 	cfg.Parse()
-
-	router := mux.NewRouter()
+	log.Infof("----------------------------------------------------------------------")
+	log.Infof("|                          NOMAD UI                                  |")
+	log.Infof("----------------------------------------------------------------------")
+	log.Infof("| address            : %-45s |", cfg.Address)
+	log.Infof("| web.listen-address : %-45s |", cfg.ListenAddress)
+	log.Infof("| web.path           : %-45s |", cfg.Endpoint)
+	log.Infof("----------------------------------------------------------------------")
+	log.Infof("")
 
 	broadcast := make(chan *Action)
 
+	log.Infof("Connecting to nomad ...")
 	nomad := NewNomad(cfg.Address, broadcast)
 	go nomad.watchAllocs()
 	go nomad.watchEvals()
@@ -90,10 +100,11 @@ func main() {
 	hub := NewHub(nomad, broadcast)
 	go hub.Run()
 
+	router := mux.NewRouter()
 	router.HandleFunc(path.Join(cfg.Endpoint, "ws"), hub.Handler)
 	router.PathPrefix(cfg.Endpoint).Handler(http.FileServer(assetFS()))
 
-	log.Infof("Listening on %s", cfg.ListenAddress)
+	log.Infof("Listening ...")
 	err := http.ListenAndServe(cfg.ListenAddress, router)
 	if err != nil {
 		log.Fatal(err)
