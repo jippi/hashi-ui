@@ -7,6 +7,7 @@ import Events from './events';
 const jobStatusLabels = [ "Running", "Pending", "Dead" ]
 const jobTypeLabels = [ "Service", "Batch", "System" ]
 const nodeStatusLabels = [ "Ready", "Initializing", "Down" ]
+const memberStatusLabels = [ "Alive", "Leaving", "Left", "Shutdown" ]
 
 const backgroundColors = [ "#449b82", "#FF9500", "#FF4A55" ]
 
@@ -17,7 +18,8 @@ class Cluster extends Component {
         let stats = {
             jobStatus: [0, 0, 0],
             jobTypes: [0, 0, 0],
-            nodeStatus: [0, 0, 0]
+            nodeStatus: [0, 0, 0],
+            memberStatus: [0, 0, 0, 0]
         };
 
         for (let job of this.props.jobs) {
@@ -64,6 +66,24 @@ class Cluster extends Component {
             }
         }
 
+        for (let member of this.props.members) {
+            switch(member.Status) {
+                case 'alive':
+                    stats.memberStatus[0] += 1;
+                    break;
+                case 'leaving':
+                    stats.memberStatus[1] += 1;
+                    break;
+                case 'left':
+                    stats.memberStatus[2] += 1;
+                    break;
+                case 'shutdown':
+                    stats.memberStatus[3] += 1;
+                    break;
+                default:
+            }
+        }
+
         return [
             {
                 labels: jobStatusLabels,
@@ -85,24 +105,36 @@ class Cluster extends Component {
                     data: stats.nodeStatus,
                     backgroundColor: backgroundColors
                 }]
+            },
+            {
+                labels: memberStatusLabels,
+                datasets: [{
+                    data: stats.memberStatus,
+                    backgroundColor: backgroundColors
+                }]
             }
         ]
     }
 
     render() {
-        const [jobStatus, jobTypes, nodeStatus] = this.getChartData()
+        const [jobStatus, jobTypes, nodeStatus, memberStatus] = this.getChartData()
 
         return (
             <div>
+                <div className="row">
+                    <div className="col-md-4">
+                        <Doughnut title="Member Status" data={memberStatus} />
+                    </div>
+                    <div className="col-md-4">
+                        <Doughnut title="Node Status" data={nodeStatus} />
+                    </div>
+                </div>
                 <div className="row">
                     <div className="col-md-4">
                         <Doughnut title="Job Status" data={jobStatus} />
                    </div>
                     <div className="col-md-4">
                         <Doughnut title="Job Type" data={jobTypes} />
-                    </div>
-                    <div className="col-md-4">
-                        <Doughnut title="Node Status" data={nodeStatus} />
                     </div>
                 </div>
                 <Events />
@@ -111,8 +143,8 @@ class Cluster extends Component {
     }
 }
 
-function mapStateToProps({ jobs, nodes }) {
-    return { jobs, nodes }
+function mapStateToProps({ jobs, nodes, members }) {
+    return { jobs, nodes, members}
 }
 
 export default connect(mapStateToProps)(Cluster);
