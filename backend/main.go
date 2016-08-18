@@ -90,7 +90,11 @@ func main() {
 	broadcast := make(chan *Action)
 
 	log.Infof("Connecting to nomad ...")
-	nomad := NewNomad(cfg.Address, broadcast)
+	nomad, err := NewNomad(cfg.Address, broadcast)
+	if err != nil {
+		log.Fatalf("Could not create client: %s", err)
+	}
+
 	go nomad.watchAllocs()
 	go nomad.watchEvals()
 	go nomad.watchJobs()
@@ -105,7 +109,7 @@ func main() {
 	router.PathPrefix(cfg.Endpoint).Handler(http.FileServer(assetFS()))
 
 	log.Infof("Listening ...")
-	err := http.ListenAndServe(cfg.ListenAddress, router)
+	err = http.ListenAndServe(cfg.ListenAddress, router)
 	if err != nil {
 		log.Fatal(err)
 	}
