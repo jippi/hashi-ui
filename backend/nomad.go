@@ -13,7 +13,7 @@ const (
 
 // Nomad keeps track of the Nomad state. It monitors changes to allocations,
 // evaluations, jobs and nodes and broadcasts them to all connected websockets.
-// It also exoses an API client for the Nomad server.
+// It also exposes an API client for the Nomad server.
 type Nomad struct {
 	Client *api.Client
 
