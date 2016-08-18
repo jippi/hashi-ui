@@ -1,14 +1,29 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
-	"github.com/gorilla/mux"
 	"syscall"
 	"path"
 	"flag"
+	"os"
+	"fmt"
+
+	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/op/go-logging"
 )
+
+var log = logging.MustGetLogger("nomad-ui")
+
+func init() {
+	var format = logging.MustStringFormatter(
+		`%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{color:reset} %{message}`,
+	)
+
+	logBackend := logging.NewLogBackend(os.Stderr, "", 0)
+	backend2Formatter := logging.NewBackendFormatter(logBackend, format)
+	logging.SetBackend(backend2Formatter)
+}
 
 type Config struct {
 	Address       string
@@ -24,14 +39,19 @@ func DefaultConfig() *Config {
 	}
 }
 
+func flagDefault(value string) string {
+	return fmt.Sprintf("(default: \"%s\")", value)
+}
+
 var (
+	defaultConfig = DefaultConfig()
+
 	flagAddress = flag.String("address", "", "The address of the Nomad server. " +
-		"Overrides the NOMAD_ADDR environment variable if set. " +
-		"(default: \"http://127.0.0.1:4646\")")
+		"Overrides the NOMAD_ADDR environment variable if set. " + flagDefault(defaultConfig.Address))
 	flagListenAddress = flag.String("web.listen-address", "",
-		"The address on which to expose the web interface. (default: \":3000\")")
+		"The address on which to expose the web interface. " + flagDefault(defaultConfig.ListenAddress))
 	flagEndpoint = flag.String("web.path", "",
-		"Path under which to expose the web interface. (default: \"/\")")
+		"Path under which to expose the web interface. " + flagDefault(defaultConfig.Endpoint))
 )
 
 func (c *Config) Parse() {
@@ -72,6 +92,9 @@ func main() {
 	router.HandleFunc(path.Join(cfg.Endpoint, "ws"), hub.Handler)
 	router.PathPrefix(cfg.Endpoint).Handler(http.FileServer(assetFS()))
 
-	log.Println("Starting server...")
-	log.Fatal(http.ListenAndServe(cfg.ListenAddress, router))
+	log.Infof("Listening on %s", cfg.ListenAddress)
+	err := http.ListenAndServe(cfg.ListenAddress, router)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

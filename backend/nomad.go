@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"time"
 
 	"github.com/hashicorp/nomad/api"
@@ -60,7 +59,7 @@ func (n *Nomad) watchAllocs() {
 	for {
 		allocs, meta, err := n.Client.Allocations().List(q)
 		if err != nil {
-			log.Printf("watch: unable to fetch allocations: %s", err)
+			log.Errorf("watch: unable to fetch allocations: %s", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}
@@ -81,7 +80,7 @@ func (n *Nomad) watchEvals() {
 	for {
 		evals, meta, err := n.Client.Evaluations().List(q)
 		if err != nil {
-			log.Printf("watch: unable to fetch evaluations: %s", err)
+			log.Errorf("watch: unable to fetch evaluations: %s", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}
@@ -102,7 +101,7 @@ func (n *Nomad) watchJobs() {
 	for {
 		jobs, meta, err := n.Client.Jobs().List(q)
 		if err != nil {
-			log.Printf("watch: unable to fetch jobs: %s", err)
+			log.Errorf("watch: unable to fetch jobs: %s", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}
@@ -123,7 +122,7 @@ func (n *Nomad) watchNodes() {
 	for {
 		nodes, meta, err := n.Client.Nodes().List(q)
 		if err != nil {
-			log.Printf("watch: unable to fetch nodes: %s", err)
+			log.Errorf("watch: unable to fetch nodes: %s", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}

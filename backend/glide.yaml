@@ -12,3 +12,5 @@ import:
   - api
 - package: gopkg.in/fatih/set.v0
   version: 0.1.0
+- package: github.com/op/go-logging
+  version: 1.0.0

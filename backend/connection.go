@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"gopkg.in/fatih/set.v0"
@@ -122,11 +121,11 @@ func (c *Connection) watchAlloc(action Action) {
 
 	defer func() {
 		c.watches.Remove(allocID)
-		log.Println("Stopped watching alloc with id:", allocID)
+		log.Infof("Stopped watching alloc with id: %s", allocID)
 	}()
 	c.watches.Add(allocID)
 
-	log.Println("Started watching alloc with id:", allocID)
+	log.Infof("Started watching alloc with id: %s", allocID)
 
 	q := &api.QueryOptions{WaitIndex: 1}
 	for {
@@ -136,7 +135,7 @@ func (c *Connection) watchAlloc(action Action) {
 		default:
 			alloc, meta, err := c.hub.nomad.Client.Allocations().Info(allocID, q)
 			if err != nil {
-				log.Printf("connection: unable to fetch alloc info: %s", err)
+				log.Errorf("connection: unable to fetch alloc info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
 			}
@@ -159,11 +158,11 @@ func (c *Connection) watchEval(action Action) {
 
 	defer func() {
 		c.watches.Remove(evalID)
-		log.Println("Stopped watching eval with id:", evalID)
+		log.Infof("Stopped watching eval with id: %s", evalID)
 	}()
 	c.watches.Add(evalID)
 
-	log.Println("Started watching eval with id:", evalID)
+	log.Infof("Started watching eval with id: %s", evalID)
 
 	q := &api.QueryOptions{WaitIndex: 1}
 	for {
@@ -173,7 +172,7 @@ func (c *Connection) watchEval(action Action) {
 		default:
 			eval, meta, err := c.hub.nomad.Client.Evaluations().Info(evalID, q)
 			if err != nil {
-				log.Printf("connection: unable to fetch eval info: %s", err)
+				log.Errorf("connection: unable to fetch eval info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
 			}
@@ -195,7 +194,7 @@ func (c *Connection) fetchNode(action Action) {
 	nodeID := action.Payload.(string)
 	node, _, err := c.hub.nomad.Client.Nodes().Info(nodeID, nil)
 	if err != nil {
-		log.Printf("websocket: unable to fetch node %q: %s", nodeID, err)
+		log.Errorf("websocket: unable to fetch node %q: %s", nodeID, err)
 	}
 	c.send <- &Action{Type: fetchedNode, Payload: node}
 }
@@ -205,11 +204,11 @@ func (c *Connection) watchNode(action Action) {
 
 	defer func() {
 		c.watches.Remove(nodeID)
-		log.Println("Stopped watching node with id:", nodeID)
+		log.Infof("Stopped watching node with id: %s", nodeID)
 	}()
 	c.watches.Add(nodeID)
 
-	log.Println("Started watching node with id:", nodeID)
+	log.Infof("Started watching node with id: %s", nodeID)
 
 	q := &api.QueryOptions{WaitIndex: 1}
 	for {
@@ -219,7 +218,7 @@ func (c *Connection) watchNode(action Action) {
 		default:
 			node, meta, err := c.hub.nomad.Client.Nodes().Info(nodeID, q)
 			if err != nil {
-				log.Printf("connection: unable to fetch node info: %s", err)
+				log.Errorf("connection: unable to fetch node info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
 			}
@@ -242,11 +241,11 @@ func (c *Connection) watchJob(action Action) {
 
 	defer func() {
 		c.watches.Remove(jobID)
-		log.Println("Stopped watching job with id:", jobID)
+		log.Infof("Stopped watching job with id: %s", jobID)
 	}()
 	c.watches.Add(jobID)
 
-	log.Println("Started watching job with id:", jobID)
+	log.Infof("Started watching job with id: %s", jobID)
 
 	q := &api.QueryOptions{WaitIndex: 1}
 	for {
@@ -256,7 +255,7 @@ func (c *Connection) watchJob(action Action) {
 		default:
 			job, meta, err := c.hub.nomad.Client.Jobs().Info(jobID, q)
 			if err != nil {
-				log.Printf("connection: unable to fetch job info: %s", err)
+				log.Errorf("connection: unable to fetch job info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
 			}
@@ -277,7 +276,7 @@ func (c *Connection) watchJob(action Action) {
 func (c *Connection) fetchDir(action Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
-		log.Println("Could not decode payload")
+		log.Errorf("Could not decode payload")
 		return
 	}
 	addr := params["addr"].(string)
@@ -294,12 +293,12 @@ func (c *Connection) fetchDir(action Action) {
 	}
 	alloc, _, err := client.Allocations().Info(allocID, nil)
 	if err != nil {
-		log.Printf("Unable to fetch alloc: %s", err)
+		log.Errorf("Unable to fetch alloc: %s", err)
 		return
 	}
 	dir, _, err := client.AllocFS().List(alloc, path, nil)
 	if err != nil {
-		log.Printf("Unable to fetch directory: %s", err)
+		log.Errorf("Unable to fetch directory: %s", err)
 	}
 
 	c.send <- &Action{Type: fetchedDir, Payload: dir}
