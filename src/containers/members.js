@@ -23,6 +23,10 @@ class Members extends Component {
                                         <th>Port</th>
                                         <th>Status</th>
                                         <th>Leader</th>
+                                        <th>Protocol</th>
+                                        <th>Build</th>
+                                        <th>Datacenter</th>
+                                        <th>Region</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -36,6 +40,10 @@ class Members extends Component {
                                                 <td>{member.Port}</td>
                                                 <td>{member.Status}</td>
                                                 <td>{isLeader ? 'true' : 'false'}</td>
+                                                <td>{member.ProtocolCur}</td>
+                                                <td>{member.Tags["build"]}</td>
+                                                <td>{member.Tags["dc"]}</td>
+                                                <td>{member.Tags["region"]}</td>
                                             </tr>
                                         )
                                     })}
