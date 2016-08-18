@@ -1,9 +1,24 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import Table from '../table'
+
 class MemberInfo extends Component {
 
     render() {
+
+        const tags = this.props.member.Tags;
+        const memberTags = Object.keys(tags).map((key) => {
+            var name = key;
+            var value = tags[key];
+
+            return (
+                <tr key={name}>
+                    <td>{name}</td>
+                    <td>{value}</td>
+                </tr>
+            )
+        });
 
         const memberProps = [
             "ID",
@@ -27,6 +42,12 @@ class MemberInfo extends Component {
                             )
                         }, this)}
                     </dl>
+                    <br />
+                    <legend>Member Tags</legend>
+                    {(memberTags.length > 0) ?
+                        <Table classes="table table-hover table-striped" headers={["Name", "Value"]} body={memberTags} />
+                        : null
+                    }
                 </div>
             </div>
         );

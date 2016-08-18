@@ -1,6 +1,6 @@
 import { FETCHED_MEMBERS, FETCHED_MEMBER } from '../sagas/event';
 
-export function MemberInfoReducer(state = {}, action) {
+export function MemberInfoReducer(state = { Tags: {} }, action) {
     switch (action.type) {
         case FETCHED_MEMBER:
             return action.payload
