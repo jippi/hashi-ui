@@ -46,10 +46,12 @@ resulting files will be stored in the dist/ folder and can be served by any webs
 2. Build the backend server
 
 ```
+install glide (instructions: https://glide.sh)
 install go-bindata (instructions: https://github.com/elazarl/go-bindata-assetfs#readme)
 go-bindata-assetfs dist/...
 mv bindata_assetfs.go backend/
 cd backend/
+glide update
 go build -o nomad-ui .
 ```
 This leaves you with a nomad-ui binary that contains both the backend server and

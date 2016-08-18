@@ -312,65 +312,65 @@ type Frame struct {
 }
 
 func (c *Connection) watchFile(action Action) {
-	params, ok := action.Payload.(map[string]interface{})
-	if !ok {
-		log.Println("Could not decode payload")
-		return
-	}
-	addr := params["addr"].(string)
-	path := params["path"].(string)
-	allocID := params["allocID"].(string)
-
-	config := api.DefaultConfig()
-	config.Address = fmt.Sprintf("http://%s", addr)
-
-	client, err := api.NewClient(config)
-	if err != nil {
-		log.Printf("Could not create client: %s", err)
-		return
-	}
-	alloc, _, err := client.Allocations().Info(allocID, nil)
-	if err != nil {
-		log.Printf("Unable to fetch alloc: %s", err)
-		return
-	}
-
-	cancel := make(chan struct{})
-	frames, err := client.AllocFS().Stream(alloc, path, api.OriginStart, 0, cancel, nil)
-	if err != nil {
-		log.Printf("Unable to stream file: %s", err)
-		return
-	}
-
-	c.watches.Add(path)
-	defer func() {
-		log.Println("Stopped watching file with path:", path)
-		c.watches.Remove(path)
-		close(cancel)
-	}()
-
-	log.Println("Started watching file with path:", path)
-	ticker := time.NewTicker(10 * time.Second)
-	for {
-		select {
-		case <-c.destroyCh:
-			return
-		case frame := <-frames:
-			if !c.watches.Has(path) {
-				return
-			}
-			c.send <- &Action{
-				Type: fetchedFile,
-				Payload: Frame{
-					File:   frame.File,
-					Data:   string(frame.Data),
-					Offset: frame.Offset,
-				},
-			}
-		case <-ticker.C:
-			if !c.watches.Has(path) {
-				return
-			}
-		}
-	}
+	//params, ok := action.Payload.(map[string]interface{})
+	//if !ok {
+	//	log.Println("Could not decode payload")
+	//	return
+	//}
+	//addr := params["addr"].(string)
+	//path := params["path"].(string)
+	//allocID := params["allocID"].(string)
+	//
+	//config := api.DefaultConfig()
+	//config.Address = fmt.Sprintf("http://%s", addr)
+	//
+	//client, err := api.NewClient(config)
+	//if err != nil {
+	//	log.Printf("Could not create client: %s", err)
+	//	return
+	//}
+	//alloc, _, err := client.Allocations().Info(allocID, nil)
+	//if err != nil {
+	//	log.Printf("Unable to fetch alloc: %s", err)
+	//	return
+	//}
+	//
+	//cancel := make(chan struct{})
+	//frames, err := client.AllocFS().Stream(alloc, path, api.OriginStart, 0, cancel, nil)
+	//if err != nil {
+	//	log.Printf("Unable to stream file: %s", err)
+	//	return
+	//}
+	//
+	//c.watches.Add(path)
+	//defer func() {
+	//	log.Println("Stopped watching file with path:", path)
+	//	c.watches.Remove(path)
+	//	close(cancel)
+	//}()
+	//
+	//log.Println("Started watching file with path:", path)
+	//ticker := time.NewTicker(10 * time.Second)
+	//for {
+	//	select {
+	//	case <-c.destroyCh:
+	//		return
+	//	case frame := <-frames:
+	//		if !c.watches.Has(path) {
+	//			return
+	//		}
+	//		c.send <- &Action{
+	//			Type: fetchedFile,
+	//			Payload: Frame{
+	//				File:   frame.File,
+	//				Data:   string(frame.Data),
+	//				Offset: frame.Offset,
+	//			},
+	//		}
+	//	case <-ticker.C:
+	//		if !c.watches.Has(path) {
+	//			return
+	//		}
+	//	}
+	//}
 }
