@@ -83,8 +83,9 @@ func main() {
 	nomad := NewNomad(cfg.Address, broadcast)
 	go nomad.watchAllocs()
 	go nomad.watchEvals()
-	go nomad.watchNodes()
 	go nomad.watchJobs()
+	go nomad.watchNodes()
+	go nomad.watchMembers()
 
 	hub := NewHub(nomad, broadcast)
 	go hub.Run()

@@ -22,6 +22,12 @@ const (
 	watchNode    = "WATCH_NODE"
 	unwatchNode  = "UNWATCH_NODE"
 
+	fetchedMembers = "FETCHED_MEMBERS"
+	fetchedMember  = "FETCHED_MEMBER"
+	fetchMember    = "FETCH_MEMBER"
+	watchMember    = "WATCH_MEMBER"
+	unwatchMember  = "UNWATCH_MEMBER"
+
 	fetchDir    = "FETCH_DIR"
 	fetchedDir  = "FETCHED_DIR"
 	watchFile   = "WATCH_FILE"
