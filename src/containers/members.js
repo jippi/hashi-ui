@@ -18,7 +18,7 @@ class Members extends Component {
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
-                                        <th>Addr</th>
+                                        <th>Address</th>
                                         <th>Port</th>
                                         <th>Status</th>
                                     </tr>
