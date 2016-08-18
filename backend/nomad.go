@@ -3,10 +3,14 @@ package main
 import (
 	"time"
 
+	"crypto/md5"
+	"encoding/binary"
 	"errors"
 	"fmt"
+	"io"
 
 	"github.com/hashicorp/nomad/api"
+	uuid "github.com/satori/go.uuid"
 )
 
 const (
@@ -18,6 +22,36 @@ const (
 type AgentMemberWithID struct {
 	api.AgentMember
 	ID string
+}
+
+func NewAgentMemberWithID(member *api.AgentMember) (*AgentMemberWithID, error) {
+	h := md5.New()  // we use md5 as it also has 16 bytes and it maps nicely to uuid
+
+	_, err := io.WriteString(h, member.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = io.WriteString(h, member.Addr)
+	if err != nil {
+		return nil, err
+	}
+
+	err = binary.Write(h, binary.LittleEndian, member.Port)
+	if err != nil {
+		return nil, err
+	}
+
+	sum := h.Sum(nil)
+	ID, err := uuid.FromBytes(sum)
+	if err != nil {
+		return nil, err
+	}
+
+	return &AgentMemberWithID{
+		AgentMember: *member,
+		ID:          ID.String(),
+	}, nil
 }
 
 // Nomad keeps track of the Nomad state. It monitors changes to allocations,
@@ -44,10 +78,12 @@ func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 
 	ms := make([]*AgentMemberWithID, 0, len(members))
 	for _, m := range members {
-		ms = append(ms, &AgentMemberWithID{
-			AgentMember: *m,
-			ID:          m.Name,
-		})
+		x, err := NewAgentMemberWithID(m)
+		if err != nil {
+			log.Errorf("Failed to create AgentMemberWithID %s: %#v", err, m)
+			continue
+		}
+		ms = append(ms, x)
 	}
 	return ms, nil
 }
@@ -59,7 +95,7 @@ func (n *Nomad) MemberWithID(ID string) (*AgentMemberWithID, error) {
 		return nil, err
 	}
 	for _, m := range members {
-		if m.Name == ID {
+		if m.ID == ID {
 			return m, nil
 		}
 	}
