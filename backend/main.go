@@ -93,7 +93,6 @@ func main() {
 	nomad, err := NewNomad(cfg.Address, broadcast)
 	if err != nil {
 		log.Fatalf("Could not create client: %s", err)
-		return
 	}
 
 	go nomad.watchAllocs()
