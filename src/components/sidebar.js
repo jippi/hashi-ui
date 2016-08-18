@@ -31,20 +31,26 @@ const Sidebar = ({ location }) => {
                     </li>
                     <li className={location.pathname === '/nodes' ? 'active' : ''}>
                         <Link to={{ pathname: '/nodes' }}>
-                            <i className="pe-7s-network" />
+                            <i className="pe-7s-keypad" />
                             <p>Nodes</p>
                         </Link>
                     </li>
-                    <li className={location.pathname === '/allocations' ? 'active' : ''}>
-                        <Link to={{ pathname: '/allocations' }}>
-                            <i className="pe-7s-news-paper" />
-                            <p>Allocations</p>
+                    <li className={location.pathname === '/jobs' ? 'active' : ''}>
+                        <Link to={{ pathname: '/jobs' }}>
+                            <i className="pe-7s-copy-file" />
+                            <p>Jobs</p>
                         </Link>
                     </li>
                     <li className={location.pathname === '/evaluations' ? 'active' : ''}>
                         <Link to={{ pathname: '/evaluations' }}>
-                            <i className="pe-7s-science" />
+                            <i className="pe-7s-gleam" />
                             <p>Evaluations</p>
+                        </Link>
+                    </li>
+                    <li className={location.pathname === '/allocations' ? 'active' : ''}>
+                        <Link to={{ pathname: '/allocations' }}>
+                            <i className="pe-7s-graph" />
+                            <p>Allocations</p>
                         </Link>
                     </li>
                 </ul>
