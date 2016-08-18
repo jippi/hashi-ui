@@ -1,6 +1,5 @@
 node_modules/
 .tern-port
-dist/
 .sass-cache
 npm-debug.log
 bindata_assetfs.go
@@ -10,3 +9,10 @@ bindata_assetfs.go
 
 # Glide
 glide.lock
+vendor
+
+# Makefile
+build
+
+# Vagrant
+.vagrant

@@ -14,3 +14,7 @@ import:
   version: 0.1.0
 - package: github.com/op/go-logging
   version: 1.0.0
+- package: github.com/jteeuwen/go-bindata
+  version: 3.0.7
+- package: github.com/elazarl/go-bindata-assetfs
+  version: 41022e9a1e5b0e5d7139533d57467a06bcbc857f
