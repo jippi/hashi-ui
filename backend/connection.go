@@ -8,7 +8,6 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/hashicorp/nomad/api"
-	"github.com/prometheus/log"
 )
 
 // Connection monitors the websocket connection. It processes any action
