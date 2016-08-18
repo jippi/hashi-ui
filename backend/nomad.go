@@ -80,8 +80,7 @@ func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 	for _, m := range members {
 		x, err := NewAgentMemberWithID(m)
 		if err != nil {
-			log.Errorf("Failed to create AgentMemberWithID %s: %#v", err, m)
-			continue
+			return nil, errors.New(fmt.Sprintf("Failed to create AgentMemberWithID %s: %#v", err, m))
 		}
 		ms = append(ms, x)
 	}
