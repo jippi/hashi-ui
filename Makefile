@@ -12,7 +12,6 @@ all: check-deps build
 check-deps:
 	@echo "=> checking dependencies ..."
 	@(go version      | grep -qF '1.6.3'             ) && echo    go: `go      version | sed "s/go version //"`
-	@(glide --version | grep -qF '0.11.1'            ) && echo glide: `glide --version | cut -d' ' -f3`
 	@(node --version  | grep -qF 'v4'                ) && echo  node: `node  --version`
 	@(npm  --version  | grep -qF -e '3.10' -e '2.15' ) && echo   npm: `npm   --version`
 
@@ -40,7 +39,7 @@ webpack: $(BUILD_DIR)/webpack
 .PHONY: nomad-ui
 nomad-ui: $(BUILD_DIR) backend/bindata_assetfs.go
 	mkdir -p $(BUILD_DIR)/bin
-	cd backend && DESTDIR=$(BUILD_DIR) $(MAKE) install
+	cd backend && env PATH=$(BUILD_DIR)/bin:$(PATH) DESTDIR=$(BUILD_DIR) $(MAKE) install
 
 .PHONY: build
 build: webpack nomad-ui
