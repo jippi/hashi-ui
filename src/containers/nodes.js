@@ -26,9 +26,10 @@ class Nodes extends Component {
                                 </thead>
                                 <tbody>
                                     {this.props.nodes.map((node) => {
+                                        let shortID = node.ID.substring(0,8)
                                         return (
                                             <tr key={node.ID}>
-                                                <td><Link to={`/nodes/${node.ID}`}>{node.ID.substring(0,8)}</Link></td>
+                                                <td><Link to={`/nodes/${node.ID}`}>{shortID}</Link></td>
                                                 <td>{node.Datacenter}</td>
                                                 <td>{node.Name}</td>
                                                 <td>{node.Class ? node.Class : "<none>"}</td>
