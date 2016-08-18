@@ -27,7 +27,7 @@ class Members extends Component {
                                     {this.props.members.map((member) => {
                                         return (
                                             <tr key={member.ID}>
-                                                <td><Link to={`/members/${member.ID}`}>{member.ID}</Link></td>
+                                                <td><Link to={`/members/${member.ID}`}>{member.ID.substring(0,8)}</Link></td>
                                                 <td>{member.Name}</td>
                                                 <td>{member.Addr}</td>
                                                 <td>{member.Port}</td>
