@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/nomad/api"
-	"github.com/prometheus/log"
 )
 
 const (
