@@ -2,6 +2,7 @@ package main
 
 import (
 	"time"
+	"strings"
 
 	"crypto/md5"
 	"encoding/binary"
@@ -21,7 +22,8 @@ const (
 // consistent i.e. other types have ID field.
 type AgentMemberWithID struct {
 	api.AgentMember
-	ID string
+	ID     string
+	Leader bool
 }
 
 func NewAgentMemberWithID(member *api.AgentMember) (*AgentMemberWithID, error) {
@@ -51,6 +53,7 @@ func NewAgentMemberWithID(member *api.AgentMember) (*AgentMemberWithID, error) {
 	return &AgentMemberWithID{
 		AgentMember: *member,
 		ID:          ID.String(),
+		Leader:      false,
 	}, nil
 }
 
@@ -83,6 +86,27 @@ func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 			return nil, errors.New(fmt.Sprintf("Failed to create AgentMemberWithID %s: %#v", err, m))
 		}
 		ms = append(ms, x)
+	}
+
+	leader, err := n.Client.Status().Leader()
+	if err != nil {
+		log.Errorf("Failed to fetch leader.")
+		return nil, err
+	}
+
+	if leader != "" {
+		parts := strings.Split(leader, ":")
+		if len(parts) != 2 {
+			return nil, errors.New(fmt.Sprintf("Failed to parse leader: %s", leader))
+		}
+		addr, port := parts[0], parts[1]
+
+		for _, m := range ms {
+			mPort, ok := m.Tags["port"]
+			if ok && (mPort == port) && (m.Addr == addr) {
+				m.Leader = true
+			}
+		}
 	}
 	return ms, nil
 }
