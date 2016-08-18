@@ -4,3 +4,6 @@ dist/
 .sass-cache
 npm-debug.log
 bindata_assetfs.go
+
+# PyCharm & WebStorm
+.idea
