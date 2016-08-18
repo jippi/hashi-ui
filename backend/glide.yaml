@@ -18,3 +18,5 @@ import:
   version: 3.0.7
 - package: github.com/elazarl/go-bindata-assetfs
   version: 41022e9a1e5b0e5d7139533d57467a06bcbc857f
+- package: github.com/satori/go.uuid
+  version: ~1.1.0
