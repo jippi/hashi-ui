@@ -4,8 +4,13 @@
   "description": "User interface for the HashiCorp Nomad scheduler.",
   "repository": "https://github.com/iverberk/nomad-ui",
   "main": "src/main.js",
+  "bin": {
+    "webpack": ".bin/webpack",
+    "webpack-dev-server": ".bin/webpack-dev-server"
+  },
   "scripts": {
-    "start": "webpack-dev-server"
+    "start": "webpack-dev-server",
+    "build": "webpack --config webpack-prod.config.js -p --progress"
   },
   "keywords": [
     "nomad"

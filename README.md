@@ -36,7 +36,7 @@ If you have a Node and Go environment you can also build the production version 
 
 ```
 npm install
-NODE_ENV=production webpack -p --progress
+npm run-script build
 ```
 
 This requires that the webpack command is available somewhere in your path. The
