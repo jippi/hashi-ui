@@ -23,7 +23,7 @@ class MemberInfo extends Component {
         const memberProps = [
             "ID",
             "Name",
-            "Addr",
+            "Address",
             "Port",
             "Status"
         ]
