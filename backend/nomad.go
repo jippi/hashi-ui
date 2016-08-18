@@ -3,9 +3,11 @@ package main
 import (
 	"time"
 
-	"github.com/hashicorp/nomad/api"
 	"errors"
 	"fmt"
+
+	"github.com/hashicorp/nomad/api"
+	"github.com/prometheus/log"
 )
 
 const (
@@ -45,7 +47,7 @@ func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 	for _, m := range members {
 		ms = append(ms, &AgentMemberWithID{
 			AgentMember: *m,
-			ID: m.Name,
+			ID:          m.Name,
 		})
 	}
 	return ms, nil
