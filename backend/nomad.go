@@ -67,14 +67,14 @@ func (n *Nomad) MemberWithID(ID string) (*AgentMemberWithID, error) {
 }
 
 // NewNomad configures the Nomad API client and initializes the internal state.
-func NewNomad(url string, updateCh chan *Action) *Nomad {
+func NewNomad(url string, updateCh chan *Action) (*Nomad, error) {
 	config := api.DefaultConfig()
 	config.Address = url
 	config.WaitTime = waitTime
 
 	client, err := api.NewClient(config)
 	if err != nil {
-		log.Fatalf("Could not create client: %s", err)
+		return nil, err
 	}
 
 	return &Nomad{
@@ -85,7 +85,7 @@ func NewNomad(url string, updateCh chan *Action) *Nomad {
 		nodes:    make([]*api.NodeListStub, 0),
 		members:  make([]*AgentMemberWithID, 0),
 		jobs:     make([]*api.JobListStub, 0),
-	}
+	}, nil
 }
 
 // FlushAll sends the current Nomad state to the connection. This is used to pass
