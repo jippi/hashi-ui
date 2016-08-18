@@ -20,11 +20,6 @@ before_install:
   - cd ${HOME}/gopath/src/${GOPKG}
   - go version
 
-install:
-  - mkdir -p ${GOPATH}/bin
-  - curl https://glide.sh/get | sh
-  - glide --version
-
 script:
   - GOBUILD=${GOBUILD} make all
   - ls -la build
