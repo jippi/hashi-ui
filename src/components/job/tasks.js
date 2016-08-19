@@ -1,8 +1,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {Link} from "react-router";
+import {NomadLink} from "../link";
 import Table from "../table";
-import shortUUID from "../uuid";
 import JSON from "../json";
 
 class JobTasks extends Component {
@@ -21,16 +20,11 @@ class JobTasks extends Component {
         ];
         job.TaskGroups.forEach((taskGroup) => {
             taskGroup.Tasks.forEach((task) => {
-                task.ID = task.Name;
-                taskGroup.ID = taskGroup.Name;
                 tasks.push(
                     <tr key={task.ID}>
-                        <td><Link to={`/jobs/${job.ID}/tasks`}
-                                  query={{taskGroupId: taskGroup.ID, taskId: task.ID}}>{shortUUID(task.ID)}</Link>
-                        </td>
+                        <td><NomadLink taskId={task.ID} taskGroupId={taskGroup.ID} jobId={job.ID} short="true"/></td>
                         <td>{task.Name}</td>
-                        <td><Link to={`/jobs/${job.ID}/taskGroups`}
-                                  query={{taskGroupId: taskGroup.ID}}>{shortUUID(taskGroup.ID)}</Link></td>
+                        <td><NomadLink taskGroupId={taskGroup.ID} jobId={job.ID}>{taskGroup.Name}</NomadLink></td>
                         <td>{task.Driver}</td>
                         <td>{task.Resources.CPU}</td>
                         <td>{task.Resources.MemoryMB}</td>
