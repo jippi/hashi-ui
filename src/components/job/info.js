@@ -10,9 +10,11 @@ class JobInfo extends Component {
 
         // Build the task groups table
         const taskGroups = this.props.job.TaskGroups.map((taskGroup) => {
+             taskGroup.ID = taskGroup.Name;
              taskGroup.Tasks.map((task) => {
+                task.ID = task.Name + '/' + taskGroup.ID;
                 tasks.push(
-                    <tr key={task.Name}>
+                    <tr key={task.ID}>
                         <td>{task.Name}</td>
                         <td>{task.Driver}</td>
                         <td>{task.Resources.CPU}</td>
@@ -24,7 +26,7 @@ class JobInfo extends Component {
             })
 
             return (
-                <tr key={taskGroup.Name}>
+                <tr key={taskGroup.ID}>
                     <td>{taskGroup.Name}</td>
                     <td>{taskGroup.Count}</td>
                     <td>{taskGroup.Constraints || "<none>"}</td>
