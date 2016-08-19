@@ -9,7 +9,7 @@
     "webpack-dev-server": ".bin/webpack-dev-server"
   },
   "scripts": {
-    "start": "webpack-dev-server",
+    "start": "webpack-dev-server --host 0.0.0.0",
     "build": "webpack --config webpack-prod.config.js -p --progress"
   },
   "keywords": [
