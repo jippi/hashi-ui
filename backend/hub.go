@@ -58,7 +58,7 @@ func (h *Hub) Run() {
 func (h *Hub) Handler(w http.ResponseWriter, r *http.Request) {
 	socket, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Errorf("transport: websocket upgrade failed: %s", err)
+		logger.Errorf("transport: websocket upgrade failed: %s", err)
 		return
 	}
 	c := NewConnection(h, socket)

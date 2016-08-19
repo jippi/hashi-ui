@@ -7,7 +7,7 @@ import:
 - package: github.com/gorilla/websocket
   version: 1.0.0
 - package: github.com/hashicorp/nomad
-  version: 0.4.0
+  version: 0.4.1
   subpackages:
   - api
 - package: gopkg.in/fatih/set.v0

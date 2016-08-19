@@ -1,8 +1,8 @@
 package main
 
 import (
-	"time"
 	"strings"
+	"time"
 
 	"crypto/md5"
 	"encoding/binary"
@@ -27,7 +27,7 @@ type AgentMemberWithID struct {
 }
 
 func NewAgentMemberWithID(member *api.AgentMember) (*AgentMemberWithID, error) {
-	h := md5.New()  // we use md5 as it also has 16 bytes and it maps nicely to uuid
+	h := md5.New() // we use md5 as it also has 16 bytes and it maps nicely to uuid
 
 	_, err := io.WriteString(h, member.Name)
 	if err != nil {
@@ -90,7 +90,7 @@ func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 
 	leader, err := n.Client.Status().Leader()
 	if err != nil {
-		log.Errorf("Failed to fetch leader.")
+		logger.Error("Failed to fetch leader.")
 		return nil, err
 	}
 
@@ -162,7 +162,7 @@ func (n *Nomad) watchAllocs() {
 	for {
 		allocs, meta, err := n.Client.Allocations().List(q)
 		if err != nil {
-			log.Errorf("watch: unable to fetch allocations: %s", err)
+			logger.Errorf("watch: unable to fetch allocations: %s", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}
@@ -183,7 +183,7 @@ func (n *Nomad) watchEvals() {
 	for {
 		evals, meta, err := n.Client.Evaluations().List(q)
 		if err != nil {
-			log.Errorf("watch: unable to fetch evaluations: %s", err)
+			logger.Errorf("watch: unable to fetch evaluations: %s", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}
@@ -204,7 +204,7 @@ func (n *Nomad) watchJobs() {
 	for {
 		jobs, meta, err := n.Client.Jobs().List(q)
 		if err != nil {
-			log.Errorf("watch: unable to fetch jobs: %s", err)
+			logger.Errorf("watch: unable to fetch jobs: %s", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}
@@ -225,7 +225,7 @@ func (n *Nomad) watchNodes() {
 	for {
 		nodes, meta, err := n.Client.Nodes().List(q)
 		if err != nil {
-			log.Errorf("watch: unable to fetch nodes: %s", err)
+			logger.Errorf("watch: unable to fetch nodes: %s", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}
@@ -245,7 +245,7 @@ func (n *Nomad) watchMembers() {
 	for {
 		members, err := n.MembersWithID()
 		if err != nil {
-			log.Errorf("watch: unable to fetch members: %s", err)
+			logger.Errorf("watch: unable to fetch members: %s", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}

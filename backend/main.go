@@ -1,11 +1,11 @@
 package main
 
 import (
-	"syscall"
-	"path"
 	"flag"
-	"os"
 	"fmt"
+	"os"
+	"path"
+	"syscall"
 
 	"net/http"
 
@@ -13,7 +13,7 @@ import (
 	"github.com/op/go-logging"
 )
 
-var log = logging.MustGetLogger("nomad-ui")
+var logger = logging.MustGetLogger("nomad-ui")
 
 func init() {
 	var format = logging.MustStringFormatter(
@@ -36,9 +36,9 @@ type Config struct {
 
 func DefaultConfig() *Config {
 	return &Config{
-		Address: "http://127.0.0.1:4646",
+		Address:       "http://127.0.0.1:4646",
 		ListenAddress: "0.0.0.0:3000",
-		Endpoint: "/",
+		Endpoint:      "/",
 	}
 }
 
@@ -49,12 +49,12 @@ func flagDefault(value string) string {
 var (
 	defaultConfig = DefaultConfig()
 
-	flagAddress = flag.String("address", "", "The address of the Nomad server. " +
-		"Overrides the NOMAD_ADDR environment variable if set. " + flagDefault(defaultConfig.Address))
+	flagAddress = flag.String("address", "", "The address of the Nomad server. "+
+		"Overrides the NOMAD_ADDR environment variable if set. "+flagDefault(defaultConfig.Address))
 	flagListenAddress = flag.String("web.listen-address", "",
-		"The address on which to expose the web interface. " + flagDefault(defaultConfig.ListenAddress))
+		"The address on which to expose the web interface. "+flagDefault(defaultConfig.ListenAddress))
 	flagEndpoint = flag.String("web.path", "",
-		"Path under which to expose the web interface. " + flagDefault(defaultConfig.Endpoint))
+		"Path under which to expose the web interface. "+flagDefault(defaultConfig.Endpoint))
 )
 
 func (c *Config) Parse() {
@@ -78,21 +78,21 @@ func (c *Config) Parse() {
 func main() {
 	cfg := DefaultConfig()
 	cfg.Parse()
-	log.Infof("----------------------------------------------------------------------")
-	log.Infof("|                          NOMAD UI                                  |")
-	log.Infof("----------------------------------------------------------------------")
-	log.Infof("| address            : %-45s |", cfg.Address)
-	log.Infof("| web.listen-address : %-45s |", cfg.ListenAddress)
-	log.Infof("| web.path           : %-45s |", cfg.Endpoint)
-	log.Infof("----------------------------------------------------------------------")
-	log.Infof("")
+	logger.Infof("----------------------------------------------------------------------")
+	logger.Infof("|                          NOMAD UI                                  |")
+	logger.Infof("----------------------------------------------------------------------")
+	logger.Infof("| address            : %-45s |", cfg.Address)
+	logger.Infof("| web.listen-address : %-45s |", cfg.ListenAddress)
+	logger.Infof("| web.path           : %-45s |", cfg.Endpoint)
+	logger.Infof("----------------------------------------------------------------------")
+	logger.Infof("")
 
 	broadcast := make(chan *Action)
 
-	log.Infof("Connecting to nomad ...")
+	logger.Infof("Connecting to nomad ...")
 	nomad, err := NewNomad(cfg.Address, broadcast)
 	if err != nil {
-		log.Fatalf("Could not create client: %s", err)
+		logger.Fatalf("Could not create client: %s", err)
 	}
 
 	go nomad.watchAllocs()
@@ -108,9 +108,9 @@ func main() {
 	router.HandleFunc(path.Join(cfg.Endpoint, "ws"), hub.Handler)
 	router.PathPrefix(cfg.Endpoint).Handler(http.FileServer(assetFS()))
 
-	log.Infof("Listening ...")
+	logger.Infof("Listening ...")
 	err = http.ListenAndServe(cfg.ListenAddress, router)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 }
