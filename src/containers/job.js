@@ -70,8 +70,8 @@ class Job extends Component {
     }
 }
 
-function mapStateToProps({ job, allocations }) {
-    return { job, allocations }
+function mapStateToProps({ job }) {
+    return { job }
 }
 
 export default connect(mapStateToProps)(Job)
