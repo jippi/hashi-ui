@@ -15,8 +15,8 @@ Vagrant.configure(2) do |config|
   config.vm.box = "centos/7"
   config.vm.box_check_update = false
 
-  config.vm.network "forwarded_port", guest: 3000, host: 4000, host_ip: "127.0.0.1"
-  config.vm.network "forwarded_port", guest: 3333, host: 4444, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 3000, host: 3000, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 3333, host: 3333, host_ip: "127.0.0.1"
 
   config.vm.provision "shell", inline: <<-SHELL
     set -xe
