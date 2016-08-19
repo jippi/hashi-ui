@@ -9,6 +9,8 @@ import Job from './containers/job';
 import JobInfo from './components/job/info';
 import JobAllocs from './components/job/allocs';
 import JobEvals from './components/job/evals';
+import JobTasks from './components/job/tasks';
+import JobTaskGroups from './components/job/taskGroups';
 import JobRaw from './components/job/raw';
 
 import Allocations from './containers/allocations';
@@ -52,6 +54,8 @@ const AppRouter = () => {
                     <Route path="/jobs/:jobId/info" component={JobInfo} />
                     <Route path="/jobs/:jobId/allocations" component={JobAllocs} />
                     <Route path="/jobs/:jobId/evaluations" component={JobEvals} />
+                    <Route path="/jobs/:jobId/tasks" component={JobTasks} />
+                    <Route path="/jobs/:jobId/taskGroups" component={JobTaskGroups} />
                     <Route path="/jobs/:jobId/raw" component={JobRaw} />
                 </Route>
 

@@ -25,6 +25,14 @@ class Job extends Component {
                     path: 'evaluations'
                 },
                 {
+                    name: 'Tasks Groups',
+                    path: 'taskGroups'
+                },
+                {
+                    name: 'Tasks',
+                    path: 'tasks'
+                },
+                {
                     name: 'Raw',
                     path: 'raw'
                 }
