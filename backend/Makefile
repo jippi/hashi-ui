@@ -42,7 +42,7 @@ build: $(BINARIES)
 
 .PHONY: install
 install: $(BINARIES)
-	install -m 0755 -t $(DESTDIR) $?
+	install -m 0755 $? $(DESTDIR)
 
 .PHONY: clean
 clean:

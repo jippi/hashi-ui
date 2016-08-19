@@ -46,7 +46,7 @@ build: webpack nomad-ui
 
 .PHONY: install
 install: build
-	install -m 0755 -t $(DESTDIR) $(shell ls $(BUILD_DIR)/nomad-ui-*)
+	install -m 0755  $(shell ls $(BUILD_DIR)/nomad-ui-*) $(DESTDIR)
 
 .PHONY: vet
 vet:
