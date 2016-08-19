@@ -53,7 +53,7 @@ build: $(BUILD_DIR)/go-bindata $(BUILD_DIR)/go-bindata-assetfs $(BUILD_DIR)/glid
 
 .PHONY: install
 install: $(BUILD_DIR)/go-bindata $(BUILD_DIR)/go-bindata-assetfs $(BUILD_DIR)/glide
-	install -m 0755 -t $(DESTDIR) $?
+	install -m 0755 $? $(DESTDIR)
 
 .PHONY: clean
 clean:
