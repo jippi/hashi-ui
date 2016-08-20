@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { NomadLink } from '../components/link'
 
 class Nodes extends Component {
 
@@ -28,7 +28,7 @@ class Nodes extends Component {
                                     {this.props.nodes.map((node) => {
                                         return (
                                             <tr key={node.ID}>
-                                                <td><Link to={`/nodes/${node.ID}`}>{node.ID.substring(0,8)}</Link></td>
+                                                <td><NomadLink nodeId={node.ID} short="true"/></td>
                                                 <td>{node.Datacenter}</td>
                                                 <td>{node.Name}</td>
                                                 <td>{node.Class ? node.Class : "<none>"}</td>

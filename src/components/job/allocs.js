@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router'
+import { NomadLink } from '../link'
 import Table from '../table'
 
 const JobAllocs = ({ allocations, job }) => {
@@ -11,11 +11,11 @@ const JobAllocs = ({ allocations, job }) => {
         }).map((allocation) => {
             return (
                 <tr key={allocation.ID}>
-                    <td><Link to={`/allocations/${allocation.ID}`}>{allocation.ID.substring(0,8)}</Link></td>
+                    <td><NomadLink allocId={allocation.ID} short="true"/></td>
                     <td>{allocation.ClientStatus}</td>
                     <td>{allocation.DesiredStatus}</td>
-                    <td><Link to={`/nodes/${allocation.NodeID}`}>{allocation.NodeID.substring(0,8)}</Link></td>
-                    <td><Link to={`/evaluations/${allocation.EvalID}`}>{allocation.EvalID.substring(0,8)}</Link></td>
+                    <td><NomadLink nodeId={allocation.NodeID} short="true"/></td>
+                    <td><NomadLink evalId={allocation.EvalID} short="true"/></td>
                 </tr>
             )
         })

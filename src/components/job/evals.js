@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router'
+import { NomadLink } from '../link'
 import Table from '../table'
 
 const JobEvals = ({ evaluations, job }) => {
@@ -11,7 +11,7 @@ const JobEvals = ({ evaluations, job }) => {
         }).map((evaluation) => {
             return (
                 <tr key={evaluation.ID}>
-                    <td><Link to={`/evaluations/${evaluation.ID}`}>{evaluation.ID.substring(0,8)}</Link></td>
+                    <td><NomadLink evalId={evaluation.ID} short="true"/></td>
                     <td>{evaluation.Status}</td>
                     <td>{evaluation.Type}</td>
                     <td>{evaluation.Priority}</td>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { NomadLink } from '../components/link'
 
 class Jobs extends Component {
     render() {
@@ -25,7 +25,7 @@ class Jobs extends Component {
                                     {this.props.jobs.map((job) => {
                                         return (
                                             <tr key={job.ID}>
-                                                <td><Link to={`/jobs/${job.ID}`}>{job.ID}</Link></td>
+                                                <td><NomadLink jobId={job.ID} short="true"/></td>
                                                 <td>{job.Type}</td>
                                                 <td>{job.Priority}</td>
                                                 <td>{job.Status}</td>

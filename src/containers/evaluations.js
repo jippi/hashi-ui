@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { NomadLink } from '../components/link';
 
 class Evaluations extends Component {
 
@@ -27,8 +27,8 @@ class Evaluations extends Component {
                                     {this.props.evaluations.map((evaluation) => {
                                         return (
                                             <tr key={evaluation.ID}>
-                                                <td><Link to={`/evaluations/${evaluation.ID}`}>{evaluation.ID.substring(0,8)}</Link></td>
-                                                <td><Link to={`/jobs/${evaluation.JobID}`}>{evaluation.JobID.substring(0,8)}</Link></td>
+                                                <td><NomadLink evalId={evaluation.ID} short="true"/></td>
+                                                <td><NomadLink jobId={evaluation.JobID} short="true"/></td>
                                                 <td>{evaluation.Status}</td>
                                                 <td>{evaluation.Type}</td>
                                                 <td>{evaluation.Priority}</td>
