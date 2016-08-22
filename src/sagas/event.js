@@ -84,9 +84,8 @@ function* transport(socket) {
     yield fork(write, socket);
 }
 
-function connect() {
-    const protocol = location.protocol === "https:" ? "wss:" : "ws:";
-    const socket = new WebSocket(`${protocol}//${location.host}/ws`);
+function connectTo(url) {
+    const socket = new WebSocket(url);
 
     const resolver = (resolve, reject) => {
         const timeout = setTimeout(() => {
@@ -104,9 +103,13 @@ function connect() {
 }
 
 function* events() {
+    const protocol = location.protocol === "https:" ? "wss:" : "ws:";
+    const url = `${protocol}//${location.host}/ws`;
+
     while (true) {
         try {
-            const socket = yield call(connect)
+            console.log(`Connecting to backend: ${url}`)
+            const socket = yield call(connectTo, url)
             yield call(transport, socket)
         } catch(e) {
             console.log(e)
