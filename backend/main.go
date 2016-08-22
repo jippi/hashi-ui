@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path"
 	"syscall"
 
 	"net/http"
@@ -31,14 +30,12 @@ func init() {
 type Config struct {
 	Address       string
 	ListenAddress string
-	Endpoint      string
 }
 
 func DefaultConfig() *Config {
 	return &Config{
 		Address:       "http://127.0.0.1:4646",
 		ListenAddress: "0.0.0.0:3000",
-		Endpoint:      "/",
 	}
 }
 
@@ -53,8 +50,6 @@ var (
 		"Overrides the NOMAD_ADDR environment variable if set. "+flagDefault(defaultConfig.Address))
 	flagListenAddress = flag.String("web.listen-address", "",
 		"The address on which to expose the web interface. "+flagDefault(defaultConfig.ListenAddress))
-	flagEndpoint = flag.String("web.path", "",
-		"Path under which to expose the web interface. "+flagDefault(defaultConfig.Endpoint))
 )
 
 func (c *Config) Parse() {
@@ -70,9 +65,6 @@ func (c *Config) Parse() {
 	if *flagListenAddress != "" {
 		c.ListenAddress = *flagListenAddress
 	}
-	if *flagEndpoint != "" {
-		c.Endpoint = *flagEndpoint
-	}
 }
 
 func main() {
@@ -83,7 +75,6 @@ func main() {
 	logger.Infof("----------------------------------------------------------------------")
 	logger.Infof("| address            : %-45s |", cfg.Address)
 	logger.Infof("| web.listen-address : %-45s |", cfg.ListenAddress)
-	logger.Infof("| web.path           : %-45s |", cfg.Endpoint)
 	logger.Infof("----------------------------------------------------------------------")
 	logger.Infof("")
 
@@ -105,8 +96,8 @@ func main() {
 	go hub.Run()
 
 	router := mux.NewRouter()
-	router.HandleFunc(path.Join(cfg.Endpoint, "ws"), hub.Handler)
-	router.PathPrefix(cfg.Endpoint).Handler(http.FileServer(assetFS()))
+	router.HandleFunc("/ws", hub.Handler)
+	router.PathPrefix("/").Handler(http.FileServer(assetFS()))
 
 	logger.Infof("Listening ...")
 	err = http.ListenAndServe(cfg.ListenAddress, router)
