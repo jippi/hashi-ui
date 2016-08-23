@@ -11,8 +11,9 @@ class Events extends Component {
                 Object.keys(allocation.TaskStates).forEach((task) => {
                     allocation.TaskStates[task].Events.reverse().forEach((event) => {
                         if (taskEvents.length === 10) return
+                        let eventID = task + '.' + event.Time
                         taskEvents.push(
-                            <tr key={event.Time}>
+                            <tr key={eventID}>
                                 <td>{task}</td>
                                 <td>{event.Type}</td>
                                 <td>{event.KillError || event.DriverError || event.DownloadError || event.RestartReason || event.Message || "<none>" }</td>
