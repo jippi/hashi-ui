@@ -25,13 +25,6 @@ Vagrant.configure(2) do |config|
     yum install -y golang-#{GO_VERSION}
     yum install -y git-core
 
-    mkdir -p /opt/glide
-    if ! test -e /opt/glide/linux-amd64; then
-        curl -sL https://github.com/Masterminds/glide/releases/download/v#{GLIDE_VERSION}/glide-v#{GLIDE_VERSION}-linux-amd64.tar.gz | \
-            tar -xvz -C /opt/glide
-        ln -sf /opt/glide/linux-amd64/glide /usr/bin/glide
-    fi
-
     curl -s https://rpm.nodesource.com/setup_4.x | sh -
     yum install -y nodejs
     npm install -g npm@">=3.10"
