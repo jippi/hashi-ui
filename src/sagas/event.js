@@ -28,12 +28,12 @@ export const FETCHED_ALLOC = 'FETCHED_ALLOC';
 export const WATCH_ALLOC = 'WATCH_ALLOC';
 export const UNWATCH_ALLOC = 'UNWATCH_ALLOC';
 
-export const FETCH_DIR = 'FETCH_DIR'
-export const FETCHED_DIR = 'FETCHED_DIR'
+export const FETCH_DIR = 'FETCH_DIR';
+export const FETCHED_DIR = 'FETCHED_DIR';
 
-export const WATCH_FILE = 'WATCH_FILE'
-export const UNWATCH_FILE = 'UNWATCH_FILE'
-export const FETCHED_FILE = 'FETCHED_FILE'
+export const WATCH_FILE = 'WATCH_FILE';
+export const UNWATCH_FILE = 'UNWATCH_FILE';
+export const FETCHED_FILE = 'FETCHED_FILE';
 
 function subscribe(socket) {
     return eventChannel(emit => {
