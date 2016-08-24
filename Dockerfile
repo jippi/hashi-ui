@@ -1,5 +1,5 @@
 FROM scratch
 
-ADD ./backend/nomad-ui-linux /nomad-ui
+ADD ./build/nomad-ui-linux-amd64 /nomad-ui
 
 CMD ["/nomad-ui"]
