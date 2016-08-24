@@ -3,6 +3,7 @@ node_modules/
 .sass-cache
 npm-debug.log
 bindata_assetfs.go
+dist/
 
 # PyCharm & WebStorm
 .idea
