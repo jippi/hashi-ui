@@ -74,3 +74,11 @@ clean:
 	rm -rf $(BUILD_DIR)
 	rm -rf node_modules
 	rm -rf bindata_assetfs.go backend/bindata_assetfs.go
+
+.PHONY: docker
+docker:
+	@echo "=> build and push Docker image ..."
+	@docker login -e $(DOCKER_EMAIL) -u $(DOCKER_USER) -p $(DOCKER_PASS)
+	docker build -f Dockerfile -t iverberk/nomad-ui:$(COMMIT) .
+	docker tag iverberk/nomad-ui:$(COMMIT) iverberk/nomad-ui:$(TAG)
+	docker push iverberk/nomad-ui

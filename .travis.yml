@@ -9,6 +9,9 @@ env:
     - NODE_ENV=development
     - GOPKG=github.com/iverberk/nomad-ui
     - GOBUILD="linux-amd64 windows-amd64 darwin-amd64"
+    - secure: ZoRhnYeFjmUfbA6AV4heBts2BQROh7m6Uo0QSHxeDwHs8X1GPC9nrPm+Lf9mHqd55DWlvuqllrbx4YxhF3xreT3z2WGloNeV893rlE12H88oIS5ZQczzvmPcM4X/diMx0yFQV4yTl87pk/XJDSaOLfi3SO2kntc9fsD281Ep026wRR1qnjxoorIoI5E+mGrSsEZwFJcO7lQUcWcWy0aNbt0q9Q0ww6mSJvvINvDH7HSPvpNumH3ys5aE7VhO8GapBGk2/zjumJ/+J65BTS8wFATWC3QuCgLsi/8u1IE3xYWkIdK2J/pNHPwj/LqYYoE2bSwdSAnlDJpDAqhgEsKZGFcebmlqK902VzydGpjxZlo20NLce+VA350H1wOB2hdMmoqogEOtWqYnKhn7OEIz0Wvdom3JII0hxSQZEiK1QCa/beaElhzPeJyE1zxHXuXkwtAFaoRL4pCzE/rsjdU+KIWf98dZL5iOb1xxkdMVIey9jnqC/zRm4kS8zkX4urvZb2sqiOa6HuAM/PSfVe8XpEG4gKKJEYTHyKLJo+KSKAeZ/60qS1mjQGcB1++8VMYl2jf37y0Fos3XdA/TmeKI1jrKzyXsBN2syOpGQktGZjC9iNIRtxwo2YzKSJ3nqAb3lzwouPFWl4PTraEVvxxYTDrDvDmIu/D9mPYYofnYyGQ=
+    - secure: WKgIAG4xTouNdj27m5FR9KkNEOQrVTntwB+5KPGdlG1rwSvH4s55xswx1r6XWxj1HFlPipcKV49t1D7wBRDPrUllUU08QqCpjH7MqlSJEW1ch89H10hGqqmLEVQrHFk4ft2GEGrjD60cz8Y8xuo+vlF7JEcjva8kSWuB9RxtwFbec9U+S09XaDlVPmwxK5dY3Wz6Fv3CH9H+/IR99JjApwyc7H2G9om0rKNE2XLkl5ousJf+MBfIZuzWk6JBNrg5hrib8EHu+b0m04Uatkzrr1O91MFPpBeOLTIz9FbkANDgcGX4DkI9wqJbODg/OQ90V3hPVJvMEiXLBFP7er/HUN5wHW5VCetUXsS0hGbCRkUbddNhbet2RDIPCsgXAnCPPtu1IXwc6DwE0ky6cPN8dQ8trqL0ubKszZh4Ed+5zr+nj0Y9ppsOVq6RNEWUV919yQpCAJoQZXNmCHw+nVHdR1FRLMr4g91/k3OPidSp7BQFQvFSZsjfvM67ZCpaiOhuhOi6McIucMqUjNYsHVYBA7/sGv/QNmFPbbLu40eX768jPY/vEB66eTJ5lS/sDVcqhH4oQXnPwc2stkm1OzES3uvEHE7sQL2YulvM5+cyVtxLb5FZbvy5zIRqwFlFFFk+MHrMpaZqnp9+2LCjP5aI6uwwlpEQRQH54k5rucb1UlA=
+    - secure: UjojaXbmd3v0rRPnjbttpTK+5q0Hmm9O1aklMjNPsLFJayG7TbjH66+qDpwwTiUJAY6JLuKSGg3E+bM79wIbi7TFHPrZ5NLjhm56L8TAqV9ltVEK3bmBZjmw5broG0+D0wiicyiB3eo75q9hcw33iEJIjSCsA2aHnUjI17brQ6GjkY0PzdMgz0KcDc4zGK2jKTPic7uQU2nKC/KSK3mqK8qLzLC7bQywgo23lLl7s1OhhIhIQ8j0Z94Iyd1PXOui/LpTjv4MLFas1JR2D0n1QYXsukhxLhS2ohTSQGyJbK6Lh0bfZlhgd6sglE8lt3XntY9RVw1dDLtm9uNpu05fZlHLv0HiAsBI4M8EN/xTXUarD0vLyyBsK1EYbK1UJCKQ6KN3M40ijq9wwM82v/ax02VfmvO9DvFkcUT5vV46+8LqtrVcbXINtHTf3lEIUSN4FTr6HQXlekjQ7PglS6vpOkvV11sevIZ9fgzl4fZbuAYIJz0smCYD70HvxDCLelxphFQ1gLOp8r4Y2BSn0H1qKtT1TfQpNaWSiv/6y+uchbnjteSNlpRXcYu/OK619utHJd6xSpHM+uEdZO8NZNwSlQDTGTZvIFro3t8aQsIsNaPFg9MQ7wj1kR7epwTA7b7Ly1tB3Rrvwa2f5Sh9GXzsZTryjr+03veYcuJHnGt7spA=
 
 before_install:
   - GIMME_OUTPUT=$(gimme 1.6.3) && eval "$GIMME_OUTPUT"
@@ -26,6 +29,12 @@ before_script:
 script:
   - GOBUILD=${GOBUILD} make all
   - ls -la build
+
+after_success:
+  - export PR=https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
+  - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo `curl -s $PR | jq -r .head.ref`; fi)
+  - if [[ "$TRAVIS_TAG" != "" ]]; then make docker DOCKER_USER=${DOCKER_USER} DOCKER_PASS=${DOCKER_PASS} DOCKER_EMAIL=${DOCKER_EMAIL} TAG=${TRAVIS_TAG} COMMIT=${TRAVIS_COMMIT}; fi
+  - if [[ "$TRAVIS_TAG" == "" && "$BRANCH" == "master" ]]; then make docker DOCKER_USER=${DOCKER_USER} DOCKER_PASS=${DOCKER_PASS} DOCKER_EMAIL=${DOCKER_EMAIL} TAG=latest COMMIT=${TRAVIS_COMMIT}; fi
 
 deploy:
   provider: releases
