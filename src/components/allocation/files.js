@@ -8,17 +8,19 @@ import Table from '../table'
 class AllocFiles extends Component {
 
     constructor(props) {
-        super(props)
+        super(props);
 
-        const path = this.findAllocNode(this.props) ? '/' : ''
+        const path = this.findAllocNode(this.props) ? '/' : '';
+        const node = props.node;
+        const alloc = props.allocation;
 
         if (path === '/') {
             this.props.dispatch({
                 type: FETCH_DIR,
                 payload: {
-                    addr: props.node.HTTPAddr,
+                    addr: node.HTTPAddr,
                     path: '/',
-                    allocID: props.allocation.ID
+                    allocID: alloc.ID
                 }
             })
         }
@@ -36,17 +38,17 @@ class AllocFiles extends Component {
         // Find the node that this alloc belongs to
         const node = props.nodes.find((node) => {
             return node.ID === props.allocation.NodeID
-        })
+        });
 
         // No node for this alloc, so bail out
-        if (node === undefined) return false
+        if (node === undefined) return false;
 
         // Fetch the correct node information if the alloc node changed
         if (props.node == null || node.ID !== props.node.ID) {
             this.props.dispatch({
                 type: FETCH_NODE,
                 payload: node.ID
-            })
+            });
             return false
         }
 
@@ -55,10 +57,10 @@ class AllocFiles extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (!this.findAllocNode(nextProps)) return
+        if (!this.findAllocNode(nextProps)) return;
 
-        let path = this.state.path
-        let contents = this.state.contents
+        let path = this.state.path;
+        let contents = this.state.contents;
 
         // The node information was fetched, so transition to the root path
         // if we are initialising.
@@ -88,7 +90,7 @@ class AllocFiles extends Component {
 
     handleClick(file) {
         if (file.IsDir) {
-            let path = this.state.path
+            let path = this.state.path;
             if (file.Name === "back") {
                 path = path.substr(0, path.lastIndexOf('/', path.length-2)+1)
             } else {
@@ -96,12 +98,12 @@ class AllocFiles extends Component {
             }
             this.setState({ ...this.state, path: path })
         } else {
-            const filePath = this.state.path + file.Name
+            const filePath = this.state.path + file.Name;
             if (filePath !== this.state.file) {
                 this.props.dispatch({
                     type: UNWATCH_FILE,
                     payload: this.state.file
-                })
+                });
                 this.props.dispatch({
                     type: WATCH_FILE,
                     payload: {
@@ -109,7 +111,7 @@ class AllocFiles extends Component {
                         path: filePath,
                         allocID: this.props.allocation.ID
                     }
-                })
+                });
                 this.setState({ ...this.state, contents: '', file: filePath })
             }
         }
@@ -123,7 +125,7 @@ class AllocFiles extends Component {
                     <td>{file.IsDir ? "" : file.Size}</td>
                 </tr>
             )
-        })
+        });
 
         if (this.state.path !== '/') {
             files.unshift(
