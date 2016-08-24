@@ -33,18 +33,28 @@ script:
 after_success:
   - export PR=https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo `curl -s $PR | jq -r .head.ref`; fi)
-  - echo ${TRAVIS_TAG} ${BRANCH} ${PR} ${TRAVIS_COMMIT}
-  - if [[ "$TRAVIS_TAG" != "" ]]; then make docker DOCKER_USER=${DOCKER_USER} DOCKER_PASS=${DOCKER_PASS} DOCKER_EMAIL=${DOCKER_EMAIL} TAG=${TRAVIS_TAG} COMMIT=${TRAVIS_COMMIT}; fi
-  - if [[ "$TRAVIS_TAG" == "" && "$BRANCH" == "master" ]]; then make docker DOCKER_USER=${DOCKER_USER} DOCKER_PASS=${DOCKER_PASS} DOCKER_EMAIL=${DOCKER_EMAIL} TAG=latest COMMIT=${TRAVIS_COMMIT}; fi
+  - echo $TRAVIS_TAG $BRANCH $PR $TRAVIS_COMMIT
+  - if [[ "$TRAVIS_TAG" != "" ]]; then make docker DOCKER_USER=$DOCKER_USER DOCKER_PASS=$DOCKER_PASS DOCKER_EMAIL=$DOCKER_EMAIL TAG=$TRAVIS_TAG COMMIT=$TRAVIS_COMMIT; fi
+  - if [[ "$TRAVIS_TAG" == "" && "$BRANCH" == "master" ]]; then make docker DOCKER_USER=$DOCKER_USER DOCKER_PASS=$DOCKER_PASS DOCKER_EMAIL=$DOCKER_EMAIL TAG=latest COMMIT=$TRAVIS_COMMIT; fi
 
 deploy:
-  provider: releases
-  api_key: ${GITHUB_API_KEY}
-  file:
-    - build/nomad-ui-linux-amd64
-    - build/nomad-ui-windows-amd64
-    - build/nomad-ui-darwin-amd64
-  skip_cleanup: true
-  overwrite: true
-  on:
-    tags: true
+  - provider: releases
+    api_key: ${GITHUB_API_KEY}
+    file:
+      - build/nomad-ui-linux-amd64
+      - build/nomad-ui-windows-amd64
+      - build/nomad-ui-darwin-amd64
+    skip_cleanup: true
+    overwrite: true
+    on:
+      tags: true
+  - provider: releases
+    api_key: ${GITHUB_API_KEY}
+    file:
+      - build/nomad-ui-linux-amd64
+      - build/nomad-ui-windows-amd64
+      - build/nomad-ui-darwin-amd64
+    skip_cleanup: true
+    overwrite: true
+    on:
+      branch: master
