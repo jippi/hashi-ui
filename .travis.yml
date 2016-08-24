@@ -20,6 +20,9 @@ before_install:
   - cd ${HOME}/gopath/src/${GOPKG}
   - go version
 
+before_script:
+  - make lint
+
 script:
   - GOBUILD=${GOBUILD} make all
   - ls -la build

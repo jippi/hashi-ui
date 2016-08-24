@@ -61,6 +61,11 @@ fmt:
 simplify:
 	gofmt -l -s -w $(GOFILES_NOVENDOR)
 
+.PHONY: lint
+lint:
+	@test -e node_modules || npm install
+	npm run-script lint
+
 .PHONY: clean
 clean:
 	@echo "=> cleaning ..."
