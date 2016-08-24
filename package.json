@@ -6,11 +6,13 @@
   "main": "src/main.js",
   "bin": {
     "webpack": ".bin/webpack",
-    "webpack-dev-server": ".bin/webpack-dev-server"
+    "webpack-dev-server": ".bin/webpack-dev-server",
+    "eslint": ".bin/eslint"
   },
   "scripts": {
     "start": "webpack-dev-server --host 0.0.0.0",
-    "build": "webpack --config webpack-prod.config.js -p --progress"
+    "build": "webpack --config webpack-prod.config.js -p --progress",
+    "lint": "eslint -c config/eslint.js src"
   },
   "keywords": [
     "nomad"
