@@ -32,6 +32,7 @@ backend/bindata_assetfs.go: 3rdparty $(BUILD_DIR)/webpack
 3rdparty: $(BUILD_DIR)
 	mkdir -p $(BUILD_DIR)/bin
 	cd 3rdparty && DESTDIR=$(BUILD_DIR)/bin $(MAKE) install
+	cd 3rdparty/glide && DESTDIR=$(BUILD_DIR)/bin $(MAKE) install
 
 .PHONY: webpack
 webpack: $(BUILD_DIR)/webpack
