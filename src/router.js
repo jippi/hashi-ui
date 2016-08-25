@@ -70,7 +70,7 @@ const AppRouter = () => {
                 <Route path="/allocations/:allocId" component={Allocation}>
                     <IndexRedirect to="/allocations/:allocId/info" />
                     <Route path="/allocations/:allocId/info" component={AllocInfo} />
-                    <Route path="/allocations/:allocId/files(/:path)" component={AllocFiles} />
+                    <Route path="/allocations/:allocId/files" component={AllocFiles} />
                     <Route path="/allocations/:allocId/raw" component={AllocRaw} />
                 </Route>
 
