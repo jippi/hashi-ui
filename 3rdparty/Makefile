@@ -27,7 +27,7 @@ glide: $(BUILD_DIR)
 
 $(VENDOR_DIR): $(GOPATH) glide
 	@echo "=> updating vendor ..."
-	env GOPATH=$(GOPATH) $(BUILD_DIR)/bin/glide up
+	env GOPATH=$(GOPATH) PATH=$(BUILD_DIR)/bin:$(PATH) glide up
 
 $(BUILD_DIR)/go-bindata: $(BUILD_DIR) $(VENDOR_DIR) $(GOPATH)
 	@echo "=> building $(@F) ..."
