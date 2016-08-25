@@ -81,4 +81,4 @@ docker:
 	@docker login -e $(DOCKER_EMAIL) -u $(DOCKER_USER) -p $(DOCKER_PASS)
 	docker build -f Dockerfile -t iverberk/nomad-ui:$(COMMIT) .
 	docker tag iverberk/nomad-ui:$(COMMIT) iverberk/nomad-ui:$(TAG)
-	docker push iverberk/nomad-ui
+	docker push iverberk/nomad-ui:$(TAG)
