@@ -35,7 +35,7 @@ $(BINARIES): $(BUILD_DIR)/nomad-ui-%: $(BUILD_DIR) $(VENDOR_DIR) $(GOPATH)
 	@echo "=> building $@ ..."
 	mkdir -p            $(GOPATH)/src/$(GOPACKAGE)
 	ln -sf $(abspath .) $(GOPATH)/src/$(GOPACKAGE)/backend
-	cd $(GOPATH)/src/$(GOPACKAGE)/backend && GOPATH=$(GOPATH) GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) go build -v -o $@
+	cd $(GOPATH)/src/$(GOPACKAGE)/backend && GOPATH=$(GOPATH) GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 go build -v -o $@
 
 .PHONY: build
 build: $(BINARIES)
