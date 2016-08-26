@@ -37,7 +37,7 @@ after_success:
   - export PR=https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo `curl -s $PR | jq -r .head.ref`; fi)
   - if [[ "$TRAVIS_TAG" =~ ^v\d+.\d+.\d+$ ]]; then make docker DOCKER_USER=$DOCKER_USER DOCKER_PASS=$DOCKER_PASS DOCKER_EMAIL=$DOCKER_EMAIL TAG=$TRAVIS_TAG COMMIT=$TRAVIS_COMMIT; fi
-  - if [[ "$BRANCH" == "master" ]]; then export TRAVIS_TAG="latest"; make docker DOCKER_USER=$DOCKER_USER DOCKER_PASS=$DOCKER_PASS DOCKER_EMAIL=$DOCKER_EMAIL TAG=$TRAVIS_TAG COMMIT=$TRAVIS_COMMIT; fi
+  - if [[ "$BRANCH" == "master" ]]; then export TRAVIS_TAG="snapshot"; make docker DOCKER_USER=$DOCKER_USER DOCKER_PASS=$DOCKER_PASS DOCKER_EMAIL=$DOCKER_EMAIL TAG=$TRAVIS_TAG COMMIT=$TRAVIS_COMMIT; fi
   - echo $TRAVIS_TAG $BRANCH $PR $TRAVIS_COMMIT
 
 deploy:
@@ -59,5 +59,6 @@ deploy:
       - build/nomad-ui-darwin-amd64
     skip_cleanup: true
     overwrite: true
+    predeploy: true
     on:
-      condition: $TRAVIS_TAG == "latest"
+      condition: $TRAVIS_TAG == "snapshot"
