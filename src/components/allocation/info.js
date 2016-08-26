@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, {Component} from "react";
+import {connect} from "react-redux";
+import {Link} from "react-router";
 
 class AllocInfo extends Component {
 
@@ -11,10 +12,10 @@ class AllocInfo extends Component {
             "TaskGroup",
             "DesiredStatus",
             "ClientStatus",
-            "JobID",
-            "NodeID"
-        ]
+        ];
 
+        const jobId = this.props.allocation["JobID"];
+        const nodeId = this.props.allocation["NodeID"];
         return (
             <div className="tab-pane active">
                 <div className="content">
@@ -28,6 +29,14 @@ class AllocInfo extends Component {
                                 </div>
                             )
                         }, this)}
+                        <div key="Job">
+                            <dt>{"Job"}</dt>
+                            <dd>{jobId ? (<Link to={`/jobs/${jobId}`}>{jobId}</Link>) : null}</dd>
+                        </div>
+                        <div key="Node">
+                            <dt>{"Node"}</dt>
+                            <dd>{nodeId ? (<Link to={`/nodes/${nodeId}`}>{nodeId}</Link>) : null}</dd>
+                        </div>
                     </dl>
                 </div>
             </div>
