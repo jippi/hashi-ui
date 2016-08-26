@@ -18,7 +18,7 @@ func init() {
 	logBackend := logging.NewLogBackend(os.Stderr, "", 0)
 
 	format := logging.MustStringFormatter(
-		`%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{color:reset} %{message}`,
+		`%{color}%{time:15:04:05.000} %{shortfile} ▶ %{level:.4s} %{color:reset} %{message}`,
 	)
 	logBackendFormatted := logging.NewBackendFormatter(logBackend, format)
 
