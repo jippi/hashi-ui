@@ -122,18 +122,16 @@ class Cluster extends Component {
         return (
             <div>
                 <div className="row">
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                         <Doughnut title="Member Status" data={memberStatus} />
                     </div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                         <Doughnut title="Node Status" data={nodeStatus} />
                     </div>
-                </div>
-                <div className="row">
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                         <Doughnut title="Job Status" data={jobStatus} />
                    </div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                         <Doughnut title="Job Type" data={jobTypes} />
                     </div>
                 </div>
