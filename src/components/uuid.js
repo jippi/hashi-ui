@@ -7,6 +7,4 @@ function shortUUID(ID) {
 	}
 }
 
-module.exports = {
-	shortUUID: shortUUID
-};
+export default shortUUID;
