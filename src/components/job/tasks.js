@@ -64,7 +64,7 @@ class JobTasks extends Component {
                             : null
                         }
                     </div>
-                    <div className="col-md-4">
+                    <div className="col-md-6">
                         <legend>Task: { (taskGroupId && taskId) ? taskGroupId + '/' + taskId : null}</legend>
                         {this.props.job.TaskGroups.filter((taskGroup) => {
                             return taskGroup.ID === taskGroupId

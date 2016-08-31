@@ -52,7 +52,7 @@ class JobTaskGroups extends Component {
                             : null
                         }
                     </div>
-                    <div className="col-md-4">
+                    <div className="col-md-6">
                         <legend>Task Group: {taskGroupId}</legend>
                         {job.TaskGroups.filter((taskGroup) => {
                             return taskGroup.ID === taskGroupId
