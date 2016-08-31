@@ -15,16 +15,17 @@ import (
 var logger = logging.MustGetLogger("nomad-ui")
 
 func init() {
-	var format = logging.MustStringFormatter(
-		`%{color}%{time:15:04:05.000} %{shortfunc} ▶ %{level:.4s} %{color:reset} %{message}`,
-	)
-
 	logBackend := logging.NewLogBackend(os.Stderr, "", 0)
 
-	logBackendLeveled := logging.AddModuleLevel(logBackend)
-	logBackendLeveled.SetLevel(logging.INFO, "")
-	backend2Formatter := logging.NewBackendFormatter(logBackendLeveled, format)
-	logging.SetBackend(backend2Formatter)
+	format := logging.MustStringFormatter(
+		`%{color}%{time:15:04:05.000} %{shortfile} ▶ %{level:.4s} %{color:reset} %{message}`,
+	)
+	logBackendFormatted := logging.NewBackendFormatter(logBackend, format)
+
+	logBackendFormattedAndLeveled := logging.AddModuleLevel(logBackendFormatted)
+	logBackendFormattedAndLeveled.SetLevel(logging.INFO, "")
+
+	logging.SetBackend(logBackendFormattedAndLeveled)
 }
 
 type Config struct {
