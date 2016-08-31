@@ -2,9 +2,6 @@
 # vi: set ft=ruby :
 
 GO_VERSION = "1.6.3"
-GLIDE_VERSION = "0.11.1"
-
-GO_PACKAGE = "github.com/iverberk/nomad-ui"
 
 unless Vagrant.has_plugin?("vagrant-vbguest")
   raise 'The following plugin is required: vagrant-vbguest.'\
