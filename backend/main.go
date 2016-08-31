@@ -59,9 +59,16 @@ func (c *Config) Parse() {
 	if ok {
 		c.Address = address
 	}
+
+	listenPort, ok := syscall.Getenv("NOMAD_PORT_http")
+	if ok {
+		c.ListenAddress = fmt.Sprintf("0.0.0.0:%s", listenPort)
+	}
+
 	if *flagAddress != "" {
 		c.Address = *flagAddress
 	}
+
 	if *flagListenAddress != "" {
 		c.ListenAddress = *flagListenAddress
 	}

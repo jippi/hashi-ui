@@ -64,10 +64,13 @@ job "nomad-ui" {
         network {
           mbits = 10
 
-          # request for a dynamic port
+          # request for a static port
           port "http" {
             static = 3000
           }
+
+          # use a dynamic port
+          # port "http" {}
         }
       }
     }
