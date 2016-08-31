@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { NomadLink } from '../components/link'
 
 class Members extends Component {
 
@@ -34,7 +34,7 @@ class Members extends Component {
                                         let isLeader = member.ID === leader.ID
                                         return (
                                             <tr key={member.ID}>
-                                                <td><Link to={`/members/${member.ID}`}>{member.ID.substring(0,8)}</Link></td>
+                                                <td><NomadLink memberId={member.ID} short="true"/></td>
                                                 <td>{member.Name}</td>
                                                 <td>{member.Addr}</td>
                                                 <td>{member.Port}</td>

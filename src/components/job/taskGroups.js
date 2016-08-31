@@ -1,8 +1,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {Link} from "react-router";
+import {NomadLink} from "../link";
 import Table from "../table";
-import shortUUID from "../uuid";
 import JSON from "../json";
 
 class JobTaskGroups extends Component {
@@ -19,11 +18,9 @@ class JobTaskGroups extends Component {
             "Restart Policy",
         ];
         job.TaskGroups.forEach((taskGroup) => {
-            taskGroup.ID = taskGroup.Name;
             taskGroups.push(
                 <tr key={taskGroup.ID}>
-                    <td><Link to={`/jobs/${job.ID}/taskGroups`}
-                              query={{taskGroupId: taskGroup.ID}}>{shortUUID(taskGroup.ID)}</Link></td>
+                    <td><NomadLink taskGroupId={taskGroup.ID} jobId={job.ID} short="true"/></td>
                     <td>{taskGroup.Name}</td>
                     <td>{taskGroup.Count}</td>
                     <td>{taskGroup.Constraints || "<none>"}</td>

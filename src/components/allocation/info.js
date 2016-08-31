@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {Link} from "react-router";
+import {NomadLink} from "../link";
 
 class AllocInfo extends Component {
 
@@ -31,11 +31,11 @@ class AllocInfo extends Component {
                         }, this)}
                         <div key="Job">
                             <dt>{"Job"}</dt>
-                            <dd>{jobId ? (<Link to={`/jobs/${jobId}`}>{jobId}</Link>) : null}</dd>
+                            <dd><NomadLink jobId={jobId}/></dd>
                         </div>
                         <div key="Node">
                             <dt>{"Node"}</dt>
-                            <dd>{nodeId ? (<Link to={`/nodes/${nodeId}`}>{nodeId}</Link>) : null}</dd>
+                            <dd><NomadLink nodeId={nodeId}/></dd>
                         </div>
                     </dl>
                 </div>

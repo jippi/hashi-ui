@@ -10,9 +10,7 @@ class JobInfo extends Component {
 
         // Build the task groups table
         const taskGroups = this.props.job.TaskGroups.map((taskGroup) => {
-             taskGroup.ID = taskGroup.Name;
              taskGroup.Tasks.map((task) => {
-                task.ID = task.Name + '/' + taskGroup.ID;
                 tasks.push(
                     <tr key={task.ID}>
                         <td>{task.Name}</td>
