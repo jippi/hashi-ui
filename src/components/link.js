@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
-import shortUUID from './uuid'
+import shortUUID from '../helpers/uuid'
 
 export class NomadLink extends Component {
     render() {
