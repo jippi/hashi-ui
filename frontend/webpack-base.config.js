@@ -3,7 +3,7 @@ const autoprefixer = require('autoprefixer');
 
 module.exports = {
     output: {
-        path: path.join(__dirname, 'build/webpack'),
+        path: path.join(__dirname, 'build/'),
         publicPath: '/'
     },
     resolve: {

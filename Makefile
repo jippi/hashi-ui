@@ -18,14 +18,13 @@ check-deps:
 $(BUILD_DIR):
 	mkdir -p $@
 
-$(BUILD_DIR)/webpack:
+$(BUILD_DIR)/frontend:
 	@echo "=> building webpack ..."
-	npm install
-	npm run-script build
+	cd frontend && $(MAKE) build
 
-backend/bindata_assetfs.go: 3rdparty $(BUILD_DIR)/webpack
+backend/bindata_assetfs.go: 3rdparty $(BUILD_DIR)/frontend
 	@echo "=> building assetfs ..."
-	env PATH=$(BUILD_DIR)/bin:$(PATH) go-bindata-assetfs -prefix $(BUILD_DIR) $(BUILD_DIR)/webpack/...
+	env PATH=$(BUILD_DIR)/bin:$(PATH) go-bindata-assetfs -prefix frontend frontend/build/...
 	cp -f bindata_assetfs.go backend/
 
 .PHONY: 3rdparty
@@ -34,16 +33,16 @@ backend/bindata_assetfs.go: 3rdparty $(BUILD_DIR)/webpack
 	cd 3rdparty && DESTDIR=$(BUILD_DIR)/bin $(MAKE) install
 	cd 3rdparty/glide && DESTDIR=$(BUILD_DIR)/bin $(MAKE) install
 
-.PHONY: webpack
-webpack: $(BUILD_DIR)/webpack
+.PHONY: frontend
+frontend: $(BUILD_DIR)/frontend
 
-.PHONY: nomad-ui
-nomad-ui: $(BUILD_DIR) backend/bindata_assetfs.go
+.PHONY: backend
+backend: $(BUILD_DIR) backend/bindata_assetfs.go
 	mkdir -p $(BUILD_DIR)/bin
 	cd backend && env PATH=$(BUILD_DIR)/bin:$(PATH) DESTDIR=$(BUILD_DIR) $(MAKE) install
 
 .PHONY: build
-build: webpack nomad-ui
+build: frontend backend
 
 .PHONY: install
 install: build
@@ -72,8 +71,8 @@ clean:
 	@echo "=> cleaning ..."
 	cd 3rdparty && $(MAKE) clean
 	cd backend  && $(MAKE) clean
+	cd frontend && $(MAKE) clean
 	rm -rf $(BUILD_DIR)
-	rm -rf node_modules
 	rm -rf bindata_assetfs.go backend/bindata_assetfs.go
 
 .PHONY: docker

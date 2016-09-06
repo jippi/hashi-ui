@@ -1,7 +1,5 @@
-const path = require('path');
 const merge = require('webpack-merge');
 const webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 var webpackConfig = require("./webpack-base.config.js");
@@ -51,6 +49,11 @@ webpackConfig = merge(webpackConfig, {
                 loader: 'style!css?-autprefixer!postcss!sass'
             }
         ]
+    },
+    externals: {
+      'react/addons': true,
+      'react/lib/ExecutionEnvironment': true,
+      'react/lib/ReactContext': true
     }
 });
 
