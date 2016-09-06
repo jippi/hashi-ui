@@ -27,7 +27,7 @@ before_install:
   - go version
 
 before_script:
-  - cd frontend && make lint
+  - make -C frontend lint
 
 script:
   - GOBUILD=${GOBUILD} make all
