@@ -104,7 +104,7 @@ function connectTo(url) {
 
 function* events() {
     const protocol = location.protocol === "https:" ? "wss:" : "ws:";
-    const url = `${protocol}//localhost:3000/ws`;
+    const url = `${protocol}//${location.host}/ws`;
 
     while (true) {
         try {
