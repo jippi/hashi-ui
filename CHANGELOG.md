@@ -1,3 +1,25 @@
+## 0.1.2
+
+IMPROVEMENTS:
+  * Allow dynamic listen port for Nomad
+
+FIX:
+  * Use https for external content loading
+  * Don't block on send channel after unexpected websocket termination
+
+
+## 0.1.1
+
+IMPROVEMENTS:
+  * Add Nomad job specification
+  * Add CLI flags to specify Nomad and listen address
+  * Add Server members overview
+  * Improved logging
+  * Lot's of build and release automation added
+  * Added TaskGroup and Tasks section to Job view
+
+Special thanks to Alexander Krasnukhin who has done most of the work!
+
 ## 0.1.0 (August 8, 2016)
 
 IMPROVEMENTS:
