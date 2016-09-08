@@ -45,11 +45,13 @@ func (c *Connection) writePump() {
 	for {
 		action, ok := <-c.send
 		if !ok {
-			c.socket.WriteMessage(websocket.CloseMessage, []byte{})
+			if err := c.socket.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
+				logger.Errorf("Could not write close message to websocket: %s", err)
+			}
 			return
 		}
 		if err := c.socket.WriteJSON(action); err != nil {
-			return
+			logger.Errorf("Could not write action to websocket: %s", err)
 		}
 	}
 }
