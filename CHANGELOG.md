@@ -1,4 +1,4 @@
-## 0.1.2
+## v0.1.2
 
 IMPROVEMENTS:
   * Allow dynamic listen port for Nomad
@@ -8,7 +8,7 @@ FIX:
   * Don't block on send channel after unexpected websocket termination
 
 
-## 0.1.1
+## v0.1.1
 
 IMPROVEMENTS:
   * Add Nomad job specification
@@ -20,7 +20,7 @@ IMPROVEMENTS:
 
 Special thanks to Alexander Krasnukhin who has done most of the work!
 
-## 0.1.0 (August 8, 2016)
+## v0.1.0 (August 8, 2016)
 
 IMPROVEMENTS:
   * Introduce Go backend to query the Nomad server
