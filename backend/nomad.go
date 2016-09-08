@@ -72,6 +72,38 @@ type Nomad struct {
 	updateCh chan *Action
 }
 
+// NewNomad configures the Nomad API client and initializes the internal state.
+func NewNomad(url string, updateCh chan *Action) (*Nomad, error) {
+	config := api.DefaultConfig()
+	config.Address = url
+	config.WaitTime = waitTime
+
+	client, err := api.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Nomad{
+		Client:   client,
+		updateCh: updateCh,
+		allocs:   make([]*api.AllocationListStub, 0),
+		evals:    make([]*api.Evaluation, 0),
+		nodes:    make([]*api.NodeListStub, 0),
+		members:  make([]*AgentMemberWithID, 0),
+		jobs:     make([]*api.JobListStub, 0),
+	}, nil
+}
+
+// FlushAll sends the current Nomad state to the connection. This is used to pass
+// all known state to the client connection.
+func (n *Nomad) FlushAll(c *Connection) {
+	c.send <- &Action{Type: fetchedAllocs, Payload: n.allocs}
+	c.send <- &Action{Type: fetchedEvals, Payload: n.evals}
+	c.send <- &Action{Type: fetchedJobs, Payload: n.jobs}
+	c.send <- &Action{Type: fetchedNodes, Payload: n.nodes}
+	c.send <- &Action{Type: fetchedMembers, Payload: n.members}
+}
+
 // MembersWithID is used to query all of the known server members.
 func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 	members, err := n.Client.Agent().Members()
@@ -123,38 +155,6 @@ func (n *Nomad) MemberWithID(ID string) (*AgentMemberWithID, error) {
 		}
 	}
 	return nil, errors.New(fmt.Sprintf("Unable to find member with ID: %s", ID))
-}
-
-// NewNomad configures the Nomad API client and initializes the internal state.
-func NewNomad(url string, updateCh chan *Action) (*Nomad, error) {
-	config := api.DefaultConfig()
-	config.Address = url
-	config.WaitTime = waitTime
-
-	client, err := api.NewClient(config)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Nomad{
-		Client:   client,
-		updateCh: updateCh,
-		allocs:   make([]*api.AllocationListStub, 0),
-		evals:    make([]*api.Evaluation, 0),
-		nodes:    make([]*api.NodeListStub, 0),
-		members:  make([]*AgentMemberWithID, 0),
-		jobs:     make([]*api.JobListStub, 0),
-	}, nil
-}
-
-// FlushAll sends the current Nomad state to the connection. This is used to pass
-// all known state to the client connection.
-func (n *Nomad) FlushAll(c *Connection) {
-	c.send <- &Action{Type: fetchedAllocs, Payload: n.allocs}
-	c.send <- &Action{Type: fetchedEvals, Payload: n.evals}
-	c.send <- &Action{Type: fetchedJobs, Payload: n.jobs}
-	c.send <- &Action{Type: fetchedNodes, Payload: n.nodes}
-	c.send <- &Action{Type: fetchedMembers, Payload: n.members}
 }
 
 func (n *Nomad) watchAllocs() {
