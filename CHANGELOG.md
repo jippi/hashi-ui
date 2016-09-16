@@ -1,3 +1,8 @@
+## v0.1.3
+
+FIX:
+  * Fix broken taskgroup constraint rendering
+
 ## v0.1.2
 
 IMPROVEMENTS:
