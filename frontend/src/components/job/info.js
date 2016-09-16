@@ -27,7 +27,6 @@ class JobInfo extends Component {
                 <tr key={taskGroup.ID}>
                     <td>{taskGroup.Name}</td>
                     <td>{taskGroup.Count}</td>
-                    <td>{taskGroup.Constraints || "<none>"}</td>
                     <td>{taskGroup.Meta || "<none>" }</td>
                     <td>{taskGroup.RestartPolicy.Mode}</td>
                 </tr>
@@ -53,7 +52,7 @@ class JobInfo extends Component {
                     <br />
                     <legend>Task Groups</legend>
                     {(taskGroups.length > 0) ?
-                        <Table classes="table table-hover table-striped" headers={["Name", "Count", "Constraints", "Meta", "Restart Policy" ]} body={taskGroups} />
+                        <Table classes="table table-hover table-striped" headers={["Name", "Count", "Meta", "Restart Policy" ]} body={taskGroups} />
                         : null
                     }
 

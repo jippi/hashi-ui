@@ -13,7 +13,6 @@ class JobTaskGroups extends Component {
             "ID",
             "Name",
             "Count",
-            "Constraints",
             "Meta",
             "Restart Policy",
         ];
@@ -23,7 +22,6 @@ class JobTaskGroups extends Component {
                     <td><NomadLink taskGroupId={taskGroup.ID} jobId={job.ID} short="true"/></td>
                     <td>{taskGroup.Name}</td>
                     <td>{taskGroup.Count}</td>
-                    <td>{taskGroup.Constraints || "<none>"}</td>
                     <td>{taskGroup.Meta || "<none>" }</td>
                     <td>{taskGroup.RestartPolicy.Mode}</td>
                 </tr>
@@ -32,9 +30,7 @@ class JobTaskGroups extends Component {
 
         let taskGroupId = this.props.location.query['taskGroupId'];
 
-        //
         // Auto-select first task group if only one is available.
-        //
         if (!taskGroupId && job.TaskGroups.length === 1) {
             taskGroupId = job.TaskGroups[0].ID;
         }
