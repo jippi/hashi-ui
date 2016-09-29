@@ -13,7 +13,7 @@ class JobInfo extends Component {
              taskGroup.Tasks.map((task) => {
                 tasks.push(
                     <tr key={task.ID}>
-                        <td>{task.Name}</td>
+                        <td>{taskGroup.Name} / {task.Name}</td>
                         <td>{task.Driver}</td>
                         <td>{task.Resources.CPU}</td>
                         <td>{task.Resources.MemoryMB}</td>
