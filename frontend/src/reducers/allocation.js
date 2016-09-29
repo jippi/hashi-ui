@@ -3,9 +3,12 @@ import { FETCHED_ALLOCS, FETCHED_ALLOC } from '../sagas/event';
 export function AllocInfoReducer(state = {}, action) {
     switch (action.type) {
         case FETCHED_ALLOC:
-            return action.payload
+            let allocation = action.payload;
+            allocation.TaskGroupId = allocation.JobID + '.' + allocation.TaskGroup
+            return allocation;
         default:
     }
+
     return state
 }
 
