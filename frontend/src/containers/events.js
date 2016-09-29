@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { relativeTimestamp } from '../helpers/time'
 
 class Events extends Component {
 
@@ -17,6 +18,7 @@ class Events extends Component {
                                 <td>{task}</td>
                                 <td>{event.Type}</td>
                                 <td>{event.KillError || event.DriverError || event.DownloadError || event.RestartReason || event.Message || "<none>" }</td>
+                                <td>{relativeTimestamp(event.Time)}</td>
                             </tr>
                         )
                     })
@@ -67,6 +69,7 @@ class Events extends Component {
                                         <th>Task</th>
                                         <th>Type</th>
                                         <th>Message</th>
+                                        <th>Time</th>
                                     </tr>
                                 </thead>
                                 <tbody>
