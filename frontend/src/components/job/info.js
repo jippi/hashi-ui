@@ -53,15 +53,22 @@ class JobInfo extends Component {
                     <legend>Job Properties</legend>
                     <dl className="dl-horizontal">
                         {jobProps.map((jobProp) => {
+                            let jobPropValue = this.props.job[jobProp]
+                            if (Array.isArray(jobPropValue)) {
+                                jobPropValue = jobPropValue.join(', ')
+                            }
+
                             return (
                                 <div key={jobProp}>
                                     <dt>{jobProp}</dt>
-                                    <dd>{this.props.job[jobProp]}</dd>
+                                    <dd>{jobPropValue}</dd>
                                 </div>
                             )
                         }, this)}
                     </dl>
+
                     <br />
+
                     <legend>Task Groups</legend>
                     {(taskGroups.length > 0) ?
                         <Table classes="table table-hover table-striped" headers={["Name", "Count", "Meta", "Restart Policy" ]} body={taskGroups} />
