@@ -59,9 +59,9 @@ class Jobs extends Component {
                                     <tr>
                                         <th>ID</th>
                                         <th>Status</th>
-                                        <th>Jobs</th>
                                         <th>Type</th>
                                         <th>Priority</th>
+                                        <th>Task Groups</th>
                                         {this.getJobStatisticsHeader()}
                                     </tr>
                                 </thead>
@@ -71,9 +71,9 @@ class Jobs extends Component {
                                             <tr key={job.ID}>
                                                 <td><NomadLink jobId={job.ID} short="true"/></td>
                                                 <td>{job.Status}</td>
-                                                <td>{Object.keys(job.JobSummary.Summary).length}</td>
                                                 <td>{job.Type}</td>
                                                 <td>{job.Priority}</td>
+                                                <td>{Object.keys(job.JobSummary.Summary).length}</td>
                                                 {this.getJobStatisticsRow(job)}
                                             </tr>
                                         )
