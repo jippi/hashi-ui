@@ -1,35 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-
+import { NomadLink } from '../link';
 import Table from '../table'
+import { collectMeta } from '../../helpers/meta'
 
 class JobInfo extends Component {
 
-    collectMeta(metaBag, dtWithClass = 'default') {
-        let meta = [];
-        let metaTag = '<none>';
-
-        Object.keys(metaBag || {}).sort().forEach(function(key) {
-            meta.push(<dt className={dtWithClass} key={key + 'dt'}>{key}</dt>);
-            meta.push(<dd key={key + 'dd'}>{metaBag[key]}</dd>);
-        });
-
-        if (meta.length > 0) {
-            metaTag = <dl className="dl-horizontal">{meta}</dl>
-        }
-
-        return metaTag
-    }
-
     render() {
         const tasks = []
+        const job = this.props.job;
 
         // Build the task groups table
-        const taskGroups = this.props.job.TaskGroups.map((taskGroup) => {
+        const taskGroups = job.TaskGroups.map((taskGroup) => {
              taskGroup.Tasks.map((task) => {
                 tasks.push(
                     <tr key={task.ID}>
-                        <td>{taskGroup.Name} / {task.Name}</td>
+                        <td><NomadLink jobId={job.ID} taskGroupId={taskGroup.ID} taskId={task.ID}>{taskGroup.Name} / {task.Name}</NomadLink></td>
                         <td>{task.Driver}</td>
                         <td>{task.Resources.CPU}</td>
                         <td>{task.Resources.MemoryMB}</td>
@@ -41,10 +27,10 @@ class JobInfo extends Component {
 
             return (
                 <tr key={taskGroup.ID}>
-                    <td>{taskGroup.Name}</td>
+                    <td><NomadLink jobId={job.ID} taskGroupId={taskGroup.ID}>{taskGroup.Name}</NomadLink></td>
                     <td>{taskGroup.Count}</td>
                     <td>{taskGroup.Tasks.length}</td>
-                    <td>{this.collectMeta(taskGroup.Meta)}</td>
+                    <td>{collectMeta(taskGroup.Meta)}</td>
                     <td>{taskGroup.RestartPolicy.Mode}</td>
                 </tr>
             )
@@ -77,7 +63,7 @@ class JobInfo extends Component {
 
                         <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12">
                             <legend>Meta Properties</legend>
-                            {this.collectMeta(this.props.job.Meta || {}, "wide")}
+                            {collectMeta(this.props.job.Meta || {}, "wide")}
                         </div>
                     </div>
                     <br />

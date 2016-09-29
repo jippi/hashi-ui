@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 import {NomadLink} from "../link";
 import Table from "../table";
 import JSON from "../json";
+import { collectMeta } from '../../helpers/meta'
 
 class JobTaskGroups extends Component {
     render() {
@@ -22,7 +23,7 @@ class JobTaskGroups extends Component {
                     <td><NomadLink taskGroupId={taskGroup.ID} jobId={job.ID} short="true"/></td>
                     <td>{taskGroup.Name}</td>
                     <td>{taskGroup.Count}</td>
-                    <td>{taskGroup.Meta || "<none>" }</td>
+                    <td>{collectMeta(taskGroup.Meta)}</td>
                     <td>{taskGroup.RestartPolicy.Mode}</td>
                 </tr>
             )
