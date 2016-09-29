@@ -10,14 +10,12 @@ class Allocations extends Component {
         if (allocation.DesiredDescription) {
             return (
                 <div>
-                    <ReactTooltip id={allocation.ID}>
-                        {allocation.DesiredDescription}
-                    </ReactTooltip>
-
-                    <div data-tip data-for={allocation.ID}>{allocation.DesiredStatus}</div>
+                    <ReactTooltip id={'tooltip-' + allocation.ID}>{allocation.DesiredDescription}</ReactTooltip>
+                    <div data-tip data-for={'tooltip-' + allocation.ID}>{allocation.DesiredStatus}</div>
                 </div>
             )
         }
+
         return (<div>{allocation.DesiredStatus}</div>)
     }
 
@@ -50,7 +48,7 @@ class Allocations extends Component {
                                                 <td><NomadLink jobId={allocation.JobID} short="true"/></td>
                                                 <td>{allocation.ClientStatus}</td>
                                                 <td>{this.renderDesiredStatus(allocation)}</td>
-                                                <td><NomadLink nodeId={allocation.NodeID} short="true"/></td>
+                                                <td><NomadLink nodeId={allocation.NodeID} nodeList={this.props.nodes} short="true"/></td>
                                                 <td><NomadLink evalId={allocation.EvalID} short="true"/></td>
                                                 <td>{relativeTimestamp(allocation.CreateTime)}</td>
                                             </tr>
@@ -66,8 +64,8 @@ class Allocations extends Component {
     }
 }
 
-function mapStateToProps({ allocations }) {
-    return { allocations }
+function mapStateToProps({ allocations, nodes }) {
+    return { allocations, nodes }
 }
 
 export default connect(mapStateToProps)(Allocations)
