@@ -5,6 +5,22 @@ import Table from '../table'
 
 class JobInfo extends Component {
 
+    collectMeta(metaBag, dtWithClass = 'default') {
+        let meta = [];
+        let metaTag = '<none>';
+
+        Object.keys(metaBag || {}).sort().forEach(function(key) {
+            meta.push(<dt className={dtWithClass} key={key + 'dt'}>{key}</dt>);
+            meta.push(<dd key={key + 'dd'}>{metaBag[key]}</dd>);
+        });
+
+        if (meta.length > 0) {
+            metaTag = <dl className="dl-horizontal">{meta}</dl>
+        }
+
+        return metaTag
+    }
+
     render() {
         const tasks = []
 
@@ -23,23 +39,11 @@ class JobInfo extends Component {
                 return null
             })
 
-            let meta = [];
-            let metaTag = '<none>';
-
-            Object.keys(taskGroup.Meta || {}).forEach(function(key) {
-                meta.push(<dt key={key + 'dt'}>{key}</dt>);
-                meta.push(<dd key={key + 'dd'}>{taskGroup.Meta[key]}</dd>);
-            });
-
-            if (meta.length > 0) {
-                metaTag = <dl className="dl-horizontal">{meta}</dl>
-            }
-
             return (
                 <tr key={taskGroup.ID}>
                     <td>{taskGroup.Name}</td>
                     <td>{taskGroup.Count}</td>
-                    <td>{metaTag}</td>
+                    <td>{this.collectMeta(taskGroup.Meta)}</td>
                     <td>{taskGroup.RestartPolicy.Mode}</td>
                 </tr>
             )
@@ -50,23 +54,30 @@ class JobInfo extends Component {
         return (
             <div className="tab-pane active">
                 <div className="content">
-                    <legend>Job Properties</legend>
-                    <dl className="dl-horizontal">
-                        {jobProps.map((jobProp) => {
-                            let jobPropValue = this.props.job[jobProp]
-                            if (Array.isArray(jobPropValue)) {
-                                jobPropValue = jobPropValue.join(', ')
-                            }
+                    <div className="row">
+                        <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12">
+                            <legend>Job Properties</legend>
+                            <dl className="dl-horizontal">
+                                {jobProps.map((jobProp) => {
+                                    let jobPropValue = this.props.job[jobProp]
+                                    if (Array.isArray(jobPropValue)) {
+                                        jobPropValue = jobPropValue.join(', ')
+                                    }
 
-                            return (
-                                <div key={jobProp}>
-                                    <dt>{jobProp}</dt>
-                                    <dd>{jobPropValue}</dd>
-                                </div>
-                            )
-                        }, this)}
-                    </dl>
-
+                                    return (
+                                        <div key={jobProp}>
+                                            <dt>{jobProp}</dt>
+                                            <dd>{jobPropValue}</dd>
+                                        </div>
+                                    )
+                                }, this)}
+                            </dl>
+                        </div>
+                        <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12">
+                            <legend>Meta Properties</legend>
+                            {this.collectMeta(this.props.job.Meta || {}, "wide")}
+                        </div>
+                    </div>
                     <br />
 
                     <legend>Task Groups</legend>

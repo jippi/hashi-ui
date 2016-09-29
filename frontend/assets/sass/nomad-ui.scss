@@ -48,3 +48,9 @@
 @import "nomad-ui/responsive";
 
 @import "nomad-ui/tabs-navs-pagination";
+
+@media (min-width: 768px) {
+	.dl-horizontal dt.wide {
+		width: 50%
+	}
+}
