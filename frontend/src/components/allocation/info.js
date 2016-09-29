@@ -6,8 +6,10 @@ import { collectMeta } from '../../helpers/meta'
 const allocProps = [
     "ID",
     "Name",
-    "DesiredStatus",
     "ClientStatus",
+    "ClientDescription",
+    "DesiredStatus",
+    "DesiredDescription"
 ];
 
 class AllocInfo extends Component {
