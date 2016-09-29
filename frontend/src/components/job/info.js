@@ -23,11 +23,23 @@ class JobInfo extends Component {
                 return null
             })
 
+            let meta = [];
+            let metaTag = '<none>';
+
+            Object.keys(taskGroup.Meta || {}).forEach(function(key) {
+                meta.push(<dt key={key + 'dt'}>{key}</dt>);
+                meta.push(<dd key={key + 'dd'}>{taskGroup.Meta[key]}</dd>);
+            });
+
+            if (meta.length > 0) {
+                metaTag = <dl className="dl-horizontal">{meta}</dl>
+            }
+
             return (
                 <tr key={taskGroup.ID}>
                     <td>{taskGroup.Name}</td>
                     <td>{taskGroup.Count}</td>
-                    <td>{taskGroup.Meta || "<none>" }</td>
+                    <td>{metaTag}</td>
                     <td>{taskGroup.RestartPolicy.Mode}</td>
                 </tr>
             )
