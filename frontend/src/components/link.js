@@ -67,8 +67,16 @@ export class NomadLink extends Component {
             if (children === undefined) {
                 children = short ? shortUUID(allocId) : allocId
             }
+
+            let url = null;
+            if (this.props.jobId) {
+                url = `/jobs/${this.props.jobId}/allocations`
+            } else {
+                url = `/allocations/${allocId}`
+            }
+
             return (
-                <Link {...linkProps} to={`/allocations/${allocId}`}>{children}</Link>
+                <Link {...linkProps} to={url}>{children}</Link>
             )
         }
 
