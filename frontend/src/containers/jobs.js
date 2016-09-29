@@ -5,7 +5,7 @@ import { NomadLink } from '../components/link'
 class Jobs extends Component {
 
     counterColumns() {
-        return ['Queued', 'Complete', 'Failed', 'Running', 'Starting', 'Lost'];
+        return ['Starting', 'Running', 'Queued', 'Complete', 'Failed', 'Lost'];
     }
 
     getJobStatisticsHeader() {
