@@ -43,6 +43,7 @@ class JobInfo extends Component {
                 <tr key={taskGroup.ID}>
                     <td>{taskGroup.Name}</td>
                     <td>{taskGroup.Count}</td>
+                    <td>{taskGroup.Tasks.length}</td>
                     <td>{this.collectMeta(taskGroup.Meta)}</td>
                     <td>{taskGroup.RestartPolicy.Mode}</td>
                 </tr>
@@ -73,6 +74,7 @@ class JobInfo extends Component {
                                 }, this)}
                             </dl>
                         </div>
+
                         <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12">
                             <legend>Meta Properties</legend>
                             {this.collectMeta(this.props.job.Meta || {}, "wide")}
@@ -82,7 +84,7 @@ class JobInfo extends Component {
 
                     <legend>Task Groups</legend>
                     {(taskGroups.length > 0) ?
-                        <Table classes="table table-hover table-striped" headers={["Name", "Count", "Meta", "Restart Policy" ]} body={taskGroups} />
+                        <Table classes="table table-hover table-striped" headers={["Name", "Count", "Tasks", "Meta", "Restart Policy" ]} body={taskGroups} />
                         : null
                     }
 
