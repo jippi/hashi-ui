@@ -17,6 +17,24 @@ const Sidebar = ({ location }) => {
                             <p>Cluster</p>
                         </Link>
                     </li>
+                    <li className={location.pathname === '/jobs' ? 'active' : ''}>
+                        <Link to={{ pathname: '/jobs' }}>
+                            <i className="pe-7s-copy-file" />
+                            <p>Jobs</p>
+                        </Link>
+                    </li>
+                    <li className={location.pathname === '/allocations' ? 'active' : ''}>
+                        <Link to={{ pathname: '/allocations' }}>
+                            <i className="pe-7s-graph" />
+                            <p>Allocations</p>
+                        </Link>
+                    </li>
+                    <li className={location.pathname === '/evaluations' ? 'active' : ''}>
+                        <Link to={{ pathname: '/evaluations' }}>
+                            <i className="pe-7s-gleam" />
+                            <p>Evaluations</p>
+                        </Link>
+                    </li>
                     <li className={location.pathname === '/members' ? 'active' : ''}>
                         <Link to={{ pathname: '/members' }}>
                             <i className="pe-7s-share" />
@@ -27,24 +45,6 @@ const Sidebar = ({ location }) => {
                         <Link to={{ pathname: '/nodes' }}>
                             <i className="pe-7s-keypad" />
                             <p>Nodes</p>
-                        </Link>
-                    </li>
-                    <li className={location.pathname === '/jobs' ? 'active' : ''}>
-                        <Link to={{ pathname: '/jobs' }}>
-                            <i className="pe-7s-copy-file" />
-                            <p>Jobs</p>
-                        </Link>
-                    </li>
-                    <li className={location.pathname === '/evaluations' ? 'active' : ''}>
-                        <Link to={{ pathname: '/evaluations' }}>
-                            <i className="pe-7s-gleam" />
-                            <p>Evaluations</p>
-                        </Link>
-                    </li>
-                    <li className={location.pathname === '/allocations' ? 'active' : ''}>
-                        <Link to={{ pathname: '/allocations' }}>
-                            <i className="pe-7s-graph" />
-                            <p>Allocations</p>
                         </Link>
                     </li>
                 </ul>
