@@ -6,7 +6,7 @@ export class NomadLink extends Component {
 
     findNodeNameById(nodeId) {
         let r = Object.keys(this.props.nodeList).filter(_ => { return this.props.nodeList[_]['ID'] === nodeId; })
-        if (r) {
+        if (r.length !== 0) {
             return this.props.nodeList[r].Name;
         }
 

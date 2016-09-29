@@ -1,51 +1,43 @@
 import React, {Component} from "react";
-import {connect} from "react-redux";
-import {NomadLink} from "../link";
+import { connect } from "react-redux";
+import { NomadLink } from "../link";
+import { collectMeta } from '../../helpers/meta'
+
+const allocProps = [
+    "ID",
+    "Name",
+    "DesiredStatus",
+    "ClientStatus",
+];
 
 class AllocInfo extends Component {
 
     render() {
-
-        const allocProps = [
-            "ID",
-            "Name",
-            "TaskGroup",
-            "DesiredStatus",
-            "ClientStatus",
-        ];
-
         const jobId = this.props.allocation["JobID"];
         const nodeId = this.props.allocation["NodeID"];
+        const taskGroupId = this.props.allocation["taskGroupId"]
+
+        let allocValues = {};
+        allocProps.map((allocProp) => {
+            allocValues[allocProp] = this.props.allocation[allocProp]
+        });
+
+        allocValues.Job = <NomadLink jobId={jobId} />
+        allocValues.TaskGroup = <NomadLink nodeId={nodeId} taskGroupId={taskGroupId} />
+        allocValues.Node = <NomadLink nodeId={nodeId} nodeList={this.props.nodes} />
         return (
             <div className="tab-pane active">
                 <div className="content">
                     <legend>Allocation Properties</legend>
-                    <dl className="dl-horizontal">
-                        {allocProps.map((allocProp) => {
-                            return (
-                                <div key={allocProp}>
-                                    <dt>{allocProp}</dt>
-                                    <dd>{this.props.allocation[allocProp]}</dd>
-                                </div>
-                            )
-                        }, this)}
-                        <div key="Job">
-                            <dt>{"Job"}</dt>
-                            <dd><NomadLink jobId={jobId}/></dd>
-                        </div>
-                        <div key="Node">
-                            <dt>{"Node"}</dt>
-                            <dd><NomadLink nodeId={nodeId}/></dd>
-                        </div>
-                    </dl>
+                    {collectMeta(allocValues, "default", false)}
                 </div>
             </div>
         );
     }
 }
 
-function mapStateToProps({ allocation }) {
-    return { allocation }
+function mapStateToProps({ allocation, nodes }) {
+    return { allocation, nodes }
 }
 
 export default connect(mapStateToProps)(AllocInfo);
