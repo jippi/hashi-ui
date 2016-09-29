@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { NomadLink } from '../components/link';
-import { relativeTimestamp } from '../helpers/time'
 
 class Evaluations extends Component {
 
@@ -22,7 +21,6 @@ class Evaluations extends Component {
                                         <th>Status</th>
                                         <th>Type</th>
                                         <th>Priority</th>
-                                        <th>Time</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -34,7 +32,6 @@ class Evaluations extends Component {
                                                 <td>{evaluation.Status}</td>
                                                 <td>{evaluation.Type}</td>
                                                 <td>{evaluation.Priority}</td>
-                                                <td>{relativeTimestamp(evaluation.Time)}</td>
                                             </tr>
                                         )
                                     })}
