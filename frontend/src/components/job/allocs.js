@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { NomadLink } from '../link'
 import Table from '../table'
+import { relativeTimestamp } from '../../helpers/time'
 
 const JobAllocs = ({ allocations, job }) => {
 
@@ -16,6 +17,7 @@ const JobAllocs = ({ allocations, job }) => {
                     <td>{allocation.DesiredStatus}</td>
                     <td><NomadLink nodeId={allocation.NodeID} short="true"/></td>
                     <td><NomadLink evalId={allocation.EvalID} short="true"/></td>
+                    <td>{relativeTimestamp(allocation.CreateTime)}</td>
                 </tr>
             )
         })
@@ -23,7 +25,7 @@ const JobAllocs = ({ allocations, job }) => {
         return (
             <div className="tab-pane active">
                 {(allocations.length > 0) ?
-                    <Table classes="table table-hover table-striped" headers={["ID", "Client Status", "Desired Status", "Node", "Evaluation" ]} body={allocs} />
+                    <Table classes="table table-hover table-striped" headers={["ID", "Client Status", "Desired Status", "Node", "Evaluation", "Time" ]} body={allocs} />
                     : null
                 }
             </div>

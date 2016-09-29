@@ -1,6 +1,7 @@
 import React, {  Component } from 'react';
 import { connect } from 'react-redux';
 import { NomadLink } from '../components/link';
+import { relativeTimestamp } from '../helpers/time'
 
 class Allocations extends Component {
 
@@ -22,6 +23,7 @@ class Allocations extends Component {
                                         <th>Desired Status</th>
                                         <th>Node</th>
                                         <th>Evaluation</th>
+                                        <th>Time</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -34,6 +36,7 @@ class Allocations extends Component {
                                                 <td>{allocation.DesiredStatus}</td>
                                                 <td><NomadLink nodeId={allocation.NodeID} short="true"/></td>
                                                 <td><NomadLink evalId={allocation.EvalID} short="true"/></td>
+                                                <td>{relativeTimestamp(allocation.CreateTime)}</td>
                                             </tr>
                                         )
                                     })}
