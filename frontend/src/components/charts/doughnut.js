@@ -45,10 +45,6 @@ class Doughnut extends Component {
                             <div><i className="fa fa-circle text-warning" /> { this.props.data.labels[1] } </div>
                             <div><i className="fa fa-circle text-danger" /> { this.props.data.labels[2] } </div>
                         </div>
-                        <hr />
-                        <div className="stats">
-                            <i className="fa fa-clock-o" /> Last updated:
-                        </div>
                     </div>
                 </div>
             </div>
