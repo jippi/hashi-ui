@@ -11,7 +11,7 @@ class Allocations extends Component {
             return (
                 <div>
                     <ReactTooltip id={'tooltip-' + allocation.ID}>{allocation.DesiredDescription}</ReactTooltip>
-                    <div data-tip data-for={'tooltip-' + allocation.ID}>{allocation.DesiredStatus}</div>
+                    <span data-tip data-for={'tooltip-' + allocation.ID} className="dotted">{allocation.DesiredStatus}</span>
                 </div>
             )
         }

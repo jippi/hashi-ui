@@ -36,7 +36,7 @@ class MetaDisplay extends Component {
             return (
                 <div>
                     <ReactTooltip id={'tooltip-' + identifier}>{metaTag}</ReactTooltip>
-                    <div data-tip data-for={'tooltip-' + identifier}>{keys.length} keys</div>
+                    <span data-tip data-for={'tooltip-' + identifier} className="dotted">{keys.length} keys</span>
                 </div>
             )
         }
