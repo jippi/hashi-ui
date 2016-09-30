@@ -1,7 +1,7 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import { connect } from "react-redux";
 import { NomadLink } from "../link";
-import { collectMeta } from '../../helpers/meta'
+import MetaDisplay from '../meta'
 
 const allocProps = [
     "ID",
@@ -23,6 +23,7 @@ class AllocInfo extends Component {
         let allocValues = {};
         allocProps.map((allocProp) => {
             allocValues[allocProp] = allocation[allocProp]
+            return null
         });
 
         allocValues.Job = <NomadLink jobId={jobId} />
@@ -33,7 +34,12 @@ class AllocInfo extends Component {
             <div className="tab-pane active">
                 <div className="content">
                     <legend>Allocation Properties</legend>
-                    {collectMeta(allocValues, "default", false)}
+                    <MetaDisplay metaBag={allocValues} sortKeys={false} />
+
+                    <br />
+
+                    {states}
+
                 </div>
             </div>
         );

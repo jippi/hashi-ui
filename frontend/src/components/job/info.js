@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { NomadLink } from '../link';
 import Table from '../table'
-import { collectMeta } from '../../helpers/meta'
+import MetaDisplay from '../meta'
 
 class JobInfo extends Component {
 
@@ -30,7 +30,7 @@ class JobInfo extends Component {
                     <td><NomadLink jobId={job.ID} taskGroupId={taskGroup.ID}>{taskGroup.Name}</NomadLink></td>
                     <td>{taskGroup.Count}</td>
                     <td>{taskGroup.Tasks.length}</td>
-                    <td>{collectMeta(taskGroup.Meta)}</td>
+                    <td><MetaDisplay asTooltip={true} metaBag={taskGroup.Meta} /></td>
                     <td>{taskGroup.RestartPolicy.Mode}</td>
                 </tr>
             )
@@ -63,7 +63,7 @@ class JobInfo extends Component {
 
                         <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12">
                             <legend>Meta Properties</legend>
-                            {collectMeta(this.props.job.Meta || {}, "wide")}
+                            <MetaDisplay dtWithClass="wide" metaBag={this.props.job.Meta} />
                         </div>
                     </div>
                     <br />
