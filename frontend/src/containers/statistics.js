@@ -38,7 +38,7 @@ class Statistics extends Component {
                 bsStyle = metricColor[key]
             }
 
-            batches.push(<div className={"col-xs-4 col-md-2 " + bsStyle}>{key} <Badge>{clientStatus[key]}</Badge></div>)
+            batches.push(<div key={key} className={"col-xs-4 col-md-2 " + bsStyle}>{key} <Badge>{clientStatus[key]}</Badge></div>)
         }
 
         return (
