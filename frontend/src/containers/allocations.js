@@ -33,6 +33,8 @@ class Allocations extends Component {
                                     <tr>
                                         <th>ID</th>
                                         <th>Job</th>
+                                        <th>Task Group</th>
+                                        <th>Task</th>
                                         <th>Client Status</th>
                                         <th>Desired Status</th>
                                         <th>Node</th>
@@ -46,6 +48,8 @@ class Allocations extends Component {
                                             <tr key={allocation.ID}>
                                                 <td><NomadLink allocId={allocation.ID} short="true"/></td>
                                                 <td><NomadLink jobId={allocation.JobID} short="true"/></td>
+                                                <td><NomadLink jobId={allocation.JobID} taskGroupId={allocation.TaskGroupId}>{allocation.TaskGroup}</NomadLink></td>
+                                                <td>{allocation.Name}</td>
                                                 <td>{allocation.ClientStatus}</td>
                                                 <td>{this.renderDesiredStatus(allocation)}</td>
                                                 <td><NomadLink nodeId={allocation.NodeID} nodeList={this.props.nodes} short="true"/></td>
