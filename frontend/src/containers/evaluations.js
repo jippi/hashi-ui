@@ -21,6 +21,7 @@ class Evaluations extends Component {
                                         <th>Status</th>
                                         <th>Type</th>
                                         <th>Priority</th>
+                                        <th>Node</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -32,6 +33,7 @@ class Evaluations extends Component {
                                                 <td>{evaluation.Status}</td>
                                                 <td>{evaluation.Type}</td>
                                                 <td>{evaluation.Priority}</td>
+                                                <td><NomadLink nodeId={evaluation.NodeID} nodeList={this.props.nodes} short="true"/></td>
                                             </tr>
                                         )
                                     })}
@@ -45,8 +47,8 @@ class Evaluations extends Component {
     }
 }
 
-function mapStateToProps({ evaluations }) {
-    return { evaluations }
+function mapStateToProps({ evaluations, nodes }) {
+    return { evaluations, nodes }
 }
 
 export default connect(mapStateToProps)(Evaluations)

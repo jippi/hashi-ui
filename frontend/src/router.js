@@ -22,6 +22,7 @@ import AllocRaw from './components/allocation/raw';
 import Evaluations from './containers/evaluations';
 import Evaluation from './containers/evaluation';
 import EvalInfo from './components/evaluation/info';
+import EvalAlloc from './components/evaluation/allocs';
 import EvalRaw from './components/evaluation/raw';
 
 import Nodes from './containers/nodes';
@@ -78,6 +79,7 @@ const AppRouter = () => {
                 <Route path="/evaluations/:evalId" component={Evaluation}>
                     <IndexRedirect to="/evaluations/:evalId/info" />
                     <Route path="/evaluations/:evalId/info" component={EvalInfo} />
+                    <Route path="/evaluations/:evalId/allocations" component={EvalAlloc} />
                     <Route path="/evaluations/:evalId/raw" component={EvalRaw} />
                 </Route>
             </Route>

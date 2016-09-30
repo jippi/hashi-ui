@@ -10,7 +10,7 @@ export class NomadLink extends Component {
             return this.props.nodeList[r].Name;
         }
 
-        return 'n/a';
+        return nodeId
     }
 
     render() {
