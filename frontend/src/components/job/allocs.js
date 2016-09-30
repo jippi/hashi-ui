@@ -10,7 +10,9 @@ const JobAllocs = ({ allocations, job, nodes }) => {
     }).map((allocation) => {
         return (
             <tr key={allocation.ID}>
-                <td><NomadLink allocId={allocation.ID} short="true"/></td>
+                <td><NomadLink jobId={allocation.JobID} allocId={allocation.ID} short="true"/></td>
+                <td><NomadLink jobId={allocation.JobID} taskGroupId={allocation.TaskGroupId}>{allocation.TaskGroup}</NomadLink></td>
+                <td>{allocation.Name}</td>
                 <td>{allocation.DesiredStatus}</td>
                 <td>{allocation.ClientStatus}</td>
                 <td><NomadLink nodeId={allocation.NodeID} nodeList={nodes} short="true"/></td>
@@ -23,7 +25,7 @@ const JobAllocs = ({ allocations, job, nodes }) => {
     return (
         <div className="tab-pane active">
             {(allocations.length > 0) ?
-                <Table classes="table table-hover table-striped" headers={["ID", "Desired Status", "Client Status", "Node", "Evaluation", "Time" ]} body={allocs} />
+                <Table classes="table table-hover table-striped" headers={["ID", "TaskGroup", "Task", "Desired Status", "Client Status", "Node", "Evaluation", "Time" ]} body={allocs} />
                 : null
             }
         </div>

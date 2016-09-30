@@ -15,7 +15,12 @@ export function AllocInfoReducer(state = {}, action) {
 export function AllocListReducer(state = [], action) {
     switch (action.type) {
         case FETCHED_ALLOCS:
-            return action.payload
+            let allocations = action.payload.map((allocation) => {
+                allocation.TaskGroupId = allocation.JobID + '.' + allocation.TaskGroup
+                return allocation;
+            });
+
+            return allocations
         default:
     }
     return state
