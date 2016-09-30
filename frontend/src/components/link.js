@@ -5,7 +5,7 @@ import shortUUID from '../helpers/uuid'
 export class NomadLink extends Component {
 
     findNodeNameById(nodeId) {
-        let r = Object.keys(this.props.nodeList).filter(_ => { return this.props.nodeList[_]['ID'] === nodeId; })
+        const r = Object.keys(this.props.nodeList).filter((node) => { return this.props.nodeList[node]['ID'] === nodeId; })
         if (r.length !== 0) {
             return this.props.nodeList[r].Name;
         }
