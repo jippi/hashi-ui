@@ -2,9 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Badge } from 'react-bootstrap';
 
-const positiveMetrics = ["Running", "Complete"]
-const warningMetrics = ["Starting", "Queued"]
-const errorMetrics = ["Failed", "Lost"]
+const metricColor = {
+    Running: "text-success" ,
+    Complete: "text-success",
+    Starting: "text-warning",
+    Queued: "text-warning",
+    Failed: "text-danger",
+    Lost: "text-danger"
+}
 
 class Statistics extends Component {
 
@@ -29,16 +34,8 @@ class Statistics extends Component {
         for (let key in clientStatus) {
             let bsStyle;
 
-            if (positiveMetrics.indexOf(key) !== -1) {
-                bsStyle = "text-success"
-            }
-
-            if (warningMetrics.indexOf(key) !== -1) {
-                bsStyle = "text-warning"
-            }
-
-            if (errorMetrics.indexOf(key) !== -1) {
-                bsStyle = "text-danger"
+            if (key in metricColor) {
+                bsStyle = metricColor[key]
             }
 
             batches.push(<div className={"col-xs-4 col-md-2 " + bsStyle}>{key} <Badge>{clientStatus[key]}</Badge></div>)

@@ -4,6 +4,12 @@ import { NomadLink } from '../components/link'
 
 const summaryLabels = ['Starting', 'Running', 'Queued', 'Complete', 'Failed', 'Lost'];
 
+const jobStatusColors = {
+    running: "success" ,
+    pending: "warning",
+    dead: "danger",
+}
+
 class Jobs extends Component {
 
     getJobStatisticsHeader() {
@@ -43,6 +49,12 @@ class Jobs extends Component {
         return output
     }
 
+    jobStatusToColor(status) {
+        if (status in jobStatusColors) {
+            return jobStatusColors[status]
+        }
+    }
+
     render() {
         return (
             <div className="row">
@@ -66,7 +78,7 @@ class Jobs extends Component {
                                 <tbody>
                                     {this.props.jobs.map((job) => {
                                         return (
-                                            <tr key={job.ID}>
+                                            <tr key={job.ID} className={this.jobStatusToColor(job.Status)}>
                                                 <td><NomadLink jobId={job.ID} short="true"/></td>
                                                 <td>{job.Status}</td>
                                                 <td>{job.Type}</td>
