@@ -1,7 +1,7 @@
 import React, {  Component } from 'react';
 import { connect } from 'react-redux';
 import { NomadLink } from '../components/link';
-import { relativeTimestamp } from '../helpers/time'
+import DisplayTime from '../components/time'
 import ReactTooltip from 'react-tooltip'
 
 class Allocations extends Component {
@@ -50,7 +50,7 @@ class Allocations extends Component {
                                                 <td>{this.renderDesiredStatus(allocation)}</td>
                                                 <td><NomadLink nodeId={allocation.NodeID} nodeList={this.props.nodes} short="true"/></td>
                                                 <td><NomadLink evalId={allocation.EvalID} short="true"/></td>
-                                                <td>{relativeTimestamp(allocation.CreateTime)}</td>
+                                                <td><DisplayTime time={allocation.CreateTime} /></td>
                                             </tr>
                                         )
                                     })}

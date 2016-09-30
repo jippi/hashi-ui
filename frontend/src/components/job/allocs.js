@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { NomadLink } from '../link'
 import Table from '../table'
-import { relativeTimestamp } from '../../helpers/time'
+import DisplayTime from '../time'
 
 const JobAllocs = ({ allocations, job, nodes }) => {
     const allocs = allocations.filter((allocation) => {
@@ -15,7 +15,7 @@ const JobAllocs = ({ allocations, job, nodes }) => {
                 <td>{allocation.ClientStatus}</td>
                 <td><NomadLink nodeId={allocation.NodeID} nodeList={nodes} short="true"/></td>
                 <td><NomadLink evalId={allocation.EvalID} short="true"/></td>
-                <td>{relativeTimestamp(allocation.CreateTime)}</td>
+                <td><DisplayTime time={allocation.CreateTime} /></td>
             </tr>
         )
     })

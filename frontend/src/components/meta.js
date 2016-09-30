@@ -6,9 +6,9 @@ class MetaDisplay extends Component {
 
     render() {
         const metaBag = this.props.metaBag;
-        const dtWithClass = this.props.dtWithClass || "default"
-        const sortKeys = this.props.sortKeys || true
-        const asTooltip = this.props.asTooltip || false
+        const dtWithClass = this.props.dtWithClass;
+        const sortKeys = this.props.sortKeys;
+        const asTooltip = this.props.asTooltip;
 
         let keys = Object.keys(metaBag || {});
         if (keys.length === 0) {
@@ -45,5 +45,12 @@ class MetaDisplay extends Component {
     }
 
 }
+
+MetaDisplay.defaultProps = {
+    metaBag: {},
+    dtWithClass: "default",
+    sortKeys: true,
+    asTooltip: false
+};
 
 export default MetaDisplay

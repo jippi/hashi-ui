@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { relativeTimestamp } from '../helpers/time'
+import DisplayTime from '../components/time'
 import { NomadLink } from '../components/link'
 
 class Events extends Component {
@@ -19,7 +19,7 @@ class Events extends Component {
                                 <td><NomadLink jobId={allocation.JobID} allocId={allocation.ID}>{allocation.JobID}.{task}</NomadLink></td>
                                 <td>{event.Type}</td>
                                 <td>{event.KillError || event.DriverError || event.DownloadError || event.RestartReason || event.Message || "<none>" }</td>
-                                <td>{relativeTimestamp(event.Time)}</td>
+                                <td><DisplayTime time={event.Time} /></td>
                             </tr>
                         )
                     })
