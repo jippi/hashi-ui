@@ -15,7 +15,8 @@ class JobInfo extends Component {
              taskGroup.Tasks.map((task) => {
                 tasks.push(
                     <tr key={task.ID}>
-                        <td><NomadLink jobId={job.ID} taskGroupId={taskGroup.ID} taskId={task.ID}>{taskGroup.Name} / {task.Name}</NomadLink></td>
+                        <td><NomadLink jobId={job.ID} taskGroupId={taskGroup.ID}>{taskGroup.Name}</NomadLink></td>
+                        <td><NomadLink jobId={job.ID} taskGroupId={taskGroup.ID} taskId={task.ID}>{task.Name}</NomadLink></td>
                         <td>{task.Driver}</td>
                         <td>{task.Resources.CPU}</td>
                         <td>{task.Resources.MemoryMB}</td>
@@ -77,7 +78,7 @@ class JobInfo extends Component {
                     <br /><br />
                     <legend>Tasks</legend>
                     {(tasks.length > 0) ?
-                        <Table classes="table table-hover table-striped" headers={["Name", "Driver", "CPU", "Memory", "Disk" ]} body={tasks} />
+                        <Table classes="table table-hover table-striped" headers={["Task Group", "Name", "Driver", "CPU", "Memory", "Disk" ]} body={tasks} />
                         : null
                     }
                 </div>
