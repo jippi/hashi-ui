@@ -21,4 +21,9 @@ function mapStateToProps({ allocations, job, nodes }) {
 	return { allocations, job, nodes }
 }
 
+JobAllocs.defaultProps = {
+    allocations: {},
+    nodes: {},
+};
+
 export default connect(mapStateToProps)(JobAllocs);

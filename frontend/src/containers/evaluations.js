@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { NomadLink } from '../components/link';
+import EvaluationList from '../components/evaluation_list';
 
 class Evaluations extends Component {
 
@@ -13,32 +13,7 @@ class Evaluations extends Component {
                             <h4 className="title">Evaluations</h4>
                         </div>
                         <div className="content table-responsive table-full-width">
-                            <table className="table table-hover table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Job</th>
-                                        <th>Status</th>
-                                        <th>Type</th>
-                                        <th>Priority</th>
-                                        <th>Node</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {this.props.evaluations.map((evaluation) => {
-                                        return (
-                                            <tr key={evaluation.ID}>
-                                                <td><NomadLink evalId={evaluation.ID} short="true"/></td>
-                                                <td><NomadLink jobId={evaluation.JobID} short="true"/></td>
-                                                <td>{evaluation.Status}</td>
-                                                <td>{evaluation.Type}</td>
-                                                <td>{evaluation.Priority}</td>
-                                                <td><NomadLink nodeId={evaluation.NodeID} nodeList={this.props.nodes} short="true"/></td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
+                            <EvaluationList evaluations={this.props.evaluations} nodes={this.props.nodes} />
                         </div>
                     </div>
                 </div>
@@ -50,5 +25,10 @@ class Evaluations extends Component {
 function mapStateToProps({ evaluations, nodes }) {
     return { evaluations, nodes }
 }
+
+Evaluations.defaultProps = {
+    evaluations: {},
+    nodes: {},
+};
 
 export default connect(mapStateToProps)(Evaluations)
