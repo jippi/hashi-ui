@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import moment from 'moment'
+// this is actually used no matter what webpack says
 import momentDurationFormat from 'moment-duration-format'
 
 const nanosecondLength = 19;

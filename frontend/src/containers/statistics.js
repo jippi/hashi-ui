@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import DisplayTime from '../components/time'
-import { NomadLink } from '../components/link'
 import { Badge } from 'react-bootstrap';
 
 const positiveMetrics = ["Running", "Complete"]

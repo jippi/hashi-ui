@@ -21,7 +21,7 @@ class AllocInfo extends Component {
         let lastEventTime = null;
 
         return (
-            <Panel header={title}>
+            <Panel key={name} header={title}>
                 <Table striped hover>
                 <thead>
                     <tr>
