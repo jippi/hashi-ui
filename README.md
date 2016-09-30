@@ -1,6 +1,8 @@
 Nomad UI [![Build Status](https://travis-ci.org/iverberk/nomad-ui.svg?branch=master)](https://travis-ci.org/iverberk/nomad-ui)
 ========
 
+[![Join the chat at https://gitter.im/nomad-ui/Lobby](https://badges.gitter.im/nomad-ui/Lobby.svg)](https://gitter.im/nomad-ui/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 An awesome user interface for an awesome scheduler, plain and simple :-)
 
 ![Nomad UI](http://www.ivoverberk.nl/dl/nomad-ui.jpg)
