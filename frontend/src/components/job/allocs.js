@@ -1,39 +1,24 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { NomadLink } from '../link'
-import Table from '../table'
-import DisplayTime from '../time'
+import AllocationList from '../allocation_list'
 
-const JobAllocs = ({ allocations, job, nodes }) => {
-    const allocs = allocations.filter((allocation) => {
-        return (allocation.JobID === job.ID);
-    }).map((allocation) => {
-        return (
-            <tr key={allocation.ID}>
-                <td><NomadLink jobId={allocation.JobID} allocId={allocation.ID} short="true"/></td>
-                <td><NomadLink jobId={allocation.JobID} taskGroupId={allocation.TaskGroupId}>{allocation.TaskGroup}</NomadLink></td>
-                <td>{allocation.Name}</td>
-                <td>{allocation.DesiredStatus}</td>
-                <td>{allocation.ClientStatus}</td>
-                <td><NomadLink nodeId={allocation.NodeID} nodeList={nodes} short="true"/></td>
-                <td><NomadLink evalId={allocation.EvalID} short="true"/></td>
-                <td><DisplayTime time={allocation.CreateTime} /></td>
-            </tr>
-        )
-    })
+class JobAllocs extends Component {
 
-    return (
-        <div className="tab-pane active">
-            {(allocations.length > 0) ?
-                <Table classes="table table-hover table-striped" headers={["ID", "TaskGroup", "Task", "Desired Status", "Client Status", "Node", "Evaluation", "Time" ]} body={allocs} />
-                : null
-            }
-        </div>
-    )
+	render() {
+		const allocs = this.props.allocations.filter((allocation) => {
+			return (allocation.JobID === this.props.job.ID);
+		})
+
+		return (
+			<div className="tab-pane active">
+				<AllocationList allocations={allocs} nodes={this.props.nodes} />
+			</div>
+		)
+	}
 }
 
 function mapStateToProps({ allocations, job, nodes }) {
-    return { allocations, job, nodes }
+	return { allocations, job, nodes }
 }
 
 export default connect(mapStateToProps)(JobAllocs);

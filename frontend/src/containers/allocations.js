@@ -1,6 +1,6 @@
 import React, {  Component } from 'react';
 import { connect } from 'react-redux';
-import { AllocationList } from '../components/allocations'
+import AllocationList from '../components/allocation_list'
 
 class Allocations extends Component {
 
