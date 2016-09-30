@@ -21,7 +21,15 @@ class Statistics extends Component {
 
         this.props.jobs.forEach((job) => {
             for (let taskGroup in job.JobSummary.Summary) {
+                if (!job.JobSummary.Summary.hasOwnProperty(taskGroup)) {
+                    continue;
+                }
+
                 for (let task in job.JobSummary.Summary[taskGroup]) {
+                    if (!job.JobSummary.Summary[taskGroup].hasOwnProperty(task)) {
+                        continue;
+                    }
+
                     if (!(task in clientStatus)) {
                         clientStatus[task] = 0;
                     }
@@ -32,8 +40,11 @@ class Statistics extends Component {
 
         let batches = [];
         for (let key in clientStatus) {
-            let bsStyle;
+            if (!clientStatus.hasOwnProperty(key)) {
+                continue;
+            }
 
+            let bsStyle;
             if (key in metricColor) {
                 bsStyle = metricColor[key]
             }
