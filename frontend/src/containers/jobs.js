@@ -2,15 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { NomadLink } from '../components/link'
 
-class Jobs extends Component {
+const summaryLabels = ['Starting', 'Running', 'Queued', 'Complete', 'Failed', 'Lost'];
 
-    counterColumns() {
-        return ['Starting', 'Running', 'Queued', 'Complete', 'Failed', 'Lost'];
-    }
+class Jobs extends Component {
 
     getJobStatisticsHeader() {
         let output = [];
-        this.counterColumns().forEach((key) => {
+        summaryLabels.forEach((key) => {
             output.push(<th key={'statistics-header-for-' + key} className="center">{key}</th>)
         });
 
@@ -38,7 +36,7 @@ class Jobs extends Component {
         });
 
         let output = [];
-        this.counterColumns().forEach((key) => {
+        summaryLabels.forEach((key) => {
             output.push(<td key={job.ID + '-' + key}>{counter[key]}</td>)
         });
 
