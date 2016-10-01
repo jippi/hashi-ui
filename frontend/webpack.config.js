@@ -22,6 +22,7 @@ webpackConfig = merge(webpackConfig, {
             appMountId: 'app'
         }),
         new webpack.DefinePlugin({ 'process.env.NODE_ENV': '"development"' }),
+        new webpack.DefinePlugin({ 'process.env.GO_PORT': process.env.GO_PORT || 3000 }),
         new webpack.HotModuleReplacementPlugin()
     ],
     devServer: {

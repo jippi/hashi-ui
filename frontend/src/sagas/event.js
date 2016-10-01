@@ -118,13 +118,12 @@ export default function eventSaga() {
         const protocol = location.protocol === "https:" ? "wss:" : "ws:";
 
         // if we build production page, assume /ws run inside the go-binary and such on same host+port
-        // otherwise assume development, where we re-use the hostname but force port :3000
-
+        // otherwise assume development, where we re-use the hostname but use GO_PORT end with fallback to :3000
         let hostname;
         if (process.env.NODE_ENV === 'production') {
             hostname = location.hostname
         } else {
-            hostname = location.hostname + ':3000'
+            hostname = location.hostname + ':' + process.env.GO_PORT || 3000
         }
 
         const url = `${protocol}///${hostname}/ws`;
