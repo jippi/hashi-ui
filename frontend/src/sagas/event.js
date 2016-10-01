@@ -121,7 +121,7 @@ export default function eventSaga() {
         // otherwise assume development, where we re-use the hostname but use GO_PORT end with fallback to :3000
         let hostname;
         if (process.env.NODE_ENV === 'production') {
-            hostname = location.hostname
+            hostname = location.host
         } else {
             hostname = location.hostname + ':' + process.env.GO_PORT || 3000
         }
