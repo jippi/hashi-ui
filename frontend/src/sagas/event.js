@@ -102,14 +102,9 @@ function connectTo(url) {
     return new Promise(resolver.bind(socket))
 }
 
-function* events() {
-    const protocol = location.protocol === "https:" ? "wss:" : "ws:";
-    const url = `${protocol}//${location.host}/ws`;
-
+function* events(socket) {
     while (true) {
         try {
-            console.log(`Connecting to backend: ${url}`)
-            const socket = yield call(connectTo, url)
             yield call(transport, socket)
         } catch(e) {
             console.log(e)
@@ -118,6 +113,13 @@ function* events() {
     }
 }
 
-export default function* eventSaga() {
-    yield fork(events)
+export default function eventSaga() {
+    return new Promise((resolve, reject) => {
+        const protocol = location.protocol === "https:" ? "wss:" : "ws:";
+        const url = `${protocol}//localhost:3000/ws`;
+        const p = connectTo(url);
+        return p.then(function (socket) {
+            resolve(function*() { yield fork(events, socket) })
+        })
+    })
 }
