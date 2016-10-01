@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Glyphicon } from 'react-bootstrap'
 import DisplayBoolean from './boolean'
 
 class NodeStatus extends Component {
@@ -14,6 +13,9 @@ class NodeStatus extends Component {
 
             case "down":
                 return (<DisplayBoolean value={false} title={this.props.value} />)
+
+            default:
+                return (<span>{this.props.value}</span>)
         }
     }
 }

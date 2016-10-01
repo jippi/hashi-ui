@@ -19,7 +19,7 @@ class DisplayBoolean extends Component {
     	}
 
         return (
-        	<span title={this.props.title} className={colorClass}>{icon}</span>
+            <span title={this.props.title} className={colorClass}>{icon} {text}</span>
         )
     }
 }
