@@ -4,19 +4,18 @@ class ConstraintRow extends Component {
 
     render() {
         const constraint = this.props.constraint;
-        const uniqueKey = constraint.LTarget + '@' + constraint.RTarget + '@' + constraint.Operand;
 
         // unique case as it does not expose any LTarget or RTarget
         if (constraint.Operand === 'distinct_hosts') {
             return (
-                <tr key={uniqueKey}>
+                <tr>
                     <td colSpan="3"><code>Distinct Hosts</code></td>
                 </tr>
             )
         }
 
         return (
-            <tr key={uniqueKey}>
+            <tr>
                 <td><code>{constraint.LTarget}</code></td>
                 <td>{constraint.Operand}</td>
                 <td><code>{constraint.RTarget}</code></td>
@@ -26,7 +25,7 @@ class ConstraintRow extends Component {
 }
 
 ConstraintRow.defaultProps = {
-    constraint: {}
+    constraint: {},
 };
 
 export default ConstraintRow
