@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { NomadLink } from '../link';
 import Table from '../table'
 import MetaDisplay from '../meta'
+import ConstraintTable from '../_constraint/constraint_table'
 
 class JobInfo extends Component {
 
@@ -18,14 +19,15 @@ class JobInfo extends Component {
                         <td><NomadLink jobId={job.ID} taskGroupId={taskGroup.ID}>{taskGroup.Name}</NomadLink></td>
                         <td><NomadLink jobId={job.ID} taskGroupId={taskGroup.ID} taskId={task.ID}>{task.Name}</NomadLink></td>
                         <td>{task.Driver}</td>
-                        <td>{task.Resources.CPU}</td>
-                        <td>{task.Resources.MemoryMB}</td>
-                        <td>{task.Resources.DiskMB}</td>
+                        <td>{task.Resources.CPU} MHz</td>
+                        <td>{task.Resources.MemoryMB} MB</td>
+                        <td>{task.Resources.DiskMB} MB</td>
+                        <td><ConstraintTable idPrefix={task.ID} asTooltip={true} constraints={task.Constraints} /></td>
                     </tr>
                 )
+
                 return null
             })
-
             return (
                 <tr key={taskGroup.ID}>
                     <td><NomadLink jobId={job.ID} taskGroupId={taskGroup.ID}>{taskGroup.Name}</NomadLink></td>
@@ -33,6 +35,7 @@ class JobInfo extends Component {
                     <td>{taskGroup.Tasks.length}</td>
                     <td><MetaDisplay asTooltip={true} metaBag={taskGroup.Meta} /></td>
                     <td>{taskGroup.RestartPolicy.Mode}</td>
+                    <td><ConstraintTable idPrefix={taskGroup.ID} asTooltip={true} constraints={taskGroup.Constraints} /></td>
                 </tr>
             )
         })
@@ -67,18 +70,32 @@ class JobInfo extends Component {
                             <MetaDisplay dtWithClass="wide" metaBag={this.props.job.Meta} />
                         </div>
                     </div>
+
+                    <br />
+                    <br />
+
+                    <div className="row">
+                        <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12">
+                            <legend>Constraints</legend>
+                            <ConstraintTable idPrefix={this.props.job.ID} constraints={this.props.job.Constraints} />
+                        </div>
+                    </div>
+
+                    <br />
                     <br />
 
                     <legend>Task Groups</legend>
                     {(taskGroups.length > 0) ?
-                        <Table classes="table table-hover table-striped" headers={["Name", "Count", "Tasks", "Meta", "Restart Policy" ]} body={taskGroups} />
+                        <Table classes="table table-hover table-striped" headers={["Name", "Count", "Tasks", "Meta", "Restart Policy", "Constraints" ]} body={taskGroups} />
                         : null
                     }
 
-                    <br /><br />
+                    <br />
+                    <br />
+
                     <legend>Tasks</legend>
                     {(tasks.length > 0) ?
-                        <Table classes="table table-hover table-striped" headers={["Task Group", "Name", "Driver", "CPU", "Memory", "Disk" ]} body={tasks} />
+                        <Table classes="table table-hover table-striped" headers={["Task Group", "Name", "Driver", "CPU", "Memory", "Disk", "Constraints" ]} body={tasks} />
                         : null
                     }
                 </div>
@@ -86,6 +103,15 @@ class JobInfo extends Component {
         );
     }
 }
+
+JobInfo.defaultProps = {
+    job: {
+        constraints: []
+    },
+    allocations: {},
+    evaluations: {},
+};
+
 
 function mapStateToProps({ job, allocations, evaluations }) {
     return { job, allocations, evaluations }

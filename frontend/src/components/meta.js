@@ -12,7 +12,7 @@ class MetaDisplay extends Component {
 
         let keys = Object.keys(metaBag || {});
         if (keys.length === 0) {
-            return (<span>-none-</span>);
+            return (<span>-</span>);
         }
 
         let identifier = uuid.v1();
