@@ -116,8 +116,9 @@ function* events(socket) {
 export default function eventSaga() {
     return new Promise((resolve, reject) => {
         const protocol = location.protocol === "https:" ? "wss:" : "ws:";
-        const url = `${protocol}//localhost:3000/ws`;
+        const url = `${protocol}///${location.host}:3000/ws`;
         const p = connectTo(url);
+
         return p.then(function (socket) {
             resolve(function*() { yield fork(events, socket) })
         })
