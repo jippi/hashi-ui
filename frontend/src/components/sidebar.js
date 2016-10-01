@@ -11,40 +11,40 @@ const Sidebar = ({ location }) => {
                     </Link>
                 </div>
                 <ul className="nav">
-                    <li className={location.pathname === '/cluster' ? 'active' : ''}>
+                    <li className={location.pathname.startsWith('/cluster') ? 'active' : ''}>
                         <Link to={{ pathname: '/cluster' }}>
                             <i className="pe-7s-cloud" />
                             <p>Cluster</p>
                         </Link>
                     </li>
-                    <li className={location.pathname === '/members' ? 'active' : ''}>
-                        <Link to={{ pathname: '/members' }}>
-                            <i className="pe-7s-share" />
-                            <p>Members</p>
-                        </Link>
-                    </li>
-                    <li className={location.pathname === '/nodes' ? 'active' : ''}>
-                        <Link to={{ pathname: '/nodes' }}>
-                            <i className="pe-7s-keypad" />
-                            <p>Nodes</p>
-                        </Link>
-                    </li>
-                    <li className={location.pathname === '/jobs' ? 'active' : ''}>
+                    <li className={location.pathname.startsWith('/jobs') ? 'active' : ''}>
                         <Link to={{ pathname: '/jobs' }}>
                             <i className="pe-7s-copy-file" />
                             <p>Jobs</p>
                         </Link>
                     </li>
-                    <li className={location.pathname === '/evaluations' ? 'active' : ''}>
+                    <li className={location.pathname.startsWith('/allocations') ? 'active' : ''}>
+                        <Link to={{ pathname: '/allocations' }}>
+                            <i className="pe-7s-graph" />
+                            <p>Allocations</p>
+                        </Link>
+                    </li>
+                    <li className={location.pathname.startsWith('/evaluations') ? 'active' : ''}>
                         <Link to={{ pathname: '/evaluations' }}>
                             <i className="pe-7s-gleam" />
                             <p>Evaluations</p>
                         </Link>
                     </li>
-                    <li className={location.pathname === '/allocations' ? 'active' : ''}>
-                        <Link to={{ pathname: '/allocations' }}>
-                            <i className="pe-7s-graph" />
-                            <p>Allocations</p>
+                    <li className={location.pathname.startsWith('/members') ? 'active' : ''}>
+                        <Link to={{ pathname: '/members' }}>
+                            <i className="pe-7s-share" />
+                            <p>Members</p>
+                        </Link>
+                    </li>
+                    <li className={location.pathname.startsWith('/nodes') ? 'active' : ''}>
+                        <Link to={{ pathname: '/nodes' }}>
+                            <i className="pe-7s-keypad" />
+                            <p>Nodes</p>
                         </Link>
                     </li>
                 </ul>

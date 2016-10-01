@@ -48,3 +48,30 @@
 @import "nomad-ui/responsive";
 
 @import "nomad-ui/tabs-navs-pagination";
+
+@media (min-width: 768px) {
+	.dl-horizontal dt.wide {
+		width: 50%
+	}
+}
+
+.pointer {
+	cursor: pointer;
+}
+
+dl {
+	margin-bottom: 0;
+}
+
+dd, dt {
+	line-height: 150%
+}
+
+.statistics-big {
+	font-size: 150%
+}
+
+.dotted {
+	border-bottom: 1px dashed #999;
+	text-decoration: none;
+}

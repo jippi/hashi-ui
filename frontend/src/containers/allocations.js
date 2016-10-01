@@ -1,6 +1,6 @@
 import React, {  Component } from 'react';
 import { connect } from 'react-redux';
-import { NomadLink } from '../components/link';
+import AllocationList from '../components/allocation_list'
 
 class Allocations extends Component {
 
@@ -13,32 +13,7 @@ class Allocations extends Component {
                             <h4 className="title">Allocations</h4>
                         </div>
                         <div className="content table-responsive table-full-width">
-                            <table className="table table-hover table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Job</th>
-                                        <th>Client Status</th>
-                                        <th>Desired Status</th>
-                                        <th>Node</th>
-                                        <th>Evaluation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {this.props.allocations.map((allocation) => {
-                                        return (
-                                            <tr key={allocation.ID}>
-                                                <td><NomadLink allocId={allocation.ID} short="true"/></td>
-                                                <td><NomadLink jobId={allocation.JobID} short="true"/></td>
-                                                <td>{allocation.ClientStatus}</td>
-                                                <td>{allocation.DesiredStatus}</td>
-                                                <td><NomadLink nodeId={allocation.NodeID} short="true"/></td>
-                                                <td><NomadLink evalId={allocation.EvalID} short="true"/></td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
+                            <AllocationList allocations={this.props.allocations} nodes={this.props.nodes} />
                         </div>
                     </div>
                 </div>
@@ -47,8 +22,8 @@ class Allocations extends Component {
     }
 }
 
-function mapStateToProps({ allocations }) {
-    return { allocations }
+function mapStateToProps({ allocations, nodes }) {
+    return { allocations, nodes }
 }
 
 export default connect(mapStateToProps)(Allocations)

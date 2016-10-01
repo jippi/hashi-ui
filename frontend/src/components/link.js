@@ -3,6 +3,16 @@ import { Link } from 'react-router';
 import shortUUID from '../helpers/uuid'
 
 export class NomadLink extends Component {
+
+    findNodeNameById(nodeId) {
+        const r = Object.keys(this.props.nodeList).filter((node) => { return this.props.nodeList[node]['ID'] === nodeId; })
+        if (r.length !== 0) {
+            return this.props.nodeList[r].Name;
+        }
+
+        return nodeId
+    }
+
     render() {
         const short = this.props.short === 'true'
 
@@ -12,6 +22,7 @@ export class NomadLink extends Component {
             delete linkProps[k]
         })
         delete linkProps['short']
+        delete linkProps['nodeList']
 
         // member
         if (this.props.memberId !== undefined) {
@@ -28,7 +39,11 @@ export class NomadLink extends Component {
         if (this.props.nodeId !== undefined) {
             const nodeId = this.props.nodeId
             if (children === undefined) {
-                children = short ? shortUUID(nodeId) : nodeId
+                if (this.props.nodeList) {
+                    children = this.findNodeNameById(this.props.nodeId)
+                } else {
+                    children = short ? shortUUID(this.props.nodeId) : nodeId
+                }
             }
             return (
                 <Link {...linkProps} to={`/nodes/${nodeId}`}>{children}</Link>
@@ -52,6 +67,7 @@ export class NomadLink extends Component {
             if (children === undefined) {
                 children = short ? shortUUID(allocId) : allocId
             }
+
             return (
                 <Link {...linkProps} to={`/allocations/${allocId}`}>{children}</Link>
             )

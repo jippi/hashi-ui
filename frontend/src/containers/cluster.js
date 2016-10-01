@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 
 import Doughnut from '../components/charts/doughnut';
 import Events from './events';
+import Statistics from './statistics';
 
 const jobStatusLabels = [ "Running", "Pending", "Dead" ]
 const jobTypeLabels = [ "Service", "Batch", "System" ]
 const nodeStatusLabels = [ "Ready", "Initializing", "Down" ]
 const memberStatusLabels = [ "Alive", "Leaving", "Left", "Shutdown" ]
-
 const backgroundColors = [ "#449b82", "#FF9500", "#FF4A55" ]
 
 class Cluster extends Component {
@@ -121,6 +121,7 @@ class Cluster extends Component {
 
         return (
             <div>
+                <Statistics />
                 <div className="row">
                     <div className="col-md-3">
                         <Doughnut title="Member Status" data={memberStatus} />

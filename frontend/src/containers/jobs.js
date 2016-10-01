@@ -2,7 +2,59 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { NomadLink } from '../components/link'
 
+const summaryLabels = ['Starting', 'Running', 'Queued', 'Complete', 'Failed', 'Lost'];
+
+const jobStatusColors = {
+    running: "success" ,
+    pending: "warning",
+    dead: "danger",
+}
+
 class Jobs extends Component {
+
+    getJobStatisticsHeader() {
+        let output = [];
+        summaryLabels.forEach((key) => {
+            output.push(<th key={'statistics-header-for-' + key} className="center">{key}</th>)
+        });
+
+        return output
+    }
+
+    getJobStatisticsRow(job) {
+        let counter = {
+            Queued: 0,
+            Complete: 0,
+            Failed: 0,
+            Running: 0,
+            Starting: 0,
+            Lost: 0
+        }
+
+        let summary = job.JobSummary.Summary;
+        Object.keys(summary).forEach(function(taskGroupID) {
+            counter.Queued += summary[taskGroupID].Queued;
+            counter.Complete += summary[taskGroupID].Complete;
+            counter.Failed += summary[taskGroupID].Failed;
+            counter.Running += summary[taskGroupID].Running;
+            counter.Starting += summary[taskGroupID].Starting;
+            counter.Lost += summary[taskGroupID].Lost;
+        });
+
+        let output = [];
+        summaryLabels.forEach((key) => {
+            output.push(<td key={job.ID + '-' + key}>{counter[key]}</td>)
+        });
+
+        return output
+    }
+
+    jobStatusToColor(status) {
+        if (status in jobStatusColors) {
+            return jobStatusColors[status]
+        }
+    }
+
     render() {
         return (
             <div className="row">
@@ -16,19 +68,23 @@ class Jobs extends Component {
                                 <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>Status</th>
                                         <th>Type</th>
                                         <th>Priority</th>
-                                        <th>Status</th>
+                                        <th>Task Groups</th>
+                                        {this.getJobStatisticsHeader()}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {this.props.jobs.map((job) => {
                                         return (
-                                            <tr key={job.ID}>
+                                            <tr key={job.ID} className={this.jobStatusToColor(job.Status)}>
                                                 <td><NomadLink jobId={job.ID} short="true"/></td>
+                                                <td>{job.Status}</td>
                                                 <td>{job.Type}</td>
                                                 <td>{job.Priority}</td>
-                                                <td>{job.Status}</td>
+                                                <td>{Object.keys(job.JobSummary.Summary).length}</td>
+                                                {this.getJobStatisticsRow(job)}
                                             </tr>
                                         )
                                     })}

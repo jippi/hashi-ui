@@ -17,6 +17,10 @@ class Evaluation extends Component {
                     path: 'info'
                 },
                 {
+                    name: 'Allocations',
+                    path: 'allocations'
+                },
+                {
                     name: 'Raw',
                     path: 'raw'
                 }

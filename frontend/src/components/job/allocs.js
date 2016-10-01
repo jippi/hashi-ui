@@ -1,37 +1,29 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { NomadLink } from '../link'
-import Table from '../table'
+import AllocationList from '../allocation_list'
 
-const JobAllocs = ({ allocations, job }) => {
+class JobAllocs extends Component {
 
-        // build the job allocation table
-        const allocs = allocations.filter((allocation) => {
-            return (allocation.JobID === job.ID);
-        }).map((allocation) => {
-            return (
-                <tr key={allocation.ID}>
-                    <td><NomadLink allocId={allocation.ID} short="true"/></td>
-                    <td>{allocation.ClientStatus}</td>
-                    <td>{allocation.DesiredStatus}</td>
-                    <td><NomadLink nodeId={allocation.NodeID} short="true"/></td>
-                    <td><NomadLink evalId={allocation.EvalID} short="true"/></td>
-                </tr>
-            )
-        })
+	render() {
+		const allocs = this.props.allocations.filter((allocation) => {
+			return (allocation.JobID === this.props.job.ID);
+		})
 
-        return (
-            <div className="tab-pane active">
-                {(allocations.length > 0) ?
-                    <Table classes="table table-hover table-striped" headers={["ID", "Client Status", "Desired Status", "Node", "Evaluation" ]} body={allocs} />
-                    : null
-                }
-            </div>
-        )
+		return (
+			<div className="tab-pane active">
+				<AllocationList allocations={allocs} nodes={this.props.nodes} />
+			</div>
+		)
+	}
 }
 
-function mapStateToProps({ allocations, job }) {
-    return { allocations, job }
+function mapStateToProps({ allocations, job, nodes }) {
+	return { allocations, job, nodes }
 }
+
+JobAllocs.defaultProps = {
+    allocations: {},
+    nodes: {},
+};
 
 export default connect(mapStateToProps)(JobAllocs);

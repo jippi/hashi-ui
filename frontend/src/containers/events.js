@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import DisplayTime from '../components/time'
+import { NomadLink } from '../components/link'
 
 class Events extends Component {
 
@@ -14,9 +16,10 @@ class Events extends Component {
                         let eventID = task + '.' + event.Time
                         taskEvents.push(
                             <tr key={eventID}>
-                                <td>{task}</td>
+                                <td><NomadLink jobId={allocation.JobID} allocId={allocation.ID}>{allocation.JobID}.{task}</NomadLink></td>
                                 <td>{event.Type}</td>
                                 <td>{event.KillError || event.DriverError || event.DownloadError || event.RestartReason || event.Message || "<none>" }</td>
+                                <td><DisplayTime time={event.Time} /></td>
                             </tr>
                         )
                     })
@@ -67,6 +70,7 @@ class Events extends Component {
                                         <th>Task</th>
                                         <th>Type</th>
                                         <th>Message</th>
+                                        <th>Time</th>
                                     </tr>
                                 </thead>
                                 <tbody>

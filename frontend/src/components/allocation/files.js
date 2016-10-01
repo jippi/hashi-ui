@@ -120,7 +120,7 @@ class AllocFiles extends Component {
     render() {
         let files = this.props.directory.map((file) => {
             return (
-                <tr onClick={() => this.handleClick(file)} key={file.Name}>
+                <tr className="pointer" onClick={() => this.handleClick(file)} key={file.Name}>
                     <td>{file.Name}{file.IsDir ? "/": ""}</td>
                     <td>{file.IsDir ? "" : file.Size}</td>
                 </tr>
@@ -129,7 +129,7 @@ class AllocFiles extends Component {
 
         if (this.state.path !== '/') {
             files.unshift(
-                <tr onClick={() => this.handleClick({ Name: "back", IsDir: true })} key='back'>
+                <tr className="pointer" onClick={() => this.handleClick({ Name: "back", IsDir: true })} key='back'>
                     <td id="back">..</td>
                     <td id="back"></td>
                 </tr>

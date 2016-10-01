@@ -66,5 +66,4 @@ function mapStateToProps({ member }) {
     return { member }
 }
 
-
 export default connect(mapStateToProps)(Member)
