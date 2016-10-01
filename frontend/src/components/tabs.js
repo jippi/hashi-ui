@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router';
 
 class Tabs extends Component {
 
@@ -9,7 +10,7 @@ class Tabs extends Component {
                     {this.props.tabs.map((tab) => {
                         return (
                             <li key={tab.name} role="presentation" className={(this.props.tabSlug === tab.path) ? "active" : null }>
-                                <a href={`#${this.props.basePath}/${tab.path}`} data-toggle="tab" aria-expanded={(this.props.tabSlug === tab.path) ? "true" : "false" }>{ tab.name }</a>
+                                <Link to={{pathname: this.props.basePath + '/' + tab.path }} data-toggle="tab" aria-expanded={(this.props.tabSlug === tab.path) ? "true" : "false" }>{ tab.name }</Link>
                             </li>
                         );
                     }, this)}
