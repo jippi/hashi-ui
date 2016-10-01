@@ -2,6 +2,19 @@ import React, { Component } from 'react';
 import { NomadLink } from './link';
 import DisplayTime from './time'
 import ReactTooltip from 'react-tooltip'
+import { Glyphicon } from 'react-bootstrap'
+
+const clientStatusTextColor = {
+    complete: 'text-success',
+    running: 'text-info',
+    lost: 'text-danger'
+}
+
+const clientStatusIcon = {
+    complete: <Glyphicon glyph="ok" />,
+    running: <Glyphicon glyph="cog" />,
+    lost: <Glyphicon glyph="remove" />
+}
 
 class AllocationList extends Component {
 
@@ -16,6 +29,20 @@ class AllocationList extends Component {
         }
 
         return (<div>{allocation.DesiredStatus}</div>)
+    }
+
+    renderClientStatus(allocation) {
+        let textColor, icon = null;
+
+        if (allocation.ClientStatus in clientStatusTextColor) {
+            textColor = clientStatusTextColor[allocation.ClientStatus];
+        }
+
+        if (allocation.ClientStatus in clientStatusIcon) {
+            icon = clientStatusIcon[allocation.ClientStatus];
+        }
+
+        return <span className={textColor}>{icon} {allocation.ClientStatus}</span>
     }
 
     render() {
@@ -42,7 +69,7 @@ class AllocationList extends Component {
                             <td><NomadLink jobId={allocation.JobID} short="true" /></td>
                             <td><NomadLink jobId={allocation.JobID} taskGroupId={allocation.TaskGroupId}>{allocation.TaskGroup}</NomadLink></td>
                             <td>{allocation.Name}</td>
-                            <td>{allocation.ClientStatus}</td>
+                            <td>{this.renderClientStatus(allocation)}</td>
                             <td>{this.renderDesiredStatus(allocation)}</td>
                             <td><NomadLink nodeId={allocation.NodeID} nodeList={this.props.nodes} short="true" /></td>
                             <td><NomadLink evalId={allocation.EvalID} short="true" /></td>
