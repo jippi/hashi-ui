@@ -5,7 +5,7 @@ import Tabs from '../components/tabs'
 
 import { WATCH_NODE, UNWATCH_NODE } from '../sagas/event';
 
-class Node extends Component {
+class Client extends Component {
 
     constructor(props) {
         super(props);
@@ -50,7 +50,7 @@ class Node extends Component {
                 <div className="col-md-12">
                     <div className="card">
                         <div className="header">
-                            <h4 className="title">Node: {this.props.node.ID}</h4>
+                            <h4 className="title">Client: {this.props.node.Name}</h4>
                         </div>
                         <div className="content">
                             <Tabs children={this.props.children} tabs={this.state.tabs} tabSlug={tabSlug} basePath={basePath} />
@@ -67,4 +67,4 @@ function mapStateToProps({ node }) {
 }
 
 
-export default connect(mapStateToProps)(Node)
+export default connect(mapStateToProps)(Client)

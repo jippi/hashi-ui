@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import JSON from '../json'
 
-const NodeRaw = ({ node }) => {
+const ClientRaw = ({ node }) => {
     return (
         <div className="tab-pane active">
             <JSON json={node} />
@@ -15,4 +15,4 @@ function mapStateToProps({ node }) {
     return { node }
 }
 
-export default connect(mapStateToProps)(NodeRaw)
+export default connect(mapStateToProps)(ClientRaw)

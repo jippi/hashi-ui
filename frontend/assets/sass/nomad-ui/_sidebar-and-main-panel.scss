@@ -9,10 +9,10 @@
     color: #fff;
     font-weight: 200;
 
-
-    .sidebar-wrapper{
+    .sidebar-wrapper {
         position: relative;
         z-index: 4;
+
 
         height: calc(100vh - 64px);
 
@@ -30,7 +30,7 @@
 
     }
 
-    .sidebar-background{
+    .sidebar-background {
         background-image: url('../img/nomad.jpg');
         position: absolute;
         z-index: 1;
@@ -39,8 +39,7 @@
         display: block;
         top: 0;
         left: 0;
-        background-size: cover;
-        background-position: center center;
+        background-position: left top;
     }
 
     .nav{
@@ -188,7 +187,6 @@
     }
 
     &:after{
-       @include line-gradient($black-color-top, rgba($black-color-bottom,.7));
        z-index: 3;
        opacity: 1;
     }
@@ -209,7 +207,8 @@
         @include line-gradient($color-green, rgba($green-color-bottom,.7));
     }
     &[data-color="nomad-green"]:after{
-        @include line-gradient($color-nomad-green, rgba($nomad-green-color-bottom,.7));
+        opacity: 0.8;
+        background-color: $color-nomad-green;
     }
     &[data-color="orange"]:after{
         @include line-gradient($color-orange, rgba($orange-color-bottom,.7));

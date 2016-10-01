@@ -63,9 +63,9 @@ class AllocationList extends Component {
                     <th>Job</th>
                     <th>Task Group</th>
                     <th>Task</th>
+                    <th>Client</th>
                     <th>Client Status</th>
                     <th>Desired Status</th>
-                    <th>Node</th>
                     <th>Evaluation</th>
                     <th>Time</th>
                 </tr>
@@ -79,9 +79,9 @@ class AllocationList extends Component {
                             <td><NomadLink jobId={allocation.JobID} short="true" /></td>
                             <td><NomadLink jobId={allocation.JobID} taskGroupId={allocation.TaskGroupId}>{allocation.TaskGroup}</NomadLink></td>
                             <td>{allocation.Name}</td>
+                            <td><NomadLink nodeId={allocation.NodeID} nodeList={this.props.nodes} short="true" /></td>
                             <td>{this.renderClientStatus(allocation)}</td>
                             <td>{this.renderDesiredStatus(allocation)}</td>
-                            <td><NomadLink nodeId={allocation.NodeID} nodeList={this.props.nodes} short="true" /></td>
                             <td><NomadLink evalId={allocation.EvalID} short="true" /></td>
                             <td><DisplayTime time={allocation.CreateTime} /></td>
                         </tr>

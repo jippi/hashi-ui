@@ -31,7 +31,7 @@ export class NomadLink extends Component {
                 children = short ? shortUUID(memberId) : memberId
             }
             return (
-                <Link {...linkProps} to={`/members/${memberId}`}>{children}</Link>
+                <Link {...linkProps} to={`/servers/${memberId}`}>{children}</Link>
             )
         }
 
@@ -46,7 +46,7 @@ export class NomadLink extends Component {
                 }
             }
             return (
-                <Link {...linkProps} to={`/nodes/${nodeId}`}>{children}</Link>
+                <Link {...linkProps} to={`/clients/${nodeId}`}>{children}</Link>
             )
         }
 

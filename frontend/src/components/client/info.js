@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-class NodeInfo extends Component {
+class ClientInfo extends Component {
 
     render() {
 
@@ -18,7 +18,7 @@ class NodeInfo extends Component {
         return (
             <div className="tab-pane active">
                 <div className="content">
-                    <legend>Node Properties</legend>
+                    <legend>Client Properties</legend>
                     <dl className="dl-horizontal">
                         {nodeProps.map((nodeProp) => {
                             return (
@@ -39,4 +39,4 @@ function mapStateToProps({ node }) {
     return { node }
 }
 
-export default connect(mapStateToProps)(NodeInfo);
+export default connect(mapStateToProps)(ClientInfo);

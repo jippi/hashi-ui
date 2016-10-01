@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import Table from '../table'
 
-class MemberInfo extends Component {
+class ServerInfo extends Component {
 
     render() {
 
@@ -31,7 +31,7 @@ class MemberInfo extends Component {
         return (
             <div className="tab-pane active">
                 <div className="content">
-                    <legend>Member Properties</legend>
+                    <legend>Server Properties</legend>
                     <dl className="dl-horizontal">
                         {memberProps.map((memberProp) => {
                             return (
@@ -43,7 +43,7 @@ class MemberInfo extends Component {
                         }, this)}
                     </dl>
                     <br />
-                    <legend>Member Tags</legend>
+                    <legend>Server Tags</legend>
                     {(memberTags.length > 0) ?
                         <Table classes="table table-hover table-striped" headers={["Name", "Value"]} body={memberTags} />
                         : null
@@ -58,4 +58,4 @@ function mapStateToProps({ member }) {
     return { member }
 }
 
-export default connect(mapStateToProps)(MemberInfo);
+export default connect(mapStateToProps)(ServerInfo);

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { NomadLink } from '../components/link'
 import DisplayBoolean from '../components/display/boolean'
 
-class Members extends Component {
+class Servers extends Component {
 
     render() {
         const leader = this.props.members[0]
@@ -12,7 +12,7 @@ class Members extends Component {
                 <div className="col-md-12">
                     <div className="card">
                         <div className="header">
-                            <h4 className="title">Members</h4>
+                            <h4 className="title">Servers</h4>
                         </div>
                         <div className="content table-responsive table-full-width">
                             <table className="table table-hover table-striped">
@@ -62,4 +62,4 @@ function mapStateToProps({ members }) {
     return { members }
 }
 
-export default connect(mapStateToProps)(Members)
+export default connect(mapStateToProps)(Servers)
