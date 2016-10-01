@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { NomadLink } from '../components/link'
+import DisplayBoolean from '../components/display/boolean'
 
 class Members extends Component {
 
@@ -39,7 +40,7 @@ class Members extends Component {
                                                 <td>{member.Addr}</td>
                                                 <td>{member.Port}</td>
                                                 <td>{member.Status}</td>
-                                                <td>{isLeader ? 'true' : 'false'}</td>
+                                                <td><DisplayBoolean value={isLeader} /></td>
                                                 <td>{member.ProtocolCur}</td>
                                                 <td>{member.Tags["build"]}</td>
                                                 <td>{member.Tags["dc"]}</td>

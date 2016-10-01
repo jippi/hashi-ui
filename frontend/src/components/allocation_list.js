@@ -5,15 +5,24 @@ import ReactTooltip from 'react-tooltip'
 import { Glyphicon } from 'react-bootstrap'
 
 const clientStatusTextColor = {
-    complete: 'text-success',
-    running: 'text-info',
-    lost: 'text-danger'
+    xcomplete: 'text-success',
+    xrunning: 'text-info',
+    xlost: 'text-warning',
+    xfailed: 'text-danger',
+}
+
+const allocationStatusColors = {
+    complete: "success" ,
+    running: "info",
+    lost: "warning",
+    failed: "danger",
 }
 
 const clientStatusIcon = {
     complete: <Glyphicon glyph="ok" />,
     running: <Glyphicon glyph="cog" />,
-    lost: <Glyphicon glyph="remove" />
+    lost: <Glyphicon glyph="remove" />,
+    failed: <Glyphicon glyph="exclamation-sign" />,
 }
 
 class AllocationList extends Component {
@@ -63,8 +72,9 @@ class AllocationList extends Component {
             </thead>
             <tbody>
                 {this.props.allocations.map((allocation) => {
+                    let color = allocationStatusColors[allocation.ClientStatus]
                     return (
-                        <tr key={allocation.ID}>
+                        <tr className={color} key={allocation.ID}>
                             <td><NomadLink allocId={allocation.ID} short="true" /></td>
                             <td><NomadLink jobId={allocation.JobID} short="true" /></td>
                             <td><NomadLink jobId={allocation.JobID} taskGroupId={allocation.TaskGroupId}>{allocation.TaskGroup}</NomadLink></td>

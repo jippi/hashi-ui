@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { NomadLink } from '../components/link'
+import DisplayBoolean from '../components/display/boolean'
+import DisplayNodeStatus from '../components/display/node_status'
 
 class Nodes extends Component {
 
@@ -32,8 +34,8 @@ class Nodes extends Component {
                                                 <td>{node.Datacenter}</td>
                                                 <td>{node.Name}</td>
                                                 <td>{node.Class ? node.Class : "<none>"}</td>
-                                                <td>{node.Drain ? "true" : "false"}</td>
-                                                <td>{node.Status}</td>
+                                                <td><DisplayBoolean value={node.Drain} /></td>
+                                                <td><DisplayNodeStatus value={node.Status}/></td>
                                             </tr>
                                         )
                                     })}
