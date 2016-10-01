@@ -41,10 +41,10 @@ class DisplayTime extends Component {
 		const format = this.props.timeFormat;
 
 		if (this.props.display === "relative") {
-			return <div title={time.format(format)}>{this.getTimeDiff(time, now)}</div>
+			return <div className="dotted" title={time.format(format)}>{this.getTimeDiff(time, now)}</div>
 		}
 
-		return <div title={this.getTimeDiff(time, now)}>{time.format(format)}</div>
+		return <div className="dotted" title={this.getTimeDiff(time, now)}>{time.format(format)}</div>
 	}
 }
 
