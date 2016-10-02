@@ -14,7 +14,7 @@
     "test": "mocha -w test/helpers/browser.js test/*.spec.js",
     "start": "webpack-dev-server --host 0.0.0.0",
     "build": "webpack --config webpack-prod.config.js -p --progress",
-    "lint": "eslint -c config/eslint.js src"
+    "lint": "eslint src"
   },
   "keywords": [
     "nomad"
@@ -55,10 +55,12 @@
     "chai-enzyme": "^0.5.1",
     "css-loader": "^0.23.1",
     "enzyme": "^2.4.1",
-    "eslint": "^3.1.1",
+    "eslint": "^3.7.0",
+    "eslint-config-airbnb": "^12.0.0",
     "eslint-loader": "^1.4.1",
-    "eslint-plugin-import": "^1.11.1",
-    "eslint-plugin-react": "^5.2.2",
+    "eslint-plugin-import": "^1.16.0",
+    "eslint-plugin-jsx-a11y": "^2.2.2",
+    "eslint-plugin-react": "^6.3.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.9.0",
     "html-webpack-plugin": "^2.22.0",

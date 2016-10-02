@@ -1,30 +1,39 @@
-import React, { Component } from 'react';
-import { Glyphicon } from 'react-bootstrap'
+import React, { PropTypes } from 'react';
+import { Glyphicon } from 'react-bootstrap';
 
-class DisplayBoolean extends Component {
+const Boolean = ({
+    title,
+    value,
+    withIcon,
+    withText,
+    withColor,
+    trueText,
+    falseText,
+    falseIcon,
+    trueIcon,
+}) => {
+    let colorClass;
+    let icon;
+    let text;
 
-    render() {
-    	let colorClass, icon, text;
-
-    	if (this.props.withColor) {
-    		colorClass = this.props.value ? 'text-success' : 'text-danger';
-    	}
-
-    	if (this.props.withIcon) {
-    		icon = <Glyphicon glyph={this.props.value ? this.props.trueIcon : this.props.falseIcon} />
-    	}
-
-    	if (this.props.withText) {
-			text = <span>{this.props.value ? this.props.trueText : this.props.falseText}</span>
-    	}
-
-        return (
-            <span title={this.props.title} className={colorClass}>{icon} {text}</span>
-        )
+    if (withColor) {
+        colorClass = this.value ? 'text-success' : 'text-danger';
     }
-}
 
-DisplayBoolean.defaultProps = {
+    if (withIcon) {
+        icon = <Glyphicon glyph={ value ? trueIcon : falseIcon } />;
+    }
+
+    if (withText) {
+        text = <span>{ value ? trueText : falseText }</span>;
+    }
+
+    return (
+      <span title={ title } className={ colorClass }>{ icon } { text }</span>
+    );
+};
+
+Boolean.defaultProps = {
     value: null,
     title: null,
 
@@ -36,8 +45,22 @@ DisplayBoolean.defaultProps = {
     trueIcon: 'ok',
 
     falseText: 'no',
-    falseIcon: 'remove'
+    falseIcon: 'remove',
 };
 
+Boolean.propTypes = {
+    value: PropTypes.isRequired,
+    title: PropTypes.isRequired,
 
-export default DisplayBoolean
+    withColor: PropTypes.isRequired,
+    withIcon: PropTypes.isRequired,
+    withText: PropTypes.isRequired,
+
+    trueText: PropTypes.isRequired,
+    trueIcon: PropTypes.isRequired,
+
+    falseText: PropTypes.isRequired,
+    falseIcon: PropTypes.isRequired,
+};
+
+export default Boolean;

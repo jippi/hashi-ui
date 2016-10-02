@@ -1,29 +1,28 @@
-import React, { Component } from 'react';
-import DisplayBoolean from './boolean'
+import React, { PropTypes } from 'react';
+import Boolean from './boolean';
 
-class NodeStatus extends Component {
+const NodeStatus = ({ value }) => {
+    switch (value) {
+    case 'initializing':
+        return (<span>initializing</span>);
 
-    render() {
-        switch (this.props.value) {
-            case "initializing":
-                return (<span>initializing</span>)
+    case 'ready':
+        return (<Boolean value title={ value } />);
 
-            case "ready":
-                return (<DisplayBoolean value={true} title={this.props.value} />)
+    case 'down':
+        return (<Boolean title={ value } />);
 
-            case "down":
-                return (<DisplayBoolean value={false} title={this.props.value} />)
-
-            default:
-                return (<span>{this.props.value}</span>)
-        }
+    default:
+        return (<span>{value}</span>);
     }
-}
+};
 
 NodeStatus.defaultProps = {
     value: null,
-    title: null,
 };
 
+NodeStatus.propTypes = {
+    value: PropTypes.isRequired,
+};
 
-export default NodeStatus
+export default NodeStatus;

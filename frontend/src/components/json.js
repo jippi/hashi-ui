@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
-import JSONFormatter from 'json-formatter-js'
+import React, { Component, PropTypes } from 'react';
+import JSONFormatter from 'json-formatter-js';
 
-class JSON extends Component {
+class Json extends Component {
 
-    componentDidMount () {
+    componentDidMount() {
         const formatter = new JSONFormatter(this.props.json, 2, {
             hoverPreviewEnabled: true,
             hoverPreviewArrayCount: 100,
@@ -12,7 +12,7 @@ class JSON extends Component {
         this.refs.json.appendChild(formatter.render());
     }
 
-    componentDidUpdate () {
+    componentDidUpdate() {
         const formatter = new JSONFormatter(this.props.json, 2, {
             hoverPreviewEnabled: true,
             hoverPreviewArrayCount: 100,
@@ -27,11 +27,15 @@ class JSON extends Component {
         this.refs.json.appendChild(formatter.render());
     }
 
-    render () {
+    render() {
         return (
-            <div id="raw_json" ref={'json'}></div>
+          <div id="raw_json" ref={ 'json' }></div>
         );
     }
 }
+
+Json.propTypes = {
+    json: PropTypes.isRequired,
+};
 
 export default JSON;

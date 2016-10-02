@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import JSON from '../json'
+import Json from '../json';
 
-const MemberRaw = ({ member }) => {
-    return (
-        <div className="tab-pane active">
-            <JSON json={member} />
-        </div>
-    )
-}
+const MemberRaw = ({ member }) =>
+  <div className="tab-pane active">
+    <Json json={ member } />
+  </div>;
 
 function mapStateToProps({ member }) {
-    return { member }
+    return { member };
 }
 
-export default connect(mapStateToProps)(MemberRaw)
+MemberRaw.propTypes = {
+    member: PropTypes.isRequired,
+};
+
+export default connect(mapStateToProps)(MemberRaw);

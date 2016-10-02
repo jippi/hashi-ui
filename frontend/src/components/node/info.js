@@ -1,42 +1,37 @@
-import React, { Component } from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-class NodeInfo extends Component {
+const nodeProps = [
+    'ID',
+    'Name',
+    'Status',
+    'Datacenter',
+    'Drain',
+    'HTTPAddr',
+    'NodeClass',
+];
 
-    render() {
-
-        const nodeProps = [
-            "ID",
-            "Name",
-            "Status",
-            "Datacenter",
-            "Drain",
-            "HTTPAddr",
-            "NodeClass"
-        ]
-
-        return (
-            <div className="tab-pane active">
-                <div className="content">
-                    <legend>Node Properties</legend>
-                    <dl className="dl-horizontal">
-                        {nodeProps.map((nodeProp) => {
-                            return (
-                                <div key={nodeProp}>
-                                    <dt>{nodeProp}</dt>
-                                    <dd>{this.props.node[nodeProp]}</dd>
-                                </div>
-                            )
-                        }, this)}
-                    </dl>
-                </div>
-            </div>
-        );
-    }
-}
+const NodeInfo = ({ node }) =>
+  <div className="tab-pane active">
+    <div className="content">
+      <legend>Node Properties</legend>
+      <dl className="dl-horizontal">
+        {nodeProps.map(nodeProp =>
+          <div key={ nodeProp }>
+            <dt>{ nodeProp }</dt>
+            <dd>{ node[nodeProp] }</dd>
+          </div>
+        )}
+      </dl>
+    </div>
+  </div>;
 
 function mapStateToProps({ node }) {
-    return { node }
+    return { node };
 }
+
+NodeInfo.propTypes = {
+    node: PropTypes.isRequired,
+};
 
 export default connect(mapStateToProps)(NodeInfo);

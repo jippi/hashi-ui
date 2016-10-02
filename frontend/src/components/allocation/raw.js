@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import JSON from '../json'
+import Json from '../json';
 
-const AllocRaw = ({ allocation }) => {
-    return (
-        <div className="tab-pane active">
-            <JSON json={allocation} />
-        </div>
-    )
-}
+const AllocRaw = ({ allocation }) =>
+  <div className="tab-pane active">
+    <Json json={ allocation } />
+  </div>;
 
 function mapStateToProps({ allocation }) {
-    return { allocation }
+    return { allocation };
 }
 
-export default connect(mapStateToProps)(AllocRaw)
+AllocRaw.propTypes = {
+    allocation: PropTypes.isRequired,
+};
+
+export default connect(mapStateToProps)(AllocRaw);

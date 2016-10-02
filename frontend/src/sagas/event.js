@@ -36,14 +36,15 @@ export const UNWATCH_FILE = 'UNWATCH_FILE';
 export const FETCHED_FILE = 'FETCHED_FILE';
 
 function subscribe(socket) {
-    return eventChannel(emit => {
+    return eventChannel((emit) => {
+        // eslint-disable-next-line no-param-reassign
         socket.onmessage = (event) => {
-            const data = JSON.parse(event.data)
+            const data = JSON.parse(event.data);
             emit({
                 type: data.Type,
-                payload: data.Payload
-            })
-        }
+                payload: data.Payload,
+            });
+        };
         return () => {};
     });
 }
@@ -51,8 +52,8 @@ function subscribe(socket) {
 function* read(socket) {
     const channel = yield call(subscribe, socket);
     while (true) {
-         let action = yield take(channel);
-         yield put(action);
+        const action = yield take(channel);
+        yield put(action);
     }
 }
 
@@ -75,7 +76,7 @@ function* write(socket) {
             WATCH_FILE,
             UNWATCH_FILE,
         ]);
-        socket.send(JSON.stringify(action))
+        socket.send(JSON.stringify(action));
     }
 }
 
@@ -89,48 +90,46 @@ function connectTo(url) {
 
     const resolver = (resolve, reject) => {
         const timeout = setTimeout(() => {
-            reject("Unable to connect to the backend...");
-        }, 2000)
+            reject('Unable to connect to the backend...');
+        }, 2000);
 
         socket.onopen = () => {
-            console.log("Connected to the backend.")
-            resolve(socket)
-            clearTimeout(timeout)
-        }
-    }
+            resolve(socket);
+            clearTimeout(timeout);
+        };
+    };
 
-    return new Promise(resolver.bind(socket))
+    return new Promise(resolver.bind(socket));
 }
 
 function* events(socket) {
     while (true) {
-        try {
-            yield call(transport, socket)
-        } catch(e) {
-            console.log(e)
-        }
-        yield delay(5000)
+        yield call(transport, socket);
+        yield delay(5000);
     }
 }
 
 export default function eventSaga() {
     return new Promise((resolve, reject) => {
-        const protocol = location.protocol === "https:" ? "wss:" : "ws:";
+        const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
 
-        // if we build production page, assume /ws run inside the go-binary and such on same host+port
-        // otherwise assume development, where we re-use the hostname but use GO_PORT end with fallback to :3000
+        // If we build production page, assume /ws run inside the go-binary
+        // and such on same host+port otherwise assume development, where we
+        // re-use the hostname but use GO_PORT end with fallback to :3000.
         let hostname;
         if (process.env.NODE_ENV === 'production') {
-            hostname = location.host
+            hostname = location.host;
         } else {
-            hostname = location.hostname + ':' + process.env.GO_PORT || 3000
+            hostname = `${location.hostname}:${process.env.GO_PORT}` || 3000;
         }
 
         const url = `${protocol}///${hostname}/ws`;
         const p = connectTo(url);
 
-        return p.then(function (socket) {
-            resolve(function*() { yield fork(events, socket) })
-        })
-    })
+        return p.then((socket) => {
+            resolve(function* eventGenerator() { yield fork(events, socket); });
+        }).catch((err) => {
+            reject(err);
+        });
+    });
 }

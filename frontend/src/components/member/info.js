@@ -1,61 +1,60 @@
-import React, { Component } from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import Table from '../table'
+import Table from '../table';
 
-class MemberInfo extends Component {
+const memberProps = [
+    'ID',
+    'Name',
+    'Address',
+    'Port',
+    'Status',
+];
 
-    render() {
+const MemberInfo = ({ member }) => {
+    const tags = member.Tags;
 
-        const tags = this.props.member.Tags;
-        const memberTags = Object.keys(tags).map((key) => {
-            var name = key;
-            var value = tags[key];
-
-            return (
-                <tr key={name}>
-                    <td>{name}</td>
-                    <td>{value}</td>
-                </tr>
-            )
-        });
-
-        const memberProps = [
-            "ID",
-            "Name",
-            "Address",
-            "Port",
-            "Status"
-        ]
+    const memberTags = Object.keys(tags).map((key) => {
+        const name = key;
+        const value = tags[key];
 
         return (
-            <div className="tab-pane active">
-                <div className="content">
-                    <legend>Member Properties</legend>
-                    <dl className="dl-horizontal">
-                        {memberProps.map((memberProp) => {
-                            return (
-                                <div key={memberProp}>
-                                    <dt>{memberProp}</dt>
-                                    <dd>{this.props.member[memberProp]}</dd>
-                                </div>
-                            )
-                        }, this)}
-                    </dl>
-                    <br />
-                    <legend>Member Tags</legend>
-                    {(memberTags.length > 0) ?
-                        <Table classes="table table-hover table-striped" headers={["Name", "Value"]} body={memberTags} />
-                        : null
-                    }
-                </div>
-            </div>
+          <tr key={ name }>
+            <td>{ name }</td>
+            <td>{ value }</td>
+          </tr>
         );
-    }
-}
+    });
+
+    return (
+      <div className="tab-pane active">
+        <div className="content">
+          <legend>Member Properties</legend>
+          <dl className="dl-horizontal">
+            {memberProps.map(memberProp =>
+              <div key={ memberProp }>
+                <dt>{memberProp}</dt>
+                <dd>{this.props.member[memberProp]}</dd>
+              </div>
+            )}
+          </dl>
+          <br />
+          <legend>Member Tags</legend>
+          {(memberTags.length > 0) ?
+            <Table classes="table table-hover table-striped" headers={ ['Name', 'Value'] } body={ memberTags } />
+            : null
+          }
+        </div>
+      </div>
+    );
+};
 
 function mapStateToProps({ member }) {
-    return { member }
+    return { member };
 }
+
+MemberInfo.propTypes = {
+    member: PropTypes.isRequired,
+};
 
 export default connect(mapStateToProps)(MemberInfo);

@@ -1,26 +1,30 @@
-import React, { Component } from 'react';
+import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
-class Tabs extends Component {
+const Tabs = ({ tabs, tabSlug, basePath }) =>
+  <div>
+    <ul role="tablist" className="nav nav-tabs">
+      {tabs.map(tab =>
+        <li key={ tab.name } role="presentation" className={ (tabSlug === tab.path) ? 'active' : null }>
+          <Link
+            to={{ pathname: `${basePath}/${tab.path}` }}
+            data-toggle="tab"
+            aria-expanded={ (tabSlug === tab.path) ? 'true' : 'false' }
+          >
+            { tab.name }
+          </Link>
+        </li>)
+      }, this)
+    </ul>
+    <div className="tab-content">
+      {this.props.children}
+    </div>
+  </div>;
 
-    render() {
-        return (
-            <div>
-                <ul role="tablist" className="nav nav-tabs">
-                    {this.props.tabs.map((tab) => {
-                        return (
-                            <li key={tab.name} role="presentation" className={(this.props.tabSlug === tab.path) ? "active" : null }>
-                                <Link to={{pathname: this.props.basePath + '/' + tab.path }} data-toggle="tab" aria-expanded={(this.props.tabSlug === tab.path) ? "true" : "false" }>{ tab.name }</Link>
-                            </li>
-                        );
-                    }, this)}
-                </ul>
-                <div className="tab-content">
-                    {this.props.children}
-                </div>
-            </div>
-        );
-    }
-}
+Tabs.propTypes = {
+    tabs: PropTypes.isRequired,
+    tabSlug: PropTypes.isRequired,
+    basePath: PropTypes.isRequired,
+};
 
-export default Tabs
+export default Tabs;

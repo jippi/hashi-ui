@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import ReactTooltip from 'react-tooltip'
-import uuid from 'node-uuid'
+import React, { Component, PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
+import uuid from 'node-uuid';
 
-class MetaDisplay extends Component {
+class Meta extends Component {
 
     render() {
         const metaBag = this.props.metaBag;
@@ -15,42 +15,48 @@ class MetaDisplay extends Component {
             return (<span>-none-</span>);
         }
 
-        let identifier = uuid.v1();
-        let meta = [];
+        const identifier = uuid.v1();
+        const meta = [];
         let metaTag = null;
 
         if (sortKeys) {
             keys = keys.sort();
         }
 
-        keys.forEach(function(key) {
-            meta.push(<dt className={dtWithClass} key={key + 'dt'}>{key}</dt>);
-            meta.push(<dd key={key + 'dd'}>{metaBag[key]}</dd>);
+        keys.forEach((key) => {
+            meta.push(<dt className={ dtWithClass } key={ `${key}dt` }>{ key }</dt>);
+            meta.push(<dd key={ `${key}dd` }>{ metaBag[key] }</dd>);
         });
 
         if (meta.length > 0) {
-            metaTag = <dl className="dl-horizontal dl-tooltip">{meta}</dl>
+            metaTag = <dl className="dl-horizontal dl-tooltip">{meta}</dl>;
         }
 
         if (asTooltip) {
             return (
-                <div>
-                    <ReactTooltip id={'tooltip-' + identifier}>{metaTag}</ReactTooltip>
-                    <span data-tip data-for={'tooltip-' + identifier} className="dotted">{keys.length} keys</span>
-                </div>
-            )
+              <div>
+                <ReactTooltip id={ `tooltip-${identifier}` }>{ metaTag }</ReactTooltip>
+                <span data-tip data-for={ `tooltip-${identifier}` } className="dotted">{ keys.length } keys</span>
+              </div>
+            );
         }
 
-        return metaTag
+        return metaTag;
     }
-
 }
 
-MetaDisplay.defaultProps = {
+Meta.defaultProps = {
     metaBag: {},
-    dtWithClass: "default",
+    dtWithClass: 'default',
     sortKeys: true,
-    asTooltip: false
+    asTooltip: false,
 };
 
-export default MetaDisplay
+Meta.propTypes = {
+    metaBag: PropTypes.required,
+    dtWithClass: PropTypes.required,
+    sortKeys: PropTypes.required,
+    asTooltip: PropTypes.required,
+};
+
+export default Meta;

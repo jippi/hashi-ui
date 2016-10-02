@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux';
 
-import { MemberInfoReducer, MemberListReducer } from './member'
-import { JobInfoReducer, JobListReducer } from './job'
-import { AllocInfoReducer, AllocListReducer } from './allocation'
-import { EvalInfoReducer, EvalListReducer } from './evaluation'
-import { NodeInfoReducer, NodeListReducer } from './node'
-import { DirectoryReducer, FileReducer} from './filesystem'
+import { MemberInfoReducer, MemberListReducer } from './member';
+import { JobInfoReducer, JobListReducer } from './job';
+import { AllocInfoReducer, AllocListReducer } from './allocation';
+import { EvalInfoReducer, EvalListReducer } from './evaluation';
+import { NodeInfoReducer, NodeListReducer } from './node';
+import { DirectoryReducer, FileReducer } from './filesystem';
 
 const rootReducer = combineReducers({
     member: MemberInfoReducer,
@@ -19,7 +19,7 @@ const rootReducer = combineReducers({
     evaluation: EvalInfoReducer,
     evaluations: EvalListReducer,
     directory: DirectoryReducer,
-    file: FileReducer
+    file: FileReducer,
 });
 
 export default rootReducer;

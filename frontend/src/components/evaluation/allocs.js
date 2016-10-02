@@ -1,23 +1,23 @@
-import React, { Component } from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import AllocationList from '../allocation_list'
+import AllocationList from '../allocation_list';
 
-class EvalAlloc extends Component {
+const EvalAlloc = ({ allocations, evaluation, nodes }) => {
+    const allocs = allocations.filter(allocation => allocation.EvalID === evaluation.ID);
 
-    render() {
-        const allocs = this.props.allocations
-            .filter((allocation) => {
-                return (allocation.EvalID === this.props.evaluation.ID);
-            })
-
-        return (
-            <AllocationList allocations={allocs} nodes={this.props.nodes} />
-        )
-    }
-}
+    return (
+      <AllocationList allocations={ allocs } nodes={ nodes } />
+    );
+};
 
 function mapStateToProps({ evaluation, allocations, nodes }) {
-    return { evaluation, allocations, nodes }
+    return { evaluation, allocations, nodes };
 }
 
-export default connect(mapStateToProps)(EvalAlloc)
+EvalAlloc.propTypes = {
+    allocations: PropTypes.isRequired,
+    evaluation: PropTypes.isRequired,
+    nodes: PropTypes.isRequired,
+};
+
+export default connect(mapStateToProps)(EvalAlloc);

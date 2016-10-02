@@ -1,105 +1,125 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { NomadLink } from "../link";
-import MetaDisplay from '../meta'
-import DisplayTime from '../time'
-import { Panel, Accordion, Table } from 'react-bootstrap'
+import React, { Component, PropTypes } from 'react';
+import { Panel, Accordion, Table } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import { NomadLink } from '../link';
+import Meta from '../meta';
+import Time from '../time';
 
 const allocProps = [
-    "ID",
-    "Name",
-    "ClientStatus",
-    "ClientDescription",
-    "DesiredStatus",
-    "DesiredDescription"
+    'ID',
+    'Name',
+    'ClientStatus',
+    'ClientDescription',
+    'DesiredStatus',
+    'DesiredDescription',
 ];
 
 class AllocInfo extends Component {
 
-    taskState(allocation, name, states) {
-        let title = <h3>Task state for {allocation.JobID}.{allocation.TaskGroup}.{name} (final state: {states.State})</h3>
+    static taskState(allocation, name, states) {
+        const title = (
+          <h3>
+            Task state for {allocation.JobID}.{allocation.TaskGroup}.{name} (final state: {states.State})
+          </h3>
+        );
         let lastEventTime = null;
 
         return (
-            <Panel key={name} header={title}>
-                <Table striped hover>
-                <thead>
-                    <tr>
-                        <th>When</th>
-                        <th>Duration</th>
-                        <th>Type</th>
-                        <th>Message</th>
-                        <th>Restart Reason</th>
-                        <th>Exit Code</th>
-                        <th>Signal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {states.Events.map((element, index, array) => {
+          <Panel key={ name } header={ title }>
+            <Table striped hover>
+              <thead>
+                <tr>
+                  <th>When</th>
+                  <th>Duration</th>
+                  <th>Type</th>
+                  <th>Message</th>
+                  <th>Restart Reason</th>
+                  <th>Exit Code</th>
+                  <th>Signal</th>
+                </tr>
+              </thead>
+              <tbody>
+                { states.Events.map((element, index) => {
                     if (!lastEventTime) {
                         lastEventTime = element.Time;
                     }
 
-                    let output = (
-                        <tr key={index}>
-                            <td width="10%"><DisplayTime time={element.Time} /></td>
-                            <td><DisplayTime time={element.Time} now={lastEventTime} durationInterval="ms" durationFormat="h [hour] m [min] s [seconds] S [ms]" /></td>
-                            <td>{element.Type}</td>
-                            <td>{element.Message}</td>
-                            <td>{element.RestartReason}</td>
-                            <td>{element.ExitCode}</td>
-                            <td>{element.Signal}</td>
-                        </tr>
-                    )
+                    const output = (
+                      <tr key={ index }>
+                        <td width="10%"><Time time={ element.Time } /></td>
+                        <td>
+                          <Time
+                            time={ element.Time }
+                            now={ lastEventTime }
+                            durationInterval="ms"
+                            durationFormat="h [hour] m [min] s [seconds] S [ms]"
+                          />
+                        </td>
+                        <td>{element.Type}</td>
+                        <td>{element.Message}</td>
+                        <td>{element.RestartReason}</td>
+                        <td>{element.ExitCode}</td>
+                        <td>{element.Signal}</td>
+                      </tr>
+                    );
 
                     lastEventTime = element.Time;
                     return output;
                 })}
-                </tbody>
-                </Table>
-            </Panel>
-        )
+              </tbody>
+            </Table>
+          </Panel>
+        );
     }
 
     render() {
         const allocation = this.props.allocation;
-        const jobId = allocation["JobID"];
-        const nodeId = allocation["NodeID"];
-        const taskGroupId = allocation["TaskGroupId"]
+        const jobId = allocation.JobID;
+        const nodeId = allocation.NodeID;
+        const taskGroupId = allocation.TaskGroupId;
 
-        let allocValues = {};
+        const allocValues = {};
         allocProps.map((allocProp) => {
-            allocValues[allocProp] = allocation[allocProp]
-            return null
+            allocValues[allocProp] = allocation[allocProp];
+            return null;
         });
 
-        allocValues.Job = <NomadLink jobId={jobId} />
-        allocValues.TaskGroup = <NomadLink jobId={jobId} taskGroupId={taskGroupId}>{allocation.TaskGroup}</NomadLink>
-        allocValues.Node = <NomadLink nodeId={nodeId} nodeList={this.props.nodes} />
+        allocValues.Job = <NomadLink jobId={ jobId } />;
+        allocValues.TaskGroup = (
+          <NomadLink jobId={ jobId } taskGroupId={ taskGroupId } >
+            {allocation.TaskGroup}
+          </NomadLink>
+        );
+        allocValues.Node = <NomadLink nodeId={ nodeId } nodeList={ this.props.nodes } />;
 
-        let states = [];
+        const states = [];
         Object.keys(allocation.TaskStates || {}).forEach((key) => {
-            states.push(this.taskState(allocation, key, allocation.TaskStates[key]))
-        })
+            states.push(this.taskState(allocation, key, allocation.TaskStates[key]));
+        });
 
         return (
-            <div className="tab-pane active">
-                <div className="content">
-                    <legend>Allocation Properties</legend>
-                    <MetaDisplay metaBag={allocValues} sortKeys={false} />
+          <div className="tab-pane active">
+            <div className="content">
+              <legend>Allocation Properties</legend>
+              <Meta metaBag={ allocValues } sortKeys={ false } />
 
-                    <br />
+              <br />
 
-                    <legend>Task States</legend>
-                    <Accordion>{states}</Accordion>
-                </div>
+              <legend>Task States</legend>
+              <Accordion>{states}</Accordion>
             </div>
+          </div>
         );
     }
 }
 
 function mapStateToProps({ allocation, nodes }) {
-    return { allocation, nodes }
+    return { allocation, nodes };
 }
+
+AllocInfo.propTypes = {
+    allocation: PropTypes.isRequired,
+    nodes: PropTypes.isRequired,
+};
 
 export default connect(mapStateToProps)(AllocInfo);

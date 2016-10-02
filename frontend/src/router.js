@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PropTypes } from 'react';
 import { Router, Route, IndexRedirect } from 'react-router';
 
 import App from './components/app';
@@ -35,60 +35,57 @@ import Member from './containers/member';
 import MemberInfo from './components/member/info';
 import MemberRaw from './components/member/raw';
 
+const AppRouter = ({ history }) =>
+  <Router history={ history }>
+    <Route path="/" component={ App }>
+      <IndexRedirect to="/cluster" />
+      <Route path="/cluster" component={ Cluster } />
 
-class AppRouter extends Component {
+      <Route path="/members" component={ Members } />
+      <Route path="/members/:memberId" component={ Member }>
+        <IndexRedirect to="/members/:memberId/info" />
+        <Route path="/members/:memberId/info" component={ MemberInfo } />
+        <Route path="/members/:memberId/raw" component={ MemberRaw } />
+      </Route>
 
-    render() {
-        return (
-           <Router history={this.props.history}>
-                <Route path="/" component={App}>
-                    <IndexRedirect to="/cluster" />
-                    <Route path="/cluster" component={Cluster} />
+      <Route path="/jobs" component={ Jobs } />
+      <Route path="/jobs/:jobId" component={ Job }>
+        <IndexRedirect to="/jobs/:jobId/info" />
+        <Route path="/jobs/:jobId/info" component={ JobInfo } />
+        <Route path="/jobs/:jobId/allocations" component={ JobAllocs } />
+        <Route path="/jobs/:jobId/evaluations" component={ JobEvals } />
+        <Route path="/jobs/:jobId/tasks" component={ JobTasks } />
+        <Route path="/jobs/:jobId/taskGroups" component={ JobTaskGroups } />
+        <Route path="/jobs/:jobId/raw" component={ JobRaw } />
+      </Route>
 
-                    <Route path="/members" component={Members} />
-                    <Route path="/members/:memberId" component={Member}>
-                        <IndexRedirect to="/members/:memberId/info" />
-                        <Route path="/members/:memberId/info" component={MemberInfo} />
-                        <Route path="/members/:memberId/raw" component={MemberRaw} />
-                    </Route>
+      <Route path="/nodes" component={ Nodes } />
+      <Route path="/nodes/:nodeId" component={ Node }>
+        <IndexRedirect to="/nodes/:nodeId/info" />
+        <Route path="/nodes/:nodeId/info" component={ NodeInfo } />
+        <Route path="/nodes/:nodeId/raw" component={ NodeRaw } />
+      </Route>
 
-                    <Route path="/jobs" component={Jobs} />
-                    <Route path="/jobs/:jobId" component={Job}>
-                        <IndexRedirect to="/jobs/:jobId/info" />
-                        <Route path="/jobs/:jobId/info" component={JobInfo} />
-                        <Route path="/jobs/:jobId/allocations" component={JobAllocs} />
-                        <Route path="/jobs/:jobId/evaluations" component={JobEvals} />
-                        <Route path="/jobs/:jobId/tasks" component={JobTasks} />
-                        <Route path="/jobs/:jobId/taskGroups" component={JobTaskGroups} />
-                        <Route path="/jobs/:jobId/raw" component={JobRaw} />
-                    </Route>
+      <Route path="/allocations" component={ Allocations } />
+      <Route path="/allocations/:allocId" component={ Allocation }>
+        <IndexRedirect to="/allocations/:allocId/info" />
+        <Route path="/allocations/:allocId/info" component={ AllocInfo } />
+        <Route path="/allocations/:allocId/files" component={ AllocFiles } />
+        <Route path="/allocations/:allocId/raw" component={ AllocRaw } />
+      </Route>
 
-                    <Route path="/nodes" component={Nodes} />
-                    <Route path="/nodes/:nodeId" component={Node}>
-                        <IndexRedirect to="/nodes/:nodeId/info" />
-                        <Route path="/nodes/:nodeId/info" component={NodeInfo} />
-                        <Route path="/nodes/:nodeId/raw" component={NodeRaw} />
-                    </Route>
+      <Route path="/evaluations" component={ Evaluations } />
+      <Route path="/evaluations/:evalId" component={ Evaluation }>
+        <IndexRedirect to="/evaluations/:evalId/info" />
+        <Route path="/evaluations/:evalId/info" component={ EvalInfo } />
+        <Route path="/evaluations/:evalId/allocations" component={ EvalAlloc } />
+        <Route path="/evaluations/:evalId/raw" component={ EvalRaw } />
+      </Route>
+    </Route>
+  </Router>;
 
-                    <Route path="/allocations" component={Allocations} />
-                    <Route path="/allocations/:allocId" component={Allocation}>
-                        <IndexRedirect to="/allocations/:allocId/info" />
-                        <Route path="/allocations/:allocId/info" component={AllocInfo} />
-                        <Route path="/allocations/:allocId/files" component={AllocFiles} />
-                        <Route path="/allocations/:allocId/raw" component={AllocRaw} />
-                    </Route>
-
-                    <Route path="/evaluations" component={Evaluations} />
-                    <Route path="/evaluations/:evalId" component={Evaluation}>
-                        <IndexRedirect to="/evaluations/:evalId/info" />
-                        <Route path="/evaluations/:evalId/info" component={EvalInfo} />
-                        <Route path="/evaluations/:evalId/allocations" component={EvalAlloc} />
-                        <Route path="/evaluations/:evalId/raw" component={EvalRaw} />
-                    </Route>
-                </Route>
-           </Router>
-        )
-    }
+AppRouter.propTypes = {
+    history: PropTypes.isRequired,
 };
 
 export default AppRouter;
