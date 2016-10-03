@@ -11,10 +11,10 @@ const nodeProps = [
     'NodeClass',
 ];
 
-const NodeInfo = ({ node }) =>
+const ClientInfo = ({ node }) =>
   <div className="tab-pane active">
     <div className="content">
-      <legend>Node Properties</legend>
+      <legend>Client Properties</legend>
       <dl className="dl-horizontal">
         {nodeProps.map(nodeProp =>
           <div key={ nodeProp }>
@@ -30,8 +30,8 @@ function mapStateToProps({ node }) {
     return { node };
 }
 
-NodeInfo.propTypes = {
+ClientInfo.propTypes = {
     node: PropTypes.object.isRequired,
 };
 
-export default connect(mapStateToProps)(NodeInfo);
+export default connect(mapStateToProps)(ClientInfo);

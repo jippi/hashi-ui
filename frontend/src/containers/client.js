@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 
 import Tabs from '../components/tabs';
 
-import { WATCH_MEMBER, UNWATCH_MEMBER } from '../sagas/event';
+import { WATCH_NODE, UNWATCH_NODE } from '../sagas/event';
 
-class Member extends Component {
+class Client extends Component {
 
     constructor(props) {
         super(props);
@@ -26,20 +26,20 @@ class Member extends Component {
 
     componentWillMount() {
         this.props.dispatch({
-            type: WATCH_MEMBER,
-            payload: this.props.params.memberId,
+            type: WATCH_NODE,
+            payload: this.props.params.nodeId,
         });
     }
 
     componentWillUnmount() {
         this.props.dispatch({
-            type: UNWATCH_MEMBER,
-            payload: this.props.params.memberId,
+            type: UNWATCH_NODE,
+            payload: this.props.params.nodeId,
         });
     }
 
     render() {
-        if (this.props.member == null) return (null);
+        if (this.props.node == null) return (null);
 
         const path = this.props.location.pathname;
         const tabSlug = path.split('/').pop();
@@ -50,7 +50,7 @@ class Member extends Component {
             <div className="col-md-12">
               <div className="card">
                 <div className="header">
-                  <h4 className="title">Member: {this.props.member.ID}</h4>
+                  <h4 className="title">Client: {this.props.node.Name}</h4>
                 </div>
                 <div className="content">
                   <Tabs tabs={ this.state.tabs } tabSlug={ tabSlug } basePath={ basePath }>
@@ -64,16 +64,16 @@ class Member extends Component {
     }
 }
 
-function mapStateToProps({ member }) {
-    return { member };
+function mapStateToProps({ node }) {
+    return { node };
 }
 
-Member.propTypes = {
+Client.propTypes = {
     dispatch: PropTypes.func.isRequired,
     params: PropTypes.object.isRequired,
+    node: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
-    member: PropTypes.object.isRequired,
     children: PropTypes.object.isRequired,
 };
 
-export default connect(mapStateToProps)(Member);
+export default connect(mapStateToProps)(Client);

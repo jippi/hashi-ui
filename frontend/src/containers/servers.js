@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import NomadLink from '../components/link';
 import FormatBoolean from '../components/format/boolean';
 
-const Members = ({ members }) => {
+const Servers = ({ members }) => {
     const leader = members[0];
 
     return (
@@ -11,7 +11,7 @@ const Members = ({ members }) => {
         <div className="col-md-12">
           <div className="card">
             <div className="header">
-              <h4 className="title">Members</h4>
+              <h4 className="title">Servers</h4>
             </div>
             <div className="content table-responsive table-full-width">
               <table className="table table-hover table-striped">
@@ -61,8 +61,8 @@ function mapStateToProps({ members }) {
     return { members };
 }
 
-Members.propTypes = {
+Servers.propTypes = {
     members: PropTypes.array.isRequired,
 };
 
-export default connect(mapStateToProps)(Members);
+export default connect(mapStateToProps)(Servers);

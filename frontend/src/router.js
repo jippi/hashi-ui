@@ -25,15 +25,15 @@ import EvalInfo from './components/evaluation/info';
 import EvalAlloc from './components/evaluation/allocs';
 import EvalRaw from './components/evaluation/raw';
 
-import Nodes from './containers/nodes';
-import Node from './containers/node';
-import NodeInfo from './components/node/info';
-import NodeRaw from './components/node/raw';
+import Clients from './containers/clients';
+import Client from './containers/client';
+import ClientInfo from './components/client/info';
+import ClientRaw from './components/client/raw';
 
-import Members from './containers/members';
-import Member from './containers/member';
-import MemberInfo from './components/member/info';
-import MemberRaw from './components/member/raw';
+import Servers from './containers/servers';
+import Server from './containers/server';
+import ServerInfo from './components/server/info';
+import ServerRaw from './components/server/raw';
 
 const AppRouter = ({ history }) =>
   <Router history={ history }>
@@ -41,11 +41,11 @@ const AppRouter = ({ history }) =>
       <IndexRedirect to="/cluster" />
       <Route path="/cluster" component={ Cluster } />
 
-      <Route path="/members" component={ Members } />
-      <Route path="/members/:memberId" component={ Member }>
-        <IndexRedirect to="/members/:memberId/info" />
-        <Route path="/members/:memberId/info" component={ MemberInfo } />
-        <Route path="/members/:memberId/raw" component={ MemberRaw } />
+      <Route path="/servers" component={ Servers } />
+      <Route path="/servers/:memberId" component={ Server }>
+        <IndexRedirect to="/servers/:memberId/info" />
+        <Route path="/servers/:memberId/info" component={ ServerInfo } />
+        <Route path="/servers/:memberId/raw" component={ ServerRaw } />
       </Route>
 
       <Route path="/jobs" component={ Jobs } />
@@ -59,11 +59,11 @@ const AppRouter = ({ history }) =>
         <Route path="/jobs/:jobId/raw" component={ JobRaw } />
       </Route>
 
-      <Route path="/nodes" component={ Nodes } />
-      <Route path="/nodes/:nodeId" component={ Node }>
-        <IndexRedirect to="/nodes/:nodeId/info" />
-        <Route path="/nodes/:nodeId/info" component={ NodeInfo } />
-        <Route path="/nodes/:nodeId/raw" component={ NodeRaw } />
+      <Route path="/clients" component={ Clients } />
+      <Route path="/clients/:nodeId" component={ Client }>
+        <IndexRedirect to="/clients/:nodeId/info" />
+        <Route path="/clients/:nodeId/info" component={ ClientInfo } />
+        <Route path="/clients/:nodeId/raw" component={ ClientRaw } />
       </Route>
 
       <Route path="/allocations" component={ Allocations } />

@@ -2,13 +2,13 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
 const Sidebar = ({ location }) =>
-  <div className="sidebar" data-color="nomad-green" data-image="assets/img/nomad.jpg">
+  <div className="col-sm-3 col-md-2 sidebar" data-color="nomad-green">
+    <div className="logo">
+      <Link to={{ pathname: '/cluster' }} className="logo-text" >
+        Nomad
+      </Link>
+    </div>
     <div className="sidebar-wrapper">
-      <div className="logo">
-        <Link to={{ pathname: '/cluster' }} className="logo-text" >
-          Nomad
-        </Link>
-      </div>
       <ul className="nav">
         <li className={ location.pathname.startsWith('/cluster') ? 'active' : '' }>
           <Link to={{ pathname: '/cluster' }}>
@@ -34,16 +34,16 @@ const Sidebar = ({ location }) =>
             <p>Evaluations</p>
           </Link>
         </li>
-        <li className={ location.pathname.startsWith('/members') ? 'active' : '' }>
-          <Link to={{ pathname: '/members' }}>
-            <i className="pe-7s-share" />
-            <p>Members</p>
+        <li className={ location.pathname.startsWith('/clients') ? 'active' : '' }>
+          <Link to={{ pathname: '/clients' }}>
+            <i className="pe-7s-keypad" />
+            <p>Clients</p>
           </Link>
         </li>
-        <li className={ location.pathname.startsWith('/nodes') ? 'active' : '' }>
-          <Link to={{ pathname: '/nodes' }}>
-            <i className="pe-7s-keypad" />
-            <p>Nodes</p>
+        <li className={ location.pathname.startsWith('/servers') ? 'active' : '' }>
+          <Link to={{ pathname: '/servers' }}>
+            <i className="pe-7s-share" />
+            <p>Servers</p>
           </Link>
         </li>
       </ul>

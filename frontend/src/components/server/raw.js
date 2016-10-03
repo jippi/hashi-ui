@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import Json from '../json';
 
-const MemberRaw = ({ member }) =>
+const ServerRaw = ({ member }) =>
   <div className="tab-pane active">
     <Json json={ member } />
   </div>;
@@ -12,8 +12,8 @@ function mapStateToProps({ member }) {
     return { member };
 }
 
-MemberRaw.propTypes = {
+ServerRaw.propTypes = {
     member: PropTypes.object.isRequired,
 };
 
-export default connect(mapStateToProps)(MemberRaw);
+export default connect(mapStateToProps)(ServerRaw);

@@ -122,10 +122,10 @@ class Cluster extends Component {
             <Statistics />
             <div className="row">
               <div className="col-md-3">
-                <Doughnut title="Member Status" data={ memberStatus } />
+                <Doughnut title="Server Status" data={ memberStatus } />
               </div>
               <div className="col-md-3">
-                <Doughnut title="Node Status" data={ nodeStatus } />
+                <Doughnut title="Client Status" data={ nodeStatus } />
               </div>
               <div className="col-md-3">
                 <Doughnut title="Job Status" data={ jobStatus } />

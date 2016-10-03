@@ -11,7 +11,7 @@ const memberProps = [
     'Status',
 ];
 
-const MemberInfo = ({ member }) => {
+const ServerInfo = ({ member }) => {
     const tags = member.Tags;
 
     const memberTags = Object.keys(tags).map((key) => {
@@ -29,7 +29,7 @@ const MemberInfo = ({ member }) => {
     return (
       <div className="tab-pane active">
         <div className="content">
-          <legend>Member Properties</legend>
+          <legend>Server Properties</legend>
           <dl className="dl-horizontal">
             {memberProps.map(memberProp =>
               <div key={ memberProp }>
@@ -39,7 +39,7 @@ const MemberInfo = ({ member }) => {
             )}
           </dl>
           <br />
-          <legend>Member Tags</legend>
+          <legend>Server Tags</legend>
           {(memberTags.length > 0) ?
             <Table classes="table table-hover table-striped" headers={ ['Name', 'Value'] } body={ memberTags } />
             : null
@@ -53,8 +53,8 @@ function mapStateToProps({ member }) {
     return { member };
 }
 
-MemberInfo.propTypes = {
+ServerInfo.propTypes = {
     member: PropTypes.object.isRequired,
 };
 
-export default connect(mapStateToProps)(MemberInfo);
+export default connect(mapStateToProps)(ServerInfo);
