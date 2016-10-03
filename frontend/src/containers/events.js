@@ -92,6 +92,7 @@ class Events extends Component {
                       </tr>
                     </thead>
                     <tbody>
+                      { taskEvents }
                     </tbody>
                   </table>
                 </div>

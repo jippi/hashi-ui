@@ -16,7 +16,8 @@ export default function configureStore(initialState) {
 
             // Support for Redux DevTools Extension
             // This enables https://github.com/zalmoxisus/redux-devtools-extension
-            typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f
+            typeof window === 'object' &&
+            typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f
         )
     );
 

@@ -11,12 +11,12 @@ const metricColor = {
     Lost: 'text-danger',
 };
 
-const clientStatus = {
-    Running: 0,
-    Starting: 0,
-};
-
 const Statistics = ({ jobs }) => {
+    const clientStatus = {
+        Running: 0,
+        Starting: 0,
+    };
+
     Object.values(jobs).forEach((job) => {
         Object.keys(job.JobSummary.Summary).forEach((taskGroup) => {
             Object.keys(job.JobSummary.Summary[taskGroup]).forEach((stat) => {
@@ -38,8 +38,7 @@ const Statistics = ({ jobs }) => {
 
         batches.push(
           <div key={ key } className={ `col-xs-4 col-md-2 ${bsStyle}` }>
-            {key}
-            <Badge>{clientStatus[key]}</Badge>
+            {key} <Badge>{clientStatus[key]}</Badge>
           </div>
         );
     });
@@ -49,7 +48,8 @@ const Statistics = ({ jobs }) => {
         <div className="col-md-12">
           <div className="card">
             <div className="content center table-responsive statistics-big">
-              <div className="row">{batches}
+              <div className="row">
+                {batches}
               </div>
             </div>
           </div>

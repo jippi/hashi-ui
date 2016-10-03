@@ -37,10 +37,7 @@ class Doughnut extends Component {
             extra = (
               <div>
                 <i className="fa fa-circle text-danger" />
-                { this.props.data.labels[3] }
-                <Badge>
-                  {this.props.data.datasets[0].data[3]}
-                </Badge>
+                { this.props.data.labels[3] } <Badge>{this.props.data.datasets[0].data[3]}</Badge>
               </div>
             );
         }
@@ -58,24 +55,15 @@ class Doughnut extends Component {
                 <div className="legend">
                   <div>
                     <i className="fa fa-circle text-info" />
-                    { this.props.data.labels[0] }
-                    <Badge>
-                      { this.props.data.datasets[0].data[0] }
-                    </Badge>
+                    { this.props.data.labels[0] } <Badge>{ this.props.data.datasets[0].data[0] }</Badge>
                   </div>
                   <div>
                     <i className="fa fa-circle text-warning" />
-                    { this.props.data.labels[1] }
-                    <Badge>
-                      { this.props.data.datasets[0].data[1] }
-                    </Badge>
+                    { this.props.data.labels[1] } <Badge>{ this.props.data.datasets[0].data[1] }</Badge>
                   </div>
                   <div>
                     <i className="fa fa-circle text-danger" />
-                    { this.props.data.labels[2] }
-                    <Badge>
-                      { this.props.data.datasets[0].data[2] }
-                    </Badge>
+                    { this.props.data.labels[2] } <Badge>{ this.props.data.datasets[0].data[2] }</Badge>
                   </div>
                   {extra}
                 </div>
