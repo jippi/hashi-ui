@@ -17,14 +17,14 @@ const clientStatus = {
 };
 
 const Statistics = ({ jobs }) => {
-    jobs.forEach((job) => {
-        job.JobSummary.Summary.forEach((taskGroup) => {
-            job.JobSummary.Summary[taskGroup].forEach((task) => {
-                if (!(task in clientStatus)) {
-                    clientStatus[task] = 0;
+    Object.values(jobs).forEach((job) => {
+        Object.keys(job.JobSummary.Summary).forEach((taskGroup) => {
+            Object.keys(job.JobSummary.Summary[taskGroup]).forEach((stat) => {
+                if (!(stat in clientStatus)) {
+                    clientStatus[stat] = 0;
                 }
 
-                clientStatus[task] += job.JobSummary.Summary[taskGroup][task];
+                clientStatus[stat] += job.JobSummary.Summary[taskGroup][stat];
             });
         });
     });
@@ -36,7 +36,12 @@ const Statistics = ({ jobs }) => {
             bsStyle = metricColor[key];
         }
 
-        batches.push(<div key={ key } className={ `col-xs-4 col-md-2 ${bsStyle}` }>{key} <Badge>{clientStatus[key]}</Badge></div>);
+        batches.push(
+          <div key={ key } className={ `col-xs-4 col-md-2 ${bsStyle}` }>
+            {key}
+            <Badge>{clientStatus[key]}</Badge>
+          </div>
+        );
     });
 
     return (
@@ -58,7 +63,7 @@ function mapStateToProps({ jobs }) {
 }
 
 Statistics.propTypes = {
-    jobs: PropTypes.isRequired,
+    jobs: PropTypes.array.isRequired,
 };
 
 export default connect(mapStateToProps)(Statistics);

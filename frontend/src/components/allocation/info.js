@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { Panel, Accordion, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { NomadLink } from '../link';
+import NomadLink from '../link';
 import Meta from '../meta';
-import Time from '../time';
+import FormatTime from '../format/time';
 
 const allocProps = [
     'ID',
@@ -14,65 +14,64 @@ const allocProps = [
     'DesiredDescription',
 ];
 
-class AllocInfo extends Component {
-
-    static taskState(allocation, name, states) {
-        const title = (
-          <h3>
-            Task state for {allocation.JobID}.{allocation.TaskGroup}.{name} (final state: {states.State})
-          </h3>
-        );
-        let lastEventTime = null;
-
-        return (
-          <Panel key={ name } header={ title }>
-            <Table striped hover>
-              <thead>
-                <tr>
-                  <th>When</th>
-                  <th>Duration</th>
-                  <th>Type</th>
-                  <th>Message</th>
-                  <th>Restart Reason</th>
-                  <th>Exit Code</th>
-                  <th>Signal</th>
-                </tr>
-              </thead>
-              <tbody>
-                { states.Events.map((element, index) => {
-                    if (!lastEventTime) {
-                        lastEventTime = element.Time;
-                    }
-
-                    const output = (
-                      <tr key={ index }>
-                        <td width="10%"><Time time={ element.Time } /></td>
-                        <td>
-                          <Time
-                            time={ element.Time }
-                            now={ lastEventTime }
-                            durationInterval="ms"
-                            durationFormat="h [hour] m [min] s [seconds] S [ms]"
-                          />
-                        </td>
-                        <td>{element.Type}</td>
-                        <td>{element.Message}</td>
-                        <td>{element.RestartReason}</td>
-                        <td>{element.ExitCode}</td>
-                        <td>{element.Signal}</td>
-                      </tr>
-                    );
-
-                    lastEventTime = element.Time;
-                    return output;
-                })}
-              </tbody>
-            </Table>
-          </Panel>
-        );
-    }
-
+class AllocationInfo extends Component {
     render() {
+        function taskState(allocation, name, states) {
+            const title = (
+              <h3>
+                Task state for {allocation.JobID}.{allocation.TaskGroup}.{name} (final state: {states.State})
+              </h3>
+            );
+            let lastEventTime = null;
+
+            return (
+              <Panel key={ name } header={ title }>
+                <Table striped hover>
+                  <thead>
+                    <tr>
+                      <th>When</th>
+                      <th>Duration</th>
+                      <th>Type</th>
+                      <th>Message</th>
+                      <th>Restart Reason</th>
+                      <th>Exit Code</th>
+                      <th>Signal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    { states.Events.map((element, index) => {
+                        if (!lastEventTime) {
+                            lastEventTime = element.Time;
+                        }
+
+                        const output = (
+                          <tr key={ index }>
+                            <td width="10%"><FormatTime time={ element.Time } /></td>
+                            <td>
+                              <FormatTime
+                                time={ element.Time }
+                                now={ lastEventTime }
+                                durationInterval="ms"
+                                durationFormat="h [hour] m [min] s [seconds] S [ms]"
+                              />
+                            </td>
+                            <td>{element.Type}</td>
+                            <td>{element.Message}</td>
+                            <td>{element.RestartReason}</td>
+                            <td>{element.ExitCode}</td>
+                            <td>{element.Signal}</td>
+                          </tr>
+                        );
+
+                        lastEventTime = element.Time;
+                        return output;
+                    })}
+                  </tbody>
+                </Table>
+              </Panel>
+            );
+        }
+
         const allocation = this.props.allocation;
         const jobId = allocation.JobID;
         const nodeId = allocation.NodeID;
@@ -94,7 +93,7 @@ class AllocInfo extends Component {
 
         const states = [];
         Object.keys(allocation.TaskStates || {}).forEach((key) => {
-            states.push(this.taskState(allocation, key, allocation.TaskStates[key]));
+            states.push(taskState(allocation, key, allocation.TaskStates[key]));
         });
 
         return (
@@ -117,9 +116,9 @@ function mapStateToProps({ allocation, nodes }) {
     return { allocation, nodes };
 }
 
-AllocInfo.propTypes = {
-    allocation: PropTypes.isRequired,
-    nodes: PropTypes.isRequired,
+AllocationInfo.propTypes = {
+    allocation: PropTypes.object.isRequired,
+    nodes: PropTypes.array.isRequired,
 };
 
-export default connect(mapStateToProps)(AllocInfo);
+export default connect(mapStateToProps)(AllocationInfo);

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import DisplayTime from '../components/time';
-import { NomadLink } from '../components/link';
+import NomadLink from '../components/link';
+import FormatTime from '../components/format/time';
 
 class Events extends Component {
 
@@ -24,8 +24,16 @@ class Events extends Component {
                               </NomadLink>
                             </td>
                             <td>{event.Type}</td>
-                            <td>{event.KillError || event.DriverError || event.DownloadError || event.RestartReason || event.Message || '<none>' }</td>
-                            <td><DisplayTime time={ event.Time } /></td>
+                            <td>{
+                                event.KillError ||
+                                event.DriverError ||
+                                event.DownloadError ||
+                                event.RestartReason ||
+                                event.Message ||
+                                '<none>'
+                            }
+                            </td>
+                            <td><FormatTime time={ event.Time } /></td>
                           </tr>
                         );
                     });
@@ -84,7 +92,6 @@ class Events extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                      { taskEvents }
                     </tbody>
                   </table>
                 </div>
@@ -122,9 +129,9 @@ function mapStateToProps({ allocations, evaluations, jobs }) {
 }
 
 Events.propTypes = {
-    allocations: PropTypes.isRequired,
-    evaluations: PropTypes.isRequired,
-    jobs: PropTypes.isRequired,
+    allocations: PropTypes.array.isRequired,
+    evaluations: PropTypes.array.isRequired,
+    jobs: PropTypes.array.isRequired,
 };
 
 export default connect(mapStateToProps)(Events);

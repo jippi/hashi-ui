@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import AllocationList from '../components/allocation_list';
+import AllocationList from '../components/allocation/list';
 
 const Allocations = ({ allocations, nodes }) =>
   <div className="row">
@@ -23,8 +23,8 @@ function mapStateToProps({ allocations, nodes }) {
 }
 
 Allocations.propTypes = {
-    allocations: PropTypes.isRequired,
-    nodes: PropTypes.isRequired,
+    allocations: PropTypes.array.isRequired,
+    nodes: PropTypes.array.isRequired,
 };
 
 export default connect(mapStateToProps)(Allocations);

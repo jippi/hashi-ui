@@ -73,11 +73,11 @@ function mapStateToProps({ evaluation }) {
 }
 
 Evaluation.propTypes = {
-    dispatch: PropTypes.func,
-    params: PropTypes.isRequired,
-    evaluation: PropTypes.isRequired,
-    location: PropTypes.isRequired,
-    children: PropTypes.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    params: PropTypes.object.isRequired,
+    evaluation: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    children: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(Evaluation);

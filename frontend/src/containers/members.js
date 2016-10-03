@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { NomadLink } from '../components/link';
-import DisplayBoolean from '../components/display/boolean';
+import NomadLink from '../components/link';
+import FormatBoolean from '../components/format/boolean';
 
 const Members = ({ members }) => {
-    const leader = this.props.members[0];
+    const leader = members[0];
 
     return (
       <div className="row">
@@ -39,7 +39,7 @@ const Members = ({ members }) => {
                           <td>{member.Addr}</td>
                           <td>{member.Port}</td>
                           <td>{member.Status}</td>
-                          <td><DisplayBoolean value={ isLeader } /></td>
+                          <td><FormatBoolean value={ isLeader } /></td>
                           <td>{member.ProtocolCur}</td>
                           <td>{member.Tags.build}</td>
                           <td>{member.Tags.dc}</td>
@@ -62,7 +62,7 @@ function mapStateToProps({ members }) {
 }
 
 Members.propTypes = {
-    members: PropTypes.isRequired,
+    members: PropTypes.array.isRequired,
 };
 
 export default connect(mapStateToProps)(Members);

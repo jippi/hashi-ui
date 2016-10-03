@@ -139,14 +139,17 @@ export default class NomadLink extends Component {
 }
 
 NomadLink.propTypes = {
-    nodeList: PropTypes.required,
-    short: PropTypes.required,
-    children: PropTypes.required,
-    memberId: PropTypes.required,
-    nodeId: PropTypes.required,
-    evalId: PropTypes.required,
-    allocId: PropTypes.required,
-    taskId: PropTypes.required,
-    jobId: PropTypes.required,
-    taskGroupId: PropTypes.required,
+    nodeList: PropTypes.array,
+    short: PropTypes.string,
+    children: PropTypes.oneOfType([
+        PropTypes.array,
+        PropTypes.string,
+    ]),
+    memberId: PropTypes.string,
+    nodeId: PropTypes.string,
+    evalId: PropTypes.string,
+    allocId: PropTypes.string,
+    taskId: PropTypes.string,
+    jobId: PropTypes.string,
+    taskGroupId: PropTypes.string,
 };

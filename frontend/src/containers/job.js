@@ -85,11 +85,11 @@ function mapStateToProps({ job }) {
 }
 
 Job.propTypes = {
-    dispatch: PropTypes.isRequired,
-    params: PropTypes.isRequired,
-    job: PropTypes.isRequired,
-    location: PropTypes.isRequired,
-    children: PropTypes.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    params: PropTypes.object.isRequired,
+    job: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    children: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(Job);

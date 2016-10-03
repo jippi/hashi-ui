@@ -31,7 +31,7 @@ function mapStateToProps({ node }) {
 }
 
 NodeInfo.propTypes = {
-    node: PropTypes.isRequired,
+    node: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(NodeInfo);

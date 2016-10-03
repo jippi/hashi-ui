@@ -79,11 +79,11 @@ function mapStateToProps({ allocation }) {
 }
 
 Allocation.propTypes = {
-    dispatch: PropTypes.func,
-    params: PropTypes.isRequired,
-    allocation: PropTypes.isRequired,
-    location: PropTypes.isRequired,
-    children: PropTypes.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    params: PropTypes.object.isRequired,
+    allocation: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    children: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(Allocation);

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { NomadLink } from '../link';
+import NomadLink from '../link';
 import Table from '../table';
 import Json from '../json';
 
@@ -14,7 +14,7 @@ const taskHeaders = [
     'Disk',
 ];
 
-const JobTasks = ({ job }) => {
+const JobTasks = ({ job, location }) => {
     const tasks = [];
     job.TaskGroups.forEach((taskGroup) => {
         taskGroup.Tasks.forEach((task) => {
@@ -46,8 +46,8 @@ const JobTasks = ({ job }) => {
         });
     });
 
-    let taskGroupId = this.props.location.query.taskGroupId;
-    let taskId = this.props.location.query.taskId;
+    let taskGroupId = location.query.taskGroupId;
+    let taskId = location.query.taskId;
 
     // Auto-select first task if only one is available.
     if (!taskGroupId && !taskId && tasks.length === 1) {
@@ -74,7 +74,7 @@ const JobTasks = ({ job }) => {
           </div>
           <div className="col-md-6">
             <legend>Task: { (taskGroupId && taskId) ? `${taskGroupId}/${taskId}` : null}</legend>
-            {this.props.job.TaskGroups
+            {job.TaskGroups
                 .filter(taskGroup => taskGroup.ID === taskGroupId)
                 .map(taskGroup => taskGroup.Tasks
                     .filter(task => task.ID === taskId)
@@ -92,7 +92,8 @@ function mapStateToProps({ job }) {
 }
 
 JobTasks.propTypes = {
-    job: PropTypes.isRequired,
+    job: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(JobTasks);

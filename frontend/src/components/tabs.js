@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
-const Tabs = ({ tabs, tabSlug, basePath }) =>
+const Tabs = ({ children, tabs, tabSlug, basePath }) =>
   <div>
     <ul role="tablist" className="nav nav-tabs">
       {tabs.map(tab =>
@@ -14,17 +14,18 @@ const Tabs = ({ tabs, tabSlug, basePath }) =>
             { tab.name }
           </Link>
         </li>)
-      }, this)
+      }
     </ul>
     <div className="tab-content">
-      {this.props.children}
+      {children}
     </div>
   </div>;
 
 Tabs.propTypes = {
-    tabs: PropTypes.isRequired,
-    tabSlug: PropTypes.isRequired,
-    basePath: PropTypes.isRequired,
+    tabs: PropTypes.array.isRequired,
+    tabSlug: PropTypes.string.isRequired,
+    basePath: PropTypes.string.isRequired,
+    children: PropTypes.object.isRequired,
 };
 
 export default Tabs;

@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { Glyphicon } from 'react-bootstrap';
 
-const Boolean = ({
+const FormatBoolean = ({
     title,
     value,
     withIcon,
@@ -17,7 +17,7 @@ const Boolean = ({
     let text;
 
     if (withColor) {
-        colorClass = this.value ? 'text-success' : 'text-danger';
+        colorClass = value ? 'text-success' : 'text-danger';
     }
 
     if (withIcon) {
@@ -33,7 +33,7 @@ const Boolean = ({
     );
 };
 
-Boolean.defaultProps = {
+FormatBoolean.defaultProps = {
     value: null,
     title: null,
 
@@ -48,19 +48,19 @@ Boolean.defaultProps = {
     falseIcon: 'remove',
 };
 
-Boolean.propTypes = {
-    value: PropTypes.isRequired,
-    title: PropTypes.isRequired,
+FormatBoolean.propTypes = {
+    value: PropTypes.bool.isRequired,
+    title: PropTypes.string,
 
-    withColor: PropTypes.isRequired,
-    withIcon: PropTypes.isRequired,
-    withText: PropTypes.isRequired,
+    withColor: PropTypes.bool.isRequired,
+    withIcon: PropTypes.bool.isRequired,
+    withText: PropTypes.bool.isRequired,
 
-    trueText: PropTypes.isRequired,
-    trueIcon: PropTypes.isRequired,
+    trueText: PropTypes.string.isRequired,
+    trueIcon: PropTypes.string.isRequired,
 
-    falseText: PropTypes.isRequired,
-    falseIcon: PropTypes.isRequired,
+    falseText: PropTypes.string.isRequired,
+    falseIcon: PropTypes.string.isRequired,
 };
 
-export default Boolean;
+export default FormatBoolean;

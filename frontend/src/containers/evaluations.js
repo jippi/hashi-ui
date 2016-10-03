@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import EvaluationList from '../components/evaluation_list';
+import EvaluationList from '../components/evaluation/list';
 
 const Evaluations = ({ evaluations, nodes }) =>
   <div className="row">
@@ -26,8 +26,8 @@ Evaluations.defaultProps = {
 };
 
 Evaluations.propTypes = {
-    evaluations: PropTypes.isRequired,
-    nodes: PropTypes.isRequired,
+    evaluations: PropTypes.array.isRequired,
+    nodes: PropTypes.array.isRequired,
 };
 
 export default connect(mapStateToProps)(Evaluations);

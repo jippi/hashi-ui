@@ -5,7 +5,7 @@ import { Badge } from 'react-bootstrap';
 class Doughnut extends Component {
 
     componentDidMount() {
-        const chartCanvas = this.refs.chart;
+        const chartCanvas = this.chart;
         const myChart = new Chart(chartCanvas, {
             type: 'doughnut',
             data: this.props.data,
@@ -16,6 +16,8 @@ class Doughnut extends Component {
             },
         });
 
+        // TODO: fix below ignore
+        // eslint-disable-next-line react/no-did-mount-set-state
         this.setState({ chart: myChart });
     }
 
@@ -50,7 +52,7 @@ class Doughnut extends Component {
             </div>
             <div className="content">
               <div id="chartPreferences" className="ct-chart ct-perfect-fourth">
-                <canvas ref={ 'chart' } ></canvas>
+                <canvas ref={ (c) => { this.chart = c; } } ></canvas>
               </div>
               <div className="footer">
                 <div className="legend">
@@ -85,8 +87,8 @@ class Doughnut extends Component {
 }
 
 Doughnut.propTypes = {
-    data: PropTypes.isRequired,
-    title: PropTypes.isRequired,
+    data: PropTypes.object.isRequired,
+    title: PropTypes.string.isRequired,
 };
 
 export default Doughnut;

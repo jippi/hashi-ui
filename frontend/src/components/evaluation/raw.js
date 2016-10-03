@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import Json from '../json';
 
-const EvalRaw = ({ evaluation }) =>
+const EvaluationRaw = ({ evaluation }) =>
   <div className="tab-pane active">
     <Json json={ evaluation } />
   </div>;
@@ -12,8 +12,8 @@ function mapStateToProps({ evaluation }) {
     return { evaluation };
 }
 
-EvalRaw.propTypes = {
-    evaluation: PropTypes.isRequired,
+EvaluationRaw.propTypes = {
+    evaluation: PropTypes.object.isRequired,
 };
 
-export default connect(mapStateToProps)(EvalRaw);
+export default connect(mapStateToProps)(EvaluationRaw);

@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import AllocationList from '../allocation_list';
+import AllocationList from '../allocation/list';
 
-const JobAllocs = ({ allocations, nodes }) => {
+const JobAllocs = ({ allocations, nodes, job }) => {
     const allocs = allocations.filter(allocation =>
-        allocation.JobID === this.props.job.ID
+        allocation.JobID === job.ID
     );
 
     return (
@@ -19,13 +19,14 @@ function mapStateToProps({ allocations, job, nodes }) {
 }
 
 JobAllocs.defaultProps = {
-    allocations: {},
-    nodes: {},
+    allocations: [],
+    nodes: [],
 };
 
 JobAllocs.propTypes = {
-    allocations: PropTypes.isRequired,
-    nodes: PropTypes.isRequired,
+    allocations: PropTypes.array.isRequired,
+    nodes: PropTypes.array.isRequired,
+    job: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(JobAllocs);

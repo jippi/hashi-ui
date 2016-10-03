@@ -53,10 +53,10 @@ Meta.defaultProps = {
 };
 
 Meta.propTypes = {
-    metaBag: PropTypes.required,
-    dtWithClass: PropTypes.required,
-    sortKeys: PropTypes.required,
-    asTooltip: PropTypes.required,
+    metaBag: PropTypes.object.isRequired,
+    dtWithClass: PropTypes.string.isRequired,
+    sortKeys: PropTypes.bool.isRequired,
+    asTooltip: PropTypes.bool.isRequired,
 };
 
 export default Meta;

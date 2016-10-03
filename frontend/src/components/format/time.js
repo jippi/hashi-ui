@@ -1,31 +1,12 @@
 import React, { Component, PropTypes } from 'react';
-import moment from 'moment';
 // eslint-disable-next-line no-unused-vars
 import momentDurationFormat from 'moment-duration-format';
+import moment from 'moment';
+import getMoment from '../../helpers/time';
 
-const nanosecondLength = 19;
+class FormatTime extends Component {
 
-class Time extends Component {
-
-    static normalizeTime(time) {
-        const length = time.toString().length;
-
-        if (length >= nanosecondLength) {
-            return time / 1000000;
-        }
-
-        return time;
-    }
-
-    static getMoment(time) {
-        if (time === 'now' || time === null) {
-            return moment();
-        }
-
-        return moment(this.normalizeTime(time), 'x');
-    }
-
-    static getTimeDiff(time, now) {
+    getTimeDiff(time, now) {
         if (this.props.durationInterval && this.props.durationFormat) {
             return moment
                 .duration(time.diff(now), this.props.durationInterval)
@@ -36,8 +17,8 @@ class Time extends Component {
     }
 
     render() {
-        const time = this.getMoment(this.props.time);
-        const now = this.getMoment(this.props.now);
+        const time = getMoment(this.props.time);
+        const now = getMoment(this.props.now);
         const format = this.props.timeFormat;
 
         if (this.props.display === 'relative') {
@@ -56,7 +37,7 @@ class Time extends Component {
     }
 }
 
-Time.defaultProps = {
+FormatTime.defaultProps = {
     time: null,
     now: 'now',
     display: 'relative',
@@ -65,13 +46,16 @@ Time.defaultProps = {
     durationFormat: null,
 };
 
-Time.propTypes = {
-    time: PropTypes.isRequired,
-    now: PropTypes.isRequired,
-    display: PropTypes.isRequired,
-    timeFormat: PropTypes.isRequired,
-    durationInterval: PropTypes.isRequired,
-    durationFormat: PropTypes.isRequired,
+FormatTime.propTypes = {
+    time: PropTypes.number.isRequired,
+    now: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+    ]),
+    display: PropTypes.string.isRequired,
+    timeFormat: PropTypes.string.isRequired,
+    durationInterval: PropTypes.string,
+    durationFormat: PropTypes.string,
 };
 
-export default Time;
+export default FormatTime;

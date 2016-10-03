@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-const evalProps = [
+const evaluationProps = [
     'ID',
     'Status',
     'Priority',
@@ -10,12 +10,12 @@ const evalProps = [
     'TriggeredBy',
 ];
 
-const EvalInfo = ({ evaluation }) =>
+const EvaluationInfo = ({ evaluation }) =>
   <div className="tab-pane active">
     <div className="content">
       <legend>Evaluation Properties</legend>
       <dl className="dl-horizontal">
-        {evalProps.map(evalProp =>
+        {evaluationProps.map(evalProp =>
           <div key={ evalProp }>
             <dt>{ evalProp }</dt>
             <dd>{ evaluation[evalProp] }</dd>
@@ -29,8 +29,8 @@ function mapStateToProps({ evaluation }) {
     return { evaluation };
 }
 
-EvalInfo.propTypes = {
-    evaluation: PropTypes.isRequired,
+EvaluationInfo.propTypes = {
+    evaluation: PropTypes.object.isRequired,
 };
 
-export default connect(mapStateToProps)(EvalInfo);
+export default connect(mapStateToProps)(EvaluationInfo);

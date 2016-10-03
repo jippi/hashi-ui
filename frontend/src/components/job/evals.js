@@ -1,10 +1,10 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import EvaluationList from '../evaluation_list';
+import EvaluationList from '../evaluation/list';
 
-const JobEvals = ({ evaluations, nodes }) => {
+const JobEvals = ({ evaluations, nodes, job }) => {
     const evals = evaluations.filter(evaluation =>
-        evaluation.JobID === this.props.job.ID
+        evaluation.JobID === job.ID
     );
 
     return (
@@ -19,13 +19,14 @@ function mapStateToProps({ evaluations, job, nodes }) {
 }
 
 JobEvals.defaultProps = {
-    evaluations: {},
-    nodes: {},
+    evaluations: [],
+    nodes: [],
 };
 
 JobEvals.propTypes = {
-    evaluations: PropTypes.isRequired,
-    nodes: PropTypes.isRequired,
+    evaluations: PropTypes.array.isRequired,
+    nodes: PropTypes.array.isRequired,
+    job: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(JobEvals);

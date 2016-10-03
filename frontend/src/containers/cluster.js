@@ -145,9 +145,9 @@ function mapStateToProps({ jobs, nodes, members }) {
 }
 
 Cluster.propTypes = {
-    jobs: PropTypes.isRequired,
-    nodes: PropTypes.isRequired,
-    members: PropTypes.isRequired,
+    jobs: PropTypes.array.isRequired,
+    nodes: PropTypes.array.isRequired,
+    members: PropTypes.array.isRequired,
 };
 
 export default connect(mapStateToProps)(Cluster);

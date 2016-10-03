@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { NomadLink } from '../link';
+import NomadLink from '../link';
 import Table from '../table';
 import MetaDisplay from '../meta';
 
@@ -122,7 +122,7 @@ function mapStateToProps({ job, allocations, evaluations }) {
 }
 
 JobInfo.propTypes = {
-    job: PropTypes.isRequired,
+    job: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(JobInfo);

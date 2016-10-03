@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { NomadLink } from '../components/link';
-import DisplayBoolean from '../components/display/boolean';
-import DisplayNodeStatus from '../components/display/node_status';
+import NomadLink from '../components/link';
+import FormatBoolean from '../components/format/boolean';
+import NodeStatus from '../components/node/status';
 
 const Nodes = ({ nodes }) =>
   <div className="row">
@@ -30,8 +30,8 @@ const Nodes = ({ nodes }) =>
                   <td>{node.Datacenter}</td>
                   <td>{node.Name}</td>
                   <td>{node.Class ? node.Class : '<none>'}</td>
-                  <td><DisplayBoolean value={ node.Drain } /></td>
-                  <td><DisplayNodeStatus value={ node.Status } /></td>
+                  <td><FormatBoolean value={ node.Drain } /></td>
+                  <td><NodeStatus value={ node.Status } /></td>
                 </tr>
               )}
             </tbody>
@@ -46,7 +46,7 @@ function mapStateToProps({ nodes }) {
 }
 
 Nodes.propTypes = {
-    nodes: PropTypes.isRequired,
+    nodes: PropTypes.array.isRequired,
 };
 
 export default connect(mapStateToProps)(Nodes);

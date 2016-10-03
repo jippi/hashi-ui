@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import Json from '../json';
 
-const AllocRaw = ({ allocation }) =>
+const AllocationRaw = ({ allocation }) =>
   <div className="tab-pane active">
     <Json json={ allocation } />
   </div>;
@@ -12,8 +12,8 @@ function mapStateToProps({ allocation }) {
     return { allocation };
 }
 
-AllocRaw.propTypes = {
-    allocation: PropTypes.isRequired,
+AllocationRaw.propTypes = {
+    allocation: PropTypes.object.isRequired,
 };
 
-export default connect(mapStateToProps)(AllocRaw);
+export default connect(mapStateToProps)(AllocationRaw);

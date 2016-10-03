@@ -69,11 +69,11 @@ function mapStateToProps({ member }) {
 }
 
 Member.propTypes = {
-    dispatch: PropTypes.isRequired,
-    params: PropTypes.isRequired,
-    location: PropTypes.isRequired,
-    member: PropTypes.isRequired,
-    children: PropTypes.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    params: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    member: PropTypes.object.isRequired,
+    children: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(Member);

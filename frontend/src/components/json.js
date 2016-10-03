@@ -9,7 +9,7 @@ class Json extends Component {
             hoverPreviewArrayCount: 100,
             hoverPreviewFieldCount: 5,
         });
-        this.refs.json.appendChild(formatter.render());
+        this.json.appendChild(formatter.render());
     }
 
     componentDidUpdate() {
@@ -20,22 +20,22 @@ class Json extends Component {
         });
 
         // Remove the old JSON
-        if (this.refs.json.hasChildNodes()) {
-            this.refs.json.removeChild(this.refs.json.childNodes[0]);
+        if (this.json.hasChildNodes()) {
+            this.json.removeChild(this.json.childNodes[0]);
         }
         // Add the new JSON
-        this.refs.json.appendChild(formatter.render());
+        this.json.appendChild(formatter.render());
     }
 
     render() {
         return (
-          <div id="raw_json" ref={ 'json' }></div>
+          <div id="raw_json" ref={ (c) => { this.json = c; } }></div>
         );
     }
 }
 
 Json.propTypes = {
-    json: PropTypes.isRequired,
+    json: PropTypes.object.isRequired,
 };
 
-export default JSON;
+export default Json;

@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Router, Route, IndexRedirect } from 'react-router';
+import { Router, Route, IndexRedirect, browserHistory } from 'react-router';
 
 import App from './components/app';
 import Cluster from './containers/cluster';
@@ -85,7 +85,7 @@ const AppRouter = ({ history }) =>
   </Router>;
 
 AppRouter.propTypes = {
-    history: PropTypes.isRequired,
+    history: PropTypes.instanceOf(browserHistory.constructor).isRequired,
 };
 
 export default AppRouter;

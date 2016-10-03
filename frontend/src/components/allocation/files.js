@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { FETCH_NODE, FETCH_DIR, UNWATCH_FILE, WATCH_FILE } from '../../sagas/event';
 import Table from '../table';
 
-class AllocFiles extends Component {
+class AllocationFiles extends Component {
 
     constructor(props) {
         super(props);
@@ -162,12 +162,12 @@ function mapStateToProps({ allocation, nodes, node, directory, file }) {
     return { allocation, nodes, node, directory, file };
 }
 
-AllocFiles.propTypes = {
-    node: PropTypes.isRequired,
-    allocation: PropTypes.isRequired,
-    dispatch: PropTypes.isRequired,
-    file: PropTypes.isRequired,
-    directory: PropTypes.isRequired,
+AllocationFiles.propTypes = {
+    node: PropTypes.object.isRequired,
+    allocation: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    file: PropTypes.object.isRequired,
+    directory: PropTypes.array.isRequired,
 };
 
-export default connect(mapStateToProps)(AllocFiles);
+export default connect(mapStateToProps)(AllocationFiles);

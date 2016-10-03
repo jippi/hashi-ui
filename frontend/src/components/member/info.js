@@ -34,7 +34,7 @@ const MemberInfo = ({ member }) => {
             {memberProps.map(memberProp =>
               <div key={ memberProp }>
                 <dt>{memberProp}</dt>
-                <dd>{this.props.member[memberProp]}</dd>
+                <dd>{member[memberProp]}</dd>
               </div>
             )}
           </dl>
@@ -54,7 +54,7 @@ function mapStateToProps({ member }) {
 }
 
 MemberInfo.propTypes = {
-    member: PropTypes.isRequired,
+    member: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(MemberInfo);

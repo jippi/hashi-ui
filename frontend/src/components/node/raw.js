@@ -13,7 +13,7 @@ function mapStateToProps({ node }) {
 }
 
 NodeRaw.propTypes = {
-    node: PropTypes.isRequired,
+    node: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(NodeRaw);

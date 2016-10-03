@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
-import { NomadLink } from './link';
+import NomadLink from '../link';
 
-const EvaluationList = ({ evaluations }) =>
+const EvaluationList = ({ evaluations, nodes }) =>
   <table className="table table-hover table-striped">
     <thead>
       <tr>
@@ -22,7 +22,7 @@ const EvaluationList = ({ evaluations }) =>
           <td>{evaluation.Type}</td>
           <td>{evaluation.Priority}</td>
           <td>
-            <NomadLink nodeId={ evaluation.NodeID } nodeList={ this.props.nodes } short="true" />
+            <NomadLink nodeId={ evaluation.NodeID } nodeList={ nodes } short="true" />
           </td>
         </tr>
       )}
@@ -30,7 +30,8 @@ const EvaluationList = ({ evaluations }) =>
   </table>;
 
 EvaluationList.propTypes = {
-    evaluations: PropTypes.isRequired,
+    evaluations: PropTypes.array.isRequired,
+    nodes: PropTypes.array.isRequired,
 };
 
 export default EvaluationList;

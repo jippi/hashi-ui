@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import Boolean from './boolean';
+import FormatBoolean from '../format/boolean';
 
 const NodeStatus = ({ value }) => {
     switch (value) {
@@ -7,10 +7,10 @@ const NodeStatus = ({ value }) => {
         return (<span>initializing</span>);
 
     case 'ready':
-        return (<Boolean value title={ value } />);
+        return (<FormatBoolean value title={ value } />);
 
     case 'down':
-        return (<Boolean title={ value } />);
+        return (<FormatBoolean title={ value } />);
 
     default:
         return (<span>{value}</span>);
@@ -22,7 +22,7 @@ NodeStatus.defaultProps = {
 };
 
 NodeStatus.propTypes = {
-    value: PropTypes.isRequired,
+    value: PropTypes.string.isRequired,
 };
 
 export default NodeStatus;

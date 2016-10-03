@@ -13,7 +13,7 @@ function mapStateToProps({ job }) {
 }
 
 JobRaw.propTypes = {
-    job: PropTypes.isRequired,
+    job: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(JobRaw);

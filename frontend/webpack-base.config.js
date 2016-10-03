@@ -44,8 +44,7 @@ module.exports = {
         ]
     },
     eslint: {
-        configFile: path.join(__dirname, '/config/eslint.js'),
-        useEslintrc: false
+        useEslintrc: true
     },
     postcss: function() {
         return [autoprefixer];

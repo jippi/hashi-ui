@@ -52,7 +52,7 @@ const Sidebar = ({ location }) =>
   </div>;
 
 Sidebar.propTypes = {
-    location: PropTypes.isRequired,
+    location: PropTypes.object.isRequired,
 };
 
 export default Sidebar;

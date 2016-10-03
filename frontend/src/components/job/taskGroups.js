@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { NomadLink } from '../link';
+import NomadLink from '../link';
 import Table from '../table';
 import Json from '../json';
 import MetaDisplay from '../meta';
@@ -13,7 +13,7 @@ const taskGroupHeaders = [
     'Restart Policy',
 ];
 
-const JobTaskGroups = ({ job }) => {
+const JobTaskGroups = ({ job, location }) => {
     const taskGroups = [];
 
     job.TaskGroups.forEach((taskGroup) => {
@@ -28,7 +28,7 @@ const JobTaskGroups = ({ job }) => {
         );
     });
 
-    let taskGroupId = this.props.location.query.taskGroupId;
+    let taskGroupId = location.query.taskGroupId;
 
     // Auto-select first task group if only one is available.
     if (!taskGroupId && job.TaskGroups.length === 1) {
@@ -66,7 +66,8 @@ function mapStateToProps({ job }) {
 }
 
 JobTaskGroups.propTypes = {
-    job: PropTypes.isRequired,
+    job: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(JobTaskGroups);

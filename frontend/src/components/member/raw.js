@@ -13,7 +13,7 @@ function mapStateToProps({ member }) {
 }
 
 MemberRaw.propTypes = {
-    member: PropTypes.isRequired,
+    member: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(MemberRaw);

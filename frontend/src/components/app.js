@@ -14,8 +14,8 @@ const App = ({ location, children }) =>
   </div>;
 
 App.propTypes = {
-    location: PropTypes.isRequired,
-    children: PropTypes.isRequired,
+    location: PropTypes.object.isRequired,
+    children: PropTypes.object.isRequired,
 };
 
 export default App;
