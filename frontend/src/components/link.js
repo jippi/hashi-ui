@@ -87,11 +87,7 @@ export default class NomadLink extends Component {
                     children = short ? shortUUID(taskId) : taskId;
                 }
                 return (
-                  <Link
-                    { ...linkProps }
-                    to={ `/jobs/${jobId}/tasks` }
-                    query={{ taskGroupId, taskId }}
-                  >
+                  <Link { ...linkProps } to={ `/jobs/${jobId}/tasks` } query={{ taskGroupId, taskId }} >
                     {children}
                   </Link>
                 );
@@ -109,11 +105,7 @@ export default class NomadLink extends Component {
                     children = short ? shortUUID(taskGroupId) : taskGroupId;
                 }
                 return (
-                  <Link
-                    { ...linkProps }
-                    to={ `/jobs/${jobId}/taskGroups` }
-                    query={{ taskGroupId }}
-                  >
+                  <Link { ...linkProps } to={ `/jobs/${jobId}/taskGroups` } query={{ taskGroupId }} >
                     {children}
                   </Link>
                 );
