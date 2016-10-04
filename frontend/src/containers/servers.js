@@ -35,15 +35,15 @@ const Servers = ({ members }) => {
                       return (
                         <tr key={ member.ID }>
                           <td><NomadLink memberId={ member.ID } short="true" /></td>
-                          <td>{member.Name}</td>
-                          <td>{member.Addr}</td>
-                          <td>{member.Port}</td>
-                          <td>{member.Status}</td>
+                          <td>{ member.Name }</td>
+                          <td>{ member.Addr }</td>
+                          <td>{ member.Port }</td>
+                          <td>{ member.Status }</td>
                           <td><FormatBoolean value={ isLeader } /></td>
-                          <td>{member.ProtocolCur}</td>
-                          <td>{member.Tags.build}</td>
-                          <td>{member.Tags.dc}</td>
-                          <td>{member.Tags.region}</td>
+                          <td>{ member.ProtocolCur }</td>
+                          <td>{ member.Tags.build }</td>
+                          <td>{ member.Tags.dc }</td>
+                          <td>{ member.Tags.region }</td>
                         </tr>
                       );
                   })

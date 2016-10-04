@@ -66,11 +66,11 @@ class Job extends Component {
             <div className="col-md-12">
               <div className="card">
                 <div className="header">
-                  <h4 className="title">Job: {this.props.job.ID}</h4>
+                  <h4 className="title">Job: { this.props.job.ID }</h4>
                 </div>
                 <div className="content">
                   <Tabs tabs={ this.state.tabs } tabSlug={ tabSlug } basePath={ basePath }>
-                    {this.props.children}
+                    { this.props.children }
                   </Tabs>
                 </div>
               </div>

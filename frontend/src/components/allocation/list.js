@@ -26,17 +26,14 @@ const AllocationList = ({ allocations, nodes }) =>
       </tr>
     </thead>
     <tbody>
-      {allocations.map((allocation) => {
+      { allocations.map((allocation) => {
           const color = allocationStatusColors[allocation.ClientStatus];
           return (
             <tr className={ color } key={ allocation.ID }>
               <td><NomadLink allocId={ allocation.ID } short="true" /></td>
               <td><NomadLink jobId={ allocation.JobID } short="true" /></td>
               <td>
-                <NomadLink
-                  jobId={ allocation.JobID }
-                  taskGroupId={ allocation.TaskGroupId }
-                >
+                <NomadLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId } >
                   {allocation.TaskGroup}
                 </NomadLink>
               </td>

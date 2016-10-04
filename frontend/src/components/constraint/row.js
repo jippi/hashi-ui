@@ -12,9 +12,9 @@ const ConstraintRow = ({ constraint }) => {
 
     return (
       <tr>
-        <td><code>{constraint.LTarget}</code></td>
-        <td>{constraint.Operand}</td>
-        <td><code>{constraint.RTarget}</code></td>
+        <td><code>{ constraint.LTarget }</code></td>
+        <td>{ constraint.Operand }</td>
+        <td><code>{ constraint.RTarget }</code></td>
       </tr>
     );
 };

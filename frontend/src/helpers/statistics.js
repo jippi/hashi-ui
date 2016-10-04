@@ -5,7 +5,7 @@ const summaryLabels = ['Starting', 'Running', 'Queued', 'Complete', 'Failed', 'L
 export function getJobStatisticsHeader() {
     const output = [];
     summaryLabels.forEach((key) => {
-        output.push(<th key={ `statistics-header-for-${key}` } className="center">{key}</th>);
+        output.push(<th key={ `statistics-header-for-${key}` } className="center">{ key }</th>);
     });
 
     return output;

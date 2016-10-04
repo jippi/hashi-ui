@@ -29,7 +29,7 @@ class Meta extends Component {
         });
 
         if (meta.length > 0) {
-            metaTag = <dl className="dl-horizontal dl-tooltip">{meta}</dl>;
+            metaTag = <dl className="dl-horizontal dl-tooltip">{ meta }</dl>;
         }
 
         if (asTooltip) {

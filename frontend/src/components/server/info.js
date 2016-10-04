@@ -31,16 +31,16 @@ const ServerInfo = ({ member }) => {
         <div className="content">
           <legend>Server Properties</legend>
           <dl className="dl-horizontal">
-            {memberProps.map(memberProp =>
+            { memberProps.map(memberProp =>
               <div key={ memberProp }>
-                <dt>{memberProp}</dt>
-                <dd>{member[memberProp]}</dd>
+                <dt>{ memberProp }</dt>
+                <dd>{ member[memberProp] }</dd>
               </div>
             )}
           </dl>
           <br />
           <legend>Server Tags</legend>
-          {(memberTags.length > 0) ?
+          { (memberTags.length > 0) ?
             <Table classes="table table-hover table-striped" headers={ ['Name', 'Value'] } body={ memberTags } />
             : null
           }

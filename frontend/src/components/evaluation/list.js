@@ -14,13 +14,13 @@ const EvaluationList = ({ evaluations, nodes }) =>
       </tr>
     </thead>
     <tbody>
-      {evaluations.map(evaluation =>
+      { evaluations.map(evaluation =>
         <tr key={ evaluation.ID }>
           <td><NomadLink evalId={ evaluation.ID } short="true" /></td>
           <td><NomadLink jobId={ evaluation.JobID } short="true" /></td>
-          <td>{evaluation.Status}</td>
-          <td>{evaluation.Type}</td>
-          <td>{evaluation.Priority}</td>
+          <td>{ evaluation.Status }</td>
+          <td>{ evaluation.Type }</td>
+          <td>{ evaluation.Priority }</td>
           <td>
             <NomadLink nodeId={ evaluation.NodeID } nodeList={ nodes } short="true" />
           </td>

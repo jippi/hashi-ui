@@ -55,11 +55,11 @@ class AllocationInfo extends Component {
                             durationFormat="h [hour] m [min] s [seconds] S [ms]"
                           />
                         </td>
-                        <td>{element.Type}</td>
-                        <td>{element.Message}</td>
-                        <td>{element.RestartReason}</td>
-                        <td>{element.ExitCode}</td>
-                        <td>{element.Signal}</td>
+                        <td>{ element.Type }</td>
+                        <td>{ element.Message }</td>
+                        <td>{ element.RestartReason }</td>
+                        <td>{ element.ExitCode }</td>
+                        <td>{ element.Signal }</td>
                       </tr>
                     );
 
@@ -106,7 +106,7 @@ class AllocationInfo extends Component {
               <br />
 
               <legend>Task States</legend>
-              <Accordion>{states}</Accordion>
+              <Accordion>{ states }</Accordion>
             </div>
           </div>
         );

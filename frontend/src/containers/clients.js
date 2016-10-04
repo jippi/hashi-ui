@@ -24,14 +24,14 @@ const Clients = ({ nodes }) =>
               </tr>
             </thead>
             <tbody>
-              {nodes.map(node =>
+              { nodes.map(node =>
                 <tr key={ node.ID }>
                   <td><NomadLink nodeId={ node.ID } short="true" /></td>
-                  <td>{node.Name}</td>
+                  <td>{ node.Name }</td>
                   <td><NodeStatus value={ node.Status } /></td>
                   <td><FormatBoolean value={ node.Drain } /></td>
-                  <td>{node.Datacenter}</td>
-                  <td>{node.Class ? node.Class : '<none>'}</td>
+                  <td>{ node.Datacenter }</td>
+                  <td>{ node.Class ? node.Class : '<none>'}</td>
                 </tr>
               )}
             </tbody>
