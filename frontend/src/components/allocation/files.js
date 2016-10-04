@@ -9,20 +9,25 @@ class AllocationFiles extends Component {
     constructor(props) {
         super(props);
 
-        const path = this.findAllocNode(this.props) ? '/' : '';
         const node = props.node;
         const alloc = props.allocation;
+        let path = this.findAllocNode(this.props) ? '/' : '';
 
-        if (path === '/') {
+        if (path === '/' && ('path' in props.location.query)) {
+            path = props.location.query.path;
+        }
+
+        if (path !== '') {
             this.props.dispatch({
                 type: FETCH_DIR,
                 payload: {
                     addr: node.HTTPAddr,
-                    path: '/',
+                    path,
                     allocID: alloc.ID,
                 },
             });
         }
+
         this.state = { path, contents: '', file: '/' };
     }
 
@@ -36,11 +41,15 @@ class AllocationFiles extends Component {
         // if we are initialising.
         if (this.state.path === '') {
             path = '/';
+            if ('path' in nextProps.location.query) {
+                path = nextProps.location.query.path;
+            }
         }
 
         if (nextProps.file.Offset !== this.props.file.Offset) {
             contents += nextProps.file.Data;
         }
+
         this.setState({ ...this.state, path, contents });
     }
 
@@ -164,6 +173,7 @@ function mapStateToProps({ allocation, nodes, node, directory, file }) {
 
 AllocationFiles.propTypes = {
     node: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
     allocation: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     file: PropTypes.object.isRequired,
