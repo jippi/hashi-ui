@@ -23,16 +23,16 @@ class FormatTime extends Component {
 
         if (this.props.display === 'relative') {
             return (
-              <div className="dotted" title={ time.format(format) }>
+              <span className="dotted" title={ time.format(format) }>
                 {this.getTimeDiff(time, now)}
-              </div>
+              </span>
             );
         }
 
         return (
-          <div className="dotted" title={ this.getTimeDiff(time, now) }>
+          <span className="dotted" title={ this.getTimeDiff(time, now) }>
             {time.format(format)}
-          </div>
+          </span>
         );
     }
 }
