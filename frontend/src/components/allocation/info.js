@@ -15,63 +15,64 @@ const allocProps = [
 ];
 
 class AllocationInfo extends Component {
-    render() {
-        function taskState(allocation, name, states) {
-            const title = (
-              <h3>
-                Task state for {allocation.JobID}.{allocation.TaskGroup}.{name} (final state: {states.State})
-              </h3>
-            );
-            let lastEventTime = null;
 
-            return (
-              <Panel key={ name } header={ title }>
-                <Table striped hover>
-                  <thead>
-                    <tr>
-                      <th>When</th>
-                      <th>Duration</th>
-                      <th>Type</th>
-                      <th>Message</th>
-                      <th>Restart Reason</th>
-                      <th>Exit Code</th>
-                      <th>Signal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    { states.Events.map((element, index) => {
-                        if (!lastEventTime) {
-                            lastEventTime = element.Time;
-                        }
+    static taskState(allocation, name, states) {
+        const title = (
+          <h3>
+            Task state for {allocation.JobID}.{allocation.TaskGroup}.{name} (final state: {states.State})
+          </h3>
+        );
+        let lastEventTime = null;
 
-                        const output = (
-                          <tr key={ index }>
-                            <td width="10%"><FormatTime time={ element.Time } /></td>
-                            <td>
-                              <FormatTime
-                                time={ element.Time }
-                                now={ lastEventTime }
-                                durationInterval="ms"
-                                durationFormat="h [hour] m [min] s [seconds] S [ms]"
-                              />
-                            </td>
-                            <td>{element.Type}</td>
-                            <td>{element.Message}</td>
-                            <td>{element.RestartReason}</td>
-                            <td>{element.ExitCode}</td>
-                            <td>{element.Signal}</td>
-                          </tr>
-                        );
-
+        return (
+          <Panel key={ name } header={ title }>
+            <Table striped hover>
+              <thead>
+                <tr>
+                  <th>When</th>
+                  <th>Duration</th>
+                  <th>Type</th>
+                  <th>Message</th>
+                  <th>Restart Reason</th>
+                  <th>Exit Code</th>
+                  <th>Signal</th>
+                </tr>
+              </thead>
+              <tbody>
+                { states.Events.map((element, index) => {
+                    if (!lastEventTime) {
                         lastEventTime = element.Time;
-                        return output;
-                    })}
-                  </tbody>
-                </Table>
-              </Panel>
-            );
-        }
+                    }
 
+                    const output = (
+                      <tr key={ index }>
+                        <td width="10%"><FormatTime time={ element.Time } /></td>
+                        <td>
+                          <FormatTime
+                            time={ element.Time }
+                            now={ lastEventTime }
+                            durationInterval="ms"
+                            durationFormat="h [hour] m [min] s [seconds] S [ms]"
+                          />
+                        </td>
+                        <td>{element.Type}</td>
+                        <td>{element.Message}</td>
+                        <td>{element.RestartReason}</td>
+                        <td>{element.ExitCode}</td>
+                        <td>{element.Signal}</td>
+                      </tr>
+                    );
+
+                    lastEventTime = element.Time;
+                    return output;
+                })}
+              </tbody>
+            </Table>
+          </Panel>
+        );
+    }
+
+    render() {
         const allocation = this.props.allocation;
         const jobId = allocation.JobID;
         const nodeId = allocation.NodeID;
@@ -93,7 +94,7 @@ class AllocationInfo extends Component {
 
         const states = [];
         Object.keys(allocation.TaskStates || {}).forEach((key) => {
-            states.push(taskState(allocation, key, allocation.TaskStates[key]));
+            states.push(AllocationInfo.taskState(allocation, key, allocation.TaskStates[key]));
         });
 
         return (
