@@ -43,5 +43,10 @@ export function renderClientStatus(allocation) {
         icon = clientStatusIcon[allocation.ClientStatus];
     }
 
-    return <span className={ textColor }>{icon} {allocation.ClientStatus}</span>;
+    return (
+      <div>
+        <ReactTooltip id={ `client-status-${allocation.ID}` }>{allocation.ClientStatus}</ReactTooltip>
+        <span data-tip data-for={ `client-status-${allocation.ID}` } className={ textColor }>{icon}</span>
+      </div>
+    );
 }
