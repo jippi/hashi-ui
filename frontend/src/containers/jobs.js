@@ -4,7 +4,7 @@ import { getJobStatisticsHeader, getJobStatisticsRow } from '../helpers/statisti
 import NomadLink from '../components/link';
 
 const jobStatusColors = {
-    running: 'success',
+    running: '',
     pending: 'warning',
     dead: 'danger',
 };
