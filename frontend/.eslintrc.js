@@ -10,6 +10,7 @@ module.exports = {
       'no-console': 0,
       'max-len': ['error', 120],
       'react/jsx-indent': ['error', 2],
+      'react/prefer-stateless-function': 0,
       'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.js'] }],
       'react/jsx-curly-spacing': [2, 'always', { 'spacing': { 'objectLiterals': 'never' }}],
       'react/self-closing-comp': ['error', { 'component': true, 'html': false }],
