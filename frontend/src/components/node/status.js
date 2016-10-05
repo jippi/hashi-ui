@@ -10,7 +10,7 @@ const NodeStatus = ({ value }) => {
         return (<FormatBoolean value title={ value } />);
 
     case 'down':
-        return (<FormatBoolean title={ value } />);
+        return (<FormatBoolean value={ false } title={ value } />);
 
     default:
         return (<span>{value}</span>);

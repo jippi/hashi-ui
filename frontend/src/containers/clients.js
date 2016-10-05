@@ -16,11 +16,11 @@ const Clients = ({ nodes }) =>
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Datacenter</th>
                 <th>Name</th>
-                <th>Class</th>
-                <th>Drain</th>
                 <th>Status</th>
+                <th>Drain</th>
+                <th>Datacenter</th>
+                <th>Class</th>
               </tr>
             </thead>
             <tbody>
