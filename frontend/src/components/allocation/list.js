@@ -129,8 +129,8 @@ const AllocationList = ({ allocations, nodes, showJobColumn, showClientColumn })
   </table>;
 
 AllocationList.defaultProps = {
-    allocation: {},
-    nodes: {},
+    allocation: [],
+    nodes: [],
 
     showJobColumn: true,
     showClientColumn: true,
