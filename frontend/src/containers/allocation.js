@@ -55,16 +55,12 @@ class Allocation extends Component {
               <div className="card">
                 <div className="header">
                   <h4 className="title">
-                    Allocation: {this.props.allocation.ID}
+                    Allocation: { this.props.allocation.ID }
                   </h4>
                 </div>
                 <div className="content">
-                  <Tabs
-                    tabs={ this.state.tabs }
-                    tabSlug={ tabSlug }
-                    basePath={ basePath }
-                  >
-                    {this.props.children}
+                  <Tabs tabs={ this.state.tabs } tabSlug={ tabSlug } basePath={ basePath } >
+                    { this.props.children }
                   </Tabs>
                 </div>
               </div>

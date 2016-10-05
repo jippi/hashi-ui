@@ -23,7 +23,7 @@ class ConstraintTable extends Component {
               </tr>
             </thead>
             <tbody>
-              {this.props.constraints.map(constraint =>
+              { this.props.constraints.map(constraint =>
                 <ConstraintRow
                   key={ getUniqueKeyForConstraint(constraint) }
                   idPrefix={ this.props.idPrefix }
@@ -37,9 +37,9 @@ class ConstraintTable extends Component {
         if (this.props.asTooltip) {
             return (
               <div>
-                <ReactTooltip id={ `tooltip-constraints-${this.props.idPrefix}` }>{table}</ReactTooltip>
+                <ReactTooltip id={ `tooltip-constraints-${this.props.idPrefix}` }>{ table }</ReactTooltip>
                 <span data-tip data-for={ `tooltip-constraints-${this.props.idPrefix}` } className="dotted">
-                  {this.props.constraints.length} constraints
+                  { this.props.constraints.length } constraints
                 </span>
               </div>
             );

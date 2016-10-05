@@ -28,10 +28,10 @@ class JobInfo extends Component {
                         { task.Name }
                       </NomadLink>
                     </td>
-                    <td>{task.Driver}</td>
-                    <td>{task.Resources.CPU}</td>
-                    <td>{task.Resources.MemoryMB}</td>
-                    <td>{task.Resources.DiskMB}</td>
+                    <td>{ task.Driver }</td>
+                    <td>{ task.Resources.CPU }</td>
+                    <td>{ task.Resources.MemoryMB }</td>
+                    <td>{ task.Resources.DiskMB }</td>
                     <td><ConstraintTable idPrefix={ task.ID } asTooltip constraints={ task.Constraints } /></td>
                   </tr>
                 );
@@ -61,7 +61,7 @@ class JobInfo extends Component {
                 <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12">
                   <legend>Job Properties</legend>
                   <dl className="dl-horizontal">
-                    {jobProps.map((jobProp) => {
+                    { jobProps.map((jobProp) => {
                         let jobPropValue = this.props.job[jobProp];
                         if (Array.isArray(jobPropValue)) {
                             jobPropValue = jobPropValue.join(', ');
@@ -95,7 +95,7 @@ class JobInfo extends Component {
               <br /><br />
 
               <legend>Task Groups</legend>
-              {(taskGroups.length > 0) ?
+              { (taskGroups.length > 0) ?
                 <Table
                   classes="table table-hover table-striped"
                   headers={ ['Name', 'Count', 'Tasks', 'Meta', 'Restart Policy', 'Constraints'] }
@@ -106,7 +106,7 @@ class JobInfo extends Component {
 
               <br /><br />
               <legend>Tasks</legend>
-              {(tasks.length > 0) ?
+              { (tasks.length > 0) ?
                 <Table
                   classes="table table-hover table-striped"
                   headers={ ['Task Group', 'Name', 'Driver', 'CPU', 'Memory', 'Disk', 'Constraints'] }

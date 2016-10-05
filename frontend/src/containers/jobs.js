@@ -29,12 +29,12 @@ const Jobs = ({ jobs }) =>
               </tr>
             </thead>
             <tbody>
-              {jobs.map(job =>
+              { jobs.map(job =>
                 <tr key={ job.ID } className={ jobStatusColors[job.Status] }>
                   <td><NomadLink jobId={ job.ID } short="true" /></td>
-                  <td>{job.Status}</td>
-                  <td>{job.Type}</td>
-                  <td>{job.Priority}</td>
+                  <td>{ job.Status }</td>
+                  <td>{ job.Type }</td>
+                  <td>{ job.Priority }</td>
                   <td>{Object.keys(job.JobSummary.Summary).length}</td>
                   { getJobStatisticsRow(job) }
                 </tr>

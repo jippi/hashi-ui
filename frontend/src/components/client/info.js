@@ -16,7 +16,7 @@ const ClientInfo = ({ node }) =>
     <div className="content">
       <legend>Client Properties</legend>
       <dl className="dl-horizontal">
-        {nodeProps.map(nodeProp =>
+        { nodeProps.map(nodeProp =>
           <div key={ nodeProp }>
             <dt>{ nodeProp }</dt>
             <dd>{ node[nodeProp] }</dd>

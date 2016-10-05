@@ -16,14 +16,11 @@ class Events extends Component {
                         taskEvents.push(
                           <tr key={ eventID }>
                             <td>
-                              <NomadLink
-                                jobId={ allocation.JobID }
-                                allocId={ allocation.ID }
-                              >
-                                {allocation.JobID}.{task}
+                              <NomadLink jobId={ allocation.JobID } allocId={ allocation.ID } >
+                                { allocation.JobID }.{ task }
                               </NomadLink>
                             </td>
-                            <td>{event.Type}</td>
+                            <td>{ event.Type }</td>
                             <td>{
                                 event.KillError ||
                                 event.DriverError ||

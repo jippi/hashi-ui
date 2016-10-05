@@ -127,8 +127,8 @@ class AllocationFiles extends Component {
     render() {
         const files = this.props.directory.map(file =>
           <tr className="pointer" onClick={ () => this.handleClick(file) } key={ file.Name }>
-            <td>{file.Name}{file.IsDir ? '/' : ''}</td>
-            <td>{file.IsDir ? '' : file.Size}</td>
+            <td>{ file.Name }{ file.IsDir ? '/' : '' }</td>
+            <td>{ file.IsDir ? '' : file.Size }</td>
           </tr>
         );
 
@@ -146,7 +146,7 @@ class AllocationFiles extends Component {
             <div className="row">
               <div className="col-md-3">
                 <div className="card">
-                  <div className="header">Path: {this.state.path}</div>
+                  <div className="header">Path: { this.state.path }</div>
                   <div className="content">
                     <Table classes="table table-hover" headers={ ['Name', 'Size'] } body={ files } />
                   </div>
@@ -154,10 +154,10 @@ class AllocationFiles extends Component {
               </div>
               <div className="col-md-9">
                 <div className="card">
-                  <div className="header">File: {this.props.file.File}</div>
+                  <div className="header">File: { this.props.file.File }</div>
                   <hr />
                   <div className="content content-file">
-                    {this.state.contents}
+                    { this.state.contents }
                   </div>
                 </div>
               </div>

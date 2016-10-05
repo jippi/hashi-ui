@@ -15,7 +15,7 @@ const EvaluationInfo = ({ evaluation }) =>
     <div className="content">
       <legend>Evaluation Properties</legend>
       <dl className="dl-horizontal">
-        {evaluationProps.map(evalProp =>
+        { evaluationProps.map(evalProp =>
           <div key={ evalProp }>
             <dt>{ evalProp }</dt>
             <dd>{ evaluation[evalProp] }</dd>

@@ -30,17 +30,14 @@ const JobTasks = ({ job, location }) => {
                 </td>
                 <td>{task.Name}</td>
                 <td>
-                  <NomadLink
-                    taskGroupId={ taskGroup.ID }
-                    jobId={ job.ID }
-                  >
-                    {taskGroup.Name}
+                  <NomadLink taskGroupId={ taskGroup.ID } jobId={ job.ID } >
+                    { taskGroup.Name }
                   </NomadLink>
                 </td>
-                <td>{task.Driver}</td>
-                <td>{task.Resources.CPU}</td>
-                <td>{task.Resources.MemoryMB}</td>
-                <td>{task.Resources.DiskMB}</td>
+                <td>{ task.Driver }</td>
+                <td>{ task.Resources.CPU }</td>
+                <td>{ task.Resources.MemoryMB }</td>
+                <td>{ task.Resources.DiskMB }</td>
               </tr>
             );
         });
@@ -63,7 +60,7 @@ const JobTasks = ({ job, location }) => {
         <div className="row">
           <div className="col-md-6">
             <legend>Tasks</legend>
-            {(tasks.length > 0) ?
+            { (tasks.length > 0) ?
               <Table
                 classes="table table-hover table-striped"
                 headers={ taskHeaders }
@@ -74,7 +71,7 @@ const JobTasks = ({ job, location }) => {
           </div>
           <div className="col-md-6">
             <legend>Task: { (taskGroupId && taskId) ? `${taskGroupId}/${taskId}` : null}</legend>
-            {job.TaskGroups
+            { job.TaskGroups
                 .filter(taskGroup => taskGroup.ID === taskGroupId)
                 .map(taskGroup => taskGroup.Tasks
                     .filter(task => task.ID === taskId)

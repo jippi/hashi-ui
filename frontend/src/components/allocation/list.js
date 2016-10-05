@@ -32,7 +32,7 @@ const AllocationList = ({ allocations, nodes }) =>
       </tr>
     </thead>
     <tbody>
-      {allocations.map((allocation) => {
+      { allocations.map((allocation) => {
           const color = allocationStatusColors[allocation.ClientStatus];
           return (
             <tr className={ color } key={ allocation.ID }>

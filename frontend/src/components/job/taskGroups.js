@@ -20,10 +20,10 @@ const JobTaskGroups = ({ job, location }) => {
         taskGroups.push(
           <tr key={ taskGroup.ID }>
             <td><NomadLink taskGroupId={ taskGroup.ID } jobId={ job.ID } short="true" /></td>
-            <td>{taskGroup.Name}</td>
-            <td>{taskGroup.Count}</td>
+            <td>{ taskGroup.Name }</td>
+            <td>{ taskGroup.Count }</td>
             <td><MetaDisplay metaBag={ taskGroup.Meta } asTooltip /></td>
-            <td>{taskGroup.RestartPolicy.Mode}</td>
+            <td>{ taskGroup.RestartPolicy.Mode }</td>
           </tr>
         );
     });
@@ -39,7 +39,7 @@ const JobTaskGroups = ({ job, location }) => {
         <div className="row">
           <div className="col-md-6">
             <legend>Task Groups</legend>
-            {(taskGroups.length > 0) ?
+            { (taskGroups.length > 0) ?
               <Table
                 classes="table table-hover table-striped"
                 headers={ taskGroupHeaders }
@@ -49,8 +49,8 @@ const JobTaskGroups = ({ job, location }) => {
             }
           </div>
           <div className="col-md-6">
-            <legend>Task Group: {taskGroupId}</legend>
-            {job.TaskGroups
+            <legend>Task Group: { taskGroupId }</legend>
+            { job.TaskGroups
                 .filter(taskGroup => taskGroup.ID === taskGroupId)
                 .map(taskGroup => <Json json={ taskGroup } />)
                 .pop()
