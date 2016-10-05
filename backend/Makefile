@@ -40,12 +40,20 @@ $(BINARIES): $(BUILD_DIR)/nomad-ui-%: $(BUILD_DIR) $(VENDOR_DIR) $(GOPATH)
 .PHONY: build
 build: $(BINARIES)
 
+.PHONY: rebuild
+rebuild: clean $(BINARIES)
+
 .PHONY: install
 install: $(BINARIES)
 	install -m 0755 $? $(DESTDIR)
 
 .PHONY: clean
 clean:
+	@echo "=> cleaning ..."
+	rm -rf $(BUILD_DIR)
+
+.PHONY: dist-clean
+dist-clean:
 	@echo "=> cleaning ..."
 	rm -rf $(BUILD_DIR)
 	rm -rf $(VENDOR_DIR) glide.lock

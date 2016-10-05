@@ -8,8 +8,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 var webpackConfig = require("./webpack-base.config.js");
 webpackConfig = merge(webpackConfig, {
     output: {
-        filename: '[name].[chunkhash].js',
-        chunkFilename: '[name].[chunkhash].chunks.js'
+        filename: 'static/[name].[chunkhash].js',
+        chunkFilename: 'static/[name].[chunkhash].chunks.js'
     },
     bail: true,
     entry: [
@@ -41,7 +41,7 @@ webpackConfig = merge(webpackConfig, {
         ]
     },
     plugins: [
-        new ExtractTextPlugin('[name].[contenthash].css'),
+        new ExtractTextPlugin('static/[name].[contenthash].css'),
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.optimize.DedupePlugin(),
         new webpack.DefinePlugin({'process.env.NODE_ENV': '"production"'}),
