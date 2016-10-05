@@ -5,7 +5,7 @@ import uuid from 'node-uuid';
 class Meta extends Component {
 
     render() {
-        const metaBag = this.props.metaBag;
+        const metaBag = this.props.metaBag || {};
         const dtWithClass = this.props.dtWithClass;
         const sortKeys = this.props.sortKeys;
         const asTooltip = this.props.asTooltip;
