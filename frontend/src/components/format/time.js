@@ -15,7 +15,7 @@ class FormatTime extends Component {
                 .format(this.props.durationFormat, { forceLength: true });
         }
 
-        return time.from(now);
+        return time.from(now, true);
     }
 
     render() {
