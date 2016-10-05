@@ -63,31 +63,6 @@
         right: 12px;
     }
 
-    .dropup &:before{
-        border-bottom: none;
-        border-top: 11px solid rgba(0, 0, 0, 0.2);
-        border-left: 11px solid rgba(0, 0, 0, 0);
-        border-right: 11px solid rgba(0, 0, 0, 0);
-        content: "";
-        display: inline-block;
-        position: absolute;
-        left: 12px;
-        top: auto;
-        bottom: -11px;
-    }
-    .dropup &:after {
-        border-bottom: none;
-        border-top: 11px solid #FFFFFF;
-        border-left: 11px solid rgba(0, 0, 0, 0);
-        border-right: 11px solid rgba(0, 0, 0, 0);
-        content: "";
-        display: inline-block;
-        position: absolute;
-        left: 12px;
-        top: auto;
-        bottom: -10px;
-    }
-
     &.dropdown-blue > li > a:hover,
     &.dropdown-blue > li > a:focus,
     &.dropdown-blue > li.selected > a{

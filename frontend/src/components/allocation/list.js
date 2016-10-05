@@ -75,7 +75,7 @@ const AllocationList = ({ allocations, nodes, showJobColumn, showClientColumn })
       </tr>
     </thead>
     <tbody>
-      {allocations.map((allocation) => {
+      {allocations.map((allocation, index) => {
           const color = allocationStatusColors[allocation.ClientStatus];
           return (
             <tr className={ color } key={ allocation.ID }>
@@ -99,6 +99,7 @@ const AllocationList = ({ allocations, nodes, showJobColumn, showClientColumn })
                 <DropdownButton
                   noCaret
                   pullRight
+                  dropup={ index > allocations.length - 4 }
                   className="no-border pull-right"
                   title={ optionsGlyph }
                   key={ allocation.Name }
