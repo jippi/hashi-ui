@@ -19,27 +19,27 @@ module.exports = {
         loaders: [
             {
                 test: /\.png$/,
-                loader: "url?limit=100000"
+                loader: "url?limit=100000&name=static/[hash].[ext]&path=/static/"
             },
             {
                 test: /\.jpg$/,
-                loader: "file"
+                loader: "file?name=static/[hash].[ext]&path=/static/"
             },
             {
                 test: /\.(woff|woff2)/,
-                loader: 'url?limit=10000&mimetype=application/font-woff'
+                loader: 'url?limit=10000&mimetype=application/font-woff&name=static/[hash].[ext]&path=/static/'
             },
             {
                 test: /\.ttf/,
-                loader: 'url?limit=10000&mimetype=application/octet-stream'
+                loader: 'url?limit=10000&mimetype=application/octet-stream&name=static/[hash].[ext]&path=/static/'
             },
             {
                 test: /\.eot/,
-                loader: 'file'
+                loader: 'file?name=static/[hash].[ext]&path=/static/'
             },
             {
                 test: /\.svg/,
-                loader: 'url?limit=10000&mimetype=image/svg+xml'
+                loader: 'url?limit=10000&mimetype=image/svg+xml&name=static/[hash].[ext]&path=/static/'
             }
         ]
     },

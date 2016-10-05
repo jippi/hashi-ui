@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 var webpackConfig = require("./webpack-base.config.js");
 webpackConfig = merge(webpackConfig, {
     output: {
-        filename: 'bundle.js'
+        filename: 'static/bundle.js'
     },
     entry: [
         'webpack-dev-server/client?http://localhost:3333',

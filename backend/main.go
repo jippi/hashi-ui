@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 	"syscall"
 
 	"net/http"
@@ -104,8 +105,18 @@ func main() {
 	go hub.Run()
 
 	router := mux.NewRouter()
+
+	myAssetFS := assetFS()
+
 	router.HandleFunc("/ws", hub.Handler)
-	router.PathPrefix("/").Handler(http.FileServer(assetFS()))
+	router.PathPrefix("/static").Handler(http.FileServer(myAssetFS))
+	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if bs, err := myAssetFS.Open("/index.html"); err != nil {
+			logger.Infof("%s", err)
+		} else {
+			http.ServeContent(w, r, "index.html", time.Now(), bs)
+		}
+	})
 
 	logger.Infof("Listening ...")
 	err = http.ListenAndServe(cfg.ListenAddress, router)
