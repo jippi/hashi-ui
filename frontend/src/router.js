@@ -28,6 +28,8 @@ import EvalRaw from './components/evaluation/raw';
 import Clients from './containers/clients';
 import Client from './containers/client';
 import ClientInfo from './components/client/info';
+import ClientAllocations from './components/client/allocations';
+import ClientEvaluations from './components/client/evaluations';
 import ClientRaw from './components/client/raw';
 
 import Servers from './containers/servers';
@@ -63,6 +65,8 @@ const AppRouter = ({ history }) =>
       <Route path="/clients/:nodeId" component={ Client }>
         <IndexRedirect to="/clients/:nodeId/info" />
         <Route path="/clients/:nodeId/info" component={ ClientInfo } />
+        <Route path="/clients/:nodeId/allocations" component={ ClientAllocations } />
+        <Route path="/clients/:nodeId/evaluations" component={ ClientEvaluations } />
         <Route path="/clients/:nodeId/raw" component={ ClientRaw } />
       </Route>
 

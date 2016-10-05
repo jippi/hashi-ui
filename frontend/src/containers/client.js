@@ -17,6 +17,14 @@ class Client extends Component {
                     path: 'info',
                 },
                 {
+                    name: 'Allocations',
+                    path: 'allocations',
+                },
+                {
+                    name: 'Evaluations',
+                    path: 'evaluations',
+                },
+                {
                     name: 'Raw',
                     path: 'raw',
                 },
