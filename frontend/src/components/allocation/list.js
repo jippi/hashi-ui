@@ -19,45 +19,17 @@ const getAllocationNumberFromName = (allocationName) => {
 
 const optionsGlyph = <Glyphicon glyph="option-vertical" />;
 
-const jobHeaderColumn = (display) => {
-    let output;
+const jobHeaderColumn = display =>
+    (display ? <th>Job</th> : null);
 
-    if (display) {
-        output = <th>Job</th>;
-    }
+const jobColumn = (allocation, display) =>
+    (display ? <td><NomadLink jobId={ allocation.JobID } short="true" /></td> : null);
 
-    return output;
-};
+const clientHeaderColumn = display =>
+    (display ? <th>Client</th> : null);
 
-const jobColumn = (allocation, display) => {
-    let output;
-
-    if (display) {
-        output = <td><NomadLink jobId={ allocation.JobID } short="true" /></td>;
-    }
-
-    return output;
-};
-
-const clientHeaderColumn = (display) => {
-    let output;
-
-    if (display) {
-        output = <th>Client</th>;
-    }
-
-    return output;
-};
-
-const clientColumn = (allocation, nodes, display) => {
-    let output;
-
-    if (display) {
-        output = <td><NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short="true" /></td>;
-    }
-
-    return output;
-};
+const clientColumn = (allocation, nodes, display) =>
+    (display ? <td><NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short="true" /></td> : null);
 
 const AllocationList = ({ allocations, nodes, showJobColumn, showClientColumn }) =>
   <table className="table table-hover table-striped">
