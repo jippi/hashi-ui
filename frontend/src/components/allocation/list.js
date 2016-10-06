@@ -49,6 +49,26 @@ class AllocationList extends Component {
         return allocations;
     }
 
+    clientStatusFilter() {
+        const location = this.props.location;
+        const query = this.props.location.query || {};
+
+        let title = 'Client Status';
+        if ('status' in query) {
+            title = <span>{title}: <code>{ query.status }</code></span>;
+        }
+
+        return (
+          <DropdownButton title={ title } key="filter-client-status" id="filter-client-status">
+            <li><Link to={ location.pathname } query={{ ...query, status: undefined }}>- Any -</Link></li>
+            <li><Link to={ location.pathname } query={{ ...query, status: 'running' }}>Running</Link></li>
+            <li><Link to={ location.pathname } query={{ ...query, status: 'complete' }}>Complete</Link></li>
+            <li><Link to={ location.pathname } query={{ ...query, status: 'lost' }}>Lost</Link></li>
+            <li><Link to={ location.pathname } query={{ ...query, status: 'failed' }}>Failed</Link></li>
+          </DropdownButton>
+        );
+    }
+
     render() {
         const showJobColumn = this.props.showJobColumn;
         const showClientColumn = this.props.showClientColumn;
@@ -57,13 +77,8 @@ class AllocationList extends Component {
 
         return (
           <div>
-            <DropdownButton title="Client Status" key="filter-client-status" id="filter-client-status">
-              <li><Link to={ location.pathname } query={{ status: 'running' }}>Running</Link></li>
-              <li><Link to={ location.pathname } query={{ status: 'complete' }}>Complete</Link></li>
-              <li><Link to={ location.pathname } query={{ status: 'lost' }}>Lost</Link></li>
-              <li><Link to={ location.pathname } query={{ status: 'failed' }}>Failed</Link></li>
-            </DropdownButton>
-
+            &nbsp;
+            { this.clientStatusFilter() }
             <table className="table table-hover table-striped">
               <thead>
                 <tr>
