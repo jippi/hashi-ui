@@ -81,7 +81,7 @@ export default class NomadLink extends Component {
         // tasks
         if (this.props.taskId !== undefined) {
             if (this.props.jobId !== undefined && this.props.taskGroupId !== undefined) {
-                const jobId = this.props.jobId;
+                const jobId = encodeURIComponent(this.props.jobId);
                 const taskGroupId = this.props.taskGroupId;
                 const taskId = this.props.taskId;
 
@@ -100,7 +100,7 @@ export default class NomadLink extends Component {
         // taskGroup (must be after task)
         if (this.props.taskGroupId !== undefined) {
             if (this.props.jobId !== undefined) {
-                const jobId = this.props.jobId;
+                const jobId = encodeURIComponent(this.props.jobId);
                 const taskGroupId = this.props.taskGroupId;
 
                 if (children === undefined) {
@@ -117,7 +117,7 @@ export default class NomadLink extends Component {
 
         // job (must be after task & taskGroup
         if (this.props.jobId !== undefined) {
-            const jobId = this.props.jobId;
+            const jobId = encodeURIComponent(this.props.jobId);
 
             if (children === undefined) {
                 children = short ? shortUUID(jobId) : jobId;
