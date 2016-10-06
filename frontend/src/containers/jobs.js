@@ -34,7 +34,7 @@ class Jobs extends Component {
 
         let title = 'Job Type';
         if ('job_type' in query) {
-            title = <span>{title}: <code>{ query.job_status }</code></span>;
+            title = <span>{title}: <code>{ query.job_type }</code></span>;
         }
 
         return (
