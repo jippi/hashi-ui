@@ -29,6 +29,11 @@ const EvaluationList = ({ evaluations, nodes }) =>
     </tbody>
   </table>;
 
+EvaluationList.defaultProps = {
+    evaluations: [],
+    nodes: [],
+};
+
 EvaluationList.propTypes = {
     evaluations: PropTypes.array.isRequired,
     nodes: PropTypes.array.isRequired,

@@ -2,18 +2,11 @@ import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import { Glyphicon } from 'react-bootstrap';
 
-const clientStatusTextColor = {
-    xcomplete: 'text-success',
-    xrunning: 'text-info',
-    xlost: 'text-warning',
-    xfailed: 'text-danger',
-};
-
 const clientStatusIcon = {
-    complete: <Glyphicon glyph="ok" />,
-    running: <Glyphicon glyph="cog" />,
-    lost: <Glyphicon glyph="remove" />,
-    failed: <Glyphicon glyph="exclamation-sign" />,
+    complete: <span><Glyphicon glyph="stop" /></span>,
+    running: <span className="text-success"><Glyphicon glyph="play" /></span>,
+    lost: <span className="text-danger"><Glyphicon glyph="remove" /></span>,
+    failed: <span className="text-danger"><Glyphicon glyph="exclamation-sign" /></span>,
 };
 
 export function renderDesiredStatus(allocation) {
@@ -32,12 +25,7 @@ export function renderDesiredStatus(allocation) {
 }
 
 export function renderClientStatus(allocation) {
-    let textColor = null;
     let icon = null;
-
-    if (allocation.ClientStatus in clientStatusTextColor) {
-        textColor = clientStatusTextColor[allocation.ClientStatus];
-    }
 
     if (allocation.ClientStatus in clientStatusIcon) {
         icon = clientStatusIcon[allocation.ClientStatus];
@@ -46,7 +34,7 @@ export function renderClientStatus(allocation) {
     return (
       <div>
         <ReactTooltip id={ `client-status-${allocation.ID}` }>{allocation.ClientStatus}</ReactTooltip>
-        <span data-tip data-for={ `client-status-${allocation.ID}` } className={ textColor }>{icon}</span>
+        <span data-tip data-for={ `client-status-${allocation.ID}` }>{icon}</span>
       </div>
     );
 }

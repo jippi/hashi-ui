@@ -138,6 +138,7 @@ NomadLink.propTypes = {
     children: PropTypes.oneOfType([
         PropTypes.array,
         PropTypes.string,
+        React.PropTypes.node,
     ]),
     memberId: PropTypes.string,
     nodeId: PropTypes.string,

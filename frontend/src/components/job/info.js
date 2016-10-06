@@ -12,6 +12,7 @@ class JobInfo extends Component {
     render() {
         const tasks = [];
         const job = this.props.job;
+        const jobMetaBag = job.Meta || {};
 
         // Build the task groups table
         const taskGroups = job.TaskGroups.map((taskGroup) => {
@@ -38,6 +39,7 @@ class JobInfo extends Component {
                 return null;
             });
 
+            const taskGroupMeta = taskGroup.Meta || {};
             return (
               <tr key={ taskGroup.ID }>
                 <td>
@@ -47,7 +49,7 @@ class JobInfo extends Component {
                 </td>
                 <td>{ taskGroup.Count }</td>
                 <td>{ taskGroup.Tasks.length }</td>
-                <td><MetaDisplay asTooltip metaBag={ taskGroup.Meta } /></td>
+                <td><MetaDisplay asTooltip metaBag={ taskGroupMeta } /></td>
                 <td>{ taskGroup.RestartPolicy.Mode }</td>
                 <td><ConstraintTable idPrefix={ taskGroup.ID } asTooltip constraints={ taskGroup.Constraints } /></td>
               </tr>
@@ -79,7 +81,7 @@ class JobInfo extends Component {
 
                 <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12">
                   <legend>Meta Properties</legend>
-                  <MetaDisplay dtWithClass="wide" metaBag={ this.props.job.Meta } />
+                  <MetaDisplay dtWithClass="wide" metaBag={ jobMetaBag } />
                 </div>
               </div>
 

@@ -1,5 +1,6 @@
-import React, { PropTypes } from 'react';
-import { DropdownButton } from 'react-bootstrap';
+import React, { Component, PropTypes } from 'react';
+import { DropdownButton, Glyphicon } from 'react-bootstrap';
+import { Link } from 'react-router';
 import NomadLink from '../link';
 import FormatTime from '../format/time';
 import shortUUID from '../../helpers/uuid';
@@ -17,69 +18,139 @@ const getAllocationNumberFromName = (allocationName) => {
     return match[0];
 };
 
-const AllocationList = ({ allocations, nodes }) =>
-  <table className="table table-hover table-striped">
-    <thead>
-      <tr>
-        <th></th>
-        <th>ID</th>
-        <th>Job</th>
-        <th>Task Group</th>
-        <th>Client</th>
-        <th>Client Status</th>
-        <th>When</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      { allocations.map((allocation) => {
-          const color = allocationStatusColors[allocation.ClientStatus];
-          return (
-            <tr className={ color } key={ allocation.ID }>
-              <td>{ renderClientStatus(allocation) }</td>
-              <td><NomadLink allocId={ allocation.ID } short="true" /></td>
-              <td><NomadLink jobId={ allocation.JobID } short="true" /></td>
-              <td>
-                <NomadLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId }>
-                  { allocation.TaskGroup } ({ getAllocationNumberFromName(allocation.Name) })
-                </NomadLink>
-              </td>
-              <td><NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short="true" /></td>
-              <td>{ renderDesiredStatus(allocation) }</td>
-              <td><FormatTime time={ allocation.CreateTime } /></td>
-              <td>
-                <DropdownButton bsSize="small" title="more" key={ allocation.Name } id={ `actions-${allocation.Name}` }>
-                  <li>
-                    <NomadLink role="menuitem" evalId={ allocation.EvalID }>
-                      Allocation <code>{ shortUUID(allocation.EvalID) }</code>
-                    </NomadLink>
-                  </li>
-                  <li>
-                    <NomadLink role="menuitem" allocId={ allocation.ID } linkAppend="/files">
-                      Files
-                    </NomadLink>
-                  </li>
-                  <li>
-                    <NomadLink role="menuitem" allocId={ allocation.ID } linkAppend="/files?path=/alloc/logs/">
-                      Logs
-                    </NomadLink>
-                  </li>
-                  <li>
-                    <NomadLink role="menuitem" allocId={ allocation.ID }>
-                      Task States
-                    </NomadLink>
-                  </li>
-                </DropdownButton>
-              </td>
-            </tr>
-          );
-      })}
-    </tbody>
-  </table>;
+const optionsGlyph = <Glyphicon glyph="option-vertical" />;
+
+const jobHeaderColumn = display =>
+    (display ? <th>Job</th> : null);
+
+const jobColumn = (allocation, display) =>
+    (display ? <td><NomadLink jobId={ allocation.JobID } short="true" /></td> : null);
+
+const clientHeaderColumn = display =>
+    (display ? <th>Client</th> : null);
+
+const clientColumn = (allocation, nodes, display) =>
+    (display ? <td><NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short="true" /></td> : null);
+
+class AllocationList extends Component {
+
+    filteredAllocations() {
+        const query = this.props.location.query || {};
+        let allocations = this.props.allocations;
+
+        if ('status' in query) {
+            allocations = allocations.filter(allocation => allocation.ClientStatus === query.status);
+        }
+
+        if ('job' in query) {
+            allocations = allocations.filter(allocation => allocation.JobID === query.job);
+        }
+
+        return allocations;
+    }
+
+    render() {
+        const showJobColumn = this.props.showJobColumn;
+        const showClientColumn = this.props.showClientColumn;
+        const allocations = this.props.allocations;
+        const nodes = this.props.nodes;
+
+        return (
+          <div>
+            <DropdownButton title="Client Status" key="filter-client-status" id="filter-client-status">
+              <li><Link to={ location.pathname } query={{ status: 'running' }}>Running</Link></li>
+              <li><Link to={ location.pathname } query={{ status: 'complete' }}>Complete</Link></li>
+              <li><Link to={ location.pathname } query={{ status: 'lost' }}>Lost</Link></li>
+              <li><Link to={ location.pathname } query={{ status: 'failed' }}>Failed</Link></li>
+            </DropdownButton>
+
+            <table className="table table-hover table-striped">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>ID</th>
+                  { jobHeaderColumn(showJobColumn) }
+                  <th>Task Group</th>
+                  <th>Client Status</th>
+                  { clientHeaderColumn(showClientColumn) }
+                  <th>Age</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.filteredAllocations().map((allocation, index) => {
+                    const color = allocationStatusColors[allocation.ClientStatus];
+                    return (
+                      <tr className={ color } key={ allocation.ID }>
+                        <td>{ renderClientStatus(allocation) }</td>
+                        <td><NomadLink allocId={ allocation.ID } short="true" /></td>
+                        { jobColumn(allocation, showJobColumn, nodes) }
+                        <td>
+                          <NomadLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId }>
+                            { allocation.TaskGroup } ({ getAllocationNumberFromName(allocation.Name) })
+                          </NomadLink>
+                        </td>
+                        <td>{ renderDesiredStatus(allocation) }</td>
+                        { clientColumn(allocation, nodes, showClientColumn) }
+                        <td><FormatTime time={ allocation.CreateTime } /></td>
+                        <td>
+                          <NomadLink allocId={ allocation.ID } linkAppend="/files?path=/alloc/logs/">
+                            <Glyphicon glyph="align-left" />
+                          </NomadLink>
+                        </td>
+                        <td>
+                          <DropdownButton
+                            noCaret
+                            pullRight
+                            dropup={ index > allocations.length - 4 }
+                            className="no-border pull-right"
+                            title={ optionsGlyph }
+                            key={ allocation.Name }
+                            id={ `actions-${allocation.Name}` }
+                          >
+                            <li>
+                              <NomadLink role="menuitem" evalId={ allocation.EvalID }>
+                                Allocation <code>{ shortUUID(allocation.EvalID) }</code>
+                              </NomadLink>
+                            </li>
+                            <li>
+                              <NomadLink role="menuitem" allocId={ allocation.ID } linkAppend="/files">
+                                Files
+                              </NomadLink>
+                            </li>
+                            <li>
+                              <NomadLink role="menuitem" allocId={ allocation.ID }>
+                                Task States
+                              </NomadLink>
+                            </li>
+                          </DropdownButton>
+                        </td>
+                      </tr>
+                    );
+                })}
+              </tbody>
+            </table>
+          </div>);
+    }
+}
+
+AllocationList.defaultProps = {
+    allocation: [],
+    nodes: [],
+    location: {},
+
+    showJobColumn: true,
+    showClientColumn: true,
+};
 
 AllocationList.propTypes = {
     allocations: PropTypes.array.isRequired,
     nodes: PropTypes.array.isRequired,
+    location: PropTypes.object.isRequired,
+
+    showJobColumn: PropTypes.bool.isRequired,
+    showClientColumn: PropTypes.bool.isRequired,
 };
 
 export default AllocationList;

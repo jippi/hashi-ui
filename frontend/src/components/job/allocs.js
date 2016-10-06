@@ -9,7 +9,7 @@ const JobAllocs = ({ allocations, nodes, job }) => {
 
     return (
       <div className="tab-pane active">
-        <AllocationList allocations={ allocs } nodes={ nodes } />
+        <AllocationList showJobColumn={ false } allocations={ allocs } nodes={ nodes } />
       </div>
     );
 };
