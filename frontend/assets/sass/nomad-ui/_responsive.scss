@@ -440,6 +440,9 @@
     @include bottombar-x-rotation();
     @include bottombar-back-rotation();
 
+    .navbar-header {
+        padding-left: 15px
+    }
     .navbar-header .navbar-toggle {
         margin: 10px 15px 10px 0;
         width: 40px;
