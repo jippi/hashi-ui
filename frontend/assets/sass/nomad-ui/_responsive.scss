@@ -182,6 +182,9 @@
         padding-left: 0px;
         padding-right: 0px;
     }
+    .perfect-scrollbar-off .main-panel {
+        overflow: hidden;
+    }
     legend {
         padding-top: 10px;
         margin-bottom: 10px;
