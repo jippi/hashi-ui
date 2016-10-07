@@ -6,9 +6,7 @@ class JobEvals extends PureComponent {
 
     render() {
         const jobId = this.props.params.jobId;
-        const evals = this.props.evaluations.filter(evaluation =>
-            evaluation.JobID === jobId
-        );
+        const evals = this.props.evaluations.filter(evaluation => evaluation.JobID === jobId);
 
         return (
           <div className="tab-pane active">

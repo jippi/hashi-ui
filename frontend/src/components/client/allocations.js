@@ -1,31 +1,33 @@
-import React, { PropTypes } from 'react';
+import React, { PureComponent, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import AllocationList from '../allocation/list';
 
-const ClientAllocations = ({ allocations, node }) => {
-    const allocs = allocations.filter(allocation =>
-        allocation.NodeID === node.ID
-    );
+class ClientAllocations extends PureComponent {
 
-    return (
-      <div className="tab-pane active">
-        <AllocationList showClientColumn={ false } allocations={ allocs } />
-      </div>
-    );
-};
+    render() {
+        const nodeId = this.props.params.nodeId;
+        const allocs = this.props.allocations.filter(allocation => allocation.NodeID === nodeId);
 
-function mapStateToProps({ allocations, node }) {
-    return { allocations, node };
+        return (
+          <div className="tab-pane active">
+            <AllocationList showClientColumn={ false } allocations={ allocs } />
+          </div>
+        );
+    }
+}
+
+function mapStateToProps({ allocations }) {
+    return { allocations };
 }
 
 ClientAllocations.defaultProps = {
     allocations: [],
-    node: {},
+    params: {},
 };
 
 ClientAllocations.propTypes = {
     allocations: PropTypes.array.isRequired,
-    node: PropTypes.object.isRequired,
+    params: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(ClientAllocations);
