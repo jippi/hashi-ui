@@ -66,6 +66,16 @@ class Jobs extends Component {
         );
     }
 
+    taskGroupCount(job) {
+        let taskGroupCount = 'N/A';
+
+        if (job.JobSummary !== null) {
+            taskGroupCount = Object.keys(job.JobSummary.Summary).length;
+        }
+
+        return taskGroupCount;
+    }
+
     render() {
         return (
           <div className="row">
@@ -97,7 +107,7 @@ class Jobs extends Component {
                           <td>{ job.Status }</td>
                           <td>{ job.Type }</td>
                           <td>{ job.Priority }</td>
-                          <td>{Object.keys(job.JobSummary.Summary).length}</td>
+                          <td>{ this.taskGroupCount(job) }</td>
                           { getJobStatisticsRow(job) }
                         </tr>
                       )}
