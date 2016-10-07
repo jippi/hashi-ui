@@ -82,6 +82,7 @@ export default class NomadLink extends Component {
         if (this.props.taskId !== undefined) {
             if (this.props.jobId !== undefined && this.props.taskGroupId !== undefined) {
                 const jobId = this.props.jobId;
+                const jobIdUrl = encodeURIComponent(jobId);
                 const taskGroupId = this.props.taskGroupId;
                 const taskId = this.props.taskId;
 
@@ -89,7 +90,7 @@ export default class NomadLink extends Component {
                     children = short ? shortUUID(taskId) : taskId;
                 }
                 return (
-                  <Link { ...linkProps } to={ `/jobs/${jobId}/tasks${linkAppend}` } query={{ taskGroupId, taskId }} >
+                  <Link { ...linkProps } to={ `/jobs/${jobIdUrl}/tasks${linkAppend}` } query={{ taskGroupId, taskId }} >
                     { children }
                   </Link>
                 );
@@ -101,13 +102,14 @@ export default class NomadLink extends Component {
         if (this.props.taskGroupId !== undefined) {
             if (this.props.jobId !== undefined) {
                 const jobId = this.props.jobId;
+                const jobIdUrl = encodeURIComponent(jobId);
                 const taskGroupId = this.props.taskGroupId;
 
                 if (children === undefined) {
                     children = short ? shortUUID(taskGroupId) : taskGroupId;
                 }
                 return (
-                  <Link { ...linkProps } to={ `/jobs/${jobId}/taskGroups${linkAppend}` } query={{ taskGroupId }} >
+                  <Link { ...linkProps } to={ `/jobs/${jobIdUrl}/taskGroups${linkAppend}` } query={{ taskGroupId }} >
                     { children }
                   </Link>
                 );
@@ -118,12 +120,13 @@ export default class NomadLink extends Component {
         // job (must be after task & taskGroup
         if (this.props.jobId !== undefined) {
             const jobId = this.props.jobId;
+            const jobIdUrl = encodeURIComponent(jobId);
 
             if (children === undefined) {
                 children = short ? shortUUID(jobId) : jobId;
             }
             return (
-              <Link { ...linkProps } to={ `/jobs/${jobId}${linkAppend}` }>{ children }</Link>
+              <Link { ...linkProps } to={ `/jobs/${jobIdUrl}${linkAppend}` }>{ children }</Link>
             );
         }
 
