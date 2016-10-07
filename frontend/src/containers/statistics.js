@@ -8,7 +8,15 @@ const Statistics = ({ jobs }) => {
         Starting: 0,
     };
 
+    let hasJobSummary = true;
+
     Object.values(jobs).forEach((job) => {
+        // Guard against releases < 0.4.1 which don't have job summaries
+        if (!('JobSummary' in job)) {
+            hasJobSummary = false;
+            return;
+        }
+
         Object.keys(job.JobSummary.Summary).forEach((taskGroup) => {
             Object.keys(job.JobSummary.Summary[taskGroup]).forEach((stat) => {
                 if (!(stat in clientStatus)) {
@@ -19,6 +27,10 @@ const Statistics = ({ jobs }) => {
             });
         });
     });
+
+    if (!hasJobSummary) {
+        return <div />;
+    }
 
     delete clientStatus.Complete;
 
