@@ -75,10 +75,11 @@ class Jobs extends Component {
                   <h4 className="title">Jobs</h4>
                 </div>
                 <div className="content table-responsive table-full-width">
-                  &nbsp;
-                  {this.jobStatusFilter()}
-                  &nbsp;
-                  {this.jobTypeFilter()}
+                  <div className="content-header">
+                    {this.jobStatusFilter()}
+                    &nbsp;
+                    {this.jobTypeFilter()}
+                  </div>
                   <table className="table table-hover table-striped">
                     <thead>
                       <tr>

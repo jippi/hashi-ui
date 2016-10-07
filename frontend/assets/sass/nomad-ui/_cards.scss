@@ -1,28 +1,11 @@
-.card{
+.card {
     border-radius: $border-radius-base;
     box-shadow: 0 1px 2px rgba(0,0,0,.05),0 0 0 1px rgba(63,63,68,.1);
     background-color: #FFFFFF;
     margin-bottom: 30px;
 
-/*
-    background-image: url('https://images.unsplash.com/photo-1438978280647-f359d95ebda4?q=80&fm=jpg&s=73cb1239b517411534379c92660b2660');
-    background-size: cover;
-    z-index: 1;
-
-    &:before{
-        position: absolute;
-        width: 94%;
-        left: 3%;
-        height: 95%;
-        z-index: 0;
-        background-color: red;
-        display: block;
-        border-radius: 6px;
-        content: "";
-        box-shadow: 0 3px 40px rgba(0, 0, 0, 0.2);
-        top: 24px;
-    }
-*/
+    padding-left: 0px;
+    padding-right: 15px;
 
     .image{
         width: 100%;
@@ -73,6 +56,7 @@
     }
     .content{
         padding: $padding-default-horizontal;
+        padding-left: 15px;
     }
     .content-file{
         font-family: "Courier New", monospace;
@@ -91,7 +75,7 @@
     }
 
     .header{
-        padding: $padding-default-horizontal $padding-default-horizontal 0px;
+        padding: $padding-default-horizontal 0px 0px;
         color: $black-color;
         font-weight: $font-weight-light;
         font-size: $font-size-h4;
