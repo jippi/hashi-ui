@@ -37,23 +37,19 @@ const Statistics = ({ jobs }) => {
         }
 
         batches.push(
-          <div key={ key } className={ `col-xs-4 col-md-2 ${bsStyle}` }>
-            { key } <Badge>{ clientStatus[key] }</Badge>
+          <div key={ key } className="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <div className="card">
+              <div className="content">
+                <span className={ bsStyle }>Tasks { key } <Badge>{ clientStatus[key] }</Badge></span>
+              </div>
+            </div>
           </div>
         );
     });
 
     return (
       <div className="row">
-        <div className="col-md-12">
-          <div className="card">
-            <div className="content center table-responsive statistics-big">
-              <div className="row">
-                { batches }
-              </div>
-            </div>
-          </div>
-        </div>
+        { batches }
       </div>
     );
 };

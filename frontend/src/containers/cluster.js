@@ -1,139 +1,73 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import Doughnut from '../components/charts/doughnut';
+import Progressbar from '../components/charts/progressbar';
 import Events from './events';
 import Statistics from './statistics';
-
-const jobStatusLabels = ['Running', 'Pending', 'Dead'];
-const jobTypeLabels = ['Service', 'Batch', 'System'];
-const nodeStatusLabels = ['Ready', 'Initializing', 'Down'];
-const memberStatusLabels = ['Alive', 'Leaving', 'Left', 'Shutdown'];
-const backgroundColors = ['#449b82', '#FF9500', '#FF4A55'];
 
 class Cluster extends Component {
 
     getChartData() {
         const stats = {
-            jobStatus: [0, 0, 0],
-            jobTypes: [0, 0, 0],
-            nodeStatus: [0, 0, 0],
-            memberStatus: [0, 0, 0, 0],
+            jobStatus: {
+                running: 0,
+                pending: 0,
+                dead: 0,
+            },
+            jobTypes: {
+                service: 0,
+                batch: 0,
+                system: 0,
+            },
+            nodeStatus: {
+                ready: 0,
+                initializing: 0,
+                down: 0,
+            },
+            memberStatus: {
+                alive: 0,
+                leaving: 0,
+                left: 0,
+                shutdown: 0,
+            },
         };
 
         for (const job of this.props.jobs) {
-            switch (job.Status) {
-            case 'running':
-                stats.jobStatus[0] += 1;
-                break;
-            case 'pending':
-                stats.jobStatus[1] += 1;
-                break;
-            case 'dead':
-                stats.jobStatus[2] += 1;
-                break;
-            default:
-            }
-
-            switch (job.Type) {
-            case 'service':
-                stats.jobTypes[0] += 1;
-                break;
-            case 'batch':
-                stats.jobTypes[1] += 1;
-                break;
-            case 'system':
-                stats.jobTypes[2] += 1;
-                break;
-            default:
-            }
+            stats.jobStatus[job.Status] += 1;
+            stats.jobTypes[job.Type] += 1;
         }
 
         for (const node of this.props.nodes) {
-            switch (node.Status) {
-            case 'ready':
-                stats.nodeStatus[0] += 1;
-                break;
-            case 'initializing':
-                stats.nodeStatus[1] += 1;
-                break;
-            case 'down':
-                stats.nodeStatus[2] += 1;
-                break;
-            default:
-            }
+            stats.nodeStatus[node.Status] += 1;
         }
 
         for (const member of this.props.members) {
-            switch (member.Status) {
-            case 'alive':
-                stats.memberStatus[0] += 1;
-                break;
-            case 'leaving':
-                stats.memberStatus[1] += 1;
-                break;
-            case 'left':
-                stats.memberStatus[2] += 1;
-                break;
-            case 'shutdown':
-                stats.memberStatus[3] += 1;
-                break;
-            default:
-            }
+            stats.memberStatus[member.Status] += 1;
         }
 
-        return [
-            {
-                labels: jobStatusLabels,
-                datasets: [{
-                    data: stats.jobStatus,
-                    backgroundColor: backgroundColors,
-                }],
-            },
-            {
-                labels: jobTypeLabels,
-                datasets: [{
-                    data: stats.jobTypes,
-                    backgroundColor: backgroundColors,
-                }],
-            },
-            {
-                labels: nodeStatusLabels,
-                datasets: [{
-                    data: stats.nodeStatus,
-                    backgroundColor: backgroundColors,
-                }],
-            },
-            {
-                labels: memberStatusLabels,
-                datasets: [{
-                    data: stats.memberStatus,
-                    backgroundColor: backgroundColors,
-                }],
-            },
-        ];
+        return stats;
     }
 
     render() {
-        const [jobStatus, jobTypes, nodeStatus, memberStatus] = this.getChartData();
+        const data = this.getChartData();
 
         return (
           <div>
-            <Statistics />
             <div className="row">
-              <div className="col-md-3">
-                <Doughnut title="Server Status" data={ memberStatus } />
+              <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <Progressbar title="Client Status" data={ data.nodeStatus } />
               </div>
-              <div className="col-md-3">
-                <Doughnut title="Client Status" data={ nodeStatus } />
+              <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <Progressbar title="Server Status" data={ data.memberStatus } />
               </div>
-              <div className="col-md-3">
-                <Doughnut title="Job Status" data={ jobStatus } />
+              <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <Progressbar title="Job Status" data={ data.jobStatus } />
               </div>
-              <div className="col-md-3">
-                <Doughnut title="Job Type" data={ jobTypes } />
+              <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+                <Progressbar title="Job Type" data={ data.jobTypes } />
               </div>
             </div>
+            <Statistics />
             <Events />
           </div>
         );

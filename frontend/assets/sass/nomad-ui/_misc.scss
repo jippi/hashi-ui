@@ -6,10 +6,10 @@ body,
 }
 
 a{
-  color: $info-color;
+  color: $color-nomad;
 
   &:hover, &:focus{
-     color: $info-states-color;
+     color: $color-nomad-dark;
      text-decoration: none;
   }
 }
