@@ -4,46 +4,73 @@ import { ProgressBar } from 'react-bootstrap';
 class Progressbar extends Component {
 
     colorIndex(index) {
-        return ['success', 'warning', 'info', 'danger'][index];
+        return {
+            // client status
+            ready: 'success',
+            initializing: 'warning',
+            down: 'danger',
+
+            // server status
+            alive: 'success',
+            leavning: 'warning',
+            left: 'danger',
+            shutdown: 'danger',
+
+            // job status
+            running: 'success',
+            pending: 'warning',
+            dead: 'info',
+
+            // job type
+            service: 'success',
+            batch: 'info',
+            system: 'primary',
+
+            // task states
+            // running: 'success',
+            starting: 'warning',
+            queued: 'info',
+            failed: 'danger',
+            lost: 'danger',
+        }[index];
     }
 
     render() {
         const keys = Object.keys(this.props.data);
-        const sum = keys.reduce((previous, currentValue) => {
-            return previous + this.props.data[currentValue];
+        const normalizedValues = {};
+        keys.forEach(key => (normalizedValues[key.toLowerCase()] = this.props.data[key]));
+        const normalizedKeys = keys.map(string => string.toLowerCase());
+        const sum = normalizedKeys.reduce((previous, currentValue) => {
+            return previous + normalizedValues[currentValue];
         }, 0);
-
-        let numIndex = 0;
-        let labelIndex = 0;
 
         return (
           <div className="card">
             <div className="content">
               <h5>{ this.props.title }</h5>
+
               <ProgressBar>
-                {keys.map((index) => {
+                {normalizedKeys.map((index) => {
                     return (
                       <ProgressBar
-                        bsStyle={ this.colorIndex(numIndex++) }
+                        bsStyle={ this.colorIndex(index) }
                         min={ 0 }
                         max={ sum }
-                        now={ this.props.data[index] }
+                        now={ normalizedValues[index] }
                         key={ index }
                       />
                   );
                 })}
               </ProgressBar>
 
-              <div>
-                {keys.map((index) => {
-                    return (
-                      <span style={{ paddingRight: '10px' }} key={ index }>
-                        <i className={ `fa fa-circle text-${this.colorIndex(labelIndex++)}` }></i>
-                        { index } ({ this.props.data[index] })
-                      </span>
-                    );
-                })}
-              </div>
+              {normalizedKeys.map((index) => {
+                  return (
+                    <span style={{ paddingRight: '10px' }} key={ index }>
+                      <i className={ `fa fa-circle text-${this.colorIndex(index)}` }></i>
+                      { index } ({ normalizedValues[index] })
+                    </span>
+                  );
+              })}
             </div>
           </div>
         );

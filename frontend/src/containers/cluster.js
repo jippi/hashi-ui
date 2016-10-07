@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-
 import Progressbar from '../components/charts/progressbar';
 import Events from './events';
 import Statistics from './statistics';
@@ -54,16 +53,16 @@ class Cluster extends Component {
         return (
           <div>
             <div className="row">
-              <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+              <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <Progressbar title="Client Status" data={ data.nodeStatus } />
               </div>
-              <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+              <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <Progressbar title="Server Status" data={ data.memberStatus } />
               </div>
-              <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+              <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <Progressbar title="Job Status" data={ data.jobStatus } />
               </div>
-              <div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+              <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 <Progressbar title="Job Type" data={ data.jobTypes } />
               </div>
             </div>
