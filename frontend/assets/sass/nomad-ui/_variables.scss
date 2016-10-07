@@ -5,11 +5,10 @@ $color-azure:           #23CCEF;
 $color-purple:          #9368E9;
 $color-red:             #FB404B;
 $color-green:           #87CB16;
-$color-nomad-green:     #449b82;
 $color-orange:          #FFA534;
 $color-blue:            #447DF7;
 $color-black:           #5e5e5e;
-
+$color-nomad-green:     #449b82;
 
 /*      light colors         */
 
@@ -44,8 +43,6 @@ $azure-color-bottom:            	#4091ff;
 
 $green-color-top: 	                #a1eb3a;
 $green-color-bottom: 	            #6dc030;
-
-$nomad-green-color-bottom: 	        #739873;
 
 $orange-color-top: 	                #ffb33b;
 $orange-color-bottom: 	            #ec1657;
@@ -105,7 +102,7 @@ $border-thick:               2px !default;
 $white-color:                #FFFFFF !default;
 $white-bg:                   #FFFFFF !default;
 
-$smoke-bg:                   #EFEFEF !default;
+$smoke-bg:                   #F5F5F5 !default;
 
 $black-bg:                   rgba(30,30,30,.97) !default;
 
@@ -119,9 +116,9 @@ $primary-color:              $color-blue !default;
 $primary-bg:                 $color-blue !default;
 $primary-states-color:       darken($color-blue, 5%) !default;
 
-$info-color:                 #49a98d;
+$info-color:                 $color-nomad-green !default;
 $info-bg:                    $color-azure !default;
-$info-states-color:          darken(#449b82, 6%) !default;
+$info-states-color:          darken($color-nomad-green, 20%) !default;
 
 $success-color:              $color-green !default;
 $success-bg:                 $color-green !default;
@@ -249,11 +246,11 @@ $navbar-padding-a-icons:         6px 15px;
 $navbar-margin-a-icons:          6px  3px;
 
 $navbar-padding-brand:           15px 15px;
-$navbar-margin-brand:             5px  0px;
+$navbar-margin-brand:             7px  0px;
 
 $navbar-margin-brand-icons:      12px auto;
 
-$navbar-margin-btn:              15px  3px;
+$navbar-margin-btn:              10px  3px;
 
 $height-icon:					 64px !default;
 $width-icon:					 64px !default;
@@ -320,4 +317,3 @@ $screen-lg-desktop:          $screen-lg-min !default;
 $screen-xs-max:              ($screen-sm-min - 1) !default;
 $screen-sm-max:              ($screen-md-min - 1) !default;
 $screen-md-max:              ($screen-lg-min - 1) !default;
-

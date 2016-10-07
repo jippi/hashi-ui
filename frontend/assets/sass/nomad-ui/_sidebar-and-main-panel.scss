@@ -12,8 +12,7 @@
     .sidebar-wrapper {
         position: relative;
         z-index: 4;
-
-
+        width: 260px;
         height: calc(100vh - 64px);
 
         > .nav{
@@ -30,7 +29,7 @@
 
     }
 
-    .sidebar-background {
+    .sidebar-background{
         background-image: url('../img/nomad.jpg');
         position: absolute;
         z-index: 1;
@@ -39,17 +38,19 @@
         display: block;
         top: 0;
         left: 0;
-        background-position: left top;
+        background-size: cover;
+        background-position: center center;
+        background-color: $color-nomad-green;
     }
 
     .nav{
 
         li{
             > a{
-                color: #FFFFFF;
-                margin: 5px 15px;
-                opacity: .86;
+                margin: 5px 15px 0px;
                 border-radius: $border-radius-base;
+                color: #FFFFFF;
+                opacity: .86;
             }
 
             &:hover > a{
@@ -76,10 +77,14 @@
             font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
+            white-space: nowrap;
+            position: relative;
+            @extend .animation-transition-general;
 
             .caret{
-                float: right;
-                margin-top: 12px;
+                top: 12px;
+                position: absolute;
+                right: 0;
             }
         }
 
@@ -93,13 +98,16 @@
         }
     }
 
+    .logo-mini{
+        display: none;
+    }
+
 }
 
 .sidebar,
 .bootstrap-navbar{
     .logo{
-        padding: $navbar-padding-a;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding: $padding-default-vertical $padding-default-horizontal;
         position: relative;
         z-index: 4;
 
@@ -114,13 +122,15 @@
 
         .logo-text{
             text-transform: uppercase;
-            padding: 6px $padding-zero;
+            padding: 7px $padding-zero;
             display: block;
             font-size: $font-size-large;
             color: $white-color;
             font-weight: $font-weight-normal;
             line-height: 30px;
             text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .logo-image{
@@ -140,12 +150,22 @@
             }
         }
 
+        &:before{
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            right: 10%;
+            width: 80%;
+            height: 1px;
+            background-color: rgba($white-color, 0.3);
+        }
 
     }
 
     .user{
         border-bottom: 1px solid rgba($white-color, 0.20);
-        padding: 20px 0;
+        padding-bottom: 20px;
+        margin-top: 20px;
 
         .photo{
             width: 80px;
@@ -154,6 +174,7 @@
             border-radius: 50%;
             border: 4px solid rgba($white-color, .3);
             margin: 0 auto;
+            @extend .animation-transition-general;
 
             img{
                 width: 100%;
@@ -166,6 +187,7 @@
             padding: $padding-base-vertical $padding-large-vertical;
             text-align: center;
             display: block;
+            @extend .animation-transition-general;
         }
     }
 
@@ -182,13 +204,14 @@
     }
 
     &:before{
-        opacity: .50;
+        opacity: .33;
         background: #000000;
     }
 
     &:after{
+       background: $color-nomad-green;
        z-index: 3;
-       opacity: 1;
+       opacity: 0.8;
     }
 
     &[data-image]:after,
@@ -206,10 +229,6 @@
     &[data-color="green"]:after{
         @include line-gradient($color-green, rgba($green-color-bottom,.7));
     }
-    &[data-color="nomad-green"]:after{
-        opacity: 0.8;
-        background-color: $color-nomad-green;
-    }
     &[data-color="orange"]:after{
         @include line-gradient($color-orange, rgba($orange-color-bottom,.7));
     }
@@ -225,14 +244,14 @@
 .main-panel{
     background: $smoke-bg;
     position: relative;
-    z-index: 2;
+    // z-index: 2; fix for Modals inside .main-panel
     float: right;
     width: $sidebar-width;
     min-height: 100%;
 
     > .content{
         padding: 30px 15px;
-        min-height: calc(100% - 136px);
+        min-height: calc(100vh - 136px);
     }
 
     > .content-no-padding{
@@ -249,28 +268,308 @@
 }
 
 .sidebar,
-.main-panel{
-    max-height: 100%;
-    height: 100%;
-    -webkit-transition-property: top,bottom;
-    transition-property: top,bottom;
-    -webkit-transition-duration: .2s,.2s;
-    transition-duration: .2s,.2s;
-    -webkit-transition-timing-function: linear,linear;
-    transition-timing-function: linear,linear;
+.main-panel,
+.sidebar-wrapper,
+.navbar-fixed{
+    -webkit-transition-property: top,bottom,width;
+    transition-property: top,bottom, width;
+    -webkit-transition-duration: .2s,.2s, .35s;
+    transition-duration: .2s,.2s, .35s;
+    -webkit-transition-timing-function: linear,linear,ease;
+    transition-timing-function: linear,linear,ease;
     -webkit-overflow-scrolling: touch;
 }
 
-// windows os settings
-.sidebar .sidebar-wrapper,
+.sidebar,
 .main-panel{
-    overflow: hidden;
+    max-height: 100%;
+    height: 100%;
 }
 
-// mac os settings
-.mac-os{
+// windows os settings for perfect scrollbar off
+.sidebar .sidebar-wrapper,
+.main-panel{
+    .perfect-scrollbar-on &,
+    &{
+        overflow: hidden;
+    }
+}
+
+// regular settings for perfect scrollbar off
+.perfect-scrollbar-off{
     .sidebar .sidebar-wrapper,
     .main-panel{
         overflow: auto;
+    }
+}
+
+.visible-on-sidebar-regular{
+    display: inline-block !important;
+}
+.visible-on-sidebar-mini{
+    display: none !important;
+}
+
+@media (min-width: $screen-md) {
+    .hover-collapse{
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 81px;
+        background-color: $white-color;
+        border: 1px solid rgba(0,0,0,.15);
+        border: 1px solid #ccc;
+        border-radius: $border-radius-extreme;
+        padding: 0px;
+
+        @include box-shadow($dropdown-shadow);
+
+    }
+
+    .sidebar-mini{
+        .visible-on-sidebar-regular{
+            display: none !important;
+        }
+        .visible-on-sidebar-mini{
+            display: inline-block !important;
+        }
+        .sidebar{
+            width: 80px;
+            display: block;
+            font-weight: 200;
+            z-index: 3;
+
+            .sidebar-wrapper{
+                overflow: inherit;
+                width: 80px;
+                box-shadow: none;
+            }
+
+            .logo{
+                display: none;
+            }
+
+            .logo-mini{
+                padding: 10px 0px;
+                display: block;
+                margin: 0px;
+                position: relative;
+                z-index: 4;
+
+                &:before{
+                    content: "";
+                    position: absolute;
+                    bottom: -1px;
+                    right: 10%;
+                    width: 80%;
+                    height: 1px;
+                    background-color: rgba($white-color, 0.3);
+                }
+            }
+
+            .sidebar-wrapper > .nav{
+                margin-top: 20px;
+
+                li{
+
+                    // a{
+                    //     margin: 5px 10px;
+                    // }
+
+                    &:hover,
+                    &:focus{
+                        .collapse{
+                            @extend .hover-collapse;
+                        }
+                    }
+                    > a{
+                        margin: 5px 10px;
+
+                        &:before,
+                        &:after{
+                            display:none;
+                        }
+                    }
+                }
+                p{
+                    display: none;
+                }
+
+                i{
+                    float: none;
+                }
+
+                [data-toggle="collapse"] ~ div > ul > li > a {
+                    color: $black-color;
+                    padding: 8px 16px;
+                    margin: 0;
+                    border-radius: 0;
+                }
+
+                [data-toggle="collapse"] ~ div > ul > li:last-child > a{
+                    margin-bottom: 5px;
+                    border-bottom-left-radius: 3px;
+                    border-bottom-right-radius: 3px;
+                }
+
+                [data-toggle="collapse"] ~ div > ul > li:first-child > a{
+                    margin-top: 5px;
+                    border-top-left-radius: 3px;
+                    border-top-right-radius: 3px;
+                }
+
+            }
+
+            .info{
+
+                > a{
+                    height: 0;
+                    padding: 0;
+                    opacity: 0;
+                }
+
+                .collapse .nav{
+                    li{
+                        >a{
+                            margin: 0;
+                            border-radius: 0;
+
+
+                        }
+                    }
+                }
+
+                [data-toggle="collapse"] ~ div > ul > li:last-child > a{
+                    margin-bottom: 5px;
+                    border-bottom-left-radius: 3px;
+                    border-bottom-right-radius: 3px;
+                }
+
+                [data-toggle="collapse"] ~ div > ul > li:first-child > a{
+                    margin-top: 5px;
+                    border-top-left-radius: 3px;
+                    border-top-right-radius: 3px;
+                }
+            }
+
+            .user{
+                position: relative;
+                // margin-top: 20px;
+                // padding: $padding-zero;
+                // padding-bottom: 20px;
+
+                .nav{
+
+                    a{
+                        color: $black-color;
+                    }
+                }
+
+                .photo{
+                    width: 50px;
+                    height: 50px;
+                    border-width: 2px;
+                }
+
+                &:hover{
+
+                    .collapse{
+                        @extend .hover-collapse;
+                    }
+                }
+            }
+
+            .collapse .nav{
+                width: 160px;
+                height: auto;
+                position: relative;
+
+                li{
+                    & > a:hover,
+                    & > a:focus{
+
+                        background-color: $smoke-bg;
+                        opacity: 1;
+                        text-decoration: none;
+                    }
+                }
+                &:after{
+                    border-right: 11px solid #fff;
+                    border-top: 11px solid rgba(0, 0, 0, 0);
+                    border-bottom: 11px solid rgba(0, 0, 0, 0);
+                    position: absolute;
+                    content: "";
+                    display: inline-block;
+                    left:-10px;
+                    top:8px;
+                }
+
+
+                li.active{
+                    > a{
+                        background-color: $smoke-bg;
+                        opacity: 1;
+                        text-decoration: none;
+                    }
+                }
+
+                &:before{
+                    border-right: 11px solid #ccc;
+                    border-top: 11px solid rgba(0, 0, 0, 0);
+                    border-bottom: 11px solid rgba(0, 0, 0, 0);
+                    position: absolute;
+                    content: "";
+                    display: inline-block;
+                    left:-11px;
+                    top:8px;
+                }
+                &:after{
+                    border-right: 11px solid #fff;
+                    border-top: 11px solid rgba(0, 0, 0, 0);
+                    border-bottom: 11px solid rgba(0, 0, 0, 0);
+                    position: absolute;
+                    content: "";
+                    display: inline-block;
+                    left:-10px;
+                    top:8px;
+                }
+
+            }
+
+        }
+
+        .main-panel{
+            width: calc(100% - 80px);
+            margin-left: 80px;
+        }
+
+        .wrapper{
+            height: auto;
+        }
+
+        .sidebar,
+        .main-panel{
+            overflow: visible;
+            max-height: none;
+            height: auto;
+        }
+
+        .navbar-fixed{
+            width: calc(100% - 80px);
+        }
+    }
+}
+
+@media print{
+    .sidebar{
+        display: none !important;
+    }
+    .main-panel{
+        width: 100% !important;
+        max-width: none !important;
+        max-height: none !important;
+    }
+    .wrapper{
+        height: auto !important;
     }
 }

@@ -10,9 +10,7 @@ class Allocations extends PureComponent {
             <div className="col-md-12">
               <div className="card">
                 <div className="header">
-                  <h4 className="title">
-                    Allocations
-                  </h4>
+                  <h4 className="title">Allocations</h4>
                 </div>
                 <div className="content table-responsive table-full-width">
                   <AllocationList { ...this.props } allocations={ this.props.allocations } nodes={ this.props.nodes } />

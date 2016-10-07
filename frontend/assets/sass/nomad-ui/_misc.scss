@@ -47,9 +47,8 @@ input:focus {
 .form-control,
 .input-group-addon,
 .tagsinput,
-.navbar,
 .navbar .alert,
-.panel-collapse{
+.panel-collapse.collapse-hover {
     @include transition($general-transition-time, $transition-linear);
 }
 
@@ -85,12 +84,4 @@ legend{
     position:relative;
     width:100%;
     height: calc(100% - 60px);
-}
-
-.dl-horizontal dt {
-    text-align: left;
-}
-
-dd, dt {
-    line-height: 2;
 }

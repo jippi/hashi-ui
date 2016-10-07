@@ -26,48 +26,50 @@ class AllocationInfo extends Component {
 
         return (
           <Panel key={ name } header={ title }>
-            <Table striped hover>
-              <thead>
-                <tr>
-                  <th>When</th>
-                  <th>Duration</th>
-                  <th>Type</th>
-                  <th>Message</th>
-                  <th>Restart Reason</th>
-                  <th>Exit Code</th>
-                  <th>Signal</th>
-                </tr>
-              </thead>
-              <tbody>
-                { states.Events.map((element, index) => {
-                    if (!lastEventTime) {
-                        lastEventTime = element.Time;
-                    }
+            <div className="content table-responsive table-full-width">
+              <Table striped hover>
+                <thead>
+                  <tr>
+                    <th>When</th>
+                    <th>Duration</th>
+                    <th>Type</th>
+                    <th>Message</th>
+                    <th>Restart Reason</th>
+                    <th>Exit Code</th>
+                    <th>Signal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  { states.Events.map((element, index) => {
+                      if (!lastEventTime) {
+                          lastEventTime = element.Time;
+                      }
 
-                    const output = (
-                      <tr key={ index }>
-                        <td width="10%"><FormatTime time={ element.Time } /></td>
-                        <td>
-                          <FormatTime
-                            time={ element.Time }
-                            now={ lastEventTime }
-                            durationInterval="ms"
-                            durationFormat="h [hour] m [min] s [seconds] S [ms]"
-                          />
-                        </td>
-                        <td>{ element.Type }</td>
-                        <td>{ element.Message }</td>
-                        <td>{ element.RestartReason }</td>
-                        <td>{ element.ExitCode }</td>
-                        <td>{ element.Signal }</td>
-                      </tr>
-                    );
+                      const output = (
+                        <tr key={ index }>
+                          <td width="10%"><FormatTime time={ element.Time } /></td>
+                          <td>
+                            <FormatTime
+                              time={ element.Time }
+                              now={ lastEventTime }
+                              durationInterval="ms"
+                              durationFormat="h [hour] m [min] s [seconds] S [ms]"
+                            />
+                          </td>
+                          <td>{ element.Type }</td>
+                          <td>{ element.Message }</td>
+                          <td>{ element.RestartReason }</td>
+                          <td>{ element.ExitCode }</td>
+                          <td>{ element.Signal }</td>
+                        </tr>
+                      );
 
-                    lastEventTime = element.Time;
-                    return output;
-                })}
-              </tbody>
-            </Table>
+                      lastEventTime = element.Time;
+                      return output;
+                  })}
+                </tbody>
+              </Table>
+            </div>
           </Panel>
         );
     }

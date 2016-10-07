@@ -3,60 +3,62 @@
 @import "nomad-ui/mixins";
 
 //plugins css
-@import "nomad-ui/plugins/animate";
-@import "nomad-ui/plugins/sweetalert2";
+// @import "nomad-ui/plugins/animate";
+// @import "nomad-ui/plugins/sweetalert2";
 
-@import "nomad-ui/plugins/jquery.jvectormap";
-@import "nomad-ui/plugins/datatable";
-@import "nomad-ui/plugins/fullcalendar";
-@import "nomad-ui/plugins/chartist";
-@import "nomad-ui/plugins/bootstrap-select";
-@import "nomad-ui/plugins/perfect-scrollbar";
+// @import "nomad-ui/plugins/jquery.jvectormap";
+// @import "nomad-ui/plugins/bootstrap-table";
+// @import "nomad-ui/plugins/datatables.net";
+// @import "nomad-ui/plugins/fullcalendar";
+// @import "nomad-ui/plugins/chartist";
+// @import "nomad-ui/plugins/perfect-scrollbar";
+// @import "nomad-ui/plugins/bootstrap-select";
 
 // Core CSS
 @import "nomad-ui/typography";
-@import "nomad-ui/misc";
 @import "nomad-ui/sidebar-and-main-panel";
 @import "nomad-ui/buttons";
+@import "nomad-ui/misc";
 @import "nomad-ui/inputs";
-@import "nomad-ui/progress-bars";
-@import "nomad-ui/sliders";
+// @import "nomad-ui/progress-bars";
+// @import "nomad-ui/sliders";
 @import "nomad-ui/forms";
-@import "nomad-ui/alerts";
+// @import "nomad-ui/alerts";
 @import "nomad-ui/tables";
-@import "nomad-ui/tags";
-@import "nomad-ui/tooltips-and-popovers";
-@import "nomad-ui/checkbox-radio-switch";
+// @import "nomad-ui/tags";
+// @import "nomad-ui/tooltips-and-popovers";
+// @import "nomad-ui/checkbox-radio-switch";
 @import "nomad-ui/navbars";
-@import "nomad-ui/footers";
+// @import "nomad-ui/footers";
 
 // Fancy Stuff
-@import "nomad-ui/social-buttons";
+// @import "nomad-ui/social-buttons";
 @import "nomad-ui/dropdown";
-
 @import "nomad-ui/cards";
-
 @import "nomad-ui/collapse";
-@import "nomad-ui/carousel";
-
-@import "nomad-ui/plugins/datetime-picker";
-
+// @import "nomad-ui/carousel";
 // SCSS for Pages
-@import "nomad-ui/pages.scss";
+// @import "nomad-ui/pages.scss";
 
 // Responsive adjustments
 @import "nomad-ui/responsive";
-
 @import "nomad-ui/tabs-navs-pagination";
 
-@media (min-width: 768px) {
-	.dl-horizontal dt.wide {
-		width: 50%
-	}
-}
+.wrapper{
+    position: relative;
+    top: 0;
+    height: 100vh;
 
-body {
-	background-color: #EFEFEF;
+    &:after{
+        display: table;
+        clear: both;
+        content: " ";
+    }
+
+    &.wrapper-full-page{
+        height: auto;
+        min-height: 100vh;
+    }
 }
 
 .pointer {
@@ -65,14 +67,6 @@ body {
 
 dl {
 	margin-bottom: 0;
-}
-
-dd, dt {
-	line-height: 150%
-}
-
-.statistics-big {
-	font-size: 150%
 }
 
 .dotted {
@@ -86,4 +80,25 @@ dd, dt {
 
 .btn.no-border {
 	padding: 0
+}
+
+.dropdown-menu:before {
+	content: initial;
+}
+
+.dropdown-menu:after {
+	content: initial;
+}
+
+.header .btn-group {
+	padding-top: 15px;
+}
+
+.inline-pad {
+	padding-left: 15px;
+	padding-bottom: 15px;
+}
+
+.statistics-big {
+	font-size: 150%
 }

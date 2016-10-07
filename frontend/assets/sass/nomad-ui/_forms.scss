@@ -1,5 +1,5 @@
 form{
-        
+
     label{
         &.radio,
         &.checkbox{
@@ -11,14 +11,14 @@ form{
 }
 
 .form-horizontal{
-    .checkbox,  
+    .checkbox,
     .radio{
         padding-top: 0;
-        
+
         &:first-child,
         &.checkbox-inline,
         &.radio-inline{
-            margin-top: 10px;    
+            margin-top: 10px;
         }
     }
 }

@@ -2,12 +2,9 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
 const Sidebar = ({ location }) =>
-  <div className="col-sm-3 col-md-2 sidebar" data-color="nomad-green">
-    <div className="logo">
-      <Link to={{ pathname: '/cluster' }} className="logo-text" >
-        Nomad
-      </Link>
-    </div>
+  <div className="sidebar">
+    <div className="logo"><Link to={{ pathname: '/cluster' }} className="logo-text">Nomad</Link></div>
+    <div className="logo logo-mini"><Link to={{ pathname: '/cluster' }} className="logo-text">N</Link></div>
     <div className="sidebar-wrapper">
       <ul className="nav">
         <li className={ location.pathname.startsWith('/cluster') ? 'active' : '' }>
