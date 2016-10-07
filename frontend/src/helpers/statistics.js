@@ -4,6 +4,7 @@ const summaryLabels = ['Starting', 'Running', 'Queued', 'Complete', 'Failed', 'L
 
 export function getJobStatisticsHeader() {
     const output = [];
+
     summaryLabels.forEach((key) => {
         output.push(<th key={ `statistics-header-for-${key}` } className="center">{ key }</th>);
     });
@@ -21,15 +22,17 @@ export function getJobStatisticsRow(job) {
         Lost: 0,
     };
 
-    const summary = job.JobSummary.Summary;
-    Object.keys(summary).forEach((taskGroupID) => {
-        counter.Queued += summary[taskGroupID].Queued;
-        counter.Complete += summary[taskGroupID].Complete;
-        counter.Failed += summary[taskGroupID].Failed;
-        counter.Running += summary[taskGroupID].Running;
-        counter.Starting += summary[taskGroupID].Starting;
-        counter.Lost += summary[taskGroupID].Lost;
-    });
+    if ('JobSummary' in job) {
+        const summary = job.JobSummary.Summary;
+        Object.keys(summary).forEach((taskGroupID) => {
+            counter.Queued += summary[taskGroupID].Queued;
+            counter.Complete += summary[taskGroupID].Complete;
+            counter.Failed += summary[taskGroupID].Failed;
+            counter.Running += summary[taskGroupID].Running;
+            counter.Starting += summary[taskGroupID].Starting;
+            counter.Lost += summary[taskGroupID].Lost;
+        });
+    }
 
     const output = [];
     summaryLabels.forEach((key) => {
