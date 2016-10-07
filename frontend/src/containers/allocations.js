@@ -4,14 +4,6 @@ import AllocationList from '../components/allocation/list';
 
 class Allocations extends Component {
 
-    shouldComponentUpdate(nextProps) {
-        if (this.props.nodes.length === 0) {
-            return true;
-        }
-
-        return this.props.allocations !== nextProps.allocations;
-    }
-
     render() {
         return (
           <div className="row">
