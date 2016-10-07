@@ -1,8 +1,16 @@
-import React, { PureComponent, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import AllocationList from '../components/allocation/list';
 
-class Allocations extends PureComponent {
+class Allocations extends Component {
+
+    shouldComponentUpdate(nextProps) {
+        if (this.props.nodes.length === 0) {
+            return true;
+        }
+
+        return this.props.allocations !== nextProps.allocations;
+    }
 
     render() {
         return (
