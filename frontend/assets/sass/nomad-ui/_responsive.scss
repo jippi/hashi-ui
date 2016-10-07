@@ -158,7 +158,21 @@
     .navbar-transparent{
         padding-top: 15px;
     }
-
+    .dl-horizontal dt {
+        float: left;
+        width: 160px;
+        overflow: hidden;
+        clear: left;
+        text-align: right;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .dl-horizontal dd {
+       margin-left: 180px;
+    }
+    .row {
+        padding-bottom: 15px;
+    }
     body {
          position: relative;
     }

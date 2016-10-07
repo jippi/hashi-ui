@@ -68,12 +68,11 @@ class JobInfo extends Component {
                           jobPropValue = jobPropValue.join(', ');
                       }
 
-                      return (
-                        <div key={ jobProp }>
-                          <dt>{ jobProp }</dt>
-                          <dd>{ jobPropValue }</dd>
-                        </div>
-                     );
+                      const result = [];
+                      result.push(<dt>{ jobProp }</dt>);
+                      result.push(<dd>{ jobPropValue }</dd>);
+
+                      return result;
                   }, this)}
                 </dl>
               </div>
