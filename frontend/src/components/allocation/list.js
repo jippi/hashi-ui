@@ -91,7 +91,6 @@ class AllocationList extends Component {
                   { clientHeaderColumn(showClientColumn) }
                   <th>Age</th>
                   <th></th>
-                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -110,17 +109,20 @@ class AllocationList extends Component {
                         <td>{ renderDesiredStatus(allocation) }</td>
                         { clientColumn(allocation, nodes, showClientColumn) }
                         <td><FormatTime time={ allocation.CreateTime } /></td>
-                        <td>
-                          <NomadLink allocId={ allocation.ID } linkAppend="/files?path=/alloc/logs/">
+                        <td className="td-actions">
+                          <NomadLink
+                            className="btn btn-xs btn-info btn-simple"
+                            allocId={ allocation.ID }
+                            linkAppend="/files?path=/alloc/logs/"
+                          >
                             <Glyphicon glyph="align-left" />
                           </NomadLink>
-                        </td>
-                        <td>
+
                           <DropdownButton
                             noCaret
                             pullRight
                             dropup={ index > allocations.length - 4 }
-                            className="no-border pull-right"
+                            className="btn btn-xs btn-simple pull-right"
                             title={ optionsGlyph }
                             key={ allocation.Name }
                             id={ `actions-${allocation.Name}` }
@@ -131,14 +133,10 @@ class AllocationList extends Component {
                               </NomadLink>
                             </li>
                             <li>
-                              <NomadLink role="menuitem" allocId={ allocation.ID } linkAppend="/files">
-                                Files
-                              </NomadLink>
+                              <NomadLink role="menuitem" allocId={ allocation.ID } linkAppend="/files">Files</NomadLink>
                             </li>
                             <li>
-                              <NomadLink role="menuitem" allocId={ allocation.ID }>
-                                Task States
-                              </NomadLink>
+                              <NomadLink role="menuitem" allocId={ allocation.ID }>Task States</NomadLink>
                             </li>
                           </DropdownButton>
                         </td>
