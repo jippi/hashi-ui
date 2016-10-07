@@ -1,32 +1,33 @@
-import React, { PropTypes } from 'react';
+import React, { PureComponent, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import EvaluationList from '../evaluation/list';
 
-const JobEvals = ({ evaluations, nodes, job }) => {
-    const evals = evaluations.filter(evaluation =>
-        evaluation.JobID === job.ID
-    );
+class JobEvals extends PureComponent {
 
-    return (
-      <div className="tab-pane active">
-        <EvaluationList evaluations={ evals } nodes={ nodes } />
-      </div>
-    );
-};
+    render() {
+        const jobId = this.props.params.jobId;
+        const evals = this.props.evaluations.filter(evaluation => evaluation.JobID === jobId);
 
-function mapStateToProps({ evaluations, job, nodes }) {
-    return { evaluations, job, nodes };
+        return (
+          <div className="tab-pane active">
+            <EvaluationList evaluations={ evals } />
+          </div>
+        );
+    }
+}
+
+function mapStateToProps({ evaluations }) {
+    return { evaluations };
 }
 
 JobEvals.defaultProps = {
     evaluations: [],
-    nodes: [],
+    params: {},
 };
 
 JobEvals.propTypes = {
     evaluations: PropTypes.array.isRequired,
-    nodes: PropTypes.array.isRequired,
-    job: PropTypes.object.isRequired,
+    params: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(JobEvals);

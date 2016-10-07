@@ -1,8 +1,8 @@
-import React, { PureComponent, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import AllocationList from '../components/allocation/list';
 
-class Allocations extends PureComponent {
+class Allocations extends Component {
 
     render() {
         return (

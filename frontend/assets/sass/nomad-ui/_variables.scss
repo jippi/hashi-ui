@@ -8,7 +8,8 @@ $color-green:           #87CB16;
 $color-orange:          #FFA534;
 $color-blue:            #447DF7;
 $color-black:           #5e5e5e;
-$color-nomad-green:     #449b82;
+$color-nomad:     			#449b82;
+$color-nomad-dark:			darken($color-nomad, 20%) !default;
 
 /*      light colors         */
 
@@ -116,9 +117,9 @@ $primary-color:              $color-blue !default;
 $primary-bg:                 $color-blue !default;
 $primary-states-color:       darken($color-blue, 5%) !default;
 
-$info-color:                 $color-nomad-green !default;
+$info-color:                 $color-azure !default;
 $info-bg:                    $color-azure !default;
-$info-states-color:          darken($color-nomad-green, 20%) !default;
+$info-states-color:          darken($info-bg, 5%) !default;
 
 $success-color:              $color-green !default;
 $success-bg:                 $color-green !default;

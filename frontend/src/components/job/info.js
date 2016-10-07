@@ -58,64 +58,65 @@ class JobInfo extends Component {
 
         return (
           <div className="tab-pane active">
-            <div className="content">
-              <div className="row">
-                <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12">
-                  <legend>Job Properties</legend>
-                  <dl className="dl-horizontal">
-                    { jobProps.map((jobProp) => {
-                        let jobPropValue = this.props.job[jobProp];
-                        if (Array.isArray(jobPropValue)) {
-                            jobPropValue = jobPropValue.join(', ');
-                        }
+            <div className="row">
+              <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6">
+                <legend>Job Properties</legend>
+                <dl className="dl-horizontal">
+                  { jobProps.map((jobProp) => {
+                      let jobPropValue = this.props.job[jobProp];
+                      if (Array.isArray(jobPropValue)) {
+                          jobPropValue = jobPropValue.join(', ');
+                      }
 
-                        return (
-                          <div key={ jobProp }>
-                            <dt>{ jobProp }</dt>
-                            <dd>{ jobPropValue }</dd>
-                          </div>
-                       );
-                    }, this)}
-                  </dl>
-                </div>
-
-                <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12">
-                  <legend>Meta Properties</legend>
-                  <MetaDisplay dtWithClass="wide" metaBag={ jobMetaBag } />
-                </div>
+                      return (
+                        <div key={ jobProp }>
+                          <dt>{ jobProp }</dt>
+                          <dd>{ jobPropValue }</dd>
+                        </div>
+                     );
+                  }, this)}
+                </dl>
               </div>
 
-              <br /><br />
-
-              <div className="row">
-                <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12">
-                  <legend>Constraints</legend>
-                  <ConstraintTable idPrefix={ this.props.job.ID } constraints={ this.props.job.Constraints } />
-                </div>
+              <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6">
+                <legend>Meta Properties</legend>
+                <MetaDisplay dtWithClass="wide" metaBag={ jobMetaBag } />
               </div>
+            </div>
 
-              <br /><br />
+            <div className="row">
+              <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12">
+                <legend>Constraints</legend>
+                <ConstraintTable idPrefix={ this.props.job.ID } constraints={ this.props.job.Constraints } />
+              </div>
+            </div>
 
-              <legend>Task Groups</legend>
-              { (taskGroups.length > 0) ?
-                <Table
-                  classes="table table-hover table-striped"
-                  headers={ ['Name', 'Count', 'Tasks', 'Meta', 'Restart Policy', 'Constraints'] }
-                  body={ taskGroups }
-                />
-                : null
-              }
+            <div className="row">
+              <div className="col-lg-12 col-md-12 col-sm-12 col-sx-12">
+                <legend>Task Groups</legend>
+                { (taskGroups.length > 0) ?
+                  <Table
+                    classes="table table-hover table-striped"
+                    headers={ ['Name', 'Count', 'Tasks', 'Meta', 'Restart Policy', 'Constraints'] }
+                    body={ taskGroups }
+                  />
+                  : null
+                }
+              </div>
+            </div>
 
-              <br /><br />
-              <legend>Tasks</legend>
-              { (tasks.length > 0) ?
-                <Table
-                  classes="table table-hover table-striped"
-                  headers={ ['Task Group', 'Name', 'Driver', 'CPU', 'Memory', 'Disk', 'Constraints'] }
-                  body={ tasks }
-                />
-                : null
-              }
+            <div className="row">
+              <div className="col-lg-12 col-md-12 col-sm-12 col-sx-12">
+                <legend>Tasks</legend>
+                { (tasks.length > 0) ?
+                  <Table
+                    classes="table table-hover table-striped"
+                    headers={ ['Task Group', 'Name', 'Driver', 'CPU', 'Memory', 'Disk', 'Constraints'] }
+                    body={ tasks }
+                  />
+                  : null
+                }
+              </div>
             </div>
           </div>
         );

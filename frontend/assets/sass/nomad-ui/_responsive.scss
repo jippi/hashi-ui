@@ -154,6 +154,7 @@
             margin-bottom: 15px;
         }
     }
+
     .navbar-transparent{
         padding-top: 15px;
     }
@@ -168,6 +169,22 @@
        &.wrapper-full-page{
            height: auto;
        }
+    }
+    .tab-pane div .inline-pad {
+        padding-left: 0px;
+        padding-bottom: 0px;
+    }
+    .card .content.table-responsive {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    .container-fluid {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+    legend {
+        padding-top: 10px;
+        margin-bottom: 10px;
     }
 
     .navbar > div{

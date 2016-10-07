@@ -34,6 +34,26 @@ const clientColumn = (allocation, nodes, display) =>
 
 class AllocationList extends Component {
 
+    shouldComponentUpdate(nextProps) {
+        // if the location change, re-render the element
+        if (nextProps.location.query !== this.props.location.query) {
+            return true;
+        }
+
+        // if we should show the client column and we got no nodes, allow update
+        if (nextProps.showClientColumn && this.props.nodes.length === 0) {
+            return true;
+        }
+
+        // if allocations haven't changed, don't update the component
+        if (this.props.allocations === nextProps.allocations) {
+            return false;
+        }
+
+        // reject all other updates
+        return false;
+    }
+
     filteredAllocations() {
         const query = this.props.location.query || {};
         let allocations = this.props.allocations;
@@ -154,7 +174,7 @@ class AllocationList extends Component {
 }
 
 AllocationList.defaultProps = {
-    allocation: [],
+    allocations: [],
     nodes: [],
     location: {},
 

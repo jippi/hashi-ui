@@ -1,32 +1,37 @@
-import React, { PropTypes } from 'react';
+import React, { PureComponent, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import AllocationList from '../allocation/list';
 
-const JobAllocs = ({ allocations, nodes, job }) => {
-    const allocs = allocations.filter(allocation =>
-        allocation.JobID === job.ID
-    );
+class JobAllocs extends PureComponent {
 
-    return (
-      <div className="tab-pane active">
-        <AllocationList showJobColumn={ false } allocations={ allocs } nodes={ nodes } />
-      </div>
-    );
-};
+    render() {
+        const jobId = this.props.params.jobId;
+        const allocs = this.props.allocations.filter(allocation =>
+            allocation.JobID === jobId
+        );
 
-function mapStateToProps({ allocations, job, nodes }) {
-    return { allocations, job, nodes };
+        return (
+          <div className="tab-pane active">
+            <AllocationList showJobColumn={ false } allocations={ allocs } nodes={ this.props.nodes } />
+          </div>
+        );
+    }
+}
+
+function mapStateToProps({ allocations, nodes }) {
+    return { allocations, nodes };
 }
 
 JobAllocs.defaultProps = {
     allocations: [],
     nodes: [],
+    params: {},
 };
 
 JobAllocs.propTypes = {
     allocations: PropTypes.array.isRequired,
+    params: PropTypes.object.isRequired,
     nodes: PropTypes.array.isRequired,
-    job: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(JobAllocs);

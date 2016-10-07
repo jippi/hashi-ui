@@ -1,4 +1,3 @@
-// import React, { PureComponent, PropTypes } from 'react';
 import React, { PureComponent } from 'react';
 
 class Topbar extends PureComponent {

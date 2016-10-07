@@ -40,7 +40,7 @@
         left: 0;
         background-size: cover;
         background-position: center center;
-        background-color: $color-nomad-green;
+        background-color: $color-nomad;
     }
 
     .nav{
@@ -209,7 +209,7 @@
     }
 
     &:after{
-       background: $color-nomad-green;
+       background: $color-nomad;
        z-index: 3;
        opacity: 0.8;
     }

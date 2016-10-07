@@ -1,31 +1,33 @@
-import React, { PropTypes } from 'react';
+import React, { PureComponent, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import EvaluationList from '../evaluation/list';
 
-const ClientEvaluations = ({ evaluations, node }) => {
-    const evals = evaluations.filter(evaluation =>
-        evaluation.NodeID === node.ID
-    );
+class ClientEvaluations extends PureComponent {
 
-    return (
-      <div className="tab-pane active">
-        <EvaluationList evaluations={ evals } />
-      </div>
-    );
-};
+    render() {
+        const nodeId = this.props.params.nodeId;
+        const evals = this.props.evaluations.filter(evaluation => evaluation.NodeID === nodeId);
 
-function mapStateToProps({ evaluations, node }) {
-    return { evaluations, node, nodes: [] };
+        return (
+          <div className="tab-pane active">
+            <EvaluationList evaluations={ evals } />
+          </div>
+        );
+    }
+}
+
+function mapStateToProps({ evaluations }) {
+    return { evaluations };
 }
 
 ClientEvaluations.defaultProps = {
     evaluations: [],
-    node: {},
+    params: {},
 };
 
 ClientEvaluations.propTypes = {
     evaluations: PropTypes.array.isRequired,
-    node: PropTypes.object.isRequired,
+    params: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(ClientEvaluations);

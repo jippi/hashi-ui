@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import NomadLink from '../link';
 
-const EvaluationList = ({ evaluations, nodes }) =>
+const EvaluationList = ({ evaluations }) =>
   <div className="content table-responsive table-full-width">
     <table className="table table-hover table-striped">
       <thead>
@@ -11,7 +11,6 @@ const EvaluationList = ({ evaluations, nodes }) =>
           <th>Status</th>
           <th>Type</th>
           <th>Priority</th>
-          <th>Node</th>
         </tr>
       </thead>
       <tbody>
@@ -22,9 +21,6 @@ const EvaluationList = ({ evaluations, nodes }) =>
             <td>{ evaluation.Status }</td>
             <td>{ evaluation.Type }</td>
             <td>{ evaluation.Priority }</td>
-            <td>
-              <NomadLink nodeId={ evaluation.NodeID } nodeList={ nodes } short="true" />
-            </td>
           </tr>
         )}
       </tbody>
@@ -33,12 +29,10 @@ const EvaluationList = ({ evaluations, nodes }) =>
 
 EvaluationList.defaultProps = {
     evaluations: [],
-    nodes: [],
 };
 
 EvaluationList.propTypes = {
     evaluations: PropTypes.array.isRequired,
-    nodes: PropTypes.array.isRequired,
 };
 
 export default EvaluationList;
