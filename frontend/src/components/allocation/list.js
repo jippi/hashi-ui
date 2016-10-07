@@ -80,71 +80,75 @@ class AllocationList extends Component {
             <div className="inline-pad">
               { this.clientStatusFilter() }
             </div>
-            <table className="table table-hover table-striped">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>ID</th>
-                  { jobHeaderColumn(showJobColumn) }
-                  <th>Task Group</th>
-                  <th>Client Status</th>
-                  { clientHeaderColumn(showClientColumn) }
-                  <th>Age</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {this.filteredAllocations().map((allocation, index) => {
-                    const color = allocationStatusColors[allocation.ClientStatus];
-                    return (
-                      <tr className={ color } key={ allocation.ID }>
-                        <td>{ renderClientStatus(allocation) }</td>
-                        <td><NomadLink allocId={ allocation.ID } short="true" /></td>
-                        { jobColumn(allocation, showJobColumn, nodes) }
-                        <td>
-                          <NomadLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId }>
-                            { allocation.TaskGroup } ({ getAllocationNumberFromName(allocation.Name) })
-                          </NomadLink>
-                        </td>
-                        <td>{ renderDesiredStatus(allocation) }</td>
-                        { clientColumn(allocation, nodes, showClientColumn) }
-                        <td><FormatTime time={ allocation.CreateTime } /></td>
-                        <td className="td-actions">
-                          <NomadLink
-                            className="btn btn-xs btn-info btn-simple"
-                            allocId={ allocation.ID }
-                            linkAppend="/files?path=/alloc/logs/"
-                          >
-                            <Glyphicon glyph="align-left" />
-                          </NomadLink>
+            <div className="content table-responsive table-full-width">
+              <table className="table table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>ID</th>
+                    { jobHeaderColumn(showJobColumn) }
+                    <th>Task Group</th>
+                    <th>Client Status</th>
+                    { clientHeaderColumn(showClientColumn) }
+                    <th>Age</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.filteredAllocations().map((allocation, index) => {
+                      const color = allocationStatusColors[allocation.ClientStatus];
+                      return (
+                        <tr className={ color } key={ allocation.ID }>
+                          <td>{ renderClientStatus(allocation) }</td>
+                          <td><NomadLink allocId={ allocation.ID } short="true" /></td>
+                          { jobColumn(allocation, showJobColumn, nodes) }
+                          <td>
+                            <NomadLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId }>
+                              { allocation.TaskGroup } ({ getAllocationNumberFromName(allocation.Name) })
+                            </NomadLink>
+                          </td>
+                          <td>{ renderDesiredStatus(allocation) }</td>
+                          { clientColumn(allocation, nodes, showClientColumn) }
+                          <td><FormatTime time={ allocation.CreateTime } /></td>
+                          <td className="td-actions">
+                            <NomadLink
+                              className="btn btn-xs btn-info btn-simple"
+                              allocId={ allocation.ID }
+                              linkAppend="/files?path=/alloc/logs/"
+                            >
+                              <Glyphicon glyph="align-left" />
+                            </NomadLink>
 
-                          <DropdownButton
-                            noCaret
-                            pullRight
-                            dropup={ index > allocations.length - 4 }
-                            className="btn btn-xs btn-simple pull-right"
-                            title={ optionsGlyph }
-                            key={ allocation.Name }
-                            id={ `actions-${allocation.Name}` }
-                          >
-                            <li>
-                              <NomadLink role="menuitem" evalId={ allocation.EvalID }>
-                                Allocation <code>{ shortUUID(allocation.EvalID) }</code>
-                              </NomadLink>
-                            </li>
-                            <li>
-                              <NomadLink role="menuitem" allocId={ allocation.ID } linkAppend="/files">Files</NomadLink>
-                            </li>
-                            <li>
-                              <NomadLink role="menuitem" allocId={ allocation.ID }>Task States</NomadLink>
-                            </li>
-                          </DropdownButton>
-                        </td>
-                      </tr>
-                    );
-                })}
-              </tbody>
-            </table>
+                            <DropdownButton
+                              noCaret
+                              pullRight
+                              dropup={ index > allocations.length - 4 }
+                              className="btn btn-xs btn-simple pull-right"
+                              title={ optionsGlyph }
+                              key={ allocation.Name }
+                              id={ `actions-${allocation.Name}` }
+                            >
+                              <li>
+                                <NomadLink role="menuitem" evalId={ allocation.EvalID }>
+                                  Allocation <code>{ shortUUID(allocation.EvalID) }</code>
+                                </NomadLink>
+                              </li>
+                              <li>
+                                <NomadLink role="menuitem" allocId={ allocation.ID } linkAppend="/files">
+                                  Files
+                                </NomadLink>
+                              </li>
+                              <li>
+                                <NomadLink role="menuitem" allocId={ allocation.ID }>Task States</NomadLink>
+                              </li>
+                            </DropdownButton>
+                          </td>
+                        </tr>
+                      );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>);
     }
 }

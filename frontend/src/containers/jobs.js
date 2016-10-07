@@ -77,6 +77,7 @@ class Jobs extends Component {
                   &nbsp;
                   {this.jobTypeFilter()}
                 </div>
+
                 <div className="content table-responsive table-full-width">
                   <table className="table table-hover table-striped">
                     <thead>

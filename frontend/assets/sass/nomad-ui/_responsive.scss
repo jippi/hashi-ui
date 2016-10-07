@@ -147,6 +147,10 @@
         }
 
         .card{
+            .header {
+                padding-bottom: 15px;
+            }
+
             margin-bottom: 15px;
         }
     }
@@ -629,6 +633,7 @@
     }
 
     .table-responsive {
+        border: 0px;
         width: 100%;
         margin-bottom: 15px;
         overflow-x: scroll;
