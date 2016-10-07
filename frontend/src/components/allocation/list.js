@@ -77,8 +77,9 @@ class AllocationList extends Component {
 
         return (
           <div>
-            &nbsp;
-            { this.clientStatusFilter() }
+            <div className="inline-pad">
+              { this.clientStatusFilter() }
+            </div>
             <table className="table table-hover table-striped">
               <thead>
                 <tr>

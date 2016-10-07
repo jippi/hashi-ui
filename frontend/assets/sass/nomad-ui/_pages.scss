@@ -1,8 +1,13 @@
 .wrapper{
-    background: $smoke-bg;
     position: relative;
     top: 0;
     height: 100vh;
+
+    &:after{
+        display: table;
+        clear: both;
+        content: " ";
+    }
 
     &.wrapper-full-page{
         height: auto;
@@ -83,7 +88,7 @@
     }
 
     .footer nav > ul a:not(.btn),
-    .footer .copyright,
+    .footer,
     .footer .copyright a{
         color: $white-color;
         font-size: $font-size-base;
@@ -208,4 +213,3 @@
         }
     }
 }
-

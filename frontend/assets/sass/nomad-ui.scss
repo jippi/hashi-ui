@@ -7,17 +7,18 @@
 @import "nomad-ui/plugins/sweetalert2";
 
 @import "nomad-ui/plugins/jquery.jvectormap";
-@import "nomad-ui/plugins/datatable";
+@import "nomad-ui/plugins/bootstrap-table";
+@import "nomad-ui/plugins/datatables.net";
 @import "nomad-ui/plugins/fullcalendar";
 @import "nomad-ui/plugins/chartist";
-@import "nomad-ui/plugins/bootstrap-select";
 @import "nomad-ui/plugins/perfect-scrollbar";
+@import "nomad-ui/plugins/bootstrap-select";
 
 // Core CSS
 @import "nomad-ui/typography";
-@import "nomad-ui/misc";
 @import "nomad-ui/sidebar-and-main-panel";
 @import "nomad-ui/buttons";
+@import "nomad-ui/misc";
 @import "nomad-ui/inputs";
 @import "nomad-ui/progress-bars";
 @import "nomad-ui/sliders";
@@ -33,31 +34,15 @@
 // Fancy Stuff
 @import "nomad-ui/social-buttons";
 @import "nomad-ui/dropdown";
-
 @import "nomad-ui/cards";
-
 @import "nomad-ui/collapse";
 @import "nomad-ui/carousel";
-
-@import "nomad-ui/plugins/datetime-picker";
-
 // SCSS for Pages
 @import "nomad-ui/pages.scss";
 
 // Responsive adjustments
 @import "nomad-ui/responsive";
-
 @import "nomad-ui/tabs-navs-pagination";
-
-@media (min-width: 768px) {
-	.dl-horizontal dt.wide {
-		width: 50%
-	}
-}
-
-body {
-	background-color: #EFEFEF;
-}
 
 .pointer {
 	cursor: pointer;
@@ -65,14 +50,6 @@ body {
 
 dl {
 	margin-bottom: 0;
-}
-
-dd, dt {
-	line-height: 150%
-}
-
-.statistics-big {
-	font-size: 150%
 }
 
 .dotted {
@@ -88,10 +65,23 @@ dd, dt {
 	padding: 0
 }
 
-.content-header {
+.dropdown-menu:before {
+	content: initial;
+}
+
+.dropdown-menu:after {
+	content: initial;
+}
+
+.header .btn-group {
+	padding-top: 15px;
+}
+
+.inline-pad {
+	padding-left: 15px;
 	padding-bottom: 15px;
 }
 
-.card {
-	padding-left: 15px;
+.statistics-big {
+	font-size: 150%
 }

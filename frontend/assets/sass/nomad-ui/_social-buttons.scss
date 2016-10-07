@@ -1,16 +1,17 @@
-.btn-social { 
+.btn-social {
 	//@include btn-styles($default-color, $default-states-color);
 	opacity: 0.85;
 	padding: 8px 9px;
 
 	.fa {
 		font-size: 18px;
+		width: 20px;
 		vertical-align: middle;
 		display: inline-block;
 	}
 
 	&.btn-round {
-		padding: 8px 10px;
+		padding: 8px;
 	}
 
 	&.btn-simple {

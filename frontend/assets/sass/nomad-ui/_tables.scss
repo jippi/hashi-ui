@@ -1,6 +1,5 @@
-.table {
-    left: 10px;
-
+.table{
+   
    .radio,
    .checkbox{
         position: relative;
@@ -10,7 +9,7 @@
         padding: 0px 0px;
         margin: 0px 5px;
         text-align: center;
-
+        
         .icons{
             left: 5px;
         }
@@ -25,7 +24,7 @@
        vertical-align: middle;
        border-color: $light-gray;
    }
-
+   
     > thead > tr > th{
         border-bottom-width: 1px;
         font-size: $font-size-small;
@@ -37,7 +36,7 @@
 
    .td-actions .btn{
         @include opacity(0.36);
-
+    
         &.btn-xs{
             padding-left: 3px;
             padding-right: 3px;
@@ -46,17 +45,17 @@
     .td-actions{
         min-width: 90px;
     }
-
+    
     > tbody > tr{
         position: relative;
-
+        
         &:hover{
             .td-actions .btn{
                 @include opacity(1);
             }
         }
     }
-}
+} 
 
 .table-bigboy{
     > thead > tr > th{
@@ -67,12 +66,12 @@
     }
     > tbody > tr > td{
         font-size: $font-size-base;
-
+        
         b{
             display: block;
             margin-bottom: 5px;
         }
-    }
+    } 
     .td-name,
     {
        font-weight: $font-weight-light;
@@ -84,16 +83,16 @@
     .td-number{
         text-align: right;
         min-width: 110px;
-
+        
         small{
             margin-right: 3px;
         }
     }
-
+    
     .td-actions{
         width: 60px;
         min-width: auto;
-
+        
         .btn{
             float: right;
         }
@@ -103,12 +102,12 @@
         height: 120px;
         overflow: hidden;
         display: block;
-
+        
         border-radius: $border-radius-large;
-
+        
         img{
             width: 100%;
-        }
+        }    
     }
 }
 
@@ -116,3 +115,6 @@
 @include table-row-variant('info', $light-azure);
 @include table-row-variant('warning', $light-orange);
 @include table-row-variant('danger', $light-red);
+
+
+

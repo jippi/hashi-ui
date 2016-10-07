@@ -30,23 +30,20 @@
 }
 .panel-heading{
     padding: 0;
-    
+
     .caret{
         float: right;
-        margin-top: 12px; 
-        margin-right: $padding-default-horizontal;     
+        margin-top: 12px;
+        margin-right: $padding-default-horizontal;
     }
-    
+
     a{
         padding: $padding-default-vertical 0;
         display: block;
         width: 100%;
-        
+
         .content-full-width &{
             padding: $padding-default-vertical $padding-default-horizontal;
-        }        
+        }
     }
 }
-
-
-

@@ -11,6 +11,12 @@
     font-size: $font-size-navbar;
     border-radius: 0;
 
+    .navbar-minimize{
+        float: left;
+        margin: 3px 15px;
+    }
+
+
     .navbar-brand {
         font-weight: $font-weight-normal;
         margin: $navbar-margin-brand;
@@ -22,6 +28,7 @@
              padding: $navbar-padding-a;
              margin: $navbar-margin-a;
              position: relative;
+
          }
          > li > a.btn{
              margin: $navbar-margin-a-btn;
@@ -55,7 +62,7 @@
             color: #FFFFFF;
             font-weight: bold;
             line-height: 18px;
-            top: 0px;
+            top: 2px;
             left: 7px;
         }
     }
@@ -93,7 +100,7 @@
 
     & ~ .main-panel{
          > .content{
-            padding-top: 90px;
+            padding-top: 95px;
             min-height: calc(100% - 71px);
         }
     }

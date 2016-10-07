@@ -1,6 +1,6 @@
 @media (min-width: $screen-md-min){
     .navbar-form {
-        margin: 10px 0;
+        margin: 12px 0;
         padding-left: 10px;
         padding-right: 10px;
     }
@@ -105,6 +105,7 @@
         }
     }
 
+
     .table-full-width{
         margin-left: -15px;
         margin-right: -15px;
@@ -142,7 +143,7 @@
         width: 100%;
 
         > .content{
-            padding: 0px 0px;
+            padding: 15px 0px;
         }
 
         .card{
@@ -284,6 +285,22 @@
                 -webkit-box-shadow: none;
                 box-shadow: none;
             }
+
+            .dropdown-menu{
+                li{
+                    a{
+                        padding-left: 60px;
+                    }
+                }
+            }
+
+            .dropdown-with-icons{
+                li{
+                    a{
+                        padding-left: 15px;
+                    }
+                }
+            }
         }
 
         .dropdown-with-icons{
@@ -336,6 +353,24 @@
 
                 }
             }
+
+            p {
+                font-size: 12px;
+                font-weight: 600;
+                line-height: 30px;
+                margin: 0;
+                text-transform: uppercase;
+                display: inline-block;
+            }
+
+            i {
+                float: left;
+                font-size: 28px;
+                line-height: 30px;
+                margin-right: 15px;
+                text-align: center;
+                width: 30px;
+            }
         }
 
 
@@ -361,6 +396,10 @@
             background-color: #222222;
         }
 
+    }
+
+    .navbar-minimize{
+        display: none;
     }
 
 
@@ -600,5 +639,9 @@
 
     .sidebar .sidebar-wrapper{
         padding-bottom: 60px;
+    }
+
+    .navbar-minimize{
+        display: none;
     }
 }

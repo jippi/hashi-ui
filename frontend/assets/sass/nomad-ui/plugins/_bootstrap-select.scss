@@ -123,6 +123,7 @@
   border-radius: 0;
   -webkit-box-shadow: none;
           box-shadow: none;
+  -ms-overflow-style: scrollbar; // fix for IE issues when we are on Windows and have Perfect Scrollbar ON
 }
 .bootstrap-select.btn-group .dropdown-menu li {
   position: relative;

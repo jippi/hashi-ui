@@ -1,18 +1,11 @@
 <!DOCTYPE html>
-<!--[if lt IE 7 ]> <html lang="en" class="ie6" <% if(htmlWebpackPlugin.files.manifest) { %> manifest="<%= htmlWebpackPlugin.files.manifest %>"<% } %>> <![endif]-->
-<!--[if IE 7 ]>    <html lang="en" class="ie7" <% if(htmlWebpackPlugin.files.manifest) { %> manifest="<%= htmlWebpackPlugin.files.manifest %>"<% } %>> <![endif]-->
-<!--[if IE 8 ]>    <html lang="en" class="ie8" <% if(htmlWebpackPlugin.files.manifest) { %> manifest="<%= htmlWebpackPlugin.files.manifest %>"<% } %>> <![endif]-->
-<!--[if IE 9 ]>    <html lang="en" class="ie9" <% if(htmlWebpackPlugin.files.manifest) { %> manifest="<%= htmlWebpackPlugin.files.manifest %>"<% } %>> <![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="" <% if(htmlWebpackPlugin.files.manifest) { %> manifest="<%= htmlWebpackPlugin.files.manifest %>"<% } %>> <!--<![endif]-->
+<html lang="en" class="perfect-scrollbar-off">
 <head>
   <meta charset="utf-8">
   <title><%= htmlWebpackPlugin.options.title || 'Webpack App'%></title>
 
   <% if (htmlWebpackPlugin.files.favicon) { %>
   <link rel="shortcut icon" href="<%= htmlWebpackPlugin.files.favicon%>">
-  <% } %>
-  <% if (htmlWebpackPlugin.options.mobile) { %>
-  <meta name="viewport" content="width=device-width">
   <% } %>
 
   <% for (var css in htmlWebpackPlugin.files.css) { %>
@@ -23,39 +16,23 @@
   <base href="<%= htmlWebpackPlugin.options.baseHref %>" />
   <% } %>
 
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700,300" rel="stylesheet" type="text/css">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="Bownty" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="format-detection" content="date=no" />
+  <meta name="format-detection" content="address=no" />
+  <meta name="format-detection" content="email=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//fonts.googleapis.com/css?family=Roboto:400,700,300" rel="stylesheet" type="text/css">
 </head>
 <body>
-<% if (htmlWebpackPlugin.options.unsupportedBrowser) { %>
-<style>.unsupported-browser { display: none; }</style>
-<div class="unsupported-browser">
-  Sorry, your browser is not supported.  Please upgrade to
-  the latest version or switch your browser to use this site.
-  See <a href="http://outdatedbrowser.com/">outdatedbrowser.com</a>
-  for options.
-</div>
-<% } %>
 
-<% if (htmlWebpackPlugin.options.appMountId) { %>
-<div class="container-fluid" id="app">
-</div>
-<% } %>
-
-<% if (htmlWebpackPlugin.options.appMountIds && htmlWebpackPlugin.options.appMountIds.length > 0) { %>
-<% for (var index in htmlWebpackPlugin.options.appMountIds) { %>
-<div id="<%= htmlWebpackPlugin.options.appMountIds[index]%>"></div>
-<% } %>
-<% } %>
-
-<% if (htmlWebpackPlugin.options.window) { %>
-<script>
-  <% for (var varName in htmlWebpackPlugin.options.window) { %>
-    window['<%=varName%>'] = <%= JSON.stringify(htmlWebpackPlugin.options.window[varName]) %>;
-  <% } %>
-</script>
-<% } %>
+<div id="app"></div>
 
 <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
 <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
