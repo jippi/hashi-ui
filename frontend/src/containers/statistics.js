@@ -9,10 +9,9 @@ const Statistics = ({ jobs }) => {
     };
 
     let hasJobSummary = true;
-
     Object.values(jobs).forEach((job) => {
         // Guard against releases < 0.4.1 which don't have job summaries
-        if (!('JobSummary' in job)) {
+        if (job.JobSummary === null) {
             hasJobSummary = false;
             return;
         }

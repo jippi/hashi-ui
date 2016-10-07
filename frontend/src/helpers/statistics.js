@@ -22,7 +22,7 @@ export function getJobStatisticsRow(job) {
         Lost: 0,
     };
 
-    if ('JobSummary' in job) {
+    if (job.JobSummary !== null) {
         const summary = job.JobSummary.Summary;
         Object.keys(summary).forEach((taskGroupID) => {
             counter.Queued += summary[taskGroupID].Queued;
@@ -32,6 +32,8 @@ export function getJobStatisticsRow(job) {
             counter.Starting += summary[taskGroupID].Starting;
             counter.Lost += summary[taskGroupID].Lost;
         });
+    } else {
+        Object.keys(counter).forEach(key => (counter[key] = 'N/A'));
     }
 
     const output = [];
