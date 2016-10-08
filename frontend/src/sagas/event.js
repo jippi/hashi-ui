@@ -123,7 +123,7 @@ export default function eventSaga() {
             hostname = `${location.hostname}:${process.env.GO_PORT}` || 3000;
         }
 
-        const url = `${protocol}///${hostname}/ws`;
+        const url = `${protocol}//${hostname}/ws`;
         const p = connectTo(url);
 
         return p.then((socket) => {

@@ -22,6 +22,7 @@
   "author": "Ivo Verberk",
   "license": "MIT ",
   "dependencies": {
+    "babel-polyfill": "^6.16.0",
     "babel-runtime": "^6.9.2",
     "bootstrap": "^3.3.6",
     "chart.js": "^2.1.6",
