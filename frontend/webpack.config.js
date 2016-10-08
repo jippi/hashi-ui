@@ -10,6 +10,7 @@ webpackConfig = merge(webpackConfig, {
     entry: [
         'webpack-dev-server/client?http://localhost:3333',
         'webpack/hot/only-dev-server',
+        'babel-polyfill',
         './src/main.js'
     ],
     devtool: 'cheap-module-eval-source-map',
