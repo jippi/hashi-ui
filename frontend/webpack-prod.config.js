@@ -13,6 +13,7 @@ webpackConfig = merge(webpackConfig, {
     },
     bail: true,
     entry: [
+        'babel-polyfill',
         './src/main.js'
     ],
     devtool: 'source-map',
