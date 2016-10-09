@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import { FETCH_NODE, FETCH_DIR, UNWATCH_FILE, WATCH_FILE } from '../../sagas/event';
+import { FETCH_NODE, FETCH_DIR, CLEAR_RECEIVED_FILE_DATA, UNWATCH_FILE, WATCH_FILE } from '../../sagas/event';
 import Table from '../table';
 
 class AllocationFiles extends Component {
@@ -46,8 +46,14 @@ class AllocationFiles extends Component {
             }
         }
 
-        if (nextProps.file.Offset !== this.props.file.Offset) {
+        if (nextProps.file.Data) {
             contents += nextProps.file.Data;
+            this.props.dispatch({
+                type: CLEAR_RECEIVED_FILE_DATA,
+                payload: {
+                    File: nextProps.file.File,
+                },
+            });
         }
 
         this.setState({ ...this.state, path, contents });
@@ -64,6 +70,13 @@ class AllocationFiles extends Component {
                     allocID: nextProps.allocation.ID,
                 },
             });
+        }
+        this.shouldScroll = (this.content.scrollTop + this.content.offsetHeight) === this.content.scrollHeight;
+    }
+
+    componentDidUpdate() {
+        if (this.shouldScroll) {
+            this.content.scrollTop = this.content.scrollHeight;
         }
     }
 
@@ -93,7 +106,6 @@ class AllocationFiles extends Component {
         // We've located the alloc node so go ahead and query the filesystem
         return true;
     }
-
 
     handleClick(file) {
         if (file.IsDir) {
@@ -155,8 +167,8 @@ class AllocationFiles extends Component {
               <div className="col-md-9">
                 <div className="card">
                   <div className="header">File: { this.props.file.File }</div>
-                  <hr />
-                  <div className="content content-file">
+                  <hr className="file-content-hr" />
+                  <div className="content content-file" ref={ (c) => { this.content = c; } }>
                     { this.state.contents }
                   </div>
                 </div>

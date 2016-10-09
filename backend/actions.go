@@ -28,11 +28,14 @@ const (
 	watchMember    = "WATCH_MEMBER"
 	unwatchMember  = "UNWATCH_MEMBER"
 
-	fetchDir    = "FETCH_DIR"
-	fetchedDir  = "FETCHED_DIR"
-	watchFile   = "WATCH_FILE"
-	unwatchFile = "UNWATCH_FILE"
-	fetchedFile = "FETCHED_FILE"
+	fetchDir         = "FETCH_DIR"
+	fetchedDir       = "FETCHED_DIR"
+	watchFile        = "WATCH_FILE"
+	unwatchFile      = "UNWATCH_FILE"
+	unwatchedFile    = "UNWATCHED_FILE"
+	fetchedFile      = "FETCHED_FILE"
+	downloadFile     = "DOWNLOAD_FILE"
+	fileStreamFailed = "FILE_STREAM_FAILED"
 )
 
 // Action represents a Redux action that is dispatched or received from the store
