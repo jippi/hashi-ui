@@ -1,4 +1,4 @@
-import { FETCHED_DIR, FETCHED_FILE, UNWATCHED_FILE, CLEAR_RECEIVED_FILE_DATA } from '../sagas/event';
+import { FETCHED_DIR, FETCHED_FILE, CLEAR_FILE_PATH, CLEAR_RECEIVED_FILE_DATA } from '../sagas/event';
 
 export function DirectoryReducer(state = [], action) {
     switch (action.type) {
@@ -11,16 +11,11 @@ export function DirectoryReducer(state = [], action) {
 
 export function FileReducer(state = { File: '<please select a file>' }, action) {
     switch (action.type) {
-    case UNWATCHED_FILE:
-        if (state.File === action.payload.File) {
-            return Object.assign({}, state, { File: '<please select a file>', Data: '' });
-        }
-        break;
+    case CLEAR_FILE_PATH:
+        console.log('clear path', action);
+        return Object.assign({}, state, { File: '<please select a file>', Data: '' });
     case CLEAR_RECEIVED_FILE_DATA:
-        if (state.File === action.payload.File) {
-            return Object.assign({}, state, { Data: '' });
-        }
-        break;
+        return Object.assign({}, state, { Data: '' });
     case FETCHED_FILE:
         return action.payload;
     default:

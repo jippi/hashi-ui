@@ -1,8 +1,15 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-
-import { FETCH_NODE, FETCH_DIR, CLEAR_RECEIVED_FILE_DATA, UNWATCH_FILE, WATCH_FILE } from '../../sagas/event';
+import { Button } from 'react-bootstrap';
 import Table from '../table';
+import {
+    FETCH_NODE,
+    FETCH_DIR,
+    CLEAR_RECEIVED_FILE_DATA,
+    CLEAR_FILE_PATH,
+    UNWATCH_FILE,
+    WATCH_FILE,
+} from '../../sagas/event';
 
 class AllocationFiles extends Component {
 
@@ -85,6 +92,9 @@ class AllocationFiles extends Component {
             type: UNWATCH_FILE,
             payload: this.state.file,
         });
+        this.props.dispatch({
+            type: CLEAR_FILE_PATH,
+        });
     }
 
     findAllocNode(props) {
@@ -153,6 +163,22 @@ class AllocationFiles extends Component {
             );
         }
 
+        let hostname;
+        if (process.env.NODE_ENV === 'production') {
+            hostname = location.host;
+        } else {
+            hostname = `${location.hostname}:${process.env.GO_PORT}` || 3000;
+        }
+
+        const baseUrl = `${location.protocol}//${hostname}`;
+        const downloadPath = `download${this.props.file.File}`;
+        const downloadBtn = this.props.file.File.startsWith('<') ? '' :
+          <form className="file-download" method="get" action={ `${baseUrl}/${downloadPath}` } >
+            <input type="hidden" name="client" value={ this.props.node.HTTPAddr } />
+            <input type="hidden" name="allocID" value={ this.props.allocation.ID } />
+            <Button type="submit" className="btn-download">Download</Button>
+          </form>;
+
         return (
           <div className="tab-pane active">
             <div className="row">
@@ -166,7 +192,9 @@ class AllocationFiles extends Component {
               </div>
               <div className="col-md-9">
                 <div className="card">
-                  <div className="header">File: { this.props.file.File }</div>
+                  <div className="header">File: { this.props.file.File }
+                    { downloadBtn }
+                  </div>
                   <hr className="file-content-hr" />
                   <div className="content content-file" ref={ (c) => { this.content = c; } }>
                     { this.state.contents }

@@ -118,3 +118,13 @@ dl {
     margin-bottom: 0px;
     margin-top: 15px;
 }
+
+.btn-download {
+    float: right;
+    line-height: 1em;
+}
+
+form.file-download {
+    float: right;
+    line-height: 0;
+}

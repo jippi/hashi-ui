@@ -33,8 +33,9 @@ export const FETCHED_DIR = 'FETCHED_DIR';
 
 export const WATCH_FILE = 'WATCH_FILE';
 export const UNWATCH_FILE = 'UNWATCH_FILE';
-export const UNWATCHED_FILE = 'UNWATCHED_FILE';
 export const FETCHED_FILE = 'FETCHED_FILE';
+
+export const CLEAR_FILE_PATH = 'CLEAR_FILE_PATH';
 export const CLEAR_RECEIVED_FILE_DATA = 'CLEAR_RECEIVED_FILE_DATA';
 
 function subscribe(socket) {
