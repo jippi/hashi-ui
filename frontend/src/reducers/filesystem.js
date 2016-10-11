@@ -12,7 +12,6 @@ export function DirectoryReducer(state = [], action) {
 export function FileReducer(state = { File: '<please select a file>' }, action) {
     switch (action.type) {
     case CLEAR_FILE_PATH:
-        console.log('clear path', action);
         return Object.assign({}, state, { File: '<please select a file>', Data: '' });
     case CLEAR_RECEIVED_FILE_DATA:
         return Object.assign({}, state, { Data: '' });

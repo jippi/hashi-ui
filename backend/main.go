@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"time"
 	"syscall"
+	"time"
 
 	"net/http"
 
@@ -109,6 +109,7 @@ func main() {
 	myAssetFS := assetFS()
 
 	router.HandleFunc("/ws", hub.Handler)
+	router.HandleFunc("/download/{path:.*}", nomad.downloadFile)
 	router.PathPrefix("/static").Handler(http.FileServer(myAssetFS))
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if bs, err := myAssetFS.Open("/index.html"); err != nil {

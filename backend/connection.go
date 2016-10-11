@@ -450,16 +450,6 @@ func (c *Connection) watchFile(action Action) {
 		logger.Infof("Stopped watching file with path: %s", path)
 		c.watches.Remove(path)
 		r.Close()
-
-		// Indicate we stopped watching the file
-		c.send <- &Action{
-			Type: unwatchedFile,
-			Payload: struct {
-				File string
-			}{
-				File: path,
-			},
-		}
 	}()
 
 	logger.Infof("Started watching file with path: %s", path)

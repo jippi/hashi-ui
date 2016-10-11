@@ -34,7 +34,6 @@ const (
 	unwatchFile      = "UNWATCH_FILE"
 	unwatchedFile    = "UNWATCHED_FILE"
 	fetchedFile      = "FETCHED_FILE"
-	downloadFile     = "DOWNLOAD_FILE"
 	fileStreamFailed = "FILE_STREAM_FAILED"
 )
 
