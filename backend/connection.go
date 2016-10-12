@@ -19,7 +19,7 @@ const (
 	bytesToLines int64 = 120
 
 	// defaultTailLines is the number of lines to tail by default.
-	defaultTailLines int64 = 1000
+	defaultTailLines int64 = 250
 
 	// If a file exceeds an estimate of a 1000 loglines we start tailing it
 	// from the end, otherwise the whole file is retrieved and followed.

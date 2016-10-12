@@ -178,7 +178,7 @@ class AllocationFiles extends Component {
               <ReactTooltip id={ `tooltip-${this.props.file.File}` }>
                 <span className="file-size-warning">
                   The file you are trying to view is too large.<br />
-                  Tailing has started from the last thousand lines. <br />
+                  Tailing has started from the last 250 lines. <br />
                   Please download the file for the entire contents.
                 </span>
               </ReactTooltip>
