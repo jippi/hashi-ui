@@ -18,9 +18,12 @@ const (
 	// many lines to tail from.
 	bytesToLines int64 = 120
 
-	// defaultTailLines is the number of lines to tail by default if the value
-	// is not overriden.
-	defaultTailLines int64 = 30
+	// defaultTailLines is the number of lines to tail by default.
+	defaultTailLines int64 = 1000
+
+	// If a file exceeds an estimate of a 1000 loglines we start tailing it
+	// from the end, otherwise the whole file is retrieved and followed.
+	maxFileSize int64 = defaultTailLines * bytesToLines
 )
 
 // Connection monitors the websocket connection. It processes any action
@@ -404,13 +407,17 @@ func (c *Connection) watchFile(action Action) {
 		return
 	}
 
-	var offset int64 = defaultTailLines * bytesToLines
-	if offset > file.Size {
-		offset = file.Size
+	var origin string = api.OriginStart
+	var offset int64 = 0
+	var oversized bool
+	if file.Size > maxFileSize {
+		origin = api.OriginEnd
+		offset = maxFileSize
+		oversized = true
 	}
 
 	cancel := make(chan struct{})
-	frames, err := client.AllocFS().Stream(alloc, path, api.OriginEnd, offset, cancel, nil)
+	frames, err := client.AllocFS().Stream(alloc, path, origin, offset, cancel, nil)
 	if err != nil {
 		c.send <- &Action{
 			Type: fileStreamFailed,
@@ -456,9 +463,13 @@ func (c *Connection) watchFile(action Action) {
 	c.send <- &Action{
 		Type: fetchedFile,
 		Payload: struct {
-			File string
+			File      string
+			Data      string
+			Oversized bool
 		}{
-			File: path,
+			File:      path,
+			Data:      "",
+			Oversized: oversized,
 		},
 	}
 
@@ -474,11 +485,13 @@ func (c *Connection) watchFile(action Action) {
 			c.send <- &Action{
 				Type: fetchedFile,
 				Payload: struct {
-					File string
-					Data string
+					File      string
+					Data      string
+					Oversized bool
 				}{
-					File: path,
-					Data: string(line),
+					File:      path,
+					Data:      string(line),
+					Oversized: oversized,
 				},
 			}
 		case <-ticker.C:

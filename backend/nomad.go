@@ -294,6 +294,7 @@ func (n *Nomad) downloadFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Could not fetch the file.", http.StatusInternalServerError)
 		return
 	}
+	defer file.Close()
 
 	w.Header().Set("Content-Disposition", "attachment; filename="+filepath.Base(path))
 	w.Header().Set("Content-Type", "application/octet-stream")
