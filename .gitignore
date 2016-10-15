@@ -8,10 +8,6 @@ dist/
 # PyCharm & WebStorm
 .idea
 
-# Glide
-glide.lock
-vendor
-
 # Makefile
 build
 
