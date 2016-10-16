@@ -13,13 +13,16 @@ $(BINARIES): $(BUILD_DIR)/nomad-ui-%: $(BUILD_DIR)
 	@echo "=> building $@ ..."
 	GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 govendor build -o $@
 
-.PHONY: build
-build: $(BINARIES)
+bootstrap:
+	@echo "=> installing go-ps library..."
+	go get github.com/mitchellh/go-ps
 
-.PHONY: rebuild
-rebuild: clean $(BINARIES)
+build: bootstrap $(BINARIES)
 
-.PHONY: clean
+rebuild: clean bootstrap $(BINARIES)
+
 clean:
 	@echo "=> cleaning ..."
 	rm -rf $(BUILD_DIR)
+
+.PHONY: bootstrap build rebuild clean

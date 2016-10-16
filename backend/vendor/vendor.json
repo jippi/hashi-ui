@@ -1,6 +1,6 @@
 {
 	"comment": "",
-	"ignore": "test",
+	"ignore": "test github.com/mitchellh/go-ps",
 	"package": [
 		{
 			"checksumSHA1": "vzPNBiOJFecKT9FA6aAtmOjRlgs=",
@@ -855,13 +855,6 @@
 			"checksumSHA1": "AXacfEchaUqT5RGmPmMXsOWRhv8=",
 			"origin": "github.com/hashicorp/nomad/vendor/github.com/mitchellh/go-homedir",
 			"path": "github.com/mitchellh/go-homedir",
-			"revision": "1f1ec12298a9810ef7b760a4a1595d7c8c9a2da3",
-			"revisionTime": "2016-09-28T05:34:40Z"
-		},
-		{
-			"checksumSHA1": "B791WoNcAY5+ElKZsCkHfym55O4=",
-			"origin": "github.com/hashicorp/nomad/vendor/github.com/mitchellh/go-ps",
-			"path": "github.com/mitchellh/go-ps",
 			"revision": "1f1ec12298a9810ef7b760a4a1595d7c8c9a2da3",
 			"revisionTime": "2016-09-28T05:34:40Z"
 		},
