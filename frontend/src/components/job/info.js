@@ -59,7 +59,7 @@ class JobInfo extends Component {
         return (
           <div className="tab-pane active">
             <div className="row">
-              <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 content">
+              <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column">
                 <legend>Job Properties</legend>
                 <dl className="dl-horizontal">
                   { jobProps.map((jobProp) => {
@@ -76,21 +76,21 @@ class JobInfo extends Component {
                   }, this)}
                 </dl>
               </div>
-              <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 content">
+              <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column">
                 <legend>Meta Properties</legend>
                 <MetaDisplay dtWithClass="wide" metaBag={ jobMetaBag } />
               </div>
             </div>
 
             <div className="row">
-              <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12 content">
+              <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12 tab-column">
                 <legend>Constraints</legend>
                 <ConstraintTable idPrefix={ this.props.job.ID } constraints={ this.props.job.Constraints } />
               </div>
             </div>
 
             <div className="row">
-              <div className="col-lg-12 col-md-12 col-sm-12 col-sx-12 content">
+              <div className="col-lg-12 col-md-12 col-sm-12 col-sx-12 tab-column">
                 <legend>Task Groups</legend>
                 { (taskGroups.length > 0) ?
                   <Table
@@ -104,7 +104,7 @@ class JobInfo extends Component {
             </div>
 
             <div className="row">
-              <div className="col-lg-12 col-md-12 col-sm-12 col-sx-12 content">
+              <div className="col-lg-12 col-md-12 col-sm-12 col-sx-12 tab-column">
                 <legend>Tasks</legend>
                 { (tasks.length > 0) ?
                   <Table

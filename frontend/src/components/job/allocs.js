@@ -14,6 +14,7 @@ class JobAllocs extends PureComponent {
           <div className="tab-pane active">
             <AllocationList
               showJobColumn={ false }
+              containerClassName="nested-content"
               allocations={ allocs }
               location={ this.props.location }
               nodes={ this.props.nodes }

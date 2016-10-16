@@ -94,9 +94,10 @@ class AllocationList extends Component {
         const showClientColumn = this.props.showClientColumn;
         const allocations = this.props.allocations;
         const nodes = this.props.nodes;
+        const className = this.props.containerClassName;
 
         return (
-          <div className="content">
+          <div className={ className }>
             <div className="inline-pad">
               { this.clientStatusFilter() }
             </div>
@@ -180,6 +181,8 @@ AllocationList.defaultProps = {
 
     showJobColumn: true,
     showClientColumn: true,
+
+    containerClassName: '',
 };
 
 AllocationList.propTypes = {
@@ -189,6 +192,8 @@ AllocationList.propTypes = {
 
     showJobColumn: PropTypes.bool.isRequired,
     showClientColumn: PropTypes.bool.isRequired,
+
+    containerClassName: PropTypes.string.isRequired,
 };
 
 export default AllocationList;

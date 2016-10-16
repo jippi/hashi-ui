@@ -8,7 +8,7 @@
         border-radius: 0;
         color: $info-color;
         margin-left: -1px;
-        
+
         &:hover,
         &:focus{
             background-color: #F5F5F5;
@@ -19,7 +19,7 @@
     > li.active > a:focus {
         background-color: $info-color;
         color: #FFFFFF;
-    }    
+    }
     > li:first-child > a{
         border-radius: 4px 0 0 4px;
         margin: 0;
@@ -38,21 +38,21 @@
 .pagination.pagination-no-border > li > span{
     border: 0;
 }
-.pagination > li > a, 
-.pagination > li > span, 
-.pagination > li:first-child > a, 
-.pagination > li:first-child > span, 
+.pagination > li > a,
+.pagination > li > span,
+.pagination > li:first-child > a,
+.pagination > li:first-child > span,
 .pagination > li:last-child > a,
 .pagination > li:last-child > span{
     border-radius: 50%;
     margin: 0 2px;
     color: $default-states-color;
 }
-.pagination > li.active > a, 
-.pagination > li.active > span, 
-.pagination > li.active > a:hover, 
-.pagination > li.active > span:hover, 
-.pagination > li.active > a:focus, 
+.pagination > li.active > a,
+.pagination > li.active > span,
+.pagination > li.active > a:hover,
+.pagination > li.active > span:hover,
+.pagination > li.active > a:focus,
 .pagination > li.active > span:focus {
     background-color: $info-color;
     border: 0;
@@ -65,7 +65,7 @@
         > a,
         > a:hover,
         > a:focus{
-           background-color: $color-blue; 
+           background-color: $color-blue;
         }
     }
 }
@@ -88,7 +88,7 @@
         > a,
         > a:hover,
         > a:focus{
-           background-color: $color-azure; 
+           background-color: $color-azure;
         }
     }
 }
@@ -111,7 +111,7 @@
         > a,
         > a:hover,
         > a:focus{
-           background-color: $color-green; 
+           background-color: $color-green;
         }
     }
 }
@@ -134,7 +134,7 @@
         > a,
         > a:hover,
         > a:focus{
-           background-color: $color-orange; 
+           background-color: $color-orange;
         }
     }
 }
@@ -157,7 +157,7 @@
         > a,
         > a:hover,
         > a:focus{
-           background-color: $color-red; 
+           background-color: $color-red;
         }
     }
 }
@@ -191,17 +191,17 @@
     @include pill-style($color-red);
 }
 
-.nav-text, 
+.nav-text,
 .nav-icons{
     padding:  $padding-default-vertical 0 0;
-    
+
     > li > a{
         display: block;
         padding: 0px $padding-base-horizontal;
         color: $dark-gray;
         text-align: center;
         @include opacity(0.8);
-        
+
         &:hover,
         &:focus{
             background-color: $transparent-bg;
@@ -212,7 +212,7 @@
         padding-left: 0;
     }
     > li.active a{
-       color: $info-color;  
+       color: $info-color;
     }
 }
 
@@ -254,14 +254,14 @@
 
 .nav-text{
     margin: $margin-bottom;
-    
+
     > li > a{
         font-size: $font-size-h6;
         text-transform: uppercase;
         padding: 3px 0;
         text-align: left;
         font-weight: $font-weight-semi;
-        
+
     }
     > li:first-child > a{
         padding-top: 0;
@@ -280,7 +280,7 @@
     }
 }
 
-.tab-pane{
+.tab-pane {
     padding: 15px 0;
 }
 
@@ -292,7 +292,7 @@
 .content-full-width{
     .nav-tabs{
         li:first-child{
-            padding-left: $padding-default-horizontal;    
+            padding-left: $padding-default-horizontal;
         }
     }
     .tab-pane{

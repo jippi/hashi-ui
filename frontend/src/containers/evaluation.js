@@ -56,7 +56,7 @@ class Evaluation extends Component {
                 <div className="header">
                   <h4 className="title">Evaluation: { this.props.evaluation.ID }</h4>
                 </div>
-                <div className="content">
+                <div className="tab-content">
                   <Tabs tabs={ this.state.tabs } tabSlug={ tabSlug } basePath={ basePath }>
                     { this.props.children }
                   </Tabs>

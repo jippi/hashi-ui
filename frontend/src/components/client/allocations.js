@@ -10,7 +10,12 @@ class ClientAllocations extends PureComponent {
 
         return (
           <div className="tab-pane active">
-            <AllocationList showClientColumn={ false } allocations={ allocs } location={ this.props.location } />
+            <AllocationList
+              showClientColumn={ false }
+              allocations={ allocs }
+              location={ this.props.location }
+              containerClassName="nested-content"
+            />
           </div>
         );
     }

@@ -12,7 +12,12 @@ class Allocations extends Component {
                 <div className="header">
                   <h4 className="title">Allocations</h4>
                 </div>
-                <AllocationList { ...this.props } allocations={ this.props.allocations } nodes={ this.props.nodes } />
+                <AllocationList
+                  { ...this.props }
+                  allocations={ this.props.allocations }
+                  nodes={ this.props.nodes }
+                  containerClassName="content"
+                />
               </div>
             </div>
           </div>

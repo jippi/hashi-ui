@@ -9,9 +9,7 @@ const Evaluations = ({ evaluations }) =>
         <div className="header">
           <h4 className="title">Evaluations</h4>
         </div>
-        <div className="content table-responsive table-full-width">
-          <EvaluationList evaluations={ evaluations } />
-        </div>
+        <EvaluationList evaluations={ evaluations } containerClassName="content" />
       </div>
     </div>
   </div>;

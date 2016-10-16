@@ -1,3 +1,9 @@
+@media (min-width: $screen-lg-min) {
+    .tab-content {
+        padding-top: 15px !important;
+    }
+}
+
 @media (min-width: $screen-md-min){
     .navbar-form {
         margin: 12px 0;
@@ -150,9 +156,14 @@
         }
     }
 
+    .tab-content {
+        padding-right: 0 !important;
+    }
+
     .navbar-transparent{
         padding-top: 15px;
     }
+
     .dl-horizontal dt {
         float: left;
         width: 160px;
@@ -176,6 +187,12 @@
            height: auto;
        }
     }
+
+    .card .content {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
     .card .content.table-responsive {
         padding: 0px;
     }
