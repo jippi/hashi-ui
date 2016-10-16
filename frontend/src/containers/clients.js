@@ -31,7 +31,7 @@ const Clients = ({ nodes }) =>
                   <td><NodeStatus value={ node.Status } /></td>
                   <td><FormatBoolean value={ node.Drain } /></td>
                   <td>{ node.Datacenter }</td>
-                  <td>{ node.Class ? node.Class : '<none>'}</td>
+                  <td>{ node.NodeClass ? node.NodeClass : '<none>'}</td>
                 </tr>
               )}
             </tbody>
