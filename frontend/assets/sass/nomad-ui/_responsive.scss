@@ -1,3 +1,9 @@
+@media (min-width: $screen-lg-min) {
+    .tab-content {
+        padding-top: 15px !important;
+    }
+}
+
 @media (min-width: $screen-md-min){
     .navbar-form {
         margin: 12px 0;
@@ -42,11 +48,6 @@
             margin-bottom: 5px;
         }
     }
-
-
-
-
-
 
     .navbar-nav > li > .dropdown-menu:before{
         border-bottom: 11px solid rgba(0, 0, 0, 0.2);
@@ -105,11 +106,11 @@
         }
     }
 
-
     .table-full-width{
         margin-left: -15px;
         margin-right: -15px;
     }
+
     .table-responsive{
         overflow: visible;
     }
@@ -155,9 +156,14 @@
         }
     }
 
+    .tab-content {
+        padding-right: 0 !important;
+    }
+
     .navbar-transparent{
         padding-top: 15px;
     }
+
     .dl-horizontal dt {
         float: left;
         width: 160px;
@@ -170,9 +176,6 @@
     .dl-horizontal dd {
        margin-left: 180px;
     }
-    .row {
-        padding-bottom: 15px;
-    }
     body {
          position: relative;
     }
@@ -184,14 +187,14 @@
            height: auto;
        }
     }
-    .tab-pane div .inline-pad {
-        padding-left: 0px;
-        padding-bottom: 0px;
+
+    .card .content {
+        padding-left: 0;
+        padding-right: 0;
     }
+
     .card .content.table-responsive {
-        padding-left: 0px;
-        padding-right: 0px;
-        padding-top: 0px;
+        padding: 0px;
     }
     .container-fluid {
         padding-left: 0px;
@@ -200,11 +203,6 @@
     .perfect-scrollbar-off .main-panel {
         overflow-x: hidden;
     }
-    legend {
-        padding-top: 10px;
-        margin-bottom: 10px;
-    }
-
     .navbar > div{
         left: 0;
         width: 100%;

@@ -68,7 +68,7 @@ class Job extends Component {
                 <div className="header">
                   <h4 className="title">Job: { this.props.job.ID }</h4>
                 </div>
-                <div className="content">
+                <div className="tab-content">
                   <Tabs tabs={ this.state.tabs } tabSlug={ tabSlug } basePath={ basePath }>
                     { this.props.children }
                   </Tabs>

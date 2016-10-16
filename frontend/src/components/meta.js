@@ -12,7 +12,7 @@ class Meta extends Component {
 
         let keys = Object.keys(metaBag || {});
         if (keys.length === 0) {
-            return (<span>-</span>);
+            return (<div>- No data found -</div>);
         }
 
         const identifier = uuid.v1();

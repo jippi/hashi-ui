@@ -10,7 +10,7 @@ class ClientEvaluations extends PureComponent {
 
         return (
           <div className="tab-pane active">
-            <EvaluationList evaluations={ evals } />
+            <EvaluationList evaluations={ evals } containerClassName="nested-content" />
           </div>
         );
     }

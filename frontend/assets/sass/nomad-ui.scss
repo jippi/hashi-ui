@@ -95,8 +95,12 @@ dl {
 }
 
 .inline-pad {
-	padding-left: 15px;
 	padding-bottom: 15px;
+    padding-left: 15px;
+}
+
+.content > .inline-pad {
+    padding-left: 0;
 }
 
 .statistics-big {
@@ -137,4 +141,34 @@ i.pe-7s-attention {
 
 span.file-size-warning {
     line-height: 2;
+}
+
+.tab-pane {
+    // padding-top: 0;
+}
+
+.tab-column {
+    margin-bottom: 15px;
+}
+
+.tab-content {
+    legend {
+        padding-left: 15px;
+    }
+
+    padding: 15px;
+    padding-left: 0;
+    padding-top: 0;
+}
+
+.nested-content {
+    .table-full-width {
+        margin-left: 0;
+        margin-right: -30px
+    }
+
+    legend,
+    .panel-group {
+        padding-left: 15px
+    }
 }

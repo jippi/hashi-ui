@@ -37,7 +37,7 @@ const JobTaskGroups = ({ job, location }) => {
     return (
       <div className="tab-pane active">
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-md-6 tab-column">
             <legend>Task Groups</legend>
             { (taskGroups.length > 0) ?
               <Table
@@ -48,7 +48,7 @@ const JobTaskGroups = ({ job, location }) => {
               : null
             }
           </div>
-          <div className="col-md-6">
+          <div className="col-md-6 tab-column">
             <legend>Task Group: { taskGroupId }</legend>
             { job.TaskGroups
                 .filter(taskGroup => taskGroup.ID === taskGroupId)

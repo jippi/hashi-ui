@@ -12,7 +12,13 @@ class JobAllocs extends PureComponent {
 
         return (
           <div className="tab-pane active">
-            <AllocationList showJobColumn={ false } allocations={ allocs } nodes={ this.props.nodes } />
+            <AllocationList
+              showJobColumn={ false }
+              containerClassName="nested-content"
+              allocations={ allocs }
+              location={ this.props.location }
+              nodes={ this.props.nodes }
+            />
           </div>
         );
     }
@@ -26,12 +32,14 @@ JobAllocs.defaultProps = {
     allocations: [],
     nodes: [],
     params: {},
+    location: {},
 };
 
 JobAllocs.propTypes = {
     allocations: PropTypes.array.isRequired,
     params: PropTypes.object.isRequired,
     nodes: PropTypes.array.isRequired,
+    location: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(JobAllocs);

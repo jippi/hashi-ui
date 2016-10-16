@@ -101,14 +101,17 @@ class AllocationInfo extends Component {
 
         return (
           <div className="tab-pane active">
-            <div className="content">
-              <legend>Allocation Properties</legend>
-              <Meta metaBag={ allocValues } sortKeys={ false } />
-
-              <br />
-
-              <legend>Task States</legend>
-              <Accordion>{ states }</Accordion>
+            <div className="row">
+              <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column">
+                <legend>Allocation Properties</legend>
+                <Meta metaBag={ allocValues } sortKeys={ false } />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-lg-12 col-md-12 col-sm-12 col-sx-12 tab-column">
+                <legend>Task States</legend>
+                <Accordion>{ states }</Accordion>
+              </div>
             </div>
           </div>
         );
