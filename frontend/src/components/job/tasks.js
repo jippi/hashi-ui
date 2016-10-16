@@ -58,7 +58,7 @@ const JobTasks = ({ job, location }) => {
     return (
       <div className="tab-pane active">
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-md-6 content">
             <legend>Tasks</legend>
             { (tasks.length > 0) ?
               <Table
@@ -69,7 +69,7 @@ const JobTasks = ({ job, location }) => {
               : null
             }
           </div>
-          <div className="col-md-6">
+          <div className="col-md-6 content">
             <legend>Task: { (taskGroupId && taskId) ? `${taskGroupId}/${taskId}` : null}</legend>
             { job.TaskGroups
                 .filter(taskGroup => taskGroup.ID === taskGroupId)

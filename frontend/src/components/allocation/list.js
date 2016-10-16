@@ -96,11 +96,11 @@ class AllocationList extends Component {
         const nodes = this.props.nodes;
 
         return (
-          <div>
+          <div className="content">
             <div className="inline-pad">
               { this.clientStatusFilter() }
             </div>
-            <div className="content table-responsive table-full-width">
+            <div className="table-responsive table-full-width">
               <table className="table table-hover table-striped">
                 <thead>
                   <tr>

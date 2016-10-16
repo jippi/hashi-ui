@@ -5,7 +5,9 @@ import Json from '../json';
 
 const ClientRaw = ({ node }) =>
   <div className="tab-pane active">
-    <Json json={ node } />
+    <div className="content">
+      <Json json={ node } />
+    </div>
   </div>;
 
 function mapStateToProps({ node }) {

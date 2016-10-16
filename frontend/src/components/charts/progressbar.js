@@ -12,7 +12,7 @@ class Progressbar extends Component {
 
             // server status
             alive: 'success',
-            leavning: 'warning',
+            leaving: 'warning',
             left: 'danger',
             shutdown: 'danger',
 
