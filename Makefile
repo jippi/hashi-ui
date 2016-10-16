@@ -1,79 +1,58 @@
-BUILD_DIR ?= $(abspath build)
-DESTDIR ?= /usr/local/bin
+VETARGS?=-all
+EXTERNAL_TOOLS=\
+	github.com/kardianos/govendor \
+	github.com/jteeuwen/go-bindata/... \
+	github.com/elazarl/go-bindata-assetfs/...
 
-GOPKG = github.com/iverberk/nomad-ui/backend
-GOFILES = $(shell find . -type f -name '*.go')
 GOFILES_NOVENDOR = $(shell find . -type f -name '*.go' -not -path "./backend/vendor/*")
 
-.PHONY: all
-all: check-deps build
+bootstrap:
+	@for tool in $(EXTERNAL_TOOLS); do \
+		echo "Installing $$tool" ; \
+    go get $$tool; \
+	done
 
-.PHONY: check-deps
-check-deps:
-	@echo "=> checking dependencies ..."
-	@(go version      | grep -qF '1.6.3'             ) && echo    go: `go      version | sed "s/go version //"`
-	@(node --version  | grep -qF 'v4'                ) && echo  node: `node  --version`
-	@(npm  --version  | grep -qF -e '3.10' -e '2.15' ) && echo   npm: `npm   --version`
-
-$(BUILD_DIR):
-	mkdir -p $@
-
-$(BUILD_DIR)/frontend:
-	@echo "=> building webpack ..."
-	cd frontend && $(MAKE) build
-
-backend/bindata_assetfs.go: 3rdparty $(BUILD_DIR)/frontend
-	@echo "=> building assetfs ..."
-	env PATH=$(BUILD_DIR)/bin:$(PATH) go-bindata-assetfs -prefix frontend frontend/build/...
-	cp -f bindata_assetfs.go backend/
-
-.PHONY: 3rdparty
-3rdparty: $(BUILD_DIR)
-	mkdir -p $(BUILD_DIR)/bin
-	cd 3rdparty && DESTDIR=$(BUILD_DIR)/bin $(MAKE) install
-	cd 3rdparty/glide && DESTDIR=$(BUILD_DIR)/bin $(MAKE) install
-
-.PHONY: frontend
-frontend: $(BUILD_DIR)/frontend
-
-.PHONY: backend
-backend: $(BUILD_DIR) backend/bindata_assetfs.go
-	mkdir -p $(BUILD_DIR)/bin
-	cd backend && env PATH=$(BUILD_DIR)/bin:$(PATH) DESTDIR=$(BUILD_DIR) $(MAKE) install
-
-.PHONY: build
-build: frontend backend
-
-.PHONY: install
-install: build
-	install -m 0755  $(shell ls $(BUILD_DIR)/nomad-ui-*) $(DESTDIR)
-
-.PHONY: vet
-vet:
-	@gofmt -l $(GOFILES_NOVENDOR) | read && echo "Code differs from gofmt style" 1>&2 && exit 1 || true
-	go vet $(GOPKG)
-
-.PHONY: fmt
 fmt:
-	gofmt -l -w $(GOFILES_NOVENDOR)
+	@echo "--> Running go fmt" ;
+	@if [ -n "`go fmt ${GOFILES_NOVENDOR}`" ]; then \
+		echo "[ERR] go fmt updated formatting. Please commit formatted code first."; \
+		exit 1; \
+	fi
 
-.PHONY: simplify
-simplify:
-	gofmt -l -s -w $(GOFILES_NOVENDOR)
+vet:
+	@go tool vet 2>/dev/null ; if [ $$? -eq 3 ]; then \
+		go get golang.org/x/tools/cmd/vet; \
+	fi
+	@echo "--> Running go tool vet $(VETARGS) ${GOFILES_NOVENDOR}"
+	@go tool vet $(VETARGS) ${GOFILES_NOVENDOR} ; if [ $$? -eq 1 ]; then \
+		echo ""; \
+		echo "[LINT] Vet found suspicious constructs. Please check the reported constructs"; \
+		echo "and fix them if necessary before submitting the code for review."; \
+	fi
 
-.PHONY: clean
+frontend:
+	@echo "=> building frontend ..."
+	$(MAKE) -C frontend build
+
+backend/bindata_assetfs.go:
+	@echo "=> packaging assets ..."
+	go-bindata-assetfs -prefix frontend frontend/build/...
+	mv -f bindata_assetfs.go backend/
+
+build: fmt vet bootstrap frontend backend/bindata_assetfs.go
+	$(MAKE) -C backend build
+
 clean:
 	@echo "=> cleaning ..."
-	cd 3rdparty && $(MAKE) clean
-	cd backend  && $(MAKE) clean
-	cd frontend && $(MAKE) clean
-	rm -rf $(BUILD_DIR)
-	rm -rf bindata_assetfs.go backend/bindata_assetfs.go
+	$(MAKE) -C backend clean
+	$(MAKE) -C frontend clean
+	rm -f backend/bindata_assetfs.go
 
-.PHONY: docker
 docker:
 	@echo "=> build and push Docker image ..."
 	@docker login -e $(DOCKER_EMAIL) -u $(DOCKER_USER) -p $(DOCKER_PASS)
 	docker build -f Dockerfile -t iverberk/nomad-ui:$(COMMIT) .
 	docker tag iverberk/nomad-ui:$(COMMIT) iverberk/nomad-ui:$(TAG)
 	docker push iverberk/nomad-ui:$(TAG)
+
+.PHONY: docker clean build backend frontend fmt vet
