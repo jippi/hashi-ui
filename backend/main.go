@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"time"
 	"syscall"
+	"time"
 
 	"net/http"
 

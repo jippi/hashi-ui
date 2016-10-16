@@ -1,0 +1,62 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "5ftkjfUwI9A6xCQ1PwIAd5+qlo0=",
+			"path": "github.com/elazarl/go-bindata-assetfs",
+			"revision": "57eb5e1fc594ad4b0b1dbea7b286d299e0cb43c2",
+			"revisionTime": "2015-12-24T04:54:52Z"
+		},
+		{
+			"checksumSHA1": "iIUYZyoanCQQTUaWsu8b+iOSPt4=",
+			"path": "github.com/gorilla/context",
+			"revision": "215affda49addc4c8ef7e2534915df2c8c35c6cd",
+			"revisionTime": "2014-12-17T16:02:51Z"
+		},
+		{
+			"checksumSHA1": "l18VMybqvbowqoAmPFZOhObzpaE=",
+			"path": "github.com/gorilla/mux",
+			"revision": "8096f47503459bcc74d1f4c487b7e6e42e5746b5",
+			"revisionTime": "2015-03-11T03:17:35Z"
+		},
+		{
+			"checksumSHA1": "klfNfdEPsrWYLps2qBkLgfJsNYI=",
+			"path": "github.com/gorilla/websocket",
+			"revision": "5e2e56d5dfd46884df1036f828777ee6273f2cff",
+			"revisionTime": "2016-07-18T23:08:34Z"
+		},
+		{
+			"checksumSHA1": "fSe5y1UgTDeYlnFfUcDA1zzcw+U=",
+			"origin": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/go-cleanhttp",
+			"path": "github.com/hashicorp/go-cleanhttp",
+			"revision": "1f1ec12298a9810ef7b760a4a1595d7c8c9a2da3",
+			"revisionTime": "2016-09-28T05:34:40Z"
+		},
+		{
+			"checksumSHA1": "rQZHrPV6NKA4TLLX7YJyukYLl64=",
+			"path": "github.com/hashicorp/nomad/api",
+			"revision": "1f1ec12298a9810ef7b760a4a1595d7c8c9a2da3",
+			"revisionTime": "2016-09-28T05:34:40Z"
+		},
+		{
+			"checksumSHA1": "BoXdUBWB8UnSlFlbnuTQaPqfCGk=",
+			"path": "github.com/op/go-logging",
+			"revision": "970db520ece77730c7e4724c61121037378659d9",
+			"revisionTime": "2016-03-15T20:05:05Z"
+		},
+		{
+			"checksumSHA1": "itDWaOxOe8M1GH0+YHfl37pNX1E=",
+			"path": "github.com/satori/go.uuid",
+			"revision": "08f0718b61e95ddba0ade3346725fe0e4bf28ca6",
+			"revisionTime": "2015-08-29T02:49:07Z"
+		},
+		{
+			"checksumSHA1": "NGg7/qIJVUfXi7xnEyyDLocdi6Y=",
+			"path": "gopkg.in/fatih/set.v0",
+			"revision": "27c40922c40b43fe04554d8223a402af3ea333f3",
+			"revisionTime": "2014-12-10T08:48:24Z"
+		}
+	],
+	"rootPath": "github.com/iverberk/nomad-ui/backend"
+}
