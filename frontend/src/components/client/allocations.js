@@ -10,7 +10,7 @@ class ClientAllocations extends PureComponent {
 
         return (
           <div className="tab-pane active">
-            <AllocationList showClientColumn={ false } allocations={ allocs } />
+            <AllocationList showClientColumn={ false } allocations={ allocs } location={ this.props.location } />
           </div>
         );
     }
@@ -23,11 +23,13 @@ function mapStateToProps({ allocations }) {
 ClientAllocations.defaultProps = {
     allocations: [],
     params: {},
+    location: {},
 };
 
 ClientAllocations.propTypes = {
     allocations: PropTypes.array.isRequired,
     params: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(ClientAllocations);
