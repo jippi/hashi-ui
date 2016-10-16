@@ -97,6 +97,9 @@ dl {
 .inline-pad {
 	padding-bottom: 15px;
 }
+.tab-pane.active .content .inline-pad {
+    margin-left: -15px;
+}
 
 .statistics-big {
 	font-size: 150%
