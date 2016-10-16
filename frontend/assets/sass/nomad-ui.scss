@@ -113,3 +113,27 @@ dl {
 	background-size: initial;
 	background-position: initial;
 }
+
+.file-content-hr {
+    margin-bottom: 0px;
+    margin-top: 15px;
+}
+
+.btn-download {
+    float: right;
+    line-height: 1em;
+}
+
+form.file-download {
+    float: right;
+    line-height: 0;
+}
+
+i.pe-7s-attention {
+    margin-right: 15px;
+    line-height: 1.5;
+}
+
+span.file-size-warning {
+    line-height: 2;
+}

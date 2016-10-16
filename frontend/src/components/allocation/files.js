@@ -1,8 +1,16 @@
 import React, { Component, PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
-
-import { FETCH_NODE, FETCH_DIR, UNWATCH_FILE, WATCH_FILE } from '../../sagas/event';
+import { Button } from 'react-bootstrap';
 import Table from '../table';
+import {
+    FETCH_NODE,
+    FETCH_DIR,
+    CLEAR_RECEIVED_FILE_DATA,
+    CLEAR_FILE_PATH,
+    UNWATCH_FILE,
+    WATCH_FILE,
+} from '../../sagas/event';
 
 class AllocationFiles extends Component {
 
@@ -46,8 +54,14 @@ class AllocationFiles extends Component {
             }
         }
 
-        if (nextProps.file.Offset !== this.props.file.Offset) {
+        if (nextProps.file.Data) {
             contents += nextProps.file.Data;
+            this.props.dispatch({
+                type: CLEAR_RECEIVED_FILE_DATA,
+                payload: {
+                    File: nextProps.file.File,
+                },
+            });
         }
 
         this.setState({ ...this.state, path, contents });
@@ -65,12 +79,22 @@ class AllocationFiles extends Component {
                 },
             });
         }
+        this.shouldScroll = (this.content.scrollTop + this.content.offsetHeight) === this.content.scrollHeight;
+    }
+
+    componentDidUpdate() {
+        if (this.shouldScroll) {
+            this.content.scrollTop = this.content.scrollHeight;
+        }
     }
 
     componentWillUnmount() {
         this.props.dispatch({
             type: UNWATCH_FILE,
             payload: this.state.file,
+        });
+        this.props.dispatch({
+            type: CLEAR_FILE_PATH,
         });
     }
 
@@ -93,7 +117,6 @@ class AllocationFiles extends Component {
         // We've located the alloc node so go ahead and query the filesystem
         return true;
     }
-
 
     handleClick(file) {
         if (file.IsDir) {
@@ -141,6 +164,37 @@ class AllocationFiles extends Component {
             );
         }
 
+        let hostname;
+        if (process.env.NODE_ENV === 'production') {
+            hostname = location.host;
+        } else {
+            hostname = `${location.hostname}:${process.env.GO_PORT}` || 3000;
+        }
+
+        const oversizedWarning = !this.props.file.Oversized ? '' :
+          <span>
+            <i className="pe-7s-attention" data-tip data-for={ `tooltip-${this.props.file.File}` }></i>
+            <span>
+              <ReactTooltip id={ `tooltip-${this.props.file.File}` }>
+                <span className="file-size-warning">
+                  The file you are trying to view is too large.<br />
+                  Tailing has started from the last 250 lines. <br />
+                  Please download the file for the entire contents.
+                </span>
+              </ReactTooltip>
+            </span>
+          </span>;
+
+        const baseUrl = `${location.protocol}//${hostname}`;
+        const downloadPath = `download${this.props.file.File}`;
+        const downloadBtn = this.props.file.File.startsWith('<') ? '' :
+          <form className="file-download" method="get" action={ `${baseUrl}/${downloadPath}` } >
+            <input type="hidden" name="client" value={ this.props.node.HTTPAddr } />
+            <input type="hidden" name="allocID" value={ this.props.allocation.ID } />
+            { oversizedWarning }
+            <Button type="submit" className="btn-download">Download</Button>
+          </form>;
+
         return (
           <div className="tab-pane active">
             <div className="row">
@@ -154,9 +208,12 @@ class AllocationFiles extends Component {
               </div>
               <div className="col-md-9">
                 <div className="card">
-                  <div className="header">File: { this.props.file.File }</div>
-                  <hr />
-                  <div className="content content-file">
+                  <div className="header">File: { this.props.file.File }
+                    { downloadBtn }
+                  </div>
+
+                  <hr className="file-content-hr" />
+                  <div className="content content-file" ref={ (c) => { this.content = c; } }>
                     { this.state.contents }
                   </div>
                 </div>

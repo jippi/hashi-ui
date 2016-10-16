@@ -74,6 +74,13 @@
     .content{
         padding: $padding-default-horizontal;
     }
+    .content-file{
+        height: 750px;
+        overflow: auto;
+        clear: both;
+        white-space: pre;
+        background: #f5f5f5;
+    }
     .content-no-padding{
         padding: 0;
 

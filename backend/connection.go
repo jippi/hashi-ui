@@ -2,12 +2,28 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"time"
 
 	"gopkg.in/fatih/set.v0"
 
 	"github.com/gorilla/websocket"
 	"github.com/hashicorp/nomad/api"
+	"github.com/hashicorp/nomad/command"
+)
+
+const (
+	// bytesToLines is an estimation of how many bytes are in each log line.
+	// This is used to set the offset to read from when a user specifies how
+	// many lines to tail from.
+	bytesToLines int64 = 120
+
+	// defaultTailLines is the number of lines to tail by default.
+	defaultTailLines int64 = 250
+
+	// If a file exceeds an estimate of 250 loglines we start tailing it
+	// from the end, otherwise the whole file is retrieved and followed.
+	maxFileSize int64 = defaultTailLines * bytesToLines
 )
 
 // Connection monitors the websocket connection. It processes any action
@@ -355,10 +371,9 @@ func (c *Connection) fetchDir(action Action) {
 	c.send <- &Action{Type: fetchedDir, Payload: dir}
 }
 
-type Frame struct {
-	Data   string
-	File   string
-	Offset int64
+type Line struct {
+	Data string
+	File string
 }
 
 func (c *Connection) watchFile(action Action) {
@@ -385,36 +400,98 @@ func (c *Connection) watchFile(action Action) {
 		return
 	}
 
-	cancel := make(chan struct{})
-	frames, err := client.AllocFS().Stream(alloc, path, api.OriginStart, 0, cancel, nil)
+	// Get file stat info
+	file, _, err := client.AllocFS().Stat(alloc, path, nil)
 	if err != nil {
+		logger.Errorf("Unable to stat file: %s", err)
+		return
+	}
+
+	var origin string = api.OriginStart
+	var offset int64 = 0
+	var oversized bool
+	if file.Size > maxFileSize {
+		origin = api.OriginEnd
+		offset = maxFileSize
+		oversized = true
+	}
+
+	cancel := make(chan struct{})
+	frames, err := client.AllocFS().Stream(alloc, path, origin, offset, cancel, nil)
+	if err != nil {
+		c.send <- &Action{
+			Type: fileStreamFailed,
+			Payload: struct {
+				path string
+			}{
+				path: path,
+			},
+		}
+
 		logger.Errorf("Unable to stream file: %s", err)
 		return
 	}
+
+	var r io.ReadCloser
+	frameReader := api.NewFrameReader(frames, cancel)
+	frameReader.SetUnblockTime(500 * time.Millisecond)
+	r = command.NewLineLimitReader(frameReader, int(defaultTailLines), int(defaultTailLines*bytesToLines), 1*time.Second)
+
+	// Turn the reader into a channel
+	lines := make(chan []byte)
+	b := make([]byte, defaultTailLines*bytesToLines)
+	go func() {
+		for {
+			n, err := r.Read(b[:cap(b)])
+			if err != nil {
+				return
+			}
+			if n > 0 {
+				lines <- b[0:n]
+			}
+		}
+	}()
 
 	c.watches.Add(path)
 	defer func() {
 		logger.Infof("Stopped watching file with path: %s", path)
 		c.watches.Remove(path)
-		close(cancel)
+		r.Close()
 	}()
 
 	logger.Infof("Started watching file with path: %s", path)
+	c.send <- &Action{
+		Type: fetchedFile,
+		Payload: struct {
+			File      string
+			Data      string
+			Oversized bool
+		}{
+			File:      path,
+			Data:      "",
+			Oversized: oversized,
+		},
+	}
+
 	ticker := time.NewTicker(10 * time.Second)
 	for {
 		select {
 		case <-c.destroyCh:
 			return
-		case frame := <-frames:
+		case line := <-lines:
 			if !c.watches.Has(path) {
 				return
 			}
 			c.send <- &Action{
 				Type: fetchedFile,
-				Payload: Frame{
-					File:   frame.File,
-					Data:   string(frame.Data),
-					Offset: frame.Offset,
+				Payload: struct {
+					File      string
+					Data      string
+					Oversized bool
+				}{
+					File:      path,
+					Data:      string(line),
+					Oversized: oversized,
 				},
 			}
 		case <-ticker.C:
