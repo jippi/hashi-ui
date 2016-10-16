@@ -55,7 +55,7 @@ class Allocation extends Component {
               <div className="card">
                 <div className="header">
                   <h4 className="title">
-                    Allocation: { this.props.allocation.ID }
+                    Allocation: { this.props.allocation.Name }
                   </h4>
                 </div>
                 <div className="content">
