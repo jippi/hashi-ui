@@ -30,14 +30,14 @@ job "nomad-ui" {
       driver = "exec"
 
       config {
-        command = "nomad-ui-linux"
+        command = "nomad-ui-linux-amd64"
       }
 
       artifact {
-        source = "https://github.com/iverberk/nomad-ui/releases/download/v0.1.0/nomad-ui-linux"
+        source = "https://github.com/iverberk/nomad-ui/releases/download/v0.2.1/nomad-ui-linux-amd64"
 
         options {
-          checksum = "sha256:0335ab507a99dff573cb58395ef52a76e25c7361dffed45a92dbd778d9174a1a"
+          checksum = "sha256:4b6f0394698d45fcce05c536442b35b5ff83736cd6050d1c50c2a3959937dd14"
         }
       }
 
@@ -53,8 +53,7 @@ job "nomad-ui" {
       }
 
       env {
-        NOMAD_ADDR = "nomad.service.consul"
-        NOMAD_PORT = "4646"
+        NOMAD_ADDR = "http://nomad.service.consul:4646"
       }
 
       resources {
