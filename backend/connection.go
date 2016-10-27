@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"time"
+	"encoding/json"
 
 	"gopkg.in/fatih/set.v0"
 
@@ -97,6 +98,10 @@ func (c *Connection) readPump() {
 
 func (c *Connection) process(action Action) {
 	switch action.Type {
+	case runJob:
+		c.runJob(action)
+	case planJob:
+		c.planJob(action)
 	case fetchMember:
 		c.fetchMember(action)
 	case fetchNode:
@@ -138,6 +143,38 @@ func (c *Connection) Handle() {
 
 	// Kill any remaining watcher routines
 	close(c.destroyCh)
+}
+
+func (c *Connection) runJob(action Action) {
+	jobjson := action.Payload.(string)
+	runjob := api.Job{}
+	json.Unmarshal([]byte(jobjson), &runjob)
+
+	logger.Infof("Started run job with id: %s", runjob.ID)
+
+	job, _, err := c.hub.nomad.Client.Jobs().Register(&runjob, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to register job : %s", err)
+		return
+	}
+
+	c.send <- &Action{Type: "JOB_UPADTED", Payload: job}
+}
+
+func (c *Connection) planJob(action Action) {
+	jobjson := action.Payload.(string)
+	planjob := api.Job{}
+	json.Unmarshal([]byte(jobjson), &planjob)
+
+	logger.Infof("Started plan job with id: %s", planjob.ID)
+
+	plan, _, err := c.hub.nomad.Client.Jobs().Plan(&planjob, true, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to plan job : %s", err)
+		return
+	}
+
+	c.send <- &Action{Type: "JOB_PLAN", Payload: plan}
 }
 
 func (c *Connection) watchAlloc(action Action) {
