@@ -1,10 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"time"
-	"encoding/json"
 
 	"gopkg.in/fatih/set.v0"
 
