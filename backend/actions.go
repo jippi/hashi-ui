@@ -16,6 +16,7 @@ const (
 	watchJob    = "WATCH_JOB"
 	unwatchJob  = "UNWATCH_JOB"
 	runJob      = "RUN_JOB"
+	stopJob     = "STOP_JOB"
 	planJob     = "PLAN_JOB"
 
 	fetchedNodes = "FETCHED_NODES"

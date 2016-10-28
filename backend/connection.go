@@ -102,6 +102,8 @@ func (c *Connection) process(action Action) {
 		c.runJob(action)
 	case planJob:
 		c.planJob(action)
+	case stopJob:
+		c.stopJob(action)
 	case fetchMember:
 		c.fetchMember(action)
 	case fetchNode:
@@ -159,6 +161,22 @@ func (c *Connection) runJob(action Action) {
 	}
 
 	c.send <- &Action{Type: "JOB_UPADTED", Payload: job}
+}
+
+func (c *Connection) stopJob(action Action) {
+	jobjson := action.Payload.(string)
+	stopjob := api.Job{}
+	json.Unmarshal([]byte(jobjson), &stopjob)
+
+	logger.Infof("Started stop job with id: %s", stopjob.ID)
+
+	job, _, err := c.hub.nomad.Client.Jobs().Deregister(stopjob.ID, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to stop job : %s", err)
+		return
+	}
+
+	c.send <- &Action{Type: "JOB_STOPPED", Payload: job}
 }
 
 func (c *Connection) planJob(action Action) {
