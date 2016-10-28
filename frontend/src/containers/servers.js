@@ -4,8 +4,6 @@ import NomadLink from '../components/link';
 import FormatBoolean from '../components/format/boolean';
 
 const Servers = ({ members }) => {
-    const leader = members[0];
-
     return (
       <div className="row">
         <div className="col-md-12">
@@ -31,7 +29,6 @@ const Servers = ({ members }) => {
                 </thead>
                 <tbody>
                   { members.map((member) => {
-                      const isLeader = member.ID === leader.ID;
                       return (
                         <tr key={ member.ID }>
                           <td><NomadLink memberId={ member.ID } short="true" /></td>
@@ -39,7 +36,7 @@ const Servers = ({ members }) => {
                           <td>{ member.Addr }</td>
                           <td>{ member.Port }</td>
                           <td>{ member.Status }</td>
-                          <td><FormatBoolean value={ isLeader } /></td>
+                          <td><FormatBoolean value={ member.Leader } /></td>
                           <td>{ member.ProtocolCur }</td>
                           <td>{ member.Tags.build }</td>
                           <td>{ member.Tags.dc }</td>
