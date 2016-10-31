@@ -27,16 +27,15 @@ class AllocationInfo extends Component {
         return (
           <Panel key={ name } header={ title }>
             <div className="content table-responsive table-full-width">
-              <Table striped hover>
+              <Table striped hover style={{ 'table-layout': 'fixed' }}>
                 <thead>
                   <tr>
-                    <th>When</th>
-                    <th>Duration</th>
-                    <th>Type</th>
-                    <th>Message</th>
-                    <th>Reason</th>
-                    <th>Code</th>
-                    <th>Signal</th>
+                    <th width="150">When</th>
+                    <th width="150">Duration</th>
+                    <th width="150">Type</th>
+                    <th>Message / Reason</th>
+                    <th width="50">Code</th>
+                    <th width="50">Signal</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -47,7 +46,7 @@ class AllocationInfo extends Component {
 
                       const output = (
                         <tr key={ index }>
-                          <td width="10%"><FormatTime time={ element.Time } /></td>
+                          <td><FormatTime time={ element.Time } /></td>
                           <td>
                             <FormatTime
                               time={ element.Time }
@@ -59,14 +58,20 @@ class AllocationInfo extends Component {
                           <td>{ element.Type }</td>
                           <td>
                             {
-                              element.Message || element.SetupError ||
-                              element.DriverError || element.KillError || element.DownloadError ||
-                              element.ValidationError || element.VaultError
+                              element.Message
+                              || element.SetupError
+                              || element.DriverError
+                              || element.KillError
+                              || element.DownloadError
+                              || element.ValidationError
+                              || element.VaultError
+                              || element.RestartReason
+                              || element.KillReason
+                              || element.TaskSignalReason
                             }
                           </td>
-                          <td>{ element.RestartReason || element.KillReason || element.TaskSignalReason }</td>
                           <td>{ element.ExitCode }</td>
-                          <td>{ element.Signal || element.TaskSignal }</td>
+                          <td>{ element.Signal || element.TaskSignal || 'N/A' }</td>
                         </tr>
                       );
 
