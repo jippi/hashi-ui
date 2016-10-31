@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	docker "github.com/fsouza/go-dockerclient"
@@ -58,6 +59,19 @@ const (
 	// driver
 	dockerDriverAttr = "driver.docker"
 
+	// dockerSELinuxLabelConfigOption is the key for configuring the
+	// SELinux label for binds.
+	dockerSELinuxLabelConfigOption = "docker.volumes.selinuxlabel"
+
+	// dockerVolumesConfigOption is the key for enabling the use of custom
+	// bind volumes to arbitrary host paths.
+	dockerVolumesConfigOption  = "docker.volumes.enabled"
+	dockerVolumesConfigDefault = true
+
+	// dockerPrivilegedConfigOption is the key for running containers in
+	// Docker's privileged mode.
+	dockerPrivilegedConfigOption = "docker.privileged.enabled"
+
 	// dockerTimeout is the length of time a request can be outstanding before
 	// it is timed out.
 	dockerTimeout = 1 * time.Minute
@@ -72,6 +86,12 @@ type DockerDriverAuth struct {
 	Password      string `mapstructure:"password"`       // password to access the registry
 	Email         string `mapstructure:"email"`          // email address of the user who is allowed to access the registry
 	ServerAddress string `mapstructure:"server_address"` // server address of the registry
+}
+
+type DockerLoggingOpts struct {
+	Type      string              `mapstructure:"type"`
+	ConfigRaw []map[string]string `mapstructure:"config"`
+	Config    map[string]string   `mapstructure:"-"`
 }
 
 type DockerDriverConfig struct {
@@ -97,6 +117,8 @@ type DockerDriverConfig struct {
 	Interactive      bool                `mapstructure:"interactive"`        // Keep STDIN open even if not attached
 	ShmSize          int64               `mapstructure:"shm_size"`           // Size of /dev/shm of the container in bytes
 	WorkDir          string              `mapstructure:"work_dir"`           // Working directory inside the container
+	Logging          []DockerLoggingOpts `mapstructure:"logging"`            // Logging options for syslog server
+	Volumes          []string            `mapstructure:"volumes"`            // Host-Volumes to mount in, syntax: /path/to/host/directory:/destination/path/in/container
 }
 
 // Validate validates a docker driver config
@@ -107,7 +129,9 @@ func (c *DockerDriverConfig) Validate() error {
 
 	c.PortMap = mapMergeStrInt(c.PortMapRaw...)
 	c.Labels = mapMergeStrStr(c.LabelsRaw...)
-
+	if len(c.Logging) > 0 {
+		c.Logging[0].Config = mapMergeStrStr(c.Logging[0].ConfigRaw...)
+	}
 	return nil
 }
 
@@ -227,6 +251,12 @@ func (d *DockerDriver) Validate(config map[string]interface{}) error {
 			"work_dir": &fields.FieldSchema{
 				Type: fields.TypeString,
 			},
+			"logging": &fields.FieldSchema{
+				Type: fields.TypeArray,
+			},
+			"volumes": &fields.FieldSchema{
+				Type: fields.TypeArray,
+			},
 		},
 	}
 
@@ -235,6 +265,12 @@ func (d *DockerDriver) Validate(config map[string]interface{}) error {
 	}
 
 	return nil
+}
+
+func (d *DockerDriver) Abilities() DriverAbilities {
+	return DriverAbilities{
+		SendSignals: true,
+	}
 }
 
 // dockerClients creates two *docker.Client, one for long running operations and
@@ -320,9 +356,9 @@ func (d *DockerDriver) Fingerprint(cfg *config.Config, node *structs.Node) (bool
 		return false, nil
 	}
 
-	privileged := d.config.ReadBoolDefault("docker.privileged.enabled", false)
+	privileged := d.config.ReadBoolDefault(dockerPrivilegedConfigOption, false)
 	if privileged {
-		node.Attributes["docker.privileged.enabled"] = "1"
+		node.Attributes[dockerPrivilegedConfigOption] = "1"
 	}
 
 	// This is the first operation taken on the client so we'll try to
@@ -339,15 +375,25 @@ func (d *DockerDriver) Fingerprint(cfg *config.Config, node *structs.Node) (bool
 
 	node.Attributes[dockerDriverAttr] = "1"
 	node.Attributes["driver.docker.version"] = env.Get("Version")
+
+	// Advertise if this node supports Docker volumes
+	if d.config.ReadBoolDefault(dockerVolumesConfigOption, dockerVolumesConfigDefault) {
+		node.Attributes["driver."+dockerVolumesConfigOption] = "1"
+	}
+
 	return true, nil
 }
 
-func (d *DockerDriver) containerBinds(alloc *allocdir.AllocDir, task *structs.Task) ([]string, error) {
+func (d *DockerDriver) containerBinds(driverConfig *DockerDriverConfig, alloc *allocdir.AllocDir,
+	task *structs.Task) ([]string, error) {
+
 	shared := alloc.SharedDir
-	local, ok := alloc.TaskDirs[task.Name]
+	taskDir, ok := alloc.TaskDirs[task.Name]
 	if !ok {
 		return nil, fmt.Errorf("Failed to find task local directory: %v", task.Name)
 	}
+	local := filepath.Join(taskDir, allocdir.TaskLocal)
+
 	secret, err := alloc.GetSecretDir(task.Name)
 	if err != nil {
 		return nil, err
@@ -356,17 +402,45 @@ func (d *DockerDriver) containerBinds(alloc *allocdir.AllocDir, task *structs.Ta
 	allocDirBind := fmt.Sprintf("%s:%s", shared, allocdir.SharedAllocContainerPath)
 	taskLocalBind := fmt.Sprintf("%s:%s", local, allocdir.TaskLocalContainerPath)
 	secretDirBind := fmt.Sprintf("%s:%s", secret, allocdir.TaskSecretsContainerPath)
+	binds := []string{allocDirBind, taskLocalBind, secretDirBind}
 
-	if selinuxLabel := d.config.Read("docker.volumes.selinuxlabel"); selinuxLabel != "" {
-		allocDirBind = fmt.Sprintf("%s:%s", allocDirBind, selinuxLabel)
-		taskLocalBind = fmt.Sprintf("%s:%s", taskLocalBind, selinuxLabel)
-		secretDirBind = fmt.Sprintf("%s:%s", secretDirBind, selinuxLabel)
+	volumesEnabled := d.config.ReadBoolDefault(dockerVolumesConfigOption, dockerVolumesConfigDefault)
+
+	// Expand environment variables in volume paths
+	expandedVols := d.taskEnv.ParseAndReplace(driverConfig.Volumes)
+	for _, userbind := range expandedVols {
+		parts := strings.Split(userbind, ":")
+		if len(parts) < 2 {
+			return nil, fmt.Errorf("invalid docker volume: %q", userbind)
+		}
+
+		// Resolve dotted path segments
+		parts[0] = filepath.Clean(parts[0])
+
+		// Absolute paths aren't always supported
+		if filepath.IsAbs(parts[0]) {
+			if !volumesEnabled {
+				// Disallow mounting arbitrary absolute paths
+				return nil, fmt.Errorf("%s is false; cannot mount host paths: %+q", dockerVolumesConfigOption, userbind)
+			}
+			binds = append(binds, userbind)
+			continue
+		}
+
+		// Relative paths are always allowed as they mount within a container
+		// Expand path relative to alloc dir
+		parts[0] = filepath.Join(shared, parts[0])
+		binds = append(binds, strings.Join(parts, ":"))
 	}
-	return []string{
-		allocDirBind,
-		taskLocalBind,
-		secretDirBind,
-	}, nil
+
+	if selinuxLabel := d.config.Read(dockerSELinuxLabelConfigOption); selinuxLabel != "" {
+		// Apply SELinux Label to each volume
+		for i := range binds {
+			binds[i] = fmt.Sprintf("%s:%s", binds[i], selinuxLabel)
+		}
+	}
+
+	return binds, nil
 }
 
 // createContainer initializes a struct needed to call docker.client.CreateContainer()
@@ -380,7 +454,7 @@ func (d *DockerDriver) createContainer(ctx *ExecContext, task *structs.Task,
 		return c, fmt.Errorf("task.Resources is empty")
 	}
 
-	binds, err := d.containerBinds(ctx.AllocDir, task)
+	binds, err := d.containerBinds(driverConfig, ctx.AllocDir, task)
 	if err != nil {
 		return c, err
 	}
@@ -403,6 +477,18 @@ func (d *DockerDriver) createContainer(ctx *ExecContext, task *structs.Task,
 	}
 
 	memLimit := int64(task.Resources.MemoryMB) * 1024 * 1024
+
+	if len(driverConfig.Logging) == 0 {
+		if runtime.GOOS != "darwin" {
+			d.logger.Printf("[DEBUG] driver.docker: Setting default logging options to syslog and %s", syslogAddr)
+			driverConfig.Logging = []DockerLoggingOpts{
+				{Type: "syslog", Config: map[string]string{"syslog-address": syslogAddr}},
+			}
+		} else {
+			d.logger.Printf("[DEBUG] driver.docker: deferring logging to docker on Docker for Mac")
+		}
+	}
+
 	hostConfig := &docker.HostConfig{
 		// Convert MB to bytes. This is an absolute value.
 		Memory:     memLimit,
@@ -414,12 +500,14 @@ func (d *DockerDriver) createContainer(ctx *ExecContext, task *structs.Task,
 		// local directory for storage and a shared alloc directory that can be
 		// used to share data between different tasks in the same task group.
 		Binds: binds,
-		LogConfig: docker.LogConfig{
-			Type: "syslog",
-			Config: map[string]string{
-				"syslog-address": syslogAddr,
-			},
-		},
+	}
+
+	if len(driverConfig.Logging) != 0 {
+		d.logger.Printf("[DEBUG] driver.docker: Using config for logging: %+v", driverConfig.Logging[0])
+		hostConfig.LogConfig = docker.LogConfig{
+			Type:   driverConfig.Logging[0].Type,
+			Config: driverConfig.Logging[0].Config,
+		}
 	}
 
 	d.logger.Printf("[DEBUG] driver.docker: using %d bytes memory for %s", hostConfig.Memory, task.Name)
@@ -427,7 +515,7 @@ func (d *DockerDriver) createContainer(ctx *ExecContext, task *structs.Task,
 	d.logger.Printf("[DEBUG] driver.docker: binding directories %#v for %s", hostConfig.Binds, task.Name)
 
 	//  set privileged mode
-	hostPrivileged := d.config.ReadBoolDefault("docker.privileged.enabled", false)
+	hostPrivileged := d.config.ReadBoolDefault(dockerPrivilegedConfigOption, false)
 	if driverConfig.Privileged && !hostPrivileged {
 		return c, fmt.Errorf(`Docker privileged mode is disabled on this Nomad agent`)
 	}
@@ -574,7 +662,7 @@ func (d *DockerDriver) recoverablePullError(err error, image string) error {
 	if imageNotFoundMatcher.MatchString(err.Error()) {
 		recoverable = false
 	}
-	return dstructs.NewRecoverableError(fmt.Errorf("Failed to pull `%s`: %s", image, err), recoverable)
+	return structs.NewRecoverableError(fmt.Errorf("Failed to pull `%s`: %s", image, err), recoverable)
 }
 
 func (d *DockerDriver) Periodic() (bool, time.Duration) {
@@ -731,12 +819,25 @@ func (d *DockerDriver) Start(ctx *ExecContext, task *structs.Task) (DriverHandle
 		PortLowerBound: d.config.ClientMinPort,
 		PortUpperBound: d.config.ClientMaxPort,
 	}
-	ss, err := exec.LaunchSyslogServer(executorCtx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to start syslog collector: %v", err)
+	if err := exec.SetContext(executorCtx); err != nil {
+		pluginClient.Kill()
+		return nil, fmt.Errorf("failed to set executor context: %v", err)
 	}
 
-	config, err := d.createContainer(ctx, task, driverConfig, ss.Addr)
+	// Only launch syslog server if we're going to use it!
+	syslogAddr := ""
+	if runtime.GOOS == "darwin" && len(driverConfig.Logging) == 0 {
+		d.logger.Printf("[DEBUG] driver.docker: disabling syslog driver as Docker for Mac workaround")
+	} else if len(driverConfig.Logging) == 0 || driverConfig.Logging[0].Type == "syslog" {
+		ss, err := exec.LaunchSyslogServer()
+		if err != nil {
+			pluginClient.Kill()
+			return nil, fmt.Errorf("failed to start syslog collector: %v", err)
+		}
+		syslogAddr = ss.Addr
+	}
+
+	config, err := d.createContainer(ctx, task, driverConfig, syslogAddr)
 	if err != nil {
 		d.logger.Printf("[ERR] driver.docker: failed to create container configuration for image %s: %s", image, err)
 		pluginClient.Kill()
@@ -943,6 +1044,22 @@ func (h *DockerHandle) Update(task *structs.Task) error {
 
 	// Update is not possible
 	return nil
+}
+
+func (h *DockerHandle) Signal(s os.Signal) error {
+	// Convert types
+	sysSig, ok := s.(syscall.Signal)
+	if !ok {
+		return fmt.Errorf("Failed to determine signal number")
+	}
+
+	dockerSignal := docker.Signal(sysSig)
+	opts := docker.KillContainerOptions{
+		ID:     h.containerID,
+		Signal: dockerSignal,
+	}
+	return h.client.KillContainer(opts)
+
 }
 
 // Kill is used to terminate the task. This uses `docker stop -t killTimeout`

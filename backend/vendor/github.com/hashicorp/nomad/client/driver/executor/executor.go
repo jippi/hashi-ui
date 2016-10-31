@@ -48,8 +48,9 @@ var (
 // Executor is the interface which allows a driver to launch and supervise
 // a process
 type Executor interface {
-	LaunchCmd(command *ExecCommand, ctx *ExecutorContext) (*ProcessState, error)
-	LaunchSyslogServer(ctx *ExecutorContext) (*SyslogServerState, error)
+	SetContext(ctx *ExecutorContext) error
+	LaunchCmd(command *ExecCommand) (*ProcessState, error)
+	LaunchSyslogServer() (*SyslogServerState, error)
 	Wait() (*ProcessState, error)
 	ShutDown() error
 	Exit() error
@@ -59,6 +60,7 @@ type Executor interface {
 	DeregisterServices() error
 	Version() (*ExecutorVersion, error)
 	Stats() (*cstructs.TaskResourceUsage, error)
+	Signal(s os.Signal) error
 }
 
 // ConsulContext holds context to configure the Consul client and run checks
@@ -229,12 +231,23 @@ func (e *UniversalExecutor) Version() (*ExecutorVersion, error) {
 	return &ExecutorVersion{Version: "1.0.0"}, nil
 }
 
+// SetContext is used to set the executors context and should be the first call
+// after launching the executor.
+func (e *UniversalExecutor) SetContext(ctx *ExecutorContext) error {
+	e.ctx = ctx
+	return nil
+}
+
 // LaunchCmd launches a process and returns it's state. It also configures an
 // applies isolation on certain platforms.
-func (e *UniversalExecutor) LaunchCmd(command *ExecCommand, ctx *ExecutorContext) (*ProcessState, error) {
+func (e *UniversalExecutor) LaunchCmd(command *ExecCommand) (*ProcessState, error) {
 	e.logger.Printf("[DEBUG] executor: launching command %v %v", command.Cmd, strings.Join(command.Args, " "))
 
-	e.ctx = ctx
+	// Ensure the context has been set first
+	if e.ctx == nil {
+		return nil, fmt.Errorf("SetContext must be called before launching a command")
+	}
+
 	e.command = command
 
 	// setting the user of the process
@@ -272,7 +285,7 @@ func (e *UniversalExecutor) LaunchCmd(command *ExecCommand, ctx *ExecutorContext
 	e.cmd.Stderr = e.lre
 
 	// Look up the binary path and make it executable
-	absPath, err := e.lookupBin(ctx.TaskEnv.ReplaceEnv(command.Cmd))
+	absPath, err := e.lookupBin(e.ctx.TaskEnv.ReplaceEnv(command.Cmd))
 	if err != nil {
 		return nil, err
 	}
@@ -294,8 +307,8 @@ func (e *UniversalExecutor) LaunchCmd(command *ExecCommand, ctx *ExecutorContext
 
 	// Set the commands arguments
 	e.cmd.Path = path
-	e.cmd.Args = append([]string{e.cmd.Path}, ctx.TaskEnv.ParseAndReplace(command.Args)...)
-	e.cmd.Env = ctx.TaskEnv.EnvList()
+	e.cmd.Args = append([]string{e.cmd.Path}, e.ctx.TaskEnv.ParseAndReplace(command.Args)...)
+	e.cmd.Env = e.ctx.TaskEnv.EnvList()
 
 	// Start the process
 	if err := e.cmd.Start(); err != nil {
@@ -361,11 +374,15 @@ func (e *UniversalExecutor) UpdateTask(task *structs.Task) error {
 	e.ctx.Task = task
 
 	// Updating Log Config
-	fileSize := int64(task.LogConfig.MaxFileSizeMB * 1024 * 1024)
-	e.lro.MaxFiles = task.LogConfig.MaxFiles
-	e.lro.FileSize = fileSize
-	e.lre.MaxFiles = task.LogConfig.MaxFiles
-	e.lre.FileSize = fileSize
+	e.rotatorLock.Lock()
+	if e.lro != nil && e.lre != nil {
+		fileSize := int64(task.LogConfig.MaxFileSizeMB * 1024 * 1024)
+		e.lro.MaxFiles = task.LogConfig.MaxFiles
+		e.lro.FileSize = fileSize
+		e.lre.MaxFiles = task.LogConfig.MaxFiles
+		e.lre.FileSize = fileSize
+	}
+	e.rotatorLock.Unlock()
 
 	// Re-syncing task with Consul agent
 	if e.consulSyncer != nil {
@@ -396,6 +413,10 @@ func (e *UniversalExecutor) wait() {
 		e.exitState = &ProcessState{Pid: 0, ExitCode: 0, IsolationConfig: ic, Time: time.Now()}
 		return
 	}
+
+	e.lre.Close()
+	e.lro.Close()
+
 	exitCode := 1
 	var signal int
 	if exitErr, ok := err.(*exec.ExitError); ok {
@@ -440,8 +461,14 @@ func (e *UniversalExecutor) Exit() error {
 	if e.syslogServer != nil {
 		e.syslogServer.Shutdown()
 	}
-	e.lre.Close()
-	e.lro.Close()
+
+	if e.lre != nil {
+		e.lre.Close()
+	}
+
+	if e.lro != nil {
+		e.lro.Close()
+	}
 
 	if e.consulSyncer != nil {
 		e.consulSyncer.Shutdown()
@@ -855,4 +882,20 @@ func (e *UniversalExecutor) aggregatedResourceUsage(pidStats map[string]*cstruct
 		Timestamp:     ts,
 		Pids:          pidStats,
 	}
+}
+
+// Signal sends the passed signal to the task
+func (e *UniversalExecutor) Signal(s os.Signal) error {
+	if e.cmd.Process == nil {
+		return fmt.Errorf("Task not yet run")
+	}
+
+	e.logger.Printf("[DEBUG] executor: sending signal %s", s)
+	err := e.cmd.Process.Signal(s)
+	if err != nil {
+		e.logger.Printf("[ERR] executor: sending signal %s failed: %v", err)
+		return err
+	}
+
+	return nil
 }
