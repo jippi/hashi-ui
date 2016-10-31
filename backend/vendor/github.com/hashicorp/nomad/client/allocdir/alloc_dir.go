@@ -5,12 +5,8 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
-	"math"
 	"os"
 	"path/filepath"
-	"strings"
-	"sync"
 	"time"
 
 	"gopkg.in/tomb.v1"
@@ -18,20 +14,6 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/nomad/nomad/structs"
 	"github.com/hpcloud/tail/watch"
-)
-
-const (
-	// The minimum frequency to use for disk monitoring.
-	minCheckDiskInterval = 3 * time.Minute
-
-	// The maximum frequency to use for disk monitoring.
-	maxCheckDiskInterval = 15 * time.Second
-
-	// The amount of time that maxCheckDiskInterval is always used after
-	// starting the allocation. This prevents unbounded disk usage that would
-	// otherwise be possible for a number of minutes if we started with the
-	// minCheckDiskInterval.
-	checkDiskMaxEnforcePeriod = 5 * time.Minute
 )
 
 var (
@@ -48,7 +30,7 @@ var (
 	// regardless of driver.
 	TaskLocal = "local"
 
-	// TaskSecrets is the the name of the secret directory inside each task
+	// TaskSecrets is the name of the secret directory inside each task
 	// directory
 	TaskSecrets = "secrets"
 
@@ -67,33 +49,6 @@ type AllocDir struct {
 
 	// TaskDirs is a mapping of task names to their non-shared directory.
 	TaskDirs map[string]string
-
-	// Size is the total consumed disk size of the shared directory in bytes
-	size     int64
-	sizeLock sync.RWMutex
-
-	// The minimum frequency to use for disk monitoring.
-	MinCheckDiskInterval time.Duration
-
-	// The maximum frequency to use for disk monitoring.
-	MaxCheckDiskInterval time.Duration
-
-	// The amount of time that maxCheckDiskInterval is always used after
-	// starting the allocation. This prevents unbounded disk usage that would
-	// otherwise be possible for a number of minutes if we started with the
-	// minCheckDiskInterval.
-	CheckDiskMaxEnforcePeriod time.Duration
-
-	// running reflects the state of the disk watcher process.
-	running bool
-
-	// watchCh signals that the alloc directory is being torn down and that
-	// any monitoring on it should stop.
-	watchCh chan struct{}
-
-	// MaxSize represents the total amount of megabytes that the shared allocation
-	// directory is allowed to consume.
-	MaxSize int
 }
 
 // AllocFileInfo holds information about a file inside the AllocDir
@@ -111,20 +66,16 @@ type AllocDirFS interface {
 	Stat(path string) (*AllocFileInfo, error)
 	ReadAt(path string, offset int64) (io.ReadCloser, error)
 	Snapshot(w io.Writer) error
-	BlockUntilExists(path string, t *tomb.Tomb) chan error
+	BlockUntilExists(path string, t *tomb.Tomb) (chan error, error)
 	ChangeEvents(path string, curOffset int64, t *tomb.Tomb) (*watch.FileChanges, error)
 }
 
 // NewAllocDir initializes the AllocDir struct with allocDir as base path for
-// the allocation directory and maxSize as the maximum allowed size in megabytes.
-func NewAllocDir(allocDir string, maxSize int) *AllocDir {
+// the allocation directory.
+func NewAllocDir(allocDir string) *AllocDir {
 	d := &AllocDir{
-		AllocDir:                  allocDir,
-		MaxCheckDiskInterval:      maxCheckDiskInterval,
-		MinCheckDiskInterval:      minCheckDiskInterval,
-		CheckDiskMaxEnforcePeriod: checkDiskMaxEnforcePeriod,
-		TaskDirs:                  make(map[string]string),
-		MaxSize:                   maxSize,
+		AllocDir: allocDir,
+		TaskDirs: make(map[string]string),
 	}
 	d.SharedDir = filepath.Join(d.AllocDir, SharedAllocName)
 	return d
@@ -185,6 +136,34 @@ func (d *AllocDir) Snapshot(w io.Writer) error {
 	for _, path := range rootPaths {
 		if err := filepath.Walk(path, walkFn); err != nil {
 			return err
+		}
+	}
+
+	return nil
+}
+
+// Move moves the shared data and task local dirs
+func (d *AllocDir) Move(other *AllocDir, tasks []*structs.Task) error {
+	// Move the data directory
+	otherDataDir := filepath.Join(other.SharedDir, "data")
+	dataDir := filepath.Join(d.SharedDir, "data")
+	if fileInfo, err := os.Stat(otherDataDir); fileInfo != nil && err == nil {
+		if err := os.Rename(otherDataDir, dataDir); err != nil {
+			return fmt.Errorf("error moving data dir: %v", err)
+		}
+	}
+
+	// Move the task directories
+	for _, task := range tasks {
+		taskDir := filepath.Join(other.AllocDir, task.Name)
+		otherTaskLocal := filepath.Join(taskDir, TaskLocal)
+
+		if fileInfo, err := os.Stat(otherTaskLocal); fileInfo != nil && err == nil {
+			if taskDir, ok := d.TaskDirs[task.Name]; ok {
+				if err := os.Rename(otherTaskLocal, filepath.Join(taskDir, TaskLocal)); err != nil {
+					return fmt.Errorf("error moving task local dir: %v", err)
+				}
+			}
 		}
 	}
 
@@ -432,6 +411,12 @@ func (d *AllocDir) LogDir() string {
 
 // List returns the list of files at a path relative to the alloc dir
 func (d *AllocDir) List(path string) ([]*AllocFileInfo, error) {
+	if escapes, err := structs.PathEscapesAllocDir(path); err != nil {
+		return nil, fmt.Errorf("Failed to check if path escapes alloc directory: %v", err)
+	} else if escapes {
+		return nil, fmt.Errorf("Path escapes the alloc directory")
+	}
+
 	p := filepath.Join(d.AllocDir, path)
 	finfos, err := ioutil.ReadDir(p)
 	if err != nil {
@@ -452,6 +437,12 @@ func (d *AllocDir) List(path string) ([]*AllocFileInfo, error) {
 
 // Stat returns information about the file at a path relative to the alloc dir
 func (d *AllocDir) Stat(path string) (*AllocFileInfo, error) {
+	if escapes, err := structs.PathEscapesAllocDir(path); err != nil {
+		return nil, fmt.Errorf("Failed to check if path escapes alloc directory: %v", err)
+	} else if escapes {
+		return nil, fmt.Errorf("Path escapes the alloc directory")
+	}
+
 	p := filepath.Join(d.AllocDir, path)
 	info, err := os.Stat(p)
 	if err != nil {
@@ -469,7 +460,22 @@ func (d *AllocDir) Stat(path string) (*AllocFileInfo, error) {
 
 // ReadAt returns a reader for a file at the path relative to the alloc dir
 func (d *AllocDir) ReadAt(path string, offset int64) (io.ReadCloser, error) {
+	if escapes, err := structs.PathEscapesAllocDir(path); err != nil {
+		return nil, fmt.Errorf("Failed to check if path escapes alloc directory: %v", err)
+	} else if escapes {
+		return nil, fmt.Errorf("Path escapes the alloc directory")
+	}
+
 	p := filepath.Join(d.AllocDir, path)
+
+	// Check if it is trying to read into a secret directory
+	for _, dir := range d.TaskDirs {
+		sdir := filepath.Join(dir, TaskSecrets)
+		if filepath.HasPrefix(p, sdir) {
+			return nil, fmt.Errorf("Reading secret file prohibited: %s", path)
+		}
+	}
+
 	f, err := os.Open(p)
 	if err != nil {
 		return nil, err
@@ -482,7 +488,13 @@ func (d *AllocDir) ReadAt(path string, offset int64) (io.ReadCloser, error) {
 
 // BlockUntilExists blocks until the passed file relative the allocation
 // directory exists. The block can be cancelled with the passed tomb.
-func (d *AllocDir) BlockUntilExists(path string, t *tomb.Tomb) chan error {
+func (d *AllocDir) BlockUntilExists(path string, t *tomb.Tomb) (chan error, error) {
+	if escapes, err := structs.PathEscapesAllocDir(path); err != nil {
+		return nil, fmt.Errorf("Failed to check if path escapes alloc directory: %v", err)
+	} else if escapes {
+		return nil, fmt.Errorf("Path escapes the alloc directory")
+	}
+
 	// Get the path relative to the alloc directory
 	p := filepath.Join(d.AllocDir, path)
 	watcher := getFileWatcher(p)
@@ -491,13 +503,19 @@ func (d *AllocDir) BlockUntilExists(path string, t *tomb.Tomb) chan error {
 		returnCh <- watcher.BlockUntilExists(t)
 		close(returnCh)
 	}()
-	return returnCh
+	return returnCh, nil
 }
 
 // ChangeEvents watches for changes to the passed path relative to the
 // allocation directory. The offset should be the last read offset. The tomb is
 // used to clean up the watch.
 func (d *AllocDir) ChangeEvents(path string, curOffset int64, t *tomb.Tomb) (*watch.FileChanges, error) {
+	if escapes, err := structs.PathEscapesAllocDir(path); err != nil {
+		return nil, fmt.Errorf("Failed to check if path escapes alloc directory: %v", err)
+	} else if escapes {
+		return nil, fmt.Errorf("Path escapes the alloc directory")
+	}
+
 	// Get the path relative to the alloc directory
 	p := filepath.Join(d.AllocDir, path)
 	watcher := getFileWatcher(p)
@@ -538,87 +556,6 @@ func (d *AllocDir) pathExists(path string) bool {
 		}
 	}
 	return true
-}
-
-// GetSize returns the size of the shared allocation directory.
-func (d *AllocDir) GetSize() int64 {
-	d.sizeLock.Lock()
-	defer d.sizeLock.Unlock()
-
-	return d.size
-}
-
-// setSize sets the size of the shared allocation directory.
-func (d *AllocDir) setSize(size int64) {
-	d.sizeLock.Lock()
-	defer d.sizeLock.Unlock()
-
-	d.size = size
-}
-
-// StartDiskWatcher periodically checks the disk space consumed by the shared
-// allocation directory.
-func (d *AllocDir) StartDiskWatcher() {
-	start := time.Now()
-
-	sync := time.NewTimer(d.MaxCheckDiskInterval)
-	defer sync.Stop()
-
-	d.running = true
-	d.watchCh = make(chan struct{})
-
-	for {
-		select {
-		case <-d.watchCh:
-			return
-		case <-sync.C:
-			if err := d.syncDiskUsage(); err != nil {
-				log.Printf("[WARN] client: failed to sync disk usage: %v", err)
-			}
-			// Calculate the disk ratio.
-			diskRatio := float64(d.size) / float64(d.MaxSize*structs.BytesInMegabyte)
-
-			// Exponentially decrease the interval when the disk ratio increases.
-			nextInterval := time.Duration(int64(1.0/(0.1*math.Pow(diskRatio, 2))+5)) * time.Second
-
-			// Use the maximum interval for the first five minutes or if the
-			// disk ratio is sufficiently high. Also use the minimum check interval
-			// if the disk ratio becomes low enough.
-			if nextInterval < d.MaxCheckDiskInterval || time.Since(start) < d.CheckDiskMaxEnforcePeriod {
-				nextInterval = d.MaxCheckDiskInterval
-			} else if nextInterval > d.MinCheckDiskInterval {
-				nextInterval = d.MinCheckDiskInterval
-			}
-			sync.Reset(nextInterval)
-		}
-	}
-}
-
-// StopDiskWatcher closes the watch channel which causes the disk monitoring to stop.
-func (d *AllocDir) StopDiskWatcher() {
-	if d.running {
-		d.running = false
-		close(d.watchCh)
-	}
-}
-
-// syncDiskUsage walks the allocation directory recursively and
-// calculates the total consumed disk space.
-func (d *AllocDir) syncDiskUsage() error {
-	var size int64
-	err := filepath.Walk(d.AllocDir,
-		func(path string, info os.FileInfo, err error) error {
-			// Ignore paths that do not have a valid FileInfo object
-			if err == nil && !strings.Contains(path, "/proc/") && !strings.Contains(path, "/dev/") {
-				fmt.Printf("File: %s\n", path)
-				size += info.Size()
-			}
-			return nil
-		})
-	// Store the disk consumption
-	d.setSize(size)
-	fmt.Printf("Current disk size is: %d, allowed: %d", size/structs.BytesInMegabyte, d.MaxSize)
-	return err
 }
 
 func (d *AllocDir) GetSecretDir(task string) (string, error) {

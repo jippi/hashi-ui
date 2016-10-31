@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -80,6 +81,12 @@ func (d *RawExecDriver) Validate(config map[string]interface{}) error {
 	return nil
 }
 
+func (d *RawExecDriver) Abilities() DriverAbilities {
+	return DriverAbilities{
+		SendSignals: true,
+	}
+}
+
 func (d *RawExecDriver) Fingerprint(cfg *config.Config, node *structs.Node) (bool, error) {
 	// Get the current status so that we can log any debug messages only if the
 	// state changes
@@ -88,7 +95,7 @@ func (d *RawExecDriver) Fingerprint(cfg *config.Config, node *structs.Node) (boo
 	// Check that the user has explicitly enabled this executor.
 	enabled := cfg.ReadBoolDefault(rawExecConfigOption, false)
 
-	if enabled {
+	if enabled || cfg.DevMode {
 		if currentlyEnabled {
 			d.logger.Printf("[WARN] driver.raw_exec: raw exec is enabled. Only enable if needed")
 		}
@@ -142,12 +149,17 @@ func (d *RawExecDriver) Start(ctx *ExecContext, task *structs.Task) (DriverHandl
 		AllocID:  ctx.AllocID,
 		Task:     task,
 	}
+	if err := exec.SetContext(executorCtx); err != nil {
+		pluginClient.Kill()
+		return nil, fmt.Errorf("failed to set executor context: %v", err)
+	}
 
-	ps, err := exec.LaunchCmd(&executor.ExecCommand{
+	execCmd := &executor.ExecCommand{
 		Cmd:  command,
 		Args: driverConfig.Args,
 		User: task.User,
-	}, executorCtx)
+	}
+	ps, err := exec.LaunchCmd(execCmd)
 	if err != nil {
 		pluginClient.Kill()
 		return nil, err
@@ -253,6 +265,10 @@ func (h *rawExecHandle) Update(task *structs.Task) error {
 
 	// Update is not possible
 	return nil
+}
+
+func (h *rawExecHandle) Signal(s os.Signal) error {
+	return h.executor.Signal(s)
 }
 
 func (h *rawExecHandle) Kill() error {

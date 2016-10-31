@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
@@ -91,6 +92,12 @@ func (d *JavaDriver) Validate(config map[string]interface{}) error {
 	}
 
 	return nil
+}
+
+func (d *JavaDriver) Abilities() DriverAbilities {
+	return DriverAbilities{
+		SendSignals: true,
+	}
 }
 
 func (d *JavaDriver) Fingerprint(cfg *config.Config, node *structs.Node) (bool, error) {
@@ -202,6 +209,8 @@ func (d *JavaDriver) Start(ctx *ExecContext, task *structs.Task) (DriverHandle, 
 	if err != nil {
 		return nil, err
 	}
+
+	// Set the context
 	executorCtx := &executor.ExecutorContext{
 		TaskEnv:   d.taskEnv,
 		Driver:    "java",
@@ -210,19 +219,24 @@ func (d *JavaDriver) Start(ctx *ExecContext, task *structs.Task) (DriverHandle, 
 		ChrootEnv: d.config.ChrootEnv,
 		Task:      task,
 	}
+	if err := execIntf.SetContext(executorCtx); err != nil {
+		pluginClient.Kill()
+		return nil, fmt.Errorf("failed to set executor context: %v", err)
+	}
 
 	absPath, err := GetAbsolutePath("java")
 	if err != nil {
 		return nil, err
 	}
 
-	ps, err := execIntf.LaunchCmd(&executor.ExecCommand{
+	execCmd := &executor.ExecCommand{
 		Cmd:            absPath,
 		Args:           args,
 		FSIsolation:    true,
 		ResourceLimits: true,
 		User:           getExecutorUser(task),
-	}, executorCtx)
+	}
+	ps, err := execIntf.LaunchCmd(execCmd)
 	if err != nil {
 		pluginClient.Kill()
 		return nil, err
@@ -356,6 +370,10 @@ func (h *javaHandle) Update(task *structs.Task) error {
 
 	// Update is not possible
 	return nil
+}
+
+func (h *javaHandle) Signal(s os.Signal) error {
+	return h.executor.Signal(s)
 }
 
 func (h *javaHandle) Kill() error {

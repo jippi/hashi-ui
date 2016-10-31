@@ -7,11 +7,14 @@ const EvaluationList = ({ evaluations, containerClassName }) =>
       <table className="table table-hover table-striped">
         <thead>
           <tr>
-            <th>ID</th>
+            <th width="150">ID</th>
             <th>Job</th>
-            <th>Status</th>
-            <th>Type</th>
-            <th>Priority</th>
+            <th width="150">Type</th>
+            <th width="150">Priority</th>
+            <th width="150">Status</th>
+            <th>Status Description</th>
+            <th width="150">Parent</th>
+            <th width="150">Triggered by</th>
           </tr>
         </thead>
         <tbody>
@@ -19,9 +22,12 @@ const EvaluationList = ({ evaluations, containerClassName }) =>
             <tr key={ evaluation.ID }>
               <td><NomadLink evalId={ evaluation.ID } short="true" /></td>
               <td><NomadLink jobId={ evaluation.JobID } short="true" /></td>
-              <td>{ evaluation.Status }</td>
               <td>{ evaluation.Type }</td>
               <td>{ evaluation.Priority }</td>
+              <td>{ evaluation.Status }</td>
+              <td>{ evaluation.StatusDescription }</td>
+              <td><NomadLink evalId={ evaluation.PreviousEval } short="true" /></td>
+              <td>{ evaluation.TriggeredBy }</td>
             </tr>
           )}
         </tbody>
