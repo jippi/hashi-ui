@@ -93,10 +93,10 @@ class Jobs extends Component {
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th width="150">Status</th>
-                        <th width="150">Type</th>
-                        <th width="150">Priority</th>
-                        <th width="150">Task Groups</th>
+                        <th width="100">Status</th>
+                        <th width="100">Type</th>
+                        <th width="100">Priority</th>
+                        <th width="100">Task Groups</th>
                         { getJobStatisticsHeader() }
                       </tr>
                     </thead>
