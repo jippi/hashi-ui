@@ -25,9 +25,15 @@ const clientHeaderColumn = display =>
 const clientColumn = (allocation, nodes, display) =>
     (display ? <td><NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short="true" /></td> : null);
 
-const nodeIdToNameCache = {};
+let nodeIdToNameCache = {};
 
 class AllocationList extends Component {
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.nodes !== this.props.nodes) {
+            nodeIdToNameCache = {};
+        }
+    }
 
     findNodeNameById(nodeId) {
         if (nodeId in nodeIdToNameCache) {
