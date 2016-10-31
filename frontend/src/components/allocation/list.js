@@ -27,12 +27,28 @@ const clientColumn = (allocation, nodes, display) =>
 
 class AllocationList extends Component {
 
+    findNodeNameById(nodeId) {
+        const r = Object.keys(this.props.nodes).filter(node =>
+            this.props.nodes[node].ID === nodeId
+        );
+
+        if (r.length !== 0) {
+            return this.props.nodes[r].Name;
+        }
+
+        return nodeId;
+    }
+
     filteredAllocations() {
         const query = this.props.location.query || {};
         let allocations = this.props.allocations;
 
         if ('status' in query) {
             allocations = allocations.filter(allocation => allocation.ClientStatus === query.status);
+        }
+
+        if ('client' in query) {
+            allocations = allocations.filter(allocation => allocation.NodeID === query.client);
         }
 
         if ('job' in query) {
@@ -62,6 +78,78 @@ class AllocationList extends Component {
         );
     }
 
+    jobIdFilter() {
+        const location = this.props.location;
+        const query = this.props.location.query || {};
+
+        let title = 'Job';
+        if ('job' in query) {
+            title = <span>{title}: <code>{ query.job }</code></span>;
+        }
+
+        const jobs = this.props.allocations
+          .map((allocation) => {
+              return allocation.JobID;
+          })
+          .filter((v, i, a) => {
+              return a.indexOf(v) === i;
+          })
+          .map((job) => {
+              return (
+                <li key={ job }>
+                  <Link to={ location.pathname } query={{ ...query, job }}>{ job }</Link>
+                </li>
+              );
+          });
+
+        jobs.unshift(
+          <li key="any-job"><Link to={ location.pathname } query={{ ...query, job: undefined }}>- Any -</Link></li>
+        );
+
+        return (
+          <DropdownButton title={ title } key="filter-job" id="filter-job">
+            { jobs }
+          </DropdownButton>
+        );
+    }
+
+    clientFilter() {
+        const location = this.props.location;
+        const query = this.props.location.query || {};
+
+        let title = 'Client';
+        if ('client' in query) {
+            title = <span>{title}: <code>{ this.findNodeNameById(query.client) }</code></span>;
+        }
+
+        const clients = this.props.allocations
+          .map((allocation) => {
+              return allocation.NodeID;
+          })
+          .filter((v, i, a) => {
+              return a.indexOf(v) === i;
+          })
+          .map((client) => {
+              return (
+                <li key={ client }>
+                  <Link to={ location.pathname } query={{ ...query, client }}>{ this.findNodeNameById(client) }</Link>
+                </li>
+              );
+          });
+
+        clients.unshift(
+          <li key="any-client">
+            <Link to={ location.pathname } query={{ ...query, client: undefined }}>- Any -</Link>
+          </li>
+        );
+
+        return (
+          <DropdownButton title={ title } key="filter-client" id="filter-client">
+            { clients }
+          </DropdownButton>
+        );
+    }
+
     render() {
         const showJobColumn = this.props.showJobColumn;
         const showClientColumn = this.props.showClientColumn;
@@ -72,7 +160,11 @@ class AllocationList extends Component {
         return (
           <div className={ className }>
             <div className="inline-pad">
+              { this.clientFilter() }
+              &nbsp;
               { this.clientStatusFilter() }
+              &nbsp;
+              { this.jobIdFilter() }
             </div>
             <div className="table-responsive table-full-width">
               <table className="table table-hover table-striped">
@@ -81,7 +173,7 @@ class AllocationList extends Component {
                     <th width="40"></th>
                     <th width="120">ID</th>
                     { jobHeaderColumn(showJobColumn) }
-                    <th>Task Group</th>
+                    <th width="120">Task Group</th>
                     <th width="120">Status</th>
                     { clientHeaderColumn(showClientColumn) }
                     <th width="120">Age</th>
@@ -97,7 +189,7 @@ class AllocationList extends Component {
                           { jobColumn(allocation, showJobColumn, nodes) }
                           <td>
                             <NomadLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId }>
-                              { allocation.TaskGroup } ({ getAllocationNumberFromName(allocation.Name) })
+                              { allocation.TaskGroup } (#{ getAllocationNumberFromName(allocation.Name) })
                             </NomadLink>
                           </td>
                           <td>{ renderDesiredStatus(allocation) }</td>
