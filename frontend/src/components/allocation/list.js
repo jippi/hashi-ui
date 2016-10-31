@@ -40,18 +40,12 @@ class AllocationList extends Component {
             return true;
         }
 
-        // if we should show the client column and we got no nodes, allow update
-        if (nextProps.showClientColumn && this.props.nodes.length === 0) {
-            return true;
-        }
-
         // if allocations haven't changed, don't update the component
         if (this.props.allocations === nextProps.allocations) {
             return false;
         }
 
-        // reject all other updates
-        return false;
+        return true;
     }
 
     filteredAllocations() {
