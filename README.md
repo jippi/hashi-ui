@@ -25,7 +25,7 @@ Another way to run nomad-ui is through Docker. Run the following command to
 start a webserver that will serve the application.
 
 ```
-docker run -e NOMAD_ADDR=... -p 8000:3000 iverberk/nomad-ui:0.3
+docker run -e NOMAD_ADDR=... -p 8000:3000 iverberk/nomad-ui:v0.3.0
 ```
 
 Check the releases page on Github to see which version is current.
