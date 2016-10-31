@@ -27,7 +27,7 @@ class AllocationInfo extends Component {
         return (
           <Panel key={ name } header={ title }>
             <div className="content table-responsive table-full-width">
-              <Table striped hover style={{ 'table-layout': 'fixed' }}>
+              <Table striped hover style={{ tableLayout: 'fixed' }}>
                 <thead>
                   <tr>
                     <th width="150">When</th>
@@ -71,7 +71,7 @@ class AllocationInfo extends Component {
                             }
                           </td>
                           <td>{ element.ExitCode }</td>
-                          <td>{ element.Signal || element.TaskSignal || 'N/A' }</td>
+                          <td>{ element.Signal || element.TaskSignal }</td>
                         </tr>
                       );
 

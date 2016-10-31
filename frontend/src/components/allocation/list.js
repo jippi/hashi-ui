@@ -25,18 +25,27 @@ const clientHeaderColumn = display =>
 const clientColumn = (allocation, nodes, display) =>
     (display ? <td><NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short="true" /></td> : null);
 
+const nodeIdToNameCache = {};
+
 class AllocationList extends Component {
 
     findNodeNameById(nodeId) {
-        const r = Object.keys(this.props.nodes).filter(node =>
-            this.props.nodes[node].ID === nodeId
-        );
-
-        if (r.length !== 0) {
-            return this.props.nodes[r].Name;
+        if (nodeId in nodeIdToNameCache) {
+            return nodeIdToNameCache[nodeId];
         }
 
-        return nodeId;
+        const r = Object.keys(this.props.nodes)
+            .filter(node =>
+                this.props.nodes[node].ID === nodeId
+            );
+
+        if (r.length !== 0) {
+            nodeIdToNameCache[nodeId] = this.props.nodes[r].Name;
+        } else {
+            nodeIdToNameCache[nodeId] = nodeId;
+        }
+
+        return nodeIdToNameCache[nodeId];
     }
 
     filteredAllocations() {

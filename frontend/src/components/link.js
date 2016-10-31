@@ -2,18 +2,27 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import shortUUID from '../helpers/uuid';
 
+const nodeIdToNameCache = {};
+
 export default class NomadLink extends Component {
 
     findNodeNameById(nodeId) {
-        const r = Object.keys(this.props.nodeList).filter(node =>
-            this.props.nodeList[node].ID === nodeId
-        );
-
-        if (r.length !== 0) {
-            return this.props.nodeList[r].Name;
+        if (nodeId in nodeIdToNameCache) {
+            return nodeIdToNameCache[nodeId];
         }
 
-        return nodeId;
+        const r = Object.keys(this.props.nodeList)
+            .filter(node =>
+                this.props.nodeList[node].ID === nodeId
+            );
+
+        if (r.length !== 0) {
+            nodeIdToNameCache[nodeId] = this.props.nodeList[r].Name;
+        } else {
+            nodeIdToNameCache[nodeId] = false;
+        }
+
+        return nodeIdToNameCache[nodeId];
     }
 
     render() {
@@ -46,12 +55,13 @@ export default class NomadLink extends Component {
             if (children === undefined) {
                 if (this.props.nodeList) {
                     children = this.findNodeNameById(this.props.nodeId);
-                } else {
-                    children = nodeId;
                 }
 
-                children = short ? shortUUID(children) : nodeId;
+                if (!children) {
+                    children = short ? shortUUID(nodeId) : nodeId;
+                }
             }
+
             return (
               <Link { ...linkProps } to={ `/clients/${nodeId}${linkAppend}` }>{ children }</Link>
             );
