@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	"gopkg.in/tomb.v2"
 
+	multierror "github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/nomad/nomad/structs"
 	"github.com/hashicorp/nomad/nomad/structs/config"
 	vapi "github.com/hashicorp/vault/api"
@@ -45,6 +47,14 @@ const (
 	// vaultRevocationIntv is the interval at which Vault tokens that failed
 	// initial revocation are retried
 	vaultRevocationIntv = 5 * time.Minute
+
+	// Errors returned by Vault
+
+	// vaultErrInvalidRequest is returned if the request is invalid
+	vaultErrInvalidRequest = "invalid request"
+
+	// vaultErrPermissionDenied is returned if the client is not authorized
+	vaultErrPermissionDenied = "permission denied"
 )
 
 // VaultClient is the Servers interface for interfacing with Vault
@@ -104,8 +114,11 @@ type vaultClient struct {
 	config *config.VaultConfig
 
 	// connEstablished marks whether we have an established connection to Vault.
-	// It should be accessed using a helper and updated atomically
-	connEstablished int32
+	connEstablished bool
+
+	// connEstablishedErr marks an error that can occur when establishing a
+	// connection
+	connEstablishedErr error
 
 	// token is the raw token used by the client
 	token string
@@ -159,7 +172,7 @@ func NewVaultClient(c *config.VaultConfig, logger *log.Logger, purgeFn PurgeVaul
 		tomb:     &tomb.Tomb{},
 	}
 
-	if v.config.Enabled {
+	if v.config.IsEnabled() {
 		if err := v.buildClient(); err != nil {
 			return nil, err
 		}
@@ -191,7 +204,17 @@ func (v *vaultClient) Stop() {
 // creation/lookup/revocation operation are allowed. All queued revocations are
 // cancelled if set un-active as it is assumed another instances is taking over
 func (v *vaultClient) SetActive(active bool) {
-	atomic.StoreInt32(&v.active, 1)
+	if active {
+		atomic.StoreInt32(&v.active, 1)
+	} else {
+		atomic.StoreInt32(&v.active, 0)
+	}
+
+	// Clear out the revoking tokens
+	v.revLock.Lock()
+	v.revoking = make(map[*structs.VaultAccessor]time.Time)
+	v.revLock.Unlock()
+
 	return
 }
 
@@ -202,7 +225,8 @@ func (v *vaultClient) flush() {
 
 	v.client = nil
 	v.auth = nil
-	v.connEstablished = 0
+	v.connEstablished = false
+	v.connEstablishedErr = nil
 	v.token = ""
 	v.tokenData = nil
 	v.revoking = make(map[*structs.VaultAccessor]time.Time)
@@ -223,9 +247,9 @@ func (v *vaultClient) SetConfig(config *config.VaultConfig) error {
 	// Store the new config
 	v.config = config
 
-	if v.config.Enabled {
+	if v.config.IsEnabled() {
 		// Stop accepting any new request
-		atomic.StoreInt32(&v.connEstablished, 0)
+		v.connEstablished = false
 
 		// Kill any background routine and create a new tomb
 		v.tomb.Kill(nil)
@@ -310,8 +334,8 @@ OUTER:
 		case <-retryTimer.C:
 			// Ensure the API is reachable
 			if _, err := v.client.Sys().InitStatus(); err != nil {
-				v.logger.Printf("[WARN] vault: failed to contact Vault API. Retrying in %v",
-					v.config.ConnectionRetryIntv)
+				v.logger.Printf("[WARN] vault: failed to contact Vault API. Retrying in %v: %v",
+					v.config.ConnectionRetryIntv, err)
 				retryTimer.Reset(v.config.ConnectionRetryIntv)
 				continue OUTER
 			}
@@ -322,7 +346,11 @@ OUTER:
 
 	// Retrieve our token, validate it and parse the lease duration
 	if err := v.parseSelfToken(); err != nil {
-		v.logger.Printf("[ERR] vault: failed to lookup self token and not retrying: %v", err)
+		v.logger.Printf("[ERR] vault: failed to validate self token/role and not retrying: %v", err)
+		v.l.Lock()
+		v.connEstablished = false
+		v.connEstablishedErr = err
+		v.l.Unlock()
 		return
 	}
 
@@ -339,7 +367,10 @@ OUTER:
 		v.tomb.Go(wrapNilError(v.renewalLoop))
 	}
 
-	atomic.StoreInt32(&v.connEstablished, 1)
+	v.l.Lock()
+	v.connEstablished = true
+	v.connEstablishedErr = nil
+	v.l.Unlock()
 }
 
 // renewalLoop runs the renew loop. This should only be called if we are given a
@@ -407,7 +438,10 @@ func (v *vaultClient) renewalLoop() {
 				// We have failed to renew the token past its expiration. Stop
 				// renewing with Vault.
 				v.logger.Printf("[ERR] vault: failed to renew Vault token before lease expiration. Shutting down Vault client")
-				atomic.StoreInt32(&v.connEstablished, 0)
+				v.l.Lock()
+				v.connEstablished = false
+				v.connEstablishedErr = err
+				v.l.Unlock()
 				return
 
 			} else if backoff > maxBackoff.Seconds() {
@@ -485,72 +519,132 @@ func (v *vaultClient) parseSelfToken() error {
 		}
 	}
 
+	var mErr multierror.Error
 	if !root {
 		// All non-root tokens must be renewable
 		if !data.Renewable {
-			return fmt.Errorf("Vault token is not renewable or root")
+			multierror.Append(&mErr, fmt.Errorf("Vault token is not renewable or root"))
 		}
 
 		// All non-root tokens must have a lease duration
 		if data.CreationTTL == 0 {
-			return fmt.Errorf("invalid lease duration of zero")
+			multierror.Append(&mErr, fmt.Errorf("invalid lease duration of zero"))
 		}
 
 		// The lease duration can not be expired
 		if data.TTL == 0 {
-			return fmt.Errorf("token TTL is zero")
+			multierror.Append(&mErr, fmt.Errorf("token TTL is zero"))
 		}
 
-		// There must be a valid role
+		// There must be a valid role since we aren't root
 		if data.Role == "" {
-			return fmt.Errorf("token role name must be set when not using a root token")
+			multierror.Append(&mErr, fmt.Errorf("token role name must be set when not using a root token"))
 		}
+
 	} else if data.CreationTTL != 0 {
 		// If the root token has a TTL it must be renewable
 		if !data.Renewable {
-			return fmt.Errorf("Vault token has a TTL but is not renewable")
+			multierror.Append(&mErr, fmt.Errorf("Vault token has a TTL but is not renewable"))
 		} else if data.TTL == 0 {
 			// If the token has a TTL make sure it has not expired
-			return fmt.Errorf("token TTL is zero")
+			multierror.Append(&mErr, fmt.Errorf("token TTL is zero"))
+		}
+	}
+
+	// If given a role validate it
+	if data.Role != "" {
+		if err := v.validateRole(data.Role); err != nil {
+			multierror.Append(&mErr, err)
 		}
 	}
 
 	data.Root = root
 	v.tokenData = &data
-	return nil
+	return mErr.ErrorOrNil()
+}
+
+// validateRole contacts Vault and checks that the given Vault role is valid for
+// the purposes of being used by Nomad
+func (v *vaultClient) validateRole(role string) error {
+	if role == "" {
+		return fmt.Errorf("Invalid empty role name")
+	}
+
+	// Validate the role
+	rsecret, err := v.client.Logical().Read(fmt.Sprintf("auth/token/roles/%s", role))
+	if err != nil {
+		return fmt.Errorf("failed to lookup role %q: %v", role, err)
+	}
+
+	// Read and parse the fields
+	var data struct {
+		ExplicitMaxTtl int `mapstructure:"explicit_max_ttl"`
+		Orphan         bool
+		Period         int
+		Renewable      bool
+	}
+	if err := mapstructure.WeakDecode(rsecret.Data, &data); err != nil {
+		return fmt.Errorf("failed to parse Vault role's data block: %v", err)
+	}
+
+	// Validate the role is acceptable
+	var mErr multierror.Error
+	if data.Orphan {
+		multierror.Append(&mErr, fmt.Errorf("Role must not allow orphans"))
+	}
+
+	if !data.Renewable {
+		multierror.Append(&mErr, fmt.Errorf("Role must allow tokens to be renewed"))
+	}
+
+	if data.ExplicitMaxTtl != 0 {
+		multierror.Append(&mErr, fmt.Errorf("Role can not use an explicit max ttl. Token must be periodic."))
+	}
+
+	if data.Period == 0 {
+		multierror.Append(&mErr, fmt.Errorf("Role must have a non-zero period to make tokens periodic."))
+	}
+
+	return mErr.ErrorOrNil()
 }
 
 // ConnectionEstablished returns whether a connection to Vault has been
-// established.
-func (v *vaultClient) ConnectionEstablished() bool {
-	return atomic.LoadInt32(&v.connEstablished) == 1
+// established and any error that potentially caused it to be false
+func (v *vaultClient) ConnectionEstablished() (bool, error) {
+	v.l.Lock()
+	defer v.l.Unlock()
+	return v.connEstablished, v.connEstablishedErr
 }
 
+// Enabled returns whether the client is active
 func (v *vaultClient) Enabled() bool {
 	v.l.Lock()
 	defer v.l.Unlock()
-	return v.config.Enabled
+	return v.config.IsEnabled()
 }
 
-//
+// Active returns whether the client is active
 func (v *vaultClient) Active() bool {
 	return atomic.LoadInt32(&v.active) == 1
 }
 
 // CreateToken takes the allocation and task and returns an appropriate Vault
-// token. The call is rate limited and may be canceled with the passed policy
+// token. The call is rate limited and may be canceled with the passed policy.
+// When the error is recoverable, it will be of type RecoverableError
 func (v *vaultClient) CreateToken(ctx context.Context, a *structs.Allocation, task string) (*vapi.Secret, error) {
 	if !v.Enabled() {
 		return nil, fmt.Errorf("Vault integration disabled")
 	}
 
 	if !v.Active() {
-		return nil, fmt.Errorf("Vault client not active")
+		return nil, structs.NewRecoverableError(fmt.Errorf("Vault client not active"), true)
 	}
 
 	// Check if we have established a connection with Vault
-	if !v.ConnectionEstablished() {
-		return nil, fmt.Errorf("Connection to Vault has not been established. Retry")
+	if established, err := v.ConnectionEstablished(); !established && err == nil {
+		return nil, structs.NewRecoverableError(fmt.Errorf("Connection to Vault has not been established"), true)
+	} else if !established {
+		return nil, fmt.Errorf("Connection to Vault failed: %v", err)
 	}
 
 	// Retrieve the Vault block for the task
@@ -596,7 +690,19 @@ func (v *vaultClient) CreateToken(ctx context.Context, a *structs.Allocation, ta
 		secret, err = v.auth.CreateWithRole(req, v.tokenData.Role)
 	}
 
-	return secret, err
+	// Determine whether it is unrecoverable
+	if err != nil {
+		eStr := err.Error()
+		if strings.Contains(eStr, vaultErrInvalidRequest) ||
+			strings.Contains(eStr, vaultErrPermissionDenied) {
+			return secret, err
+		}
+
+		// The error is recoverable
+		return nil, structs.NewRecoverableError(err, true)
+	}
+
+	return secret, nil
 }
 
 // LookupToken takes a Vault token and does a lookup against Vault. The call is
@@ -611,8 +717,10 @@ func (v *vaultClient) LookupToken(ctx context.Context, token string) (*vapi.Secr
 	}
 
 	// Check if we have established a connection with Vault
-	if !v.ConnectionEstablished() {
-		return nil, fmt.Errorf("Connection to Vault has not been established. Retry")
+	if established, err := v.ConnectionEstablished(); !established && err == nil {
+		return nil, structs.NewRecoverableError(fmt.Errorf("Connection to Vault has not been established"), true)
+	} else if !established {
+		return nil, fmt.Errorf("Connection to Vault failed: %v", err)
 	}
 
 	// Ensure we are under our rate limit
@@ -652,7 +760,7 @@ func (v *vaultClient) RevokeTokens(ctx context.Context, accessors []*structs.Vau
 
 	// Check if we have established a connection with Vault. If not just add it
 	// to the queue
-	if !v.ConnectionEstablished() {
+	if established, err := v.ConnectionEstablished(); !established && err == nil {
 		// Only bother tracking it for later revocation if the accessor was
 		// committed
 		if committed {
@@ -709,8 +817,10 @@ func (v *vaultClient) parallelRevoke(ctx context.Context, accessors []*structs.V
 	}
 
 	// Check if we have established a connection with Vault
-	if !v.ConnectionEstablished() {
-		return fmt.Errorf("Connection to Vault has not been established. Retry")
+	if established, err := v.ConnectionEstablished(); !established && err == nil {
+		return structs.NewRecoverableError(fmt.Errorf("Connection to Vault has not been established"), true)
+	} else if !established {
+		return fmt.Errorf("Connection to Vault failed: %v", err)
 	}
 
 	g, pCtx := errgroup.WithContext(ctx)
@@ -733,7 +843,7 @@ func (v *vaultClient) parallelRevoke(ctx context.Context, accessors []*structs.V
 					}
 
 					if err := v.auth.RevokeAccessor(va.Accessor); err != nil {
-						return fmt.Errorf("failed to revoke token (alloc: %q, node: %q, task: %q)", va.AllocID, va.NodeID, va.Task)
+						return fmt.Errorf("failed to revoke token (alloc: %q, node: %q, task: %q): %v", va.AllocID, va.NodeID, va.Task, err)
 					}
 				case <-pCtx.Done():
 					return nil
@@ -770,7 +880,7 @@ func (v *vaultClient) revokeDaemon() {
 		case <-v.tomb.Dying():
 			return
 		case now := <-ticker.C:
-			if !v.ConnectionEstablished() {
+			if established, _ := v.ConnectionEstablished(); !established {
 				continue
 			}
 

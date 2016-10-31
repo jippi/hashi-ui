@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
@@ -94,6 +95,12 @@ func (d *QemuDriver) Validate(config map[string]interface{}) error {
 	}
 
 	return nil
+}
+
+func (d *QemuDriver) Abilities() DriverAbilities {
+	return DriverAbilities{
+		SendSignals: false,
+	}
 }
 
 func (d *QemuDriver) Fingerprint(cfg *config.Config, node *structs.Node) (bool, error) {
@@ -247,11 +254,17 @@ func (d *QemuDriver) Start(ctx *ExecContext, task *structs.Task) (DriverHandle, 
 		AllocID:  ctx.AllocID,
 		Task:     task,
 	}
-	ps, err := exec.LaunchCmd(&executor.ExecCommand{
+	if err := exec.SetContext(executorCtx); err != nil {
+		pluginClient.Kill()
+		return nil, fmt.Errorf("failed to set executor context: %v", err)
+	}
+
+	execCmd := &executor.ExecCommand{
 		Cmd:  args[0],
 		Args: args[1:],
 		User: task.User,
-	}, executorCtx)
+	}
+	ps, err := exec.LaunchCmd(execCmd)
 	if err != nil {
 		pluginClient.Kill()
 		return nil, err
@@ -358,6 +371,10 @@ func (h *qemuHandle) Update(task *structs.Task) error {
 
 	// Update is not possible
 	return nil
+}
+
+func (h *qemuHandle) Signal(s os.Signal) error {
+	return fmt.Errorf("Qemu driver can't send signals")
 }
 
 // TODO: allow a 'shutdown_command' that can be executed over a ssh connection

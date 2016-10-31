@@ -3,6 +3,7 @@ package driver
 import (
 	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 
 	"github.com/hashicorp/nomad/client/allocdir"
@@ -58,6 +59,15 @@ type Driver interface {
 
 	// Drivers must validate their configuration
 	Validate(map[string]interface{}) error
+
+	// Abilities returns the abilities of the driver
+	Abilities() DriverAbilities
+}
+
+// DriverAbilities marks the abilities the driver has.
+type DriverAbilities struct {
+	// SendSignals marks the driver as being able to send signals
+	SendSignals bool
 }
 
 // DriverContext is a means to inject dependencies such as loggers, configs, and
@@ -116,6 +126,9 @@ type DriverHandle interface {
 
 	// Stats returns aggregated stats of the driver
 	Stats() (*cstructs.TaskResourceUsage, error)
+
+	// Signal is used to send a signal to the task
+	Signal(s os.Signal) error
 }
 
 // ExecContext is shared between drivers within an allocation
@@ -142,6 +155,7 @@ func GetTaskEnv(allocDir *allocdir.AllocDir, node *structs.Node,
 		SetTaskMeta(task.Meta).
 		SetTaskGroupMeta(tg.Meta).
 		SetJobMeta(alloc.Job.Meta).
+		SetJobName(alloc.Job.Name).
 		SetEnvvars(task.Env).
 		SetTaskName(task.Name)
 

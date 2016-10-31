@@ -59,7 +59,7 @@ FS Specific Options:
     Causes the output to not stop when the end of the file is reached, but rather to
     wait for additional output.
 
-  -tail
+  -tail 
     Show the files contents with offsets relative to the end of the file. If no
     offset is given, -n is defaulted to 10.
 
@@ -298,7 +298,9 @@ func (f *FSCommand) Run(args []string) int {
 		}
 	}
 
-	defer r.Close()
+	if r != nil {
+		defer r.Close()
+	}
 	if readErr != nil {
 		f.Ui.Error(readErr.Error())
 		return 1

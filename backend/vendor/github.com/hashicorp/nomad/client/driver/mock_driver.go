@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -45,6 +46,9 @@ type MockDriverConfig struct {
 
 	// ExitErrMsg is the error message that the task returns while exiting
 	ExitErrMsg string `mapstructure:"exit_err_msg"`
+
+	// SignalErr is the error message that the task returns if signalled
+	SignalErr string `mapstructure:"signal_error"`
 }
 
 // MockDriver is a driver which is used for testing purposes
@@ -56,6 +60,12 @@ type MockDriver struct {
 // NewMockDriver is a factory method which returns a new Mock Driver
 func NewMockDriver(ctx *DriverContext) Driver {
 	return &MockDriver{DriverContext: *ctx}
+}
+
+func (d *MockDriver) Abilities() DriverAbilities {
+	return DriverAbilities{
+		SendSignals: false,
+	}
 }
 
 // Start starts the mock driver
@@ -87,6 +97,9 @@ func (m *MockDriver) Start(ctx *ExecContext, task *structs.Task) (DriverHandle, 
 	if driverConfig.ExitErrMsg != "" {
 		h.exitErr = errors.New(driverConfig.ExitErrMsg)
 	}
+	if driverConfig.SignalErr != "" {
+		h.signalErr = fmt.Errorf(driverConfig.SignalErr)
+	}
 	m.logger.Printf("[DEBUG] driver.mock: starting task %q", task.Name)
 	go h.run()
 	return &h, nil
@@ -112,6 +125,7 @@ type mockDriverHandle struct {
 	exitCode    int
 	exitSignal  int
 	exitErr     error
+	signalErr   error
 	logger      *log.Logger
 	waitCh      chan *dstructs.WaitResult
 	doneCh      chan struct{}
@@ -125,6 +139,7 @@ type mockDriverID struct {
 	ExitCode    int
 	ExitSignal  int
 	ExitErr     error
+	SignalErr   error
 }
 
 func (h *mockDriverHandle) ID() string {
@@ -136,6 +151,7 @@ func (h *mockDriverHandle) ID() string {
 		ExitCode:    h.exitCode,
 		ExitSignal:  h.exitSignal,
 		ExitErr:     h.exitErr,
+		SignalErr:   h.signalErr,
 	}
 
 	data, err := json.Marshal(id)
@@ -160,6 +176,7 @@ func (m *MockDriver) Open(ctx *ExecContext, handleID string) (DriverHandle, erro
 		exitCode:    id.ExitCode,
 		exitSignal:  id.ExitSignal,
 		exitErr:     id.ExitErr,
+		signalErr:   id.SignalErr,
 		logger:      m.logger,
 		doneCh:      make(chan struct{}),
 		waitCh:      make(chan *dstructs.WaitResult, 1),
@@ -176,6 +193,11 @@ func (h *mockDriverHandle) WaitCh() chan *dstructs.WaitResult {
 // TODO Implement when we need it.
 func (h *mockDriverHandle) Update(task *structs.Task) error {
 	return nil
+}
+
+// TODO Implement when we need it.
+func (h *mockDriverHandle) Signal(s os.Signal) error {
+	return h.signalErr
 }
 
 // Kill kills a mock task

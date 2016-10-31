@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -81,6 +82,12 @@ func (d *ExecDriver) Validate(config map[string]interface{}) error {
 	return nil
 }
 
+func (d *ExecDriver) Abilities() DriverAbilities {
+	return DriverAbilities{
+		SendSignals: true,
+	}
+}
+
 func (d *ExecDriver) Periodic() (bool, time.Duration) {
 	return true, 15 * time.Second
 }
@@ -128,18 +135,25 @@ func (d *ExecDriver) Start(ctx *ExecContext, task *structs.Task) (DriverHandle, 
 		ChrootEnv: d.config.ChrootEnv,
 		Task:      task,
 	}
+	if err := exec.SetContext(executorCtx); err != nil {
+		pluginClient.Kill()
+		return nil, fmt.Errorf("failed to set executor context: %v", err)
+	}
 
-	ps, err := exec.LaunchCmd(&executor.ExecCommand{
+	execCmd := &executor.ExecCommand{
 		Cmd:            command,
 		Args:           driverConfig.Args,
 		FSIsolation:    true,
 		ResourceLimits: true,
 		User:           getExecutorUser(task),
-	}, executorCtx)
+	}
+
+	ps, err := exec.LaunchCmd(execCmd)
 	if err != nil {
 		pluginClient.Kill()
 		return nil, err
 	}
+
 	d.logger.Printf("[DEBUG] driver.exec: started process via plugin with pid: %v", ps.Pid)
 
 	// Return a driver handle
@@ -256,6 +270,10 @@ func (h *execHandle) Update(task *structs.Task) error {
 
 	// Update is not possible
 	return nil
+}
+
+func (h *execHandle) Signal(s os.Signal) error {
+	return h.executor.Signal(s)
 }
 
 func (h *execHandle) Kill() error {

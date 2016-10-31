@@ -6,13 +6,6 @@ import FormatTime from '../format/time';
 import shortUUID from '../../helpers/uuid';
 import { renderDesiredStatus, renderClientStatus } from '../../helpers/render/allocation';
 
-const allocationStatusColors = {
-    complete: '',
-    running: '',
-    lost: 'warning',
-    failed: 'danger',
-};
-
 const getAllocationNumberFromName = (allocationName) => {
     const match = /[\d+]/.exec(allocationName);
     return match[0];
@@ -27,31 +20,38 @@ const jobColumn = (allocation, display) =>
     (display ? <td><NomadLink jobId={ allocation.JobID } short="true" /></td> : null);
 
 const clientHeaderColumn = display =>
-    (display ? <th>Client</th> : null);
+    (display ? <th width="120">Client</th> : null);
 
 const clientColumn = (allocation, nodes, display) =>
     (display ? <td><NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short="true" /></td> : null);
 
+let nodeIdToNameCache = {};
+
 class AllocationList extends Component {
 
-    shouldComponentUpdate(nextProps) {
-        // if the location change, re-render the element
-        if (nextProps.location.query !== this.props.location.query) {
-            return true;
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.nodes !== this.props.nodes) {
+            nodeIdToNameCache = {};
+        }
+    }
+
+    findNodeNameById(nodeId) {
+        if (nodeId in nodeIdToNameCache) {
+            return nodeIdToNameCache[nodeId];
         }
 
-        // if we should show the client column and we got no nodes, allow update
-        if (nextProps.showClientColumn && this.props.nodes.length === 0) {
-            return true;
+        const r = Object.keys(this.props.nodes)
+            .filter(node =>
+                this.props.nodes[node].ID === nodeId
+            );
+
+        if (r.length !== 0) {
+            nodeIdToNameCache[nodeId] = this.props.nodes[r].Name;
+        } else {
+            nodeIdToNameCache[nodeId] = nodeId;
         }
 
-        // if allocations haven't changed, don't update the component
-        if (this.props.allocations === nextProps.allocations) {
-            return false;
-        }
-
-        // reject all other updates
-        return false;
+        return nodeIdToNameCache[nodeId];
     }
 
     filteredAllocations() {
@@ -60,6 +60,10 @@ class AllocationList extends Component {
 
         if ('status' in query) {
             allocations = allocations.filter(allocation => allocation.ClientStatus === query.status);
+        }
+
+        if ('client' in query) {
+            allocations = allocations.filter(allocation => allocation.NodeID === query.client);
         }
 
         if ('job' in query) {
@@ -89,6 +93,78 @@ class AllocationList extends Component {
         );
     }
 
+    jobIdFilter() {
+        const location = this.props.location;
+        const query = this.props.location.query || {};
+
+        let title = 'Job';
+        if ('job' in query) {
+            title = <span>{title}: <code>{ query.job }</code></span>;
+        }
+
+        const jobs = this.props.allocations
+          .map((allocation) => {
+              return allocation.JobID;
+          })
+          .filter((v, i, a) => {
+              return a.indexOf(v) === i;
+          })
+          .map((job) => {
+              return (
+                <li key={ job }>
+                  <Link to={ location.pathname } query={{ ...query, job }}>{ job }</Link>
+                </li>
+              );
+          });
+
+        jobs.unshift(
+          <li key="any-job"><Link to={ location.pathname } query={{ ...query, job: undefined }}>- Any -</Link></li>
+        );
+
+        return (
+          <DropdownButton title={ title } key="filter-job" id="filter-job">
+            { jobs }
+          </DropdownButton>
+        );
+    }
+
+    clientFilter() {
+        const location = this.props.location;
+        const query = this.props.location.query || {};
+
+        let title = 'Client';
+        if ('client' in query) {
+            title = <span>{title}: <code>{ this.findNodeNameById(query.client) }</code></span>;
+        }
+
+        const clients = this.props.allocations
+          .map((allocation) => {
+              return allocation.NodeID;
+          })
+          .filter((v, i, a) => {
+              return a.indexOf(v) === i;
+          })
+          .map((client) => {
+              return (
+                <li key={ client }>
+                  <Link to={ location.pathname } query={{ ...query, client }}>{ this.findNodeNameById(client) }</Link>
+                </li>
+              );
+          });
+
+        clients.unshift(
+          <li key="any-client">
+            <Link to={ location.pathname } query={{ ...query, client: undefined }}>- Any -</Link>
+          </li>
+        );
+
+        return (
+          <DropdownButton title={ title } key="filter-client" id="filter-client">
+            { clients }
+          </DropdownButton>
+        );
+    }
+
     render() {
         const showJobColumn = this.props.showJobColumn;
         const showClientColumn = this.props.showClientColumn;
@@ -99,33 +175,36 @@ class AllocationList extends Component {
         return (
           <div className={ className }>
             <div className="inline-pad">
+              { this.clientFilter() }
+              &nbsp;
               { this.clientStatusFilter() }
+              &nbsp;
+              { this.jobIdFilter() }
             </div>
             <div className="table-responsive table-full-width">
               <table className="table table-hover table-striped">
                 <thead>
                   <tr>
-                    <th></th>
-                    <th>ID</th>
+                    <th width="40"></th>
+                    <th width="120">ID</th>
                     { jobHeaderColumn(showJobColumn) }
-                    <th>Task Group</th>
-                    <th>Client Status</th>
+                    <th width="300">Task Group</th>
+                    <th width="120">Status</th>
                     { clientHeaderColumn(showClientColumn) }
-                    <th>Age</th>
-                    <th></th>
+                    <th width="120">Age</th>
+                    <th width="120">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {this.filteredAllocations().map((allocation, index) => {
-                      const color = allocationStatusColors[allocation.ClientStatus];
                       return (
-                        <tr className={ color } key={ allocation.ID }>
+                        <tr key={ allocation.ID }>
                           <td>{ renderClientStatus(allocation) }</td>
                           <td><NomadLink allocId={ allocation.ID } short="true" /></td>
                           { jobColumn(allocation, showJobColumn, nodes) }
                           <td>
                             <NomadLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId }>
-                              { allocation.TaskGroup } ({ getAllocationNumberFromName(allocation.Name) })
+                              { allocation.TaskGroup } (#{ getAllocationNumberFromName(allocation.Name) })
                             </NomadLink>
                           </td>
                           <td>{ renderDesiredStatus(allocation) }</td>

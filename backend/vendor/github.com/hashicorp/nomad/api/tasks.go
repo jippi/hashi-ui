@@ -84,8 +84,9 @@ type Service struct {
 
 // EphemeralDisk is an ephemeral disk object
 type EphemeralDisk struct {
-	Sticky bool
-	SizeMB int `mapstructure:"size"`
+	Sticky  bool
+	Migrate bool
+	SizeMB  int `mapstructure:"size"`
 }
 
 // TaskGroup is the unit of scheduling.
@@ -166,18 +167,19 @@ type TaskArtifact struct {
 }
 
 type Template struct {
-	SourcePath    string
-	DestPath      string
-	EmbededTmpl   string
-	ChangeMode    string
-	RestartSignal string
-	Splay         time.Duration
-	Once          bool
+	SourcePath   string
+	DestPath     string
+	EmbeddedTmpl string
+	ChangeMode   string
+	ChangeSignal string
+	Splay        time.Duration
 }
 
 type Vault struct {
-	Policies []string
-	Env      bool
+	Policies     []string
+	Env          bool
+	ChangeMode   string
+	ChangeSignal string
 }
 
 // NewTask creates and initializes a new Task.
@@ -229,10 +231,12 @@ func (t *Task) SetLogConfig(l *LogConfig) *Task {
 // transitions.
 type TaskState struct {
 	State  string
+	Failed bool
 	Events []*TaskEvent
 }
 
 const (
+	TaskSetupFailure           = "Setup Failure"
 	TaskDriverFailure          = "Driver Failure"
 	TaskReceived               = "Received"
 	TaskFailedValidation       = "Failed Validation"
@@ -244,28 +248,34 @@ const (
 	TaskNotRestarting          = "Not Restarting"
 	TaskDownloadingArtifacts   = "Downloading Artifacts"
 	TaskArtifactDownloadFailed = "Failed Artifact Download"
-	TaskDiskExceeded           = "Disk Exceeded"
 	TaskVaultRenewalFailed     = "Vault token renewal failed"
 	TaskSiblingFailed          = "Sibling task failed"
+	TaskSignaling              = "Signaling"
+	TaskRestartSignal          = "Restart Signaled"
 )
 
 // TaskEvent is an event that effects the state of a task and contains meta-data
 // appropriate to the events type.
 type TaskEvent struct {
-	Type            string
-	Time            int64
-	RestartReason   string
-	DriverError     string
-	ExitCode        int
-	Signal          int
-	Message         string
-	KillTimeout     time.Duration
-	KillError       string
-	StartDelay      int64
-	DownloadError   string
-	ValidationError string
-	DiskLimit       int64
-	DiskSize        int64
-	FailedSibling   string
-	VaultError      string
+	Type             string
+	Time             int64
+	FailsTask        bool
+	RestartReason    string
+	SetupError       string
+	DriverError      string
+	ExitCode         int
+	Signal           int
+	Message          string
+	KillReason       string
+	KillTimeout      time.Duration
+	KillError        string
+	StartDelay       int64
+	DownloadError    string
+	ValidationError  string
+	DiskLimit        int64
+	DiskSize         int64
+	FailedSibling    string
+	VaultError       string
+	TaskSignalReason string
+	TaskSignal       string
 }
