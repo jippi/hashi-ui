@@ -34,8 +34,8 @@ class AllocationInfo extends Component {
                     <th>Duration</th>
                     <th>Type</th>
                     <th>Message</th>
-                    <th>Restart Reason</th>
-                    <th>Exit Code</th>
+                    <th>Reason</th>
+                    <th>Code</th>
                     <th>Signal</th>
                   </tr>
                 </thead>
@@ -57,10 +57,16 @@ class AllocationInfo extends Component {
                             />
                           </td>
                           <td>{ element.Type }</td>
-                          <td>{ element.Message }</td>
-                          <td>{ element.RestartReason }</td>
+                          <td>
+                            {
+                              element.Message || element.SetupError ||
+                              element.DriverError || element.KillError || element.DownloadError ||
+                              element.ValidationError || element.VaultError
+                            }
+                          </td>
+                          <td>{ element.RestartReason || element.KillReason || element.TaskSignalReason }</td>
                           <td>{ element.ExitCode }</td>
-                          <td>{ element.Signal }</td>
+                          <td>{ element.Signal || element.TaskSignal }</td>
                         </tr>
                       );
 
