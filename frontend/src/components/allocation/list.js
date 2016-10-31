@@ -6,13 +6,6 @@ import FormatTime from '../format/time';
 import shortUUID from '../../helpers/uuid';
 import { renderDesiredStatus, renderClientStatus } from '../../helpers/render/allocation';
 
-const allocationStatusColors = {
-    complete: '',
-    running: '',
-    lost: 'warning',
-    failed: 'danger',
-};
-
 const getAllocationNumberFromName = (allocationName) => {
     const match = /[\d+]/.exec(allocationName);
     return match[0];
@@ -27,26 +20,12 @@ const jobColumn = (allocation, display) =>
     (display ? <td><NomadLink jobId={ allocation.JobID } short="true" /></td> : null);
 
 const clientHeaderColumn = display =>
-    (display ? <th>Client</th> : null);
+    (display ? <th width="120">Client</th> : null);
 
 const clientColumn = (allocation, nodes, display) =>
     (display ? <td><NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short="true" /></td> : null);
 
 class AllocationList extends Component {
-
-    shouldComponentUpdate(nextProps) {
-        // if the location change, re-render the element
-        if (nextProps.location.query !== this.props.location.query) {
-            return true;
-        }
-
-        // if allocations haven't changed, don't update the component
-        if (this.props.allocations === nextProps.allocations) {
-            return false;
-        }
-
-        return true;
-    }
 
     filteredAllocations() {
         const query = this.props.location.query || {};
@@ -99,21 +78,20 @@ class AllocationList extends Component {
               <table className="table table-hover table-striped">
                 <thead>
                   <tr>
-                    <th></th>
-                    <th>ID</th>
+                    <th width="40"></th>
+                    <th width="120">ID</th>
                     { jobHeaderColumn(showJobColumn) }
                     <th>Task Group</th>
-                    <th>Client Status</th>
+                    <th width="120">Status</th>
                     { clientHeaderColumn(showClientColumn) }
-                    <th>Age</th>
-                    <th></th>
+                    <th width="120">Age</th>
+                    <th width="120"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {this.filteredAllocations().map((allocation, index) => {
-                      const color = allocationStatusColors[allocation.ClientStatus];
                       return (
-                        <tr className={ color } key={ allocation.ID }>
+                        <tr key={ allocation.ID }>
                           <td>{ renderClientStatus(allocation) }</td>
                           <td><NomadLink allocId={ allocation.ID } short="true" /></td>
                           { jobColumn(allocation, showJobColumn, nodes) }

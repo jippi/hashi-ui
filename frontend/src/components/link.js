@@ -47,8 +47,10 @@ export default class NomadLink extends Component {
                 if (this.props.nodeList) {
                     children = this.findNodeNameById(this.props.nodeId);
                 } else {
-                    children = short ? shortUUID(this.props.nodeId) : nodeId;
+                    children = nodeId;
                 }
+
+                children = short ? shortUUID(children) : nodeId;
             }
             return (
               <Link { ...linkProps } to={ `/clients/${nodeId}${linkAppend}` }>{ children }</Link>
