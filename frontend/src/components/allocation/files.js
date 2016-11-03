@@ -89,10 +89,15 @@ class AllocationFiles extends Component {
     }
 
     componentWillUnmount() {
-        this.unwatchFile(this.props, this.state);
         this.props.dispatch({
             type: CLEAR_FILE_PATH,
         });
+
+        if (!this.state.fileWatching || !this.props.location.query.file) {
+            return;
+        }
+
+        this.unwatchFile(this.props, this.props.location.query.file);
     }
 
     findAllocNode(props) {
