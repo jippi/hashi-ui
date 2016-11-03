@@ -12,7 +12,7 @@ const nodeProps = [
     'NodeClass',
 ];
 
-const withPrefix = function(obj, prefix) {
+const withPrefix = function withPrefix(obj, prefix) {
     const result = {};
 
     Object.keys(obj || {}).forEach((key) => {
