@@ -21,6 +21,10 @@ class Allocation extends Component {
                     path: 'files',
                 },
                 {
+                    name: 'Logs',
+                    path: 'logs',
+                },
+                {
                     name: 'Raw',
                     path: 'raw',
                 },

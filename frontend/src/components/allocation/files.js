@@ -17,45 +17,58 @@ class AllocationFiles extends Component {
     constructor(props) {
         super(props);
 
-        const node = props.node;
-        const alloc = props.allocation;
-        let path = this.findAllocNode(this.props) ? '/' : '';
-
-        if (path === '/' && ('path' in props.location.query)) {
-            path = props.location.query.path;
+        // if the alloc node already in props
+        // this only happens when you switch tab in the ui, this will never
+        // trigger if /allocations/:id/files are the directly url and first page
+        // you view
+        if (this.findAllocNode(props)) {
+            this.fetchDir(props, props.location.query.path || '/');
         }
 
-        if (path !== '') {
-            this.props.dispatch({
-                type: FETCH_DIR,
-                payload: {
-                    addr: node.HTTPAddr,
-                    path,
-                    allocID: alloc.ID,
-                },
-            });
-        }
-
-        this.state = { path, contents: '', file: '/' };
+        // push our initial state
+        this.state = {
+            contents: '',
+            fileWatching: false,
+            initialDirectoryFetched: false,
+        };
     }
 
     componentWillReceiveProps(nextProps) {
-        if (!this.findAllocNode(nextProps)) return;
-
-        let path = this.state.path;
-        let contents = this.state.contents;
-
-        // The node information was fetched, so transition to the root path
-        // if we are initialising.
-        if (this.state.path === '') {
-            path = '/';
-            if ('path' in nextProps.location.query) {
-                path = nextProps.location.query.path;
-            }
+        if (!this.findAllocNode(nextProps)) {
+            return;
         }
 
-        if (nextProps.file.Data) {
-            contents += nextProps.file.Data;
+        const nextState = this.state;
+
+        const nextPath = nextProps.location.query.path;
+        const currentPath = this.props.location.query.path;
+
+        const nextFile = nextProps.location.query.file;
+        const currentFile = this.props.location.query.file;
+
+        // the current internal state of currentPath does not match the new query location path
+        if (currentPath !== nextPath || !this.state.initialDirectoryFetched) {
+            this.fetchDir(nextProps, nextPath);
+            nextState.initialDirectoryFetched = true;
+        }
+
+        if (this.state.fileWatching && currentFile && currentFile !== nextFile) {
+            this.unwatchFile(nextProps, currentFile);
+            nextState.contents = '';
+            nextState.fileWatching = false;
+        }
+
+        // if we are not watching any files, and the current state file matches the next props file,
+        // start watching that file for changes
+        if (!this.state.fileWatching && nextFile) {
+            this.watchFile(nextProps);
+            nextState.fileWatching = true;
+        }
+
+        // If we are following a file and its not the default file, keep following that file
+        if (this.state.fileWatching && nextProps.file.Data) {
+            nextState.contents = this.state.contents + nextProps.file.Data;
+
             this.props.dispatch({
                 type: CLEAR_RECEIVED_FILE_DATA,
                 payload: {
@@ -64,21 +77,12 @@ class AllocationFiles extends Component {
             });
         }
 
-        this.setState({ ...this.state, path, contents });
+        if (this.state !== nextState) {
+            this.setState(nextState);
+        }
     }
 
-    componentWillUpdate(nextProps, nextState) {
-        // Only update if we changed paths
-        if (this.state.path !== nextState.path) {
-            this.props.dispatch({
-                type: FETCH_DIR,
-                payload: {
-                    addr: nextProps.node.HTTPAddr,
-                    path: nextState.path,
-                    allocID: nextProps.allocation.ID,
-                },
-            });
-        }
+    componentWillUpdate() {
         this.shouldScroll = (this.content.scrollTop + this.content.offsetHeight) === this.content.scrollHeight;
     }
 
@@ -89,10 +93,7 @@ class AllocationFiles extends Component {
     }
 
     componentWillUnmount() {
-        this.props.dispatch({
-            type: UNWATCH_FILE,
-            payload: this.state.file,
-        });
+        this.unwatchFile(this.props, this.state);
         this.props.dispatch({
             type: CLEAR_FILE_PATH,
         });
@@ -103,7 +104,9 @@ class AllocationFiles extends Component {
         const allocNode = props.nodes.find(node => node.ID === props.allocation.NodeID);
 
         // No node for this alloc, so bail out
-        if (allocNode === undefined) return false;
+        if (allocNode === undefined) {
+            return false;
+        }
 
         // Fetch the correct node information if the alloc node changed
         if (props.node == null || allocNode.ID !== props.node.ID) {
@@ -111,6 +114,7 @@ class AllocationFiles extends Component {
                 type: FETCH_NODE,
                 payload: allocNode.ID,
             });
+
             return false;
         }
 
@@ -118,36 +122,74 @@ class AllocationFiles extends Component {
         return true;
     }
 
+    // fetch a directory for the current alloc
+    fetchDir(props, dir) {
+        this.props.dispatch({
+            type: FETCH_DIR,
+            payload: {
+                addr: props.node.HTTPAddr,
+                path: dir || '/',
+                allocID: props.allocation.ID,
+            },
+        });
+    }
+
+    watchFile(props) {
+        if (!this.findAllocNode(props)) {
+            return;
+        }
+
+        const filePath = props.location.query.path + props.location.query.file;
+
+        this.props.dispatch({
+            type: WATCH_FILE,
+            payload: {
+                addr: props.node.HTTPAddr,
+                path: filePath,
+                allocID: props.allocation.ID,
+            },
+        });
+    }
+
+    unwatchFile(props, file) {
+        if (!this.findAllocNode(props)) {
+            return;
+        }
+
+        props.dispatch({
+            type: UNWATCH_FILE,
+            payload: file,
+        });
+    }
+
     handleClick(file) {
+        let path = this.props.location.query.path || '/';
+
+        // directory click
         if (file.IsDir) {
-            let path = this.state.path;
             if (file.Name === 'back') {
                 path = path.substr(0, path.lastIndexOf('/', path.length - 2) + 1);
             } else {
-                path = `${this.state.path}${file.Name}/`;
+                path = `${path}${file.Name}/`;
             }
-            this.setState({ ...this.state, path });
-        } else {
-            const filePath = this.state.path + file.Name;
-            if (filePath !== this.state.file) {
-                this.props.dispatch({
-                    type: UNWATCH_FILE,
-                    payload: this.state.file,
-                });
-                this.props.dispatch({
-                    type: WATCH_FILE,
-                    payload: {
-                        addr: this.props.node.HTTPAddr,
-                        path: filePath,
-                        allocID: this.props.allocation.ID,
-                    },
-                });
-                this.setState({ ...this.state, contents: '', file: filePath });
-            }
+
+            this.props.history.push({
+                pathname: this.props.location.pathname,
+                query: { path },
+            });
+            return;
         }
+
+        this.props.history.push({
+            pathname: this.props.location.pathname,
+            query: {
+                path,
+                file: file.Name,
+            },
+        });
     }
 
-    render() {
+    collectFiles() {
         const files = this.props.directory.map(file =>
           <tr className="pointer" onClick={ () => this.handleClick(file) } key={ file.Name }>
             <td>{ file.Name }{ file.IsDir ? '/' : '' }</td>
@@ -155,7 +197,7 @@ class AllocationFiles extends Component {
           </tr>
         );
 
-        if (this.state.path !== '/') {
+        if ((this.props.location.query.path || '/') !== '/') {
             files.unshift(
               <tr className="pointer" onClick={ () => this.handleClick({ Name: 'back', IsDir: true }) } key="back">
                 <td id="back">..</td>
@@ -164,11 +206,23 @@ class AllocationFiles extends Component {
             );
         }
 
+        return files;
+    }
+
+    render() {
         let hostname;
+        let fileName;
+
         if (process.env.NODE_ENV === 'production') {
             hostname = location.host;
         } else {
             hostname = `${location.hostname}:${process.env.GO_PORT}` || 3000;
+        }
+
+        if (this.state.fileWatching && this.props.file.File) {
+            fileName = this.props.file.File;
+        } else {
+            fileName = '<please select a file>';
         }
 
         const oversizedWarning = !this.props.file.Oversized ? '' :
@@ -187,7 +241,8 @@ class AllocationFiles extends Component {
 
         const baseUrl = `${location.protocol}//${hostname}`;
         const downloadPath = `download${this.props.file.File}`;
-        const downloadBtn = this.props.file.File.startsWith('<') ? '' :
+
+        const downloadBtn = this.props.file.File ? '' :
           <form className="file-download" method="get" action={ `${baseUrl}/${downloadPath}` } >
             <input type="hidden" name="client" value={ this.props.node.HTTPAddr } />
             <input type="hidden" name="allocID" value={ this.props.allocation.ID } />
@@ -200,15 +255,15 @@ class AllocationFiles extends Component {
             <div className="row">
               <div className="col-md-3">
                 <div className="card">
-                  <div className="header">Path: { this.state.path }</div>
+                  <div className="header">Path: { this.props.location.query.path || '/' }</div>
                   <div className="content">
-                    <Table classes="table table-hover" headers={ ['Name', 'Size'] } body={ files } />
+                    <Table classes="table table-hover" headers={ ['Name', 'Size'] } body={ this.collectFiles() } />
                   </div>
                 </div>
               </div>
               <div className="col-md-9">
                 <div className="card">
-                  <div className="header">File: { this.props.file.File }
+                  <div className="header">File: { fileName }
                     { downloadBtn }
                   </div>
 
@@ -235,6 +290,7 @@ AllocationFiles.propTypes = {
     dispatch: PropTypes.func.isRequired,
     file: PropTypes.object.isRequired,
     directory: PropTypes.array.isRequired,
+    history: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(AllocationFiles);

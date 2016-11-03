@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Router, Route, IndexRedirect, browserHistory } from 'react-router';
+import { Router, Route, Redirect, IndexRedirect, browserHistory } from 'react-router';
 
 import App from './components/app';
 import Cluster from './containers/cluster';
@@ -74,7 +74,12 @@ const AppRouter = ({ history }) =>
       <Route path="/allocations/:allocId" component={ Allocation }>
         <IndexRedirect to="/allocations/:allocId/info" />
         <Route path="/allocations/:allocId/info" component={ AllocInfo } />
-        <Route path="/allocations/:allocId/files" component={ AllocFiles } />
+        <Redirect
+          from="/allocations/:allocId/logs"
+          to="/allocations/:allocId/files"
+          query={{ path: '/alloc/logs/' }}
+        />
+        <Route path="/allocations/:allocId/files" component={ AllocFiles } query={{ path: '' }} />
         <Route path="/allocations/:allocId/raw" component={ AllocRaw } />
       </Route>
 
