@@ -10,9 +10,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -303,8 +305,9 @@ type EvalAckRequest struct {
 
 // EvalDequeueRequest is used when we want to dequeue an evaluation
 type EvalDequeueRequest struct {
-	Schedulers []string
-	Timeout    time.Duration
+	Schedulers       []string
+	Timeout          time.Duration
+	SchedulerVersion uint16
 	WriteRequest
 }
 
@@ -388,6 +391,11 @@ type VaultAccessor struct {
 type DeriveVaultTokenResponse struct {
 	// Tasks is a mapping between the task name and the wrapped token
 	Tasks map[string]string
+
+	// Error stores any error that occured. Errors are stored here so we can
+	// communicate whether it is retriable
+	Error *RecoverableError
+
 	QueryMeta
 }
 
@@ -645,6 +653,9 @@ type Node struct {
 	// HTTPAddr is the address on which the Nomad client is listening for http
 	// requests
 	HTTPAddr string
+
+	// TLSEnabled indicates if the Agent has TLS enabled for the HTTP API
+	TLSEnabled bool
 
 	// Attributes is an arbitrary set of key/value
 	// data that can be used for constraints. Examples
@@ -1299,6 +1310,55 @@ func (j *Job) VaultPolicies() map[string]map[string]*Vault {
 	return policies
 }
 
+// RequiredSignals returns a mapping of task groups to tasks to their required
+// set of signals
+func (j *Job) RequiredSignals() map[string]map[string][]string {
+	signals := make(map[string]map[string][]string)
+
+	for _, tg := range j.TaskGroups {
+		for _, task := range tg.Tasks {
+			// Use this local one as a set
+			taskSignals := make(map[string]struct{})
+
+			// Check if the Vault change mode uses signals
+			if task.Vault != nil && task.Vault.ChangeMode == VaultChangeModeSignal {
+				taskSignals[task.Vault.ChangeSignal] = struct{}{}
+			}
+
+			// Check if any template change mode uses signals
+			for _, t := range task.Templates {
+				if t.ChangeMode != TemplateChangeModeSignal {
+					continue
+				}
+
+				taskSignals[t.ChangeSignal] = struct{}{}
+			}
+
+			// Flatten and sort the signals
+			l := len(taskSignals)
+			if l == 0 {
+				continue
+			}
+
+			flat := make([]string, 0, l)
+			for sig := range taskSignals {
+				flat = append(flat, sig)
+			}
+
+			sort.Strings(flat)
+			tgSignals, ok := signals[tg.Name]
+			if !ok {
+				tgSignals = make(map[string][]string)
+				signals[tg.Name] = tgSignals
+			}
+			tgSignals[task.Name] = flat
+		}
+
+	}
+
+	return signals
+}
+
 // JobListStub is used to return a subset of job information
 // for the job list
 type JobListStub struct {
@@ -1753,12 +1813,12 @@ func (sc *ServiceCheck) validate() error {
 
 	switch sc.InitialStatus {
 	case "":
-	case api.HealthUnknown:
+		// case api.HealthUnknown: TODO: Add when Consul releases 0.7.1
 	case api.HealthPassing:
 	case api.HealthWarning:
 	case api.HealthCritical:
 	default:
-		return fmt.Errorf(`invalid initial check state (%s), must be one of %q, %q, %q, %q or empty`, sc.InitialStatus, api.HealthUnknown, api.HealthPassing, api.HealthWarning, api.HealthCritical)
+		return fmt.Errorf(`invalid initial check state (%s), must be one of %q, %q, %q, %q or empty`, sc.InitialStatus, api.HealthPassing, api.HealthWarning, api.HealthCritical)
 
 	}
 
@@ -1853,13 +1913,14 @@ func (s *Service) Canonicalize(job string, taskGroup string, task string) {
 func (s *Service) Validate() error {
 	var mErr multierror.Error
 
-	// Ensure the service name is valid per RFC-952 §1
-	// (https://tools.ietf.org/html/rfc952), RFC-1123 §2.1
+	// Ensure the service name is valid per the below RFCs but make an exception
+	// for our interpolation syntax
+	// RFC-952 §1 (https://tools.ietf.org/html/rfc952), RFC-1123 §2.1
 	// (https://tools.ietf.org/html/rfc1123), and RFC-2782
 	// (https://tools.ietf.org/html/rfc2782).
-	re := regexp.MustCompile(`^(?i:[a-z0-9]|[a-z0-9][a-z0-9\-]{0,61}[a-z0-9])$`)
+	re := regexp.MustCompile(`^(?i:[a-z0-9]|[a-z0-9\$][a-zA-Z0-9\-\$\{\}\_\.]*[a-z0-9\}])$`)
 	if !re.MatchString(s.Name) {
-		mErr.Errors = append(mErr.Errors, fmt.Errorf("service name must be valid per RFC 1123 and can contain only alphanumeric characters or dashes and must be less than 63 characters long: %q", s.Name))
+		mErr.Errors = append(mErr.Errors, fmt.Errorf("service name must be valid per RFC 1123 and can contain only alphanumeric characters or dashes: %q", s.Name))
 	}
 
 	for _, c := range s.Checks {
@@ -1873,6 +1934,20 @@ func (s *Service) Validate() error {
 		}
 	}
 	return mErr.ErrorOrNil()
+}
+
+// ValidateName checks if the services Name is valid and should be called after
+// the name has been interpolated
+func (s *Service) ValidateName(name string) error {
+	// Ensure the service name is valid per RFC-952 §1
+	// (https://tools.ietf.org/html/rfc952), RFC-1123 §2.1
+	// (https://tools.ietf.org/html/rfc1123), and RFC-2782
+	// (https://tools.ietf.org/html/rfc2782).
+	re := regexp.MustCompile(`^(?i:[a-z0-9]|[a-z0-9][a-z0-9\-]{0,61}[a-z0-9])$`)
+	if !re.MatchString(name) {
+		return fmt.Errorf("service name must be valid per RFC 1123 and can contain only alphanumeric characters or dashes and must be less than 63 characters long: %q", name)
+	}
+	return nil
 }
 
 // Hash calculates the hash of the check based on it's content and the service
@@ -2032,13 +2107,24 @@ func (t *Task) Canonicalize(job *Job, tg *TaskGroup) {
 		service.Canonicalize(job.Name, tg.Name, t.Name)
 	}
 
-	if t.Resources != nil {
+	// If Resources are nil initialize them to defaults, otherwise canonicalize
+	if t.Resources == nil {
+		t.Resources = DefaultResources()
+	} else {
 		t.Resources.Canonicalize()
 	}
 
 	// Set the default timeout if it is not specified.
 	if t.KillTimeout == 0 {
 		t.KillTimeout = DefaultKillTimeout
+	}
+
+	if t.Vault != nil {
+		t.Vault.Canonicalize()
+	}
+
+	for _, template := range t.Templates {
+		template.Canonicalize()
 	}
 }
 
@@ -2076,12 +2162,12 @@ func (t *Task) Validate(ephemeralDisk *EphemeralDisk) error {
 	// Validate the resources.
 	if t.Resources == nil {
 		mErr.Errors = append(mErr.Errors, errors.New("Missing task resources"))
-	} else if err := t.Resources.MeetsMinResources(); err != nil {
-		mErr.Errors = append(mErr.Errors, err)
-	}
+	} else {
+		if err := t.Resources.MeetsMinResources(); err != nil {
+			mErr.Errors = append(mErr.Errors, err)
+		}
 
-	// Ensure the task isn't asking for disk resources
-	if t.Resources != nil {
+		// Ensure the task isn't asking for disk resources
 		if t.Resources.DiskMB > 0 {
 			mErr.Errors = append(mErr.Errors, errors.New("Task can't ask for disk resources, they have to be specified at the task group level."))
 		}
@@ -2128,10 +2214,18 @@ func (t *Task) Validate(ephemeralDisk *EphemeralDisk) error {
 		}
 	}
 
+	destinations := make(map[string]int, len(t.Templates))
 	for idx, tmpl := range t.Templates {
 		if err := tmpl.Validate(); err != nil {
 			outer := fmt.Errorf("Template %d validation failed: %s", idx+1, err)
 			mErr.Errors = append(mErr.Errors, outer)
+		}
+
+		if other, ok := destinations[tmpl.DestPath]; ok {
+			outer := fmt.Errorf("Template %d has same destination as %d", idx+1, other)
+			mErr.Errors = append(mErr.Errors, outer)
+		} else {
+			destinations[tmpl.DestPath] = idx + 1
 		}
 	}
 
@@ -2216,30 +2310,27 @@ var (
 
 // Template represents a template configuration to be rendered for a given task
 type Template struct {
-	// SourcePath is the the path to the template to be rendered
+	// SourcePath is the path to the template to be rendered
 	SourcePath string `mapstructure:"source"`
 
 	// DestPath is the path to where the template should be rendered
 	DestPath string `mapstructure:"destination"`
 
-	// EmbededTmpl store the raw template. This is useful for smaller templates
-	// where they are embeded in the job file rather than sent as an artificat
-	EmbededTmpl string `mapstructure:"data"`
+	// EmbeddedTmpl store the raw template. This is useful for smaller templates
+	// where they are embedded in the job file rather than sent as an artificat
+	EmbeddedTmpl string `mapstructure:"data"`
 
 	// ChangeMode indicates what should be done if the template is re-rendered
 	ChangeMode string `mapstructure:"change_mode"`
 
-	// RestartSignal is the signal that should be sent if the change mode
+	// ChangeSignal is the signal that should be sent if the change mode
 	// requires it.
-	RestartSignal string `mapstructure:"restart_signal"`
+	ChangeSignal string `mapstructure:"change_signal"`
 
 	// Splay is used to avoid coordinated restarts of processes by applying a
 	// random wait between 0 and the given splay value before signalling the
 	// application of a change
 	Splay time.Duration `mapstructure:"splay"`
-
-	// Once mode is used to indicate that template should be rendered only once
-	Once bool `mapstructure:"once"`
 }
 
 // DefaultTemplate returns a default template.
@@ -2247,7 +2338,6 @@ func DefaultTemplate() *Template {
 	return &Template{
 		ChangeMode: TemplateChangeModeRestart,
 		Splay:      5 * time.Second,
-		Once:       false,
 	}
 }
 
@@ -2260,12 +2350,18 @@ func (t *Template) Copy() *Template {
 	return copy
 }
 
+func (t *Template) Canonicalize() {
+	if t.ChangeSignal != "" {
+		t.ChangeSignal = strings.ToUpper(t.ChangeSignal)
+	}
+}
+
 func (t *Template) Validate() error {
 	var mErr multierror.Error
 
 	// Verify we have something to render
-	if t.SourcePath == "" && t.EmbededTmpl == "" {
-		multierror.Append(&mErr, fmt.Errorf("Must specify a source path or have an embeded template"))
+	if t.SourcePath == "" && t.EmbeddedTmpl == "" {
+		multierror.Append(&mErr, fmt.Errorf("Must specify a source path or have an embedded template"))
 	}
 
 	// Verify we can render somewhere
@@ -2274,7 +2370,7 @@ func (t *Template) Validate() error {
 	}
 
 	// Verify the destination doesn't escape
-	escaped, err := pathEscapesAllocDir(t.DestPath)
+	escaped, err := PathEscapesAllocDir(t.DestPath)
 	if err != nil {
 		mErr.Errors = append(mErr.Errors, fmt.Errorf("invalid destination path: %v", err))
 	} else if escaped {
@@ -2285,7 +2381,7 @@ func (t *Template) Validate() error {
 	switch t.ChangeMode {
 	case TemplateChangeModeNoop, TemplateChangeModeRestart:
 	case TemplateChangeModeSignal:
-		if t.RestartSignal == "" {
+		if t.ChangeSignal == "" {
 			multierror.Append(&mErr, fmt.Errorf("Must specify signal value when change mode is signal"))
 		}
 	default:
@@ -2313,6 +2409,9 @@ type TaskState struct {
 	// The current state of the task.
 	State string
 
+	// Failed marks a task as having failed
+	Failed bool
+
 	// Series of task events that transition the state of the task.
 	Events []*TaskEvent
 }
@@ -2323,6 +2422,7 @@ func (ts *TaskState) Copy() *TaskState {
 	}
 	copy := new(TaskState)
 	copy.State = ts.State
+	copy.Failed = ts.Failed
 
 	if ts.Events != nil {
 		copy.Events = make([]*TaskEvent, len(ts.Events))
@@ -2331,22 +2431,6 @@ func (ts *TaskState) Copy() *TaskState {
 		}
 	}
 	return copy
-}
-
-// Failed returns true if the task has has failed.
-func (ts *TaskState) Failed() bool {
-	l := len(ts.Events)
-	if ts.State != TaskStateDead || l == 0 {
-		return false
-	}
-
-	switch ts.Events[l-1].Type {
-	case TaskDiskExceeded, TaskNotRestarting, TaskArtifactDownloadFailed,
-		TaskFailedValidation, TaskVaultRenewalFailed:
-		return true
-	default:
-		return false
-	}
 }
 
 // Successful returns whether a task finished successfully.
@@ -2365,6 +2449,10 @@ func (ts *TaskState) Successful() bool {
 }
 
 const (
+	// TaskSetupFailure indicates that the task could not be started due to a
+	// a setup failure.
+	TaskSetupFailure = "Setup Failure"
+
 	// TaskDriveFailure indicates that the task could not be started due to a
 	// failure in the driver.
 	TaskDriverFailure = "Driver Failure"
@@ -2397,6 +2485,13 @@ const (
 	// restarted because it has exceeded its restart policy.
 	TaskNotRestarting = "Not Restarting"
 
+	// TaskRestartSignal indicates that the task has been signalled to be
+	// restarted
+	TaskRestartSignal = "Restart Signaled"
+
+	// TaskSignaling indicates that the task is being signalled.
+	TaskSignaling = "Signaling"
+
 	// TaskDownloadingArtifacts means the task is downloading the artifacts
 	// specified in the task.
 	TaskDownloadingArtifacts = "Downloading Artifacts"
@@ -2412,9 +2507,6 @@ const (
 	// TaskSiblingFailed indicates that a sibling task in the task group has
 	// failed.
 	TaskSiblingFailed = "Sibling task failed"
-
-	// TaskVaultRenewalFailed indicates that Vault token renewal failed
-	TaskVaultRenewalFailed = "Vault token renewal failed"
 )
 
 // TaskEvent is an event that effects the state of a task and contains meta-data
@@ -2423,8 +2515,14 @@ type TaskEvent struct {
 	Type string
 	Time int64 // Unix Nanosecond timestamp
 
+	// FailsTask marks whether this event fails the task
+	FailsTask bool
+
 	// Restart fields.
 	RestartReason string
+
+	// Setup Failure fields.
+	SetupError string
 
 	// Driver Failure fields.
 	DriverError string // A driver error occurred while starting the task.
@@ -2440,6 +2538,9 @@ type TaskEvent struct {
 	// Task Killed Fields.
 	KillError string // Error killing the task.
 
+	// KillReason is the reason the task was killed
+	KillReason string
+
 	// TaskRestarting fields.
 	StartDelay int64 // The sleep period before restarting the task in unix nanoseconds.
 
@@ -2452,15 +2553,18 @@ type TaskEvent struct {
 	// The maximum allowed task disk size.
 	DiskLimit int64
 
-	// The recorded task disk size.
-	DiskSize int64
-
 	// Name of the sibling task that caused termination of the task that
 	// the TaskEvent refers to.
 	FailedSibling string
 
 	// VaultError is the error from token renewal
 	VaultError string
+
+	// TaskSignalReason indicates the reason the task is being signalled.
+	TaskSignalReason string
+
+	// TaskSignal is the signal that was sent to the task
+	TaskSignal string
 }
 
 func (te *TaskEvent) GoString() string {
@@ -2481,6 +2585,20 @@ func NewTaskEvent(event string) *TaskEvent {
 		Type: event,
 		Time: time.Now().UnixNano(),
 	}
+}
+
+// SetSetupError is used to store an error that occured while setting up the
+// task
+func (e *TaskEvent) SetSetupError(err error) *TaskEvent {
+	if err != nil {
+		e.SetupError = err.Error()
+	}
+	return e
+}
+
+func (e *TaskEvent) SetFailsTask() *TaskEvent {
+	e.FailsTask = true
+	return e
 }
 
 func (e *TaskEvent) SetDriverError(err error) *TaskEvent {
@@ -2514,6 +2632,11 @@ func (e *TaskEvent) SetKillError(err error) *TaskEvent {
 	return e
 }
 
+func (e *TaskEvent) SetKillReason(r string) *TaskEvent {
+	e.KillReason = r
+	return e
+}
+
 func (e *TaskEvent) SetRestartDelay(delay time.Duration) *TaskEvent {
 	e.StartDelay = int64(delay)
 	return e
@@ -2521,6 +2644,16 @@ func (e *TaskEvent) SetRestartDelay(delay time.Duration) *TaskEvent {
 
 func (e *TaskEvent) SetRestartReason(reason string) *TaskEvent {
 	e.RestartReason = reason
+	return e
+}
+
+func (e *TaskEvent) SetTaskSignalReason(r string) *TaskEvent {
+	e.TaskSignalReason = r
+	return e
+}
+
+func (e *TaskEvent) SetTaskSignal(s os.Signal) *TaskEvent {
+	e.TaskSignal = s.String()
 	return e
 }
 
@@ -2545,11 +2678,6 @@ func (e *TaskEvent) SetKillTimeout(timeout time.Duration) *TaskEvent {
 
 func (e *TaskEvent) SetDiskLimit(limit int64) *TaskEvent {
 	e.DiskLimit = limit
-	return e
-}
-
-func (e *TaskEvent) SetDiskSize(size int64) *TaskEvent {
-	e.DiskSize = size
 	return e
 }
 
@@ -2593,9 +2721,9 @@ func (ta *TaskArtifact) GoString() string {
 	return fmt.Sprintf("%+v", ta)
 }
 
-// pathEscapesAllocDir returns if the given path escapes the allocation
+// PathEscapesAllocDir returns if the given path escapes the allocation
 // directory
-func pathEscapesAllocDir(path string) (bool, error) {
+func PathEscapesAllocDir(path string) (bool, error) {
 	// Verify the destination doesn't escape the tasks directory
 	alloc, err := filepath.Abs(filepath.Join("/", "foo/", "bar/"))
 	if err != nil {
@@ -2620,7 +2748,7 @@ func (ta *TaskArtifact) Validate() error {
 		mErr.Errors = append(mErr.Errors, fmt.Errorf("source must be specified"))
 	}
 
-	escaped, err := pathEscapesAllocDir(ta.RelativeDest)
+	escaped, err := PathEscapesAllocDir(ta.RelativeDest)
 	if err != nil {
 		mErr.Errors = append(mErr.Errors, fmt.Errorf("invalid destination path: %v", err))
 	} else if escaped {
@@ -2677,6 +2805,7 @@ const (
 	ConstraintDistinctHosts = "distinct_hosts"
 	ConstraintRegex         = "regexp"
 	ConstraintVersion       = "version"
+	ConstraintSetContains   = "set_contains"
 )
 
 // Constraints are used to restrict placement options.
@@ -2738,6 +2867,10 @@ type EphemeralDisk struct {
 
 	// SizeMB is the size of the local disk
 	SizeMB int `mapstructure:"size"`
+
+	// Migrate determines if Nomad client should migrate the allocation dir for
+	// sticky allocations
+	Migrate bool
 }
 
 // DefaultEphemeralDisk returns a EphemeralDisk with default configurations
@@ -2762,6 +2895,17 @@ func (d *EphemeralDisk) Copy() *EphemeralDisk {
 	return ld
 }
 
+const (
+	// VaultChangeModeNoop takes no action when a new token is retrieved.
+	VaultChangeModeNoop = "noop"
+
+	// VaultChangeModeSignal signals the task when a new token is retrieved.
+	VaultChangeModeSignal = "signal"
+
+	// VaultChangeModeRestart restarts the task when a new token is retrieved.
+	VaultChangeModeRestart = "restart"
+)
+
 // Vault stores the set of premissions a task needs access to from Vault.
 type Vault struct {
 	// Policies is the set of policies that the task needs access to
@@ -2770,6 +2914,21 @@ type Vault struct {
 	// Env marks whether the Vault Token should be exposed as an environment
 	// variable
 	Env bool
+
+	// ChangeMode is used to configure the task's behavior when the Vault
+	// token changes because the original token could not be renewed in time.
+	ChangeMode string `mapstructure:"change_mode"`
+
+	// ChangeSignal is the signal sent to the task when a new token is
+	// retrieved. This is only valid when using the signal change mode.
+	ChangeSignal string `mapstructure:"change_signal"`
+}
+
+func DefaultVaultBlock() *Vault {
+	return &Vault{
+		Env:        true,
+		ChangeMode: VaultChangeModeRestart,
+	}
 }
 
 // Copy returns a copy of this Vault block.
@@ -2783,6 +2942,12 @@ func (v *Vault) Copy() *Vault {
 	return nv
 }
 
+func (v *Vault) Canonicalize() {
+	if v.ChangeSignal != "" {
+		v.ChangeSignal = strings.ToUpper(v.ChangeSignal)
+	}
+}
+
 // Validate returns if the Vault block is valid.
 func (v *Vault) Validate() error {
 	if v == nil {
@@ -2791,6 +2956,16 @@ func (v *Vault) Validate() error {
 
 	if len(v.Policies) == 0 {
 		return fmt.Errorf("Policy list can not be empty")
+	}
+
+	switch v.ChangeMode {
+	case VaultChangeModeSignal:
+		if v.ChangeSignal == "" {
+			return fmt.Errorf("Signal must be specified when using change mode %q", VaultChangeModeSignal)
+		}
+	case VaultChangeModeNoop, VaultChangeModeRestart:
+	default:
+		return fmt.Errorf("Unknown change mode %q", v.ChangeMode)
 	}
 
 	return nil
@@ -2974,6 +3149,29 @@ func (a *Allocation) Stub() *AllocListStub {
 		ModifyIndex:        a.ModifyIndex,
 		CreateTime:         a.CreateTime,
 	}
+}
+
+// ShouldMigrate returns if the allocation needs data migration
+func (a *Allocation) ShouldMigrate() bool {
+	if a.DesiredStatus == AllocDesiredStatusStop || a.DesiredStatus == AllocDesiredStatusEvict {
+		return false
+	}
+
+	tg := a.Job.LookupTaskGroup(a.TaskGroup)
+
+	// if the task group is nil or the ephemeral disk block isn't present then
+	// we won't migrate
+	if tg == nil || tg.EphemeralDisk == nil {
+		return false
+	}
+
+	// We won't migrate any data is the user hasn't enabled migration or the
+	// disk is not marked as sticky
+	if !tg.EphemeralDisk.Migrate || !tg.EphemeralDisk.Sticky {
+		return false
+	}
+
+	return true
 }
 
 var (
@@ -3559,4 +3757,41 @@ func Encode(t MessageType, msg interface{}) ([]byte, error) {
 	buf.WriteByte(uint8(t))
 	err := codec.NewEncoder(&buf, MsgpackHandle).Encode(msg)
 	return buf.Bytes(), err
+}
+
+// KeyringResponse is a unified key response and can be used for install,
+// remove, use, as well as listing key queries.
+type KeyringResponse struct {
+	Messages map[string]string
+	Keys     map[string]int
+	NumNodes int
+}
+
+// KeyringRequest is request objects for serf key operations.
+type KeyringRequest struct {
+	Key string
+}
+
+// RecoverableError wraps an error and marks whether it is recoverable and could
+// be retried or it is fatal.
+type RecoverableError struct {
+	Err         string
+	Recoverable bool
+}
+
+// NewRecoverableError is used to wrap an error and mark it as recoverable or
+// not.
+func NewRecoverableError(e error, recoverable bool) *RecoverableError {
+	if e == nil {
+		return nil
+	}
+
+	return &RecoverableError{
+		Err:         e.Error(),
+		Recoverable: recoverable,
+	}
+}
+
+func (r *RecoverableError) Error() string {
+	return r.Err
 }

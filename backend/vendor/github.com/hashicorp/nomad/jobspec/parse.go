@@ -209,8 +209,8 @@ func parseJob(result *structs.Job, list *ast.ObjectList) error {
 
 	// If we have a vault block, then parse that
 	if o := listVal.Filter("vault"); len(o.Items) > 0 {
-		var jobVault structs.Vault
-		if err := parseVault(&jobVault, o); err != nil {
+		jobVault := structs.DefaultVaultBlock()
+		if err := parseVault(jobVault, o); err != nil {
 			return multierror.Prefix(err, "vault ->")
 		}
 
@@ -218,7 +218,7 @@ func parseJob(result *structs.Job, list *ast.ObjectList) error {
 		for _, tg := range result.TaskGroups {
 			for _, task := range tg.Tasks {
 				if task.Vault == nil {
-					task.Vault = &jobVault
+					task.Vault = jobVault
 				}
 			}
 		}
@@ -335,15 +335,15 @@ func parseGroups(result *structs.Job, list *ast.ObjectList) error {
 
 		// If we have a vault block, then parse that
 		if o := listVal.Filter("vault"); len(o.Items) > 0 {
-			var tgVault structs.Vault
-			if err := parseVault(&tgVault, o); err != nil {
+			tgVault := structs.DefaultVaultBlock()
+			if err := parseVault(tgVault, o); err != nil {
 				return multierror.Prefix(err, fmt.Sprintf("'%s', vault ->", n))
 			}
 
 			// Go through the tasks and if they don't have a Vault block, set it
 			for _, task := range g.Tasks {
 				if task.Vault == nil {
-					task.Vault = &tgVault
+					task.Vault = tgVault
 				}
 			}
 		}
@@ -407,6 +407,7 @@ func parseConstraints(result *[]*structs.Constraint, list *ast.ObjectList) error
 			"version",
 			"regexp",
 			"distinct_hosts",
+			"set_contains",
 		}
 		if err := checkHCLKeys(o.Val, valid); err != nil {
 			return err
@@ -432,6 +433,13 @@ func parseConstraints(result *[]*structs.Constraint, list *ast.ObjectList) error
 		// to "regexp" and the value to the "RTarget"
 		if constraint, ok := m[structs.ConstraintRegex]; ok {
 			m["Operand"] = structs.ConstraintRegex
+			m["RTarget"] = constraint
+		}
+
+		// If "set_contains" is provided, set the operand
+		// to "set_contains" and the value to the "RTarget"
+		if constraint, ok := m[structs.ConstraintSetContains]; ok {
+			m["Operand"] = structs.ConstraintSetContains
 			m["RTarget"] = constraint
 		}
 
@@ -477,6 +485,7 @@ func parseEphemeralDisk(result **structs.EphemeralDisk, list *ast.ObjectList) er
 	valid := []string{
 		"sticky",
 		"size",
+		"migrate",
 	}
 	if err := checkHCLKeys(obj.Val, valid); err != nil {
 		return err
@@ -716,12 +725,12 @@ func parseTasks(jobName string, taskGroupName string, result *[]*structs.Task, l
 
 		// If we have a vault block, then parse that
 		if o := listVal.Filter("vault"); len(o.Items) > 0 {
-			var v structs.Vault
-			if err := parseVault(&v, o); err != nil {
+			v := structs.DefaultVaultBlock()
+			if err := parseVault(v, o); err != nil {
 				return multierror.Prefix(err, fmt.Sprintf("'%s', vault ->", n))
 			}
 
-			t.Vault = &v
+			t.Vault = v
 		}
 
 		*result = append(*result, &t)
@@ -809,7 +818,7 @@ func parseTemplates(result *[]*structs.Template, list *ast.ObjectList) error {
 			"destination",
 			"data",
 			"change_mode",
-			"restart_signal",
+			"change_signal",
 			"splay",
 			"once",
 		}
@@ -1176,6 +1185,8 @@ func parseVault(result *structs.Vault, list *ast.ObjectList) error {
 	valid := []string{
 		"policies",
 		"env",
+		"change_mode",
+		"change_signal",
 	}
 	if err := checkHCLKeys(listVal, valid); err != nil {
 		return multierror.Prefix(err, "vault ->")
@@ -1184,11 +1195,6 @@ func parseVault(result *structs.Vault, list *ast.ObjectList) error {
 	var m map[string]interface{}
 	if err := hcl.DecodeObject(&m, o.Val); err != nil {
 		return err
-	}
-
-	// Default the env bool
-	if _, ok := m["env"]; !ok {
-		m["env"] = true
 	}
 
 	if err := mapstructure.WeakDecode(m, result); err != nil {
