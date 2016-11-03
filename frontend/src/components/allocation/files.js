@@ -38,6 +38,7 @@ class AllocationFiles extends Component {
             return;
         }
 
+        let stateHaveChanged = false;
         const nextState = this.state;
 
         const nextPath = nextProps.location.query.path;
@@ -49,21 +50,25 @@ class AllocationFiles extends Component {
         if (currentPath !== nextPath || !this.state.initialDirectoryFetched) {
             this.fetchDir(nextProps, nextPath);
             nextState.initialDirectoryFetched = true;
+            stateHaveChanged = true;
         }
 
         if (this.state.fileWatching && currentFile && currentFile !== nextFile) {
             this.unwatchFile(nextProps, currentFile);
             nextState.contents = '';
             nextState.fileWatching = false;
+            stateHaveChanged = true;
         }
 
         if (!this.state.fileWatching && nextFile) {
             this.watchFile(nextProps);
             nextState.fileWatching = true;
+            stateHaveChanged = true;
         }
 
         if (this.state.fileWatching && nextProps.file.Data) {
             nextState.contents = this.state.contents + nextProps.file.Data;
+            stateHaveChanged = true;
 
             this.props.dispatch({
                 type: CLEAR_RECEIVED_FILE_DATA,
@@ -73,7 +78,7 @@ class AllocationFiles extends Component {
             });
         }
 
-        if (this.state !== nextState) {
+        if (stateHaveChanged) {
             this.setState(nextState);
         }
     }
