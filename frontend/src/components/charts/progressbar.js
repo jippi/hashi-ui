@@ -59,7 +59,7 @@ class Progressbar extends Component {
                         now={ normalizedValues[index] }
                         key={ index }
                       />
-                  );
+                    );
                 })}
               </ProgressBar>
 
