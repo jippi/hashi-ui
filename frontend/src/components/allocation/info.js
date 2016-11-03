@@ -52,7 +52,7 @@ class AllocationInfo extends Component {
                               time={ element.Time }
                               now={ lastEventTime }
                               durationInterval="ms"
-                              durationFormat="h [hour] m [min] s [seconds] S [ms]"
+                              durationFormat="h [hour] m [min] s [seconds]"
                             />
                           </td>
                           <td>{ element.Type }</td>
