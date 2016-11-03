@@ -103,6 +103,12 @@ class AllocationFiles extends Component {
         }
 
         this.unwatchFile(this.props, this.props.location.query.file);
+
+        this.setState({
+            contents: '',
+            fileWatching: false,
+            initialDirectoryFetched: false,
+        });
     }
 
     findAllocNode(props) {
