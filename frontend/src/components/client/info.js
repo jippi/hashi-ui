@@ -12,6 +12,18 @@ const nodeProps = [
     'NodeClass',
 ];
 
+const withPrefix = function(obj, prefix) {
+    const result = {};
+
+    Object.keys(obj || {}).forEach((key) => {
+        if (key.startsWith(prefix)) {
+            result[key.replace(prefix, '')] = obj[key];
+        }
+    });
+
+    return result;
+};
+
 const ClientInfo = ({ node }) =>
   <div className="tab-pane active">
     <div className="row">
@@ -32,9 +44,25 @@ const ClientInfo = ({ node }) =>
       </div>
     </div>
     <div className="row">
-      <div className="col-lg-12 col-md-12 col-sm-12 col-sx-12 tab-column">
-        <legend>Client Attributes</legend>
-        <MetaDisplay dtWithClass="wide" metaBag={ node.Attributes } />
+      <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column">
+        <legend>CPU Attributes</legend>
+        <MetaDisplay dtWithClass="wide" metaBag={ withPrefix(node.Attributes, 'cpu.') } />
+      </div>
+      <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column">
+        <legend>Driver Attributes</legend>
+        <MetaDisplay dtWithClass="wide" metaBag={ withPrefix(node.Attributes, 'driver.') } />
+      </div>
+      <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column">
+        <legend>Kernel Attributes</legend>
+        <MetaDisplay dtWithClass="wide" metaBag={ withPrefix(node.Attributes, 'kernel.') } />
+      </div>
+      <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column">
+        <legend>Unique Attributes</legend>
+        <MetaDisplay dtWithClass="wide" metaBag={ withPrefix(node.Attributes, 'unique.') } />
+      </div>
+      <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column">
+        <legend>Nomad Attributes</legend>
+        <MetaDisplay dtWithClass="wide" metaBag={ withPrefix(node.Attributes, 'nomad.') } />
       </div>
     </div>
   </div>;
