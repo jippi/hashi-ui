@@ -46,7 +46,6 @@ class AllocationFiles extends Component {
         const nextFile = nextProps.location.query.file;
         const currentFile = this.props.location.query.file;
 
-        // the current internal state of currentPath does not match the new query location path
         if (currentPath !== nextPath || !this.state.initialDirectoryFetched) {
             this.fetchDir(nextProps, nextPath);
             nextState.initialDirectoryFetched = true;
@@ -58,14 +57,11 @@ class AllocationFiles extends Component {
             nextState.fileWatching = false;
         }
 
-        // if we are not watching any files, and the current state file matches the next props file,
-        // start watching that file for changes
         if (!this.state.fileWatching && nextFile) {
             this.watchFile(nextProps);
             nextState.fileWatching = true;
         }
 
-        // If we are following a file and its not the default file, keep following that file
         if (this.state.fileWatching && nextProps.file.Data) {
             nextState.contents = this.state.contents + nextProps.file.Data;
 
@@ -122,7 +118,6 @@ class AllocationFiles extends Component {
         return true;
     }
 
-    // fetch a directory for the current alloc
     fetchDir(props, dir) {
         this.props.dispatch({
             type: FETCH_DIR,
@@ -165,7 +160,6 @@ class AllocationFiles extends Component {
     handleClick(file) {
         let path = this.props.location.query.path || '/';
 
-        // directory click
         if (file.IsDir) {
             if (file.Name === 'back') {
                 path = path.substr(0, path.lastIndexOf('/', path.length - 2) + 1);
