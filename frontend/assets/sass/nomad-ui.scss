@@ -179,5 +179,7 @@ span.file-size-warning {
 
 .content-file {
     font-family: monospace;
-    font-size: 90%
+    font-size: 90%;
+    unicode-bidi: embed;
+    white-space: pre;
 }
