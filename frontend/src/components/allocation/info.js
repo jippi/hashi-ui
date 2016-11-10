@@ -30,12 +30,12 @@ class AllocationInfo extends Component {
               <Table striped hover style={{ tableLayout: 'fixed' }}>
                 <thead>
                   <tr>
-                    <th width="150">When</th>
-                    <th width="150">Duration</th>
-                    <th width="150">Type</th>
+                    <th width="180">When</th>
+                    <th width="180">Duration</th>
+                    <th width="180">Type</th>
                     <th>Message / Reason</th>
+                    <th width="180">Signal</th>
                     <th width="50">Code</th>
-                    <th width="50">Signal</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -52,7 +52,7 @@ class AllocationInfo extends Component {
                               time={ element.Time }
                               now={ lastEventTime }
                               durationInterval="ms"
-                              durationFormat="h [hour] m [min] s [seconds] S [ms]"
+                              durationFormat="h [hour] m [min] s [seconds]"
                             />
                           </td>
                           <td>{ element.Type }</td>
@@ -70,8 +70,8 @@ class AllocationInfo extends Component {
                               || element.TaskSignalReason
                             }
                           </td>
-                          <td>{ element.ExitCode }</td>
                           <td>{ element.Signal || element.TaskSignal }</td>
+                          <td>{ element.ExitCode }</td>
                         </tr>
                       );
 

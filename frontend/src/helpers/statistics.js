@@ -6,7 +6,7 @@ export function getJobStatisticsHeader() {
     const output = [];
 
     summaryLabels.forEach((key) => {
-        output.push(<th width="150" key={ `statistics-header-for-${key}` }>{ key }</th>);
+        output.push(<th width="75" key={ `statistics-header-for-${key}` }>{ key }</th>);
     });
 
     return output;

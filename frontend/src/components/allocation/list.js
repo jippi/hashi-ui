@@ -186,13 +186,13 @@ class AllocationList extends Component {
                 <thead>
                   <tr>
                     <th width="40"></th>
-                    <th width="120">ID</th>
+                    <th width="100">ID</th>
                     { jobHeaderColumn(showJobColumn) }
                     <th width="300">Task Group</th>
-                    <th width="120">Status</th>
+                    <th width="100">Status</th>
                     { clientHeaderColumn(showClientColumn) }
                     <th width="120">Age</th>
-                    <th width="120">Actions</th>
+                    <th width="50">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
