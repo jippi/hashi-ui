@@ -46,7 +46,12 @@ type Config struct {
 	Ports *Ports `mapstructure:"ports"`
 
 	// Addresses is used to override the network addresses we bind to.
+	//
+	// Use normalizedAddrs if you need the host+port to bind to.
 	Addresses *Addresses `mapstructure:"addresses"`
+
+	// normalizedAddr is set to the Address+Port by normalizeAddrs()
+	normalizedAddrs *Addresses
 
 	// AdvertiseAddrs is used to control the addresses we advertise.
 	AdvertiseAddrs *AdvertiseAddrs `mapstructure:"advertise"`
@@ -288,7 +293,7 @@ type Telemetry struct {
 	// Default: none
 	CirconusAPIToken string `mapstructure:"circonus_api_token"`
 	// CirconusAPIApp is an app name associated with API token.
-	// Default: "consul"
+	// Default: "nomad"
 	CirconusAPIApp string `mapstructure:"circonus_api_app"`
 	// CirconusAPIURL is the base URL to use for contacting the Circonus API.
 	// Default: "https://api.circonus.com/v2"
@@ -317,8 +322,15 @@ type Telemetry struct {
 	CirconusCheckInstanceID string `mapstructure:"circonus_check_instance_id"`
 	// CirconusCheckSearchTag is a special tag which, when coupled with the instance id, helps to
 	// narrow down the search results when neither a Submission URL or Check ID is provided.
-	// Default: service:app (e.g. service:consul)
+	// Default: service:app (e.g. service:nomad)
 	CirconusCheckSearchTag string `mapstructure:"circonus_check_search_tag"`
+	// CirconusCheckTags is a comma separated list of tags to apply to the check. Note that
+	// the value of CirconusCheckSearchTag will always be added to the check.
+	// Default: none
+	CirconusCheckTags string `mapstructure:"circonus_check_tags"`
+	// CirconusCheckDisplayName is the name for the check which will be displayed in the Circonus UI.
+	// Default: value of CirconusCheckInstanceID
+	CirconusCheckDisplayName string `mapstructure:"circonus_check_display_name"`
 	// CirconusBrokerID is an explicit broker to use when creating a new check. The numeric portion
 	// of broker._cid. If metric management is enabled and neither a Submission URL nor Check ID
 	// is provided, an attempt will be made to search for an existing check using Instance ID and
@@ -335,8 +347,8 @@ type Telemetry struct {
 	CirconusBrokerSelectTag string `mapstructure:"circonus_broker_select_tag"`
 }
 
-// Ports is used to encapsulate the various ports we bind to for network
-// services. If any are not specified then the defaults are used instead.
+// Ports encapsulates the various ports we bind to for network services. If any
+// are not specified then the defaults are used instead.
 type Ports struct {
 	HTTP int `mapstructure:"http"`
 	RPC  int `mapstructure:"rpc"`
@@ -352,8 +364,8 @@ type Addresses struct {
 }
 
 // AdvertiseAddrs is used to control the addresses we advertise out for
-// different network services. Not all network services support an
-// advertise address. All are optional and default to BindAddr.
+// different network services. All are optional and default to BindAddr and
+// their default Port.
 type AdvertiseAddrs struct {
 	HTTP string `mapstructure:"http"`
 	RPC  string `mapstructure:"rpc"`
@@ -431,6 +443,7 @@ func (r *Resources) ParseReserved() error {
 // DevConfig is a Config that is used for dev mode of Nomad.
 func DevConfig() *Config {
 	conf := DefaultConfig()
+	conf.BindAddr = "127.0.0.1"
 	conf.LogLevel = "DEBUG"
 	conf.Client.Enabled = true
 	conf.Server.Enabled = true
@@ -459,7 +472,7 @@ func DefaultConfig() *Config {
 		LogLevel:   "INFO",
 		Region:     "global",
 		Datacenter: "dc1",
-		BindAddr:   "127.0.0.1",
+		BindAddr:   "0.0.0.0",
 		Ports: &Ports{
 			HTTP: 4646,
 			RPC:  4647,
@@ -657,6 +670,126 @@ func (c *Config) Merge(b *Config) *Config {
 	return &result
 }
 
+// normalizeAddrs normalizes Addresses and AdvertiseAddrs to always be
+// initialized and have sane defaults.
+func (c *Config) normalizeAddrs() error {
+	c.Addresses.HTTP = normalizeBind(c.Addresses.HTTP, c.BindAddr)
+	c.Addresses.RPC = normalizeBind(c.Addresses.RPC, c.BindAddr)
+	c.Addresses.Serf = normalizeBind(c.Addresses.Serf, c.BindAddr)
+	c.normalizedAddrs = &Addresses{
+		HTTP: fmt.Sprintf("%s:%d", c.Addresses.HTTP, c.Ports.HTTP),
+		RPC:  fmt.Sprintf("%s:%d", c.Addresses.RPC, c.Ports.RPC),
+		Serf: fmt.Sprintf("%s:%d", c.Addresses.Serf, c.Ports.Serf),
+	}
+
+	addr, err := normalizeAdvertise(c.AdvertiseAddrs.HTTP, c.Addresses.HTTP, c.Ports.HTTP, c.DevMode)
+	if err != nil {
+		return fmt.Errorf("Failed to parse HTTP advertise address: %v", err)
+	}
+	c.AdvertiseAddrs.HTTP = addr
+
+	addr, err = normalizeAdvertise(c.AdvertiseAddrs.RPC, c.Addresses.RPC, c.Ports.RPC, c.DevMode)
+	if err != nil {
+		return fmt.Errorf("Failed to parse RPC advertise address: %v", err)
+	}
+	c.AdvertiseAddrs.RPC = addr
+
+	addr, err = normalizeAdvertise(c.AdvertiseAddrs.Serf, c.Addresses.Serf, c.Ports.Serf, c.DevMode)
+	if err != nil {
+		return fmt.Errorf("Failed to parse Serf advertise address: %v", err)
+	}
+	c.AdvertiseAddrs.Serf = addr
+
+	return nil
+}
+
+// normalizeBind returns a normalized bind address.
+//
+// If addr is set it is used, if not the default bind address is used.
+func normalizeBind(addr, bind string) string {
+	if addr == "" {
+		return bind
+	}
+	return addr
+}
+
+// normalizeAdvertise returns a normalized advertise address.
+//
+// If addr is set, it is used and the default port is appended if no port is
+// set.
+//
+// If addr is not set and bind is a valid address, the returned string is the
+// bind+port.
+//
+// If addr is not set and bind is not a valid advertise address, the hostname
+// is resolved and returned with the port.
+//
+// Loopback is only considered a valid advertise address in dev mode.
+func normalizeAdvertise(addr string, bind string, defport int, dev bool) (string, error) {
+	if addr != "" {
+		// Default to using manually configured address
+		_, _, err := net.SplitHostPort(addr)
+		if err != nil {
+			if !isMissingPort(err) {
+				return "", fmt.Errorf("Error parsing advertise address %q: %v", addr, err)
+			}
+
+			// missing port, append the default
+			return fmt.Sprintf("%s:%d", addr, defport), nil
+		}
+		return addr, nil
+	}
+
+	// Fallback to bind address first, and then try resolving the local hostname
+	ips, err := net.LookupIP(bind)
+	if err != nil {
+		return "", fmt.Errorf("Error resolving bind address %q: %v", bind, err)
+	}
+
+	// Return the first unicast address
+	for _, ip := range ips {
+		if ip.IsLinkLocalUnicast() || ip.IsGlobalUnicast() {
+			return fmt.Sprintf("%s:%d", ip, defport), nil
+		}
+		if ip.IsLoopback() && dev {
+			// loopback is fine for dev mode
+			return fmt.Sprintf("%s:%d", ip, defport), nil
+		}
+	}
+
+	// As a last resort resolve the hostname and use it if it's not
+	// localhost (as localhost is never a sensible default)
+	host, err := os.Hostname()
+	if err != nil {
+		return "", fmt.Errorf("Unable to get hostname to set advertise address: %v", err)
+	}
+
+	ips, err = net.LookupIP(host)
+	if err != nil {
+		return "", fmt.Errorf("Error resolving hostname %q for advertise address: %v", host, err)
+	}
+
+	// Return the first unicast address
+	for _, ip := range ips {
+		if ip.IsLinkLocalUnicast() || ip.IsGlobalUnicast() {
+			return fmt.Sprintf("%s:%d", ip, defport), nil
+		}
+		if ip.IsLoopback() && dev {
+			// loopback is fine for dev mode
+			return fmt.Sprintf("%s:%d", ip, defport), nil
+		}
+	}
+	return "", fmt.Errorf("No valid advertise addresses, please set `advertise` manually")
+}
+
+// isMissingPort returns true if an error is a "missing port" error from
+// net.SplitHostPort.
+func isMissingPort(err error) bool {
+	// matches error const in net/ipsock.go
+	const missingPort = "missing port in address"
+	return err != nil && strings.HasPrefix(err.Error(), missingPort)
+}
+
 // Merge is used to merge two server configs together
 func (a *ServerConfig) Merge(b *ServerConfig) *ServerConfig {
 	result := *a
@@ -831,6 +964,12 @@ func (a *Telemetry) Merge(b *Telemetry) *Telemetry {
 	}
 	if b.CirconusCheckSearchTag != "" {
 		result.CirconusCheckSearchTag = b.CirconusCheckSearchTag
+	}
+	if b.CirconusCheckTags != "" {
+		result.CirconusCheckTags = b.CirconusCheckTags
+	}
+	if b.CirconusCheckDisplayName != "" {
+		result.CirconusCheckDisplayName = b.CirconusCheckDisplayName
 	}
 	if b.CirconusBrokerID != "" {
 		result.CirconusBrokerID = b.CirconusBrokerID

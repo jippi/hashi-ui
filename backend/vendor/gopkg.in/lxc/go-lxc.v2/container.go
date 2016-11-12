@@ -1556,6 +1556,13 @@ func (c *Container) Migrate(cmd uint, opts MigrateOptions) error {
 		return err
 	}
 
+	if (cmd != MIGRATE_RESTORE) {
+		if err := c.makeSure(isRunning); err != nil {
+			return err
+		}
+	}
+
+
 	cdirectory := C.CString(opts.Directory)
 	defer C.free(unsafe.Pointer(cdirectory))
 

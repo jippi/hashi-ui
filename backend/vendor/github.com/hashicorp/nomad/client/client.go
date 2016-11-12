@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -20,6 +19,7 @@ import (
 	consulapi "github.com/hashicorp/consul/api"
 	"github.com/hashicorp/consul/lib"
 	"github.com/hashicorp/go-multierror"
+	nomadapi "github.com/hashicorp/nomad/api"
 	"github.com/hashicorp/nomad/client/allocdir"
 	"github.com/hashicorp/nomad/client/config"
 	"github.com/hashicorp/nomad/client/driver"
@@ -166,7 +166,7 @@ var (
 // NewClient is used to create a new client from the given configuration
 func NewClient(cfg *config.Config, consulSyncer *consul.Syncer, logger *log.Logger) (*Client, error) {
 	// Create the tls wrapper
-	var tlsWrap tlsutil.Wrapper
+	var tlsWrap tlsutil.RegionWrapper
 	if cfg.TLSConfig.EnableRPC {
 		tw, err := cfg.TLSConfiguration().OutgoingTLSWrapper()
 		if err != nil {
@@ -720,6 +720,8 @@ func (c *Client) reservePorts() {
 func (c *Client) fingerprint() error {
 	whitelist := c.config.ReadStringListToMap("fingerprint.whitelist")
 	whitelistEnabled := len(whitelist) > 0
+	blacklist := c.config.ReadStringListToMap("fingerprint.blacklist")
+
 	c.logger.Printf("[DEBUG] client: built-in fingerprints: %v", fingerprint.BuiltinFingerprints())
 
 	var applied []string
@@ -727,6 +729,11 @@ func (c *Client) fingerprint() error {
 	for _, name := range fingerprint.BuiltinFingerprints() {
 		// Skip modules that are not in the whitelist if it is enabled.
 		if _, ok := whitelist[name]; whitelistEnabled && !ok {
+			skipped = append(skipped, name)
+			continue
+		}
+		// Skip modules that are in the blacklist
+		if _, ok := blacklist[name]; ok {
 			skipped = append(skipped, name)
 			continue
 		}
@@ -754,7 +761,7 @@ func (c *Client) fingerprint() error {
 	}
 	c.logger.Printf("[DEBUG] client: applied fingerprints %v", applied)
 	if len(skipped) != 0 {
-		c.logger.Printf("[DEBUG] client: fingerprint modules skipped due to whitelist: %v", skipped)
+		c.logger.Printf("[DEBUG] client: fingerprint modules skipped due to white/blacklist: %v", skipped)
 	}
 	return nil
 }
@@ -778,9 +785,10 @@ func (c *Client) fingerprintPeriodic(name string, f fingerprint.Fingerprint, d t
 
 // setupDrivers is used to find the available drivers
 func (c *Client) setupDrivers() error {
-	// Build the whitelist of drivers.
+	// Build the white/blacklists of drivers.
 	whitelist := c.config.ReadStringListToMap("driver.whitelist")
 	whitelistEnabled := len(whitelist) > 0
+	blacklist := c.config.ReadStringListToMap("driver.blacklist")
 
 	var avail []string
 	var skipped []string
@@ -789,6 +797,11 @@ func (c *Client) setupDrivers() error {
 		// Skip fingerprinting drivers that are not in the whitelist if it is
 		// enabled.
 		if _, ok := whitelist[name]; whitelistEnabled && !ok {
+			skipped = append(skipped, name)
+			continue
+		}
+		// Skip fingerprinting drivers that are in the blacklist
+		if _, ok := blacklist[name]; ok {
 			skipped = append(skipped, name)
 			continue
 		}
@@ -817,7 +830,7 @@ func (c *Client) setupDrivers() error {
 	c.logger.Printf("[DEBUG] client: available drivers %v", avail)
 
 	if len(skipped) != 0 {
-		c.logger.Printf("[DEBUG] client: drivers skipped due to whitelist: %v", skipped)
+		c.logger.Printf("[DEBUG] client: drivers skipped due to white/blacklist: %v", skipped)
 	}
 
 	return nil
@@ -1185,7 +1198,13 @@ func (c *Client) watchAllocations(updates chan *allocUpdates) {
 			default:
 			}
 
-			if err != noServersErr {
+			// COMPAT: Remove in 0.6. This is to allow the case in which the
+			// servers are not fully upgraded before the clients register. This
+			// can cause the SecretID to be lost
+			if strings.Contains(err.Error(), "node secret ID does not match") {
+				c.logger.Printf("[DEBUG] client: re-registering node as there was a secret ID mismatch: %v", err)
+				c.retryRegisterNode()
+			} else if err != noServersErr {
 				c.logger.Printf("[ERR] client: failed to query for node allocations: %v", err)
 			}
 			retry := c.retryIntv(getAllocRetryIntv)
@@ -1519,15 +1538,33 @@ func (c *Client) migrateRemoteAllocDir(alloc *structs.Allocation, allocID string
 	}
 
 	// Get the snapshot
-	url := fmt.Sprintf("http://%v/v1/client/allocation/%v/snapshot", node.HTTPAddr, alloc.ID)
-	resp, err := http.Get(url)
+	scheme := "http"
+	if node.TLSEnabled {
+		scheme = "https"
+	}
+	// Create an API client
+	apiConfig := nomadapi.DefaultConfig()
+	apiConfig.Address = fmt.Sprintf("%s://%s", scheme, node.HTTPAddr)
+	apiConfig.TLSConfig = &nomadapi.TLSConfig{
+		CACert:     c.config.TLSConfig.CAFile,
+		ClientCert: c.config.TLSConfig.CertFile,
+		ClientKey:  c.config.TLSConfig.KeyFile,
+	}
+	apiClient, err := nomadapi.NewClient(apiConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("/v1/client/allocation/%v/snapshot", alloc.ID)
+	resp, err := apiClient.Raw().Response(url, nil)
 	if err != nil {
 		os.RemoveAll(pathToAllocDir)
 		c.logger.Printf("[ERR] client: error getting snapshot: %v", err)
 		return nil, fmt.Errorf("error getting snapshot for alloc %v: %v", alloc.ID, err)
 	}
-	tr := tar.NewReader(resp.Body)
-	defer resp.Body.Close()
+
+	tr := tar.NewReader(resp)
+	defer resp.Close()
 
 	buf := make([]byte, 1024)
 

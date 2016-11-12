@@ -8,12 +8,12 @@ package lxc
 
 // #cgo pkg-config: lxc
 // #cgo LDFLAGS: -llxc -lutil
-// #ifndef LXC_DEVEL
-// #define LXC_DEVEL 0
-// #endif
 // #include <lxc/lxccontainer.h>
 // #include <lxc/version.h>
 // #include "lxc-binding.h"
+// #ifndef LXC_DEVEL
+// #define LXC_DEVEL 0
+// #endif
 import "C"
 
 import (
