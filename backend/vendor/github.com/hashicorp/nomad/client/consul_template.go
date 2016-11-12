@@ -18,6 +18,12 @@ import (
 	"github.com/hashicorp/nomad/nomad/structs"
 )
 
+const (
+	// hostSrcOption is the Client option that determines whether the template
+	// source may be from the host
+	hostSrcOption = "template.allow_host_source"
+)
+
 var (
 	// testRetryRate is used to speed up tests by setting consul-templates retry
 	// rate to something low
@@ -319,7 +325,11 @@ func templateRunner(tmpls []*structs.Template, config *config.Config,
 	}
 
 	// Parse the templates
-	ctmplMapping := parseTemplateConfigs(tmpls, taskDir, taskEnv)
+	allowAbs := config.ReadBoolDefault(hostSrcOption, true)
+	ctmplMapping, err := parseTemplateConfigs(tmpls, taskDir, taskEnv, allowAbs)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	// Set the config
 	flat := make([]*ctconf.ConfigTemplate, 0, len(ctmplMapping))
@@ -349,7 +359,8 @@ func templateRunner(tmpls []*structs.Template, config *config.Config,
 }
 
 // parseTemplateConfigs converts the tasks templates into consul-templates
-func parseTemplateConfigs(tmpls []*structs.Template, taskDir string, taskEnv *env.TaskEnvironment) map[ctconf.ConfigTemplate]*structs.Template {
+func parseTemplateConfigs(tmpls []*structs.Template, taskDir string,
+	taskEnv *env.TaskEnvironment, allowAbs bool) (map[ctconf.ConfigTemplate]*structs.Template, error) {
 	// Build the task environment
 	// TODO Should be able to inject the Nomad env vars into Consul-template for
 	// rendering
@@ -359,7 +370,15 @@ func parseTemplateConfigs(tmpls []*structs.Template, taskDir string, taskEnv *en
 	for _, tmpl := range tmpls {
 		var src, dest string
 		if tmpl.SourcePath != "" {
-			src = filepath.Join(taskDir, taskEnv.ReplaceEnv(tmpl.SourcePath))
+			if filepath.IsAbs(tmpl.SourcePath) {
+				if !allowAbs {
+					return nil, fmt.Errorf("Specifying absolute template paths disallowed by client config: %q", tmpl.SourcePath)
+				}
+
+				src = tmpl.SourcePath
+			} else {
+				src = filepath.Join(taskDir, taskEnv.ReplaceEnv(tmpl.SourcePath))
+			}
 		}
 		if tmpl.DestPath != "" {
 			dest = filepath.Join(taskDir, taskEnv.ReplaceEnv(tmpl.DestPath))
@@ -376,7 +395,7 @@ func parseTemplateConfigs(tmpls []*structs.Template, taskDir string, taskEnv *en
 		ctmpls[ct] = tmpl
 	}
 
-	return ctmpls
+	return ctmpls, nil
 }
 
 // runnerConfig returns a consul-template runner configuration, setting the
@@ -429,13 +448,15 @@ func runnerConfig(config *config.Config, vaultToken string) (*ctconf.Config, err
 	}
 
 	// Setup the Vault config
+	// Always set these to ensure nothing is picked up from the environment
+	conf.Vault = &ctconf.VaultConfig{
+		RenewToken: false,
+	}
+	set([]string{"vault", "vault.token", "vault.renew_token"})
 	if config.VaultConfig != nil && config.VaultConfig.IsEnabled() {
-		conf.Vault = &ctconf.VaultConfig{
-			Address:    config.VaultConfig.Addr,
-			Token:      vaultToken,
-			RenewToken: false,
-		}
-		set([]string{"vault", "vault.address", "vault.token", "vault.renew_token"})
+		conf.Vault.Address = config.VaultConfig.Addr
+		conf.Vault.Token = vaultToken
+		set([]string{"vault.address"})
 
 		if strings.HasPrefix(config.VaultConfig.Addr, "https") || config.VaultConfig.TLSCertFile != "" {
 			verify := config.VaultConfig.TLSSkipVerify == nil || !*config.VaultConfig.TLSSkipVerify
