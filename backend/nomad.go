@@ -114,8 +114,8 @@ func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 		return nil, err
 	}
 
-	ms := make([]*AgentMemberWithID, 0, len(members))
-	for _, m := range members {
+	ms := make([]*AgentMemberWithID, 0, len(members.Members))
+	for _, m := range members.Members {
 		x, err := NewAgentMemberWithID(m)
 		if err != nil {
 			return nil, errors.New(fmt.Sprintf("Failed to create AgentMemberWithID %s: %#v", err, m))
