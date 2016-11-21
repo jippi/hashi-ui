@@ -9,6 +9,22 @@ import (
 	"time"
 )
 
+// RegionSpecificWrapper is used to invoke a static Region and turns a
+// RegionWrapper into a Wrapper type.
+func RegionSpecificWrapper(region string, tlsWrap RegionWrapper) Wrapper {
+	if tlsWrap == nil {
+		return nil
+	}
+	return func(conn net.Conn) (net.Conn, error) {
+		return tlsWrap(region, conn)
+	}
+}
+
+// RegionWrapper is a function that is used to wrap a non-TLS connection and
+// returns an appropriate TLS connection or error. This takes a Region as an
+// argument.
+type RegionWrapper func(region string, conn net.Conn) (net.Conn, error)
+
 // Wrapper wraps a connection and enables TLS on it.
 type Wrapper func(conn net.Conn) (net.Conn, error)
 
@@ -44,10 +60,6 @@ type Config struct {
 	// KeyFile is used to provide a TLS key that is used for serving TLS connections.
 	// Must be provided to serve TLS connections.
 	KeyFile string
-
-	// ServerName is used with the TLS certificate to ensure the name we
-	// provide matches the certificate
-	ServerName string
 }
 
 // AppendCA opens and parses the CA file and adds the certificates to
@@ -98,8 +110,7 @@ func (c *Config) OutgoingTLSConfig() (*tls.Config, error) {
 		RootCAs:            x509.NewCertPool(),
 		InsecureSkipVerify: true,
 	}
-	if c.ServerName != "" {
-		tlsConfig.ServerName = c.ServerName
+	if c.VerifyServerHostname {
 		tlsConfig.InsecureSkipVerify = false
 	}
 
@@ -128,7 +139,7 @@ func (c *Config) OutgoingTLSConfig() (*tls.Config, error) {
 // OutgoingTLSWrapper returns a a Wrapper based on the OutgoingTLS
 // configuration. If hostname verification is on, the wrapper
 // will properly generate the dynamic server name for verification.
-func (c *Config) OutgoingTLSWrapper() (Wrapper, error) {
+func (c *Config) OutgoingTLSWrapper() (RegionWrapper, error) {
 	// Get the TLS config
 	tlsConfig, err := c.OutgoingTLSConfig()
 	if err != nil {
@@ -140,10 +151,21 @@ func (c *Config) OutgoingTLSWrapper() (Wrapper, error) {
 		return nil, nil
 	}
 
-	wrapper := func(conn net.Conn) (net.Conn, error) {
-		return WrapTLSClient(conn, tlsConfig)
+	// Generate the wrapper based on hostname verification
+	if c.VerifyServerHostname {
+		wrapper := func(region string, conn net.Conn) (net.Conn, error) {
+			conf := *tlsConfig
+			conf.ServerName = "server." + region + ".nomad"
+			return WrapTLSClient(conn, &conf)
+		}
+		return wrapper, nil
+	} else {
+		wrapper := func(dc string, c net.Conn) (net.Conn, error) {
+			return WrapTLSClient(c, tlsConfig)
+		}
+		return wrapper, nil
 	}
-	return wrapper, nil
+
 }
 
 // Wrap a net.Conn into a client tls connection, performing any
@@ -203,7 +225,6 @@ func WrapTLSClient(conn net.Conn, tlsConfig *tls.Config) (net.Conn, error) {
 func (c *Config) IncomingTLSConfig() (*tls.Config, error) {
 	// Create the tlsConfig
 	tlsConfig := &tls.Config{
-		ServerName: c.ServerName,
 		ClientCAs:  x509.NewCertPool(),
 		ClientAuth: tls.NoClientCert,
 	}
