@@ -288,7 +288,7 @@ func (d *RktDriver) Start(ctx *ExecContext, task *structs.Task) (DriverHandle, e
 	// Inject environment variables
 	d.taskEnv.SetAllocDir(allocdir.SharedAllocContainerPath)
 	d.taskEnv.SetTaskLocalDir(allocdir.TaskLocalContainerPath)
-	d.taskEnv.SetTaskLocalDir(allocdir.TaskSecretsContainerPath)
+	d.taskEnv.SetSecretsDir(allocdir.TaskSecretsContainerPath)
 	d.taskEnv.Build()
 	for k, v := range d.taskEnv.EnvMap() {
 		cmdArgs = append(cmdArgs, fmt.Sprintf("--set-env=%v=%v", k, v))
@@ -544,9 +544,9 @@ func (h *rktHandle) Stats() (*cstructs.TaskResourceUsage, error) {
 }
 
 func (h *rktHandle) run() {
-	ps, err := h.executor.Wait()
+	ps, werr := h.executor.Wait()
 	close(h.doneCh)
-	if ps.ExitCode == 0 && err != nil {
+	if ps.ExitCode == 0 && werr != nil {
 		if e := killProcess(h.executorPid); e != nil {
 			h.logger.Printf("[ERROR] driver.rkt: error killing user process: %v", e)
 		}
@@ -554,15 +554,18 @@ func (h *rktHandle) run() {
 			h.logger.Printf("[ERROR] driver.rkt: unmounting dev,proc and alloc dirs failed: %v", e)
 		}
 	}
-	h.waitCh <- dstructs.NewWaitResult(ps.ExitCode, 0, err)
-	close(h.waitCh)
 	// Remove services
 	if err := h.executor.DeregisterServices(); err != nil {
 		h.logger.Printf("[ERR] driver.rkt: failed to deregister services: %v", err)
 	}
 
+	// Exit the executor
 	if err := h.executor.Exit(); err != nil {
 		h.logger.Printf("[ERR] driver.rkt: error killing executor: %v", err)
 	}
 	h.pluginClient.Kill()
+
+	// Send the results
+	h.waitCh <- dstructs.NewWaitResult(ps.ExitCode, 0, werr)
+	close(h.waitCh)
 }

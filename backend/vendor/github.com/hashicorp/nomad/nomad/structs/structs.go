@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -357,6 +358,29 @@ type AllocsGetRequest struct {
 type PeriodicForceRequest struct {
 	JobID string
 	WriteRequest
+}
+
+// ServerMembersResponse has the list of servers in a cluster
+type ServerMembersResponse struct {
+	ServerName   string
+	ServerRegion string
+	ServerDC     string
+	Members      []*ServerMember
+}
+
+// ServerMember holds information about a Nomad server agent in a cluster
+type ServerMember struct {
+	Name        string
+	Addr        net.IP
+	Port        uint16
+	Tags        map[string]string
+	Status      string
+	ProtocolMin uint8
+	ProtocolMax uint8
+	ProtocolCur uint8
+	DelegateMin uint8
+	DelegateMax uint8
+	DelegateCur uint8
 }
 
 // DeriveVaultTokenRequest is used to request wrapped Vault tokens for the
@@ -1653,8 +1677,26 @@ func (tg *TaskGroup) Canonicalize(job *Job) {
 		tg.RestartPolicy = NewRestartPolicy(job.Type)
 	}
 
+	// Set a default ephemeral disk object if the user has not requested for one
+	if tg.EphemeralDisk == nil {
+		tg.EphemeralDisk = DefaultEphemeralDisk()
+	}
+
 	for _, task := range tg.Tasks {
 		task.Canonicalize(job, tg)
+	}
+
+	// Add up the disk resources to EphemeralDisk. This is done so that users
+	// are not required to move their disk attribute from resources to
+	// EphemeralDisk section of the job spec in Nomad 0.5
+	// COMPAT 0.4.1 -> 0.5
+	// Remove in 0.6
+	var diskMB int
+	for _, task := range tg.Tasks {
+		diskMB += task.Resources.DiskMB
+	}
+	if diskMB > 0 {
+		tg.EphemeralDisk.SizeMB = diskMB
 	}
 }
 
@@ -1785,7 +1827,9 @@ func (sc *ServiceCheck) Canonicalize(serviceName string) {
 func (sc *ServiceCheck) validate() error {
 	switch strings.ToLower(sc.Type) {
 	case ServiceCheckTCP:
-		if sc.Timeout < minCheckTimeout {
+		if sc.Timeout == 0 {
+			return fmt.Errorf("missing required value timeout. Timeout cannot be less than %v", minCheckInterval)
+		} else if sc.Timeout < minCheckTimeout {
 			return fmt.Errorf("timeout (%v) is lower than required minimum timeout %v", sc.Timeout, minCheckInterval)
 		}
 	case ServiceCheckHTTP:
@@ -1793,7 +1837,9 @@ func (sc *ServiceCheck) validate() error {
 			return fmt.Errorf("http type must have a valid http path")
 		}
 
-		if sc.Timeout < minCheckTimeout {
+		if sc.Timeout == 0 {
+			return fmt.Errorf("missing required value timeout. Timeout cannot be less than %v", minCheckInterval)
+		} else if sc.Timeout < minCheckTimeout {
 			return fmt.Errorf("timeout (%v) is lower than required minimum timeout %v", sc.Timeout, minCheckInterval)
 		}
 	case ServiceCheckScript:
@@ -1807,8 +1853,10 @@ func (sc *ServiceCheck) validate() error {
 		return fmt.Errorf(`invalid type (%+q), must be one of "http", "tcp", or "script" type`, sc.Type)
 	}
 
-	if sc.Interval < minCheckInterval {
-		return fmt.Errorf("interval (%v) can not be lower than %v", sc.Interval, minCheckInterval)
+	if sc.Interval == 0 {
+		return fmt.Errorf("missing required value interval. Interval cannot be less than %v", minCheckInterval)
+	} else if sc.Interval < minCheckInterval {
+		return fmt.Errorf("interval (%v) cannot be lower than %v", sc.Interval, minCheckInterval)
 	}
 
 	switch sc.InitialStatus {
@@ -2150,7 +2198,7 @@ func (t *Task) Validate(ephemeralDisk *EphemeralDisk) error {
 	if strings.ContainsAny(t.Name, `/\`) {
 		// We enforce this so that when creating the directory on disk it will
 		// not have any slashes.
-		mErr.Errors = append(mErr.Errors, errors.New("Task name can not include slashes"))
+		mErr.Errors = append(mErr.Errors, errors.New("Task name cannot include slashes"))
 	}
 	if t.Driver == "" {
 		mErr.Errors = append(mErr.Errors, errors.New("Missing task driver"))
@@ -2759,7 +2807,7 @@ func (ta *TaskArtifact) Validate() error {
 	if check, ok := ta.GetterOptions["checksum"]; ok {
 		check = strings.TrimSpace(check)
 		if check == "" {
-			mErr.Errors = append(mErr.Errors, fmt.Errorf("checksum value can not be empty"))
+			mErr.Errors = append(mErr.Errors, fmt.Errorf("checksum value cannot be empty"))
 			return mErr.ErrorOrNil()
 		}
 
@@ -2955,7 +3003,7 @@ func (v *Vault) Validate() error {
 	}
 
 	if len(v.Policies) == 0 {
-		return fmt.Errorf("Policy list can not be empty")
+		return fmt.Errorf("Policy list cannot be empty")
 	}
 
 	switch v.ChangeMode {
