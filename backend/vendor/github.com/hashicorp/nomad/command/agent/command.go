@@ -201,6 +201,19 @@ func (c *Command) readConfig() *Config {
 	config.Version = c.Version
 	config.VersionPrerelease = c.VersionPrerelease
 
+	// Normalize binds, ports, addresses, and advertise
+	if err := config.normalizeAddrs(); err != nil {
+		c.Ui.Error(err.Error())
+		return nil
+	}
+
+	// Check to see if we should read the Vault token from the environment
+	if config.Vault.Token == "" {
+		if token, ok := os.LookupEnv("VAULT_TOKEN"); ok {
+			config.Vault.Token = token
+		}
+	}
+
 	if dev {
 		// Skip validation for dev mode
 		return config
@@ -213,7 +226,7 @@ func (c *Command) readConfig() *Config {
 		}
 		keyfile := filepath.Join(config.DataDir, serfKeyring)
 		if _, err := os.Stat(keyfile); err == nil {
-			c.Ui.Error("WARNING: keyring exists but -encrypt given, using keyring")
+			c.Ui.Warn("WARNING: keyring exists but -encrypt given, using keyring")
 		}
 	}
 
@@ -649,17 +662,13 @@ func (c *Command) setupTelemetry(config *Config) error {
 		cfg.CheckManager.Check.ForceMetricActivation = telConfig.CirconusCheckForceMetricActivation
 		cfg.CheckManager.Check.InstanceID = telConfig.CirconusCheckInstanceID
 		cfg.CheckManager.Check.SearchTag = telConfig.CirconusCheckSearchTag
+		cfg.CheckManager.Check.Tags = telConfig.CirconusCheckTags
+		cfg.CheckManager.Check.DisplayName = telConfig.CirconusCheckDisplayName
 		cfg.CheckManager.Broker.ID = telConfig.CirconusBrokerID
 		cfg.CheckManager.Broker.SelectTag = telConfig.CirconusBrokerSelectTag
 
 		if cfg.CheckManager.API.TokenApp == "" {
 			cfg.CheckManager.API.TokenApp = "nomad"
-		}
-
-		if cfg.CheckManager.Check.InstanceID == "" {
-			if config.NodeName != "" && config.Datacenter != "" {
-				cfg.CheckManager.Check.InstanceID = fmt.Sprintf("%s:%s", config.NodeName, config.Datacenter)
-			}
 		}
 
 		if cfg.CheckManager.Check.SearchTag == "" {
@@ -918,7 +927,8 @@ Vault Options:
 
   -vault-token=<token>
     The Vault token used to derive tokens from Vault on behalf of clients.
-    This only needs to be set on Servers.
+    This only needs to be set on Servers. Overrides the Vault token read from
+    the VAULT_TOKEN environment variable.
 
   -vault-allow-unauthenticated
     Whether to allow jobs to be sumbitted that request Vault Tokens but do not

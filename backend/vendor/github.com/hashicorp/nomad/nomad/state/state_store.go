@@ -638,6 +638,7 @@ func (s *StateStore) UpsertEvals(index uint64, evals []*structs.Evaluation) erro
 	jobs := make(map[string]string, len(evals))
 	for _, eval := range evals {
 		watcher.Add(watch.Item{Eval: eval.ID})
+		watcher.Add(watch.Item{EvalJob: eval.JobID})
 		if err := s.nestedUpsertEval(txn, index, eval); err != nil {
 			return err
 		}
@@ -734,8 +735,10 @@ func (s *StateStore) DeleteEval(index uint64, evals []string, allocs []string) e
 		if err := txn.Delete("evals", existing); err != nil {
 			return fmt.Errorf("eval delete failed: %v", err)
 		}
+		jobID := existing.(*structs.Evaluation).JobID
 		watcher.Add(watch.Item{Eval: eval})
-		jobs[existing.(*structs.Evaluation).JobID] = ""
+		watcher.Add(watch.Item{EvalJob: jobID})
+		jobs[jobID] = ""
 	}
 
 	for _, alloc := range allocs {
@@ -1659,15 +1662,15 @@ func (s *StateStore) updateSummaryWithAlloc(index uint64, alloc *structs.Allocat
 // addEphemeralDiskToTaskGroups adds missing EphemeralDisk objects to TaskGroups
 func (s *StateStore) addEphemeralDiskToTaskGroups(job *structs.Job) {
 	for _, tg := range job.TaskGroups {
-		if tg.EphemeralDisk != nil {
-			continue
-		}
 		var diskMB int
 		for _, task := range tg.Tasks {
 			if task.Resources != nil {
 				diskMB += task.Resources.DiskMB
 				task.Resources.DiskMB = 0
 			}
+		}
+		if tg.EphemeralDisk != nil {
+			continue
 		}
 		tg.EphemeralDisk = &structs.EphemeralDisk{
 			SizeMB: diskMB,
@@ -1729,6 +1732,7 @@ func (r *StateRestore) JobRestore(job *structs.Job) error {
 func (r *StateRestore) EvalRestore(eval *structs.Evaluation) error {
 	r.items.Add(watch.Item{Table: "evals"})
 	r.items.Add(watch.Item{Eval: eval.ID})
+	r.items.Add(watch.Item{EvalJob: eval.JobID})
 	if err := r.txn.Insert("evals", eval); err != nil {
 		return fmt.Errorf("eval insert failed: %v", err)
 	}
