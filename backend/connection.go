@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strconv"
 	"time"
 
 	"gopkg.in/fatih/set.v0"
@@ -148,6 +149,11 @@ func (c *Connection) Handle() {
 }
 
 func (c *Connection) runJob(action Action) {
+	if *flagReadOnly == true {
+		logger.Errorf("Unable to run jon: READONLY is set to true")
+		c.send <- &Action{Type: "ERROR", Payload: "READONLY: " + strconv.FormatBool(*flagReadOnly)}
+		return
+	}
 	jobjson := action.Payload.(string)
 	runjob := api.Job{}
 	json.Unmarshal([]byte(jobjson), &runjob)
@@ -164,6 +170,11 @@ func (c *Connection) runJob(action Action) {
 }
 
 func (c *Connection) stopJob(action Action) {
+	if *flagReadOnly == true {
+		logger.Errorf("Unable to stop jon: READONLY is set to true")
+		c.send <- &Action{Type: "ERROR", Payload: "READONLY: " + strconv.FormatBool(*flagReadOnly)}
+		return
+	}
 	jobjson := action.Payload.(string)
 	stopjob := api.Job{}
 	json.Unmarshal([]byte(jobjson), &stopjob)
@@ -180,6 +191,11 @@ func (c *Connection) stopJob(action Action) {
 }
 
 func (c *Connection) planJob(action Action) {
+	if *flagReadOnly == true {
+		logger.Errorf("Unable to plan jon: READONLY is set to true")
+		c.send <- &Action{Type: "ERROR", Payload: "READONLY: " + strconv.FormatBool(*flagReadOnly)}
+		return
+	}
 	jobjson := action.Payload.(string)
 	planjob := api.Job{}
 	json.Unmarshal([]byte(jobjson), &planjob)

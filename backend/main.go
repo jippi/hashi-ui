@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 	"syscall"
 	"time"
 
@@ -32,12 +33,14 @@ func init() {
 type Config struct {
 	Address       string
 	ListenAddress string
+	ReadOnly      bool
 }
 
 func DefaultConfig() *Config {
 	return &Config{
 		Address:       "http://127.0.0.1:4646",
 		ListenAddress: "0.0.0.0:3000",
+		ReadOnly:      true,
 	}
 }
 
@@ -52,6 +55,8 @@ var (
 		"Overrides the NOMAD_ADDR environment variable if set. "+flagDefault(defaultConfig.Address))
 	flagListenAddress = flag.String("web.listen-address", "",
 		"The address on which to expose the web interface. "+flagDefault(defaultConfig.ListenAddress))
+	flagReadOnly = flag.Bool("readonly", true,
+		"The possibility to execut or not writing optrations. "+flagDefault(strconv.FormatBool(defaultConfig.ReadOnly)))
 )
 
 func (c *Config) Parse() {
@@ -73,6 +78,9 @@ func (c *Config) Parse() {
 
 	if *flagListenAddress != "" {
 		c.ListenAddress = *flagListenAddress
+	}
+	if *flagReadOnly != true {
+		c.ReadOnly = *flagReadOnly
 	}
 }
 

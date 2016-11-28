@@ -36,6 +36,10 @@ class Job extends Component {
                     name: 'Raw',
                     path: 'raw',
                 },
+                {
+                    name: 'Manage',
+                    path: 'manage',
+                },
             ],
         };
     }
