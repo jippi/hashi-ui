@@ -59,8 +59,8 @@ const AppRouter = ({ history }) =>
         <Route path="/jobs/:jobId/evaluations" component={ JobEvals } />
         <Route path="/jobs/:jobId/tasks" component={ JobTasks } />
         <Route path="/jobs/:jobId/taskGroups" component={ JobTaskGroups } />
-        <Route path="/jobs/:jobId/raw" component={ JobRaw } />
         <Route path="/jobs/:jobId/manage" component={ JobManage } />
+        <Route path="/jobs/:jobId/raw" component={ JobRaw } />
       </Route>
 
       <Route path="/clients" component={ Clients } />

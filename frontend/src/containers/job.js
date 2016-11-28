@@ -33,12 +33,12 @@ class Job extends Component {
                     path: 'tasks',
                 },
                 {
-                    name: 'Raw',
-                    path: 'raw',
-                },
-                {
                     name: 'Manage',
                     path: 'manage',
+                },
+                {
+                    name: 'Raw',
+                    path: 'raw',
                 },
             ],
         };
