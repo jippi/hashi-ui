@@ -1,6 +1,8 @@
 package main
 
 const (
+	readOnly      = "READONLY"
+	
 	fetchedAllocs = "FETCHED_ALLOCS"
 	fetchedAlloc  = "FETCHED_ALLOC"
 	watchAlloc    = "WATCH_ALLOC"
