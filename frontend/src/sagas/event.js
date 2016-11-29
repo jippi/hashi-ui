@@ -5,6 +5,8 @@ export const FETCHED_JOBS = 'FETCHED_JOBS';
 export const FETCHED_JOB = 'FETCHED_JOB';
 export const WATCH_JOB = 'WATCH_JOB';
 export const UNWATCH_JOB = 'UNWATCH_JOB';
+export const RUN_JOB = 'RUN_JOB';
+export const EDIT_TASK = 'EDIT_TASK';
 
 export const FETCHED_MEMBERS = 'FETCHED_MEMBERS';
 export const FETCHED_MEMBER = 'FETCHED_MEMBER';
@@ -61,10 +63,12 @@ function* read(socket) {
 }
 
 function* write(socket) {
+    console.log('WRITE');
     while (true) {
         const action = yield take([
             WATCH_JOB,
             UNWATCH_JOB,
+            RUN_JOB,
             WATCH_ALLOC,
             UNWATCH_ALLOC,
             WATCH_EVAL,

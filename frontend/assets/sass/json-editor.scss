@@ -1,0 +1,147 @@
+.jsonEditor * {
+	vertical-align: top;
+}
+
+.jsonEditor > .jsonObject > .jsonChildren {
+	margin-left: 0;
+	border-left: 0;
+	padding: 0;
+}
+
+.jsonChildren {
+  margin-left: 20px;
+  display: none;
+  font-weight: normal;
+  border-left: 1px dotted #ddd;
+}
+.jsonFlex .jsonChildren {
+	margin-left: -20px;
+}
+.jsonCompound.open > .jsonChildren {
+  display: block;
+}
+
+.jsonAdd {
+	margin-left: 5px;
+}
+.jsonFlex .jsonField {
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: row;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-webkit-flex-wrap: nowrap;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	-webkit-justify-content: flex-start;
+	-ms-flex-pack: start;
+	justify-content: flex-start;
+	-webkit-align-content: stretch;
+	-ms-flex-line-pack: stretch;
+	align-content: stretch;
+}
+.jsonFieldAdder {
+  margin-left: 13px;
+}
+.jsonFieldAdder select {
+  margin-left: 5px;
+}
+.compoundToggle:before {
+  content: '▸';
+  color: #333;
+  line-height: 1em;
+  margin-right: 3px;
+}
+.open > .compoundToggle:before {
+  content: '▾';
+}
+
+.jsonName {
+  color: #1973ea;
+  font-style: italic;
+  text-align: right;
+  position: relative;
+  padding-left: 15px;
+  white-space: nowrap;
+}
+
+.jsonValue {
+  padding-left: 5px;
+  flex-grow: 1;
+}
+
+.jsonValue > input,
+.jsonValue > textarea,
+.jsonValue > select {
+	margin-bottom: 5px;
+}
+
+.jsonFlex input[type=text],
+.jsonFlex input[type=number],
+.jsonFlex input[type=password],
+.jsonFlex textarea {
+	width: 100%;
+}
+
+.jsonRemove, .jsonFixed {
+  visibility: hidden;
+  margin-right: 5px;
+  text-decoration: none;
+  width: .6em;
+  display: inline-block;
+  position: absolute;
+  left: 0;
+}
+
+.jsonName:hover > .jsonRemove {
+  visibility: visible;
+}
+pre {
+  background: #eee;
+  border: 1px solid #ddd;
+  padding: 5px;
+  float: left;
+  width: 180px;
+  margin: 0 10px 0 0;
+}
+
+.compoundToggle, .jsonString{
+  cursor: pointer;
+  color: #0b9c33;
+}
+
+.booleanField * {
+	vertical-align: middle;
+}
+
+.booleanField input {
+	margin-bottom: 0;
+}
+
+.jsonError > .jsonName,
+.jsonError .jsonErrorMsg {
+	color: #f36;
+}
+
+.jsonError .jsonErrorMsg {
+	margin: 0 0 10px 10px;
+	font-size: 0.9em;
+	vertical-align: bottom;
+	display: block;
+}
+
+.jsonError > .jsonValue > input,
+.jsonError > .jsonValue > select,
+.jsonError > .jsonValue > textarea {
+	background-color: #fff8f8;
+}
+
+.jsonNovalue {
+	color: #999;
+	font-style: italic;
+}
+
+.jsonGroup {
+	margin-bottom: 10px;
+}
