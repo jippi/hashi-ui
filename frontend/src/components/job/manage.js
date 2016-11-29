@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 import NomadLink from '../link';
 import Table from '../table';
 import { RUN_JOB } from '../../sagas/event';
@@ -9,50 +10,60 @@ class JobManage extends Component {
     constructor(props) {
         super(props);
         this.onRun = () => this.run();
+        this.onEdit = () => this.edit();
         this.onImage = (taskId, taskGroupId) => this.image(taskId, taskGroupId);
         this.onPause = taskGroupId => this.pause(taskGroupId);
         this.onCount = taskGroupId => this.count(taskGroupId);
-        this.location = this.props.location;
-        this.job = this.props.job;
+        this.state = {
+            job: _.cloneDeep(props.job),
+            edit: false,
+        };
+    }
+
+    componentWillReceiveProps(props) {
+        if (!this.state.edit) {
+            this.setState({ job: _.cloneDeep(props.job) });
+        }
+    }
+
+    edit() {
+        this.setState({
+            job: _.cloneDeep(this.props.job),
+            edit: !this.state.edit,
+        });
     }
 
     run() {
         this.props.dispatch({
             type: RUN_JOB,
-            payload: JSON.stringify(this.job),
+            payload: JSON.stringify(this.state.job),
         });
     }
 
     image(taskId, taskGroupId) {
         return (event) => {
-            if (this.job === null) {
-                this.job = this.props.job;
-            }
-            this.job.TaskGroups
+            this.state.job.TaskGroups
             .filter(taskGroup => taskGroup.ID === taskGroupId)
             .map(taskGroup => taskGroup.Tasks
                 .filter(task => task.ID === taskId))[0][0].Config.image = event.target.value;
+            this.setState(this.state);
         };
     }
 
     pause(taskGroupId) {
         return () => {
-            if (this.job === null) {
-                this.job = this.props.job;
-            }
-            this.job.TaskGroups
+            this.state.job.TaskGroups
             .filter(taskGroup => taskGroup.ID === taskGroupId)[0].Count = 0;
+            this.setState(this.state);
             this.run();
         };
     }
 
     count(taskGroupId) {
         return (event) => {
-            if (this.job === null) {
-                this.job = this.props.job;
-            }
-            this.job.TaskGroups
+            this.state.job.TaskGroups
             .filter(taskGroup => taskGroup.ID === taskGroupId)[0].Count = parseInt(event.target.value, 10);
+            this.setState(this.state);
         };
     }
 
@@ -79,33 +90,37 @@ class JobManage extends Component {
         };
         const updateStyle = {
             float: 'right',
-            'margin-right': '7px',
+            marginRight: '7px',
         };
+        const floatRight = { float: 'right' };
 
-        this.props.job.TaskGroups.forEach((taskGroup) => {
+        this.state.job.TaskGroups.map((taskGroup, gdix) => {
             let max = 10000;
-            if (this.props.job.Type === 'system') {
+            if (this.state.job.Type === 'system') {
                 max = 1;
             }
             taskGroups.push(
               <tr key={ taskGroup.ID }>
-                <td><NomadLink taskGroupId={ taskGroup.ID } jobId={ this.props.job.ID } short="true" /></td>
+                <td><NomadLink taskGroupId={ taskGroup.ID } jobId={ this.state.job.ID } short="true" /></td>
                 <td>{ taskGroup.Name }</td>
                 <td>
-                  <input
-                    type="number"
-                    min="0"
-                    max={ max }
-                    style={ inputStyle }
-                    className="form-control"
-                    defaultValue={ taskGroup.Count }
-                    onChange={ this.onCount(taskGroup.ID) }
-                  />
+                  { (this.state.edit) ?
+                    <input
+                      type="number"
+                      min="0"
+                      max={ max }
+                      style={ inputStyle }
+                      className="form-control"
+                      value={ taskGroup.Count }
+                      onChange={ this.onCount(taskGroup.ID) }
+                    />
+                    : taskGroup.Count
+                  }
                 </td>
                 <td><MetaDisplay metaBag={ taskGroup.Meta } asTooltip /></td>
                 <td>{ taskGroup.RestartPolicy.Mode }</td>
                 <td>
-                  { (taskGroup.Count !== 0) ?
+                  { (this.state.edit && this.props.job.TaskGroups[gdix].Count !== 0) ?
                     <button
                       type="button"
                       className="btn btn-danger"
@@ -119,9 +134,10 @@ class JobManage extends Component {
                 </td>
               </tr>
             );
+            return null;
         });
 
-        this.props.job.TaskGroups.forEach((taskGroup) => {
+        this.state.job.TaskGroups.forEach((taskGroup) => {
             const disabled = taskGroup.Count === 0;
             taskGroup.Tasks.forEach((task) => {
                 tasks.push(
@@ -130,24 +146,24 @@ class JobManage extends Component {
                       <NomadLink
                         taskId={ task.ID }
                         taskGroupId={ taskGroup.ID }
-                        jobId={ this.props.job.ID }
+                        jobId={ this.state.job.ID }
                         short="true"
                       />
                     </td>
                     <td>{ task.Name }</td>
                     <td>{ task.Driver }</td>
-                    { (task.Driver === 'docker') ? (
+                    { (this.state.edit && task.Driver === 'docker') ? (
                       <td>
                         Image: <input
                           type="text"
                           name="name"
                           style={ inputStyle }
                           className="form-control"
-                          defaultValue={ task.Config.image }
+                          value={ task.Config.image }
                           onChange={ this.onImage(task.ID, taskGroup.ID) }
                           disabled={ disabled }
                         /></td>)
-                        : <td></td>
+                        : <td>Image: { task.Config.image }</td>
                       }
                   </tr>
                 );
@@ -155,16 +171,41 @@ class JobManage extends Component {
         });
         return (
           <div className="nested-content">
-            <div className="table-responsive">
-              <legend>Task Groups</legend>
+            { (this.state.edit && !this.props.readonly) ?
+              <button
+                type="button"
+                className="btn btn-danger"
+                style={ updateStyle }
+                onClick={ this.onEdit }
+              >
+                Close
+              </button>
+              : null
+            }
+            { (!this.state.edit && !this.props.readonly) ?
               <button
                 type="button"
                 className="btn btn-success"
                 style={ updateStyle }
-                onClick={ this.onRun }
+                onClick={ this.onEdit }
               >
-                Update
+                Edit
               </button>
+              : null
+            }
+            <div className="table-responsive">
+              <legend>Task Groups</legend>
+              { (this.state.edit) ?
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  style={ updateStyle }
+                  onClick={ this.onRun }
+                >
+                    Update
+                </button>
+                : null
+              }
               { (taskGroups.length > 0) ?
                 <Table
                   classes="table table-hover table-striped"
@@ -176,14 +217,17 @@ class JobManage extends Component {
             </div>
             <div className="table-responsive">
               <legend>Tasks</legend>
-              <button
-                type="button"
-                className="btn btn-success"
-                style={ updateStyle }
-                onClick={ this.onRun }
-              >
-                Update
-              </button>
+              { (this.state.edit) ?
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  style={ updateStyle }
+                  onClick={ this.onRun }
+                >
+                    Update
+                </button>
+                : null
+              }
               { (tasks.length > 0) ?
                 <Table
                   classes="table table-hover table-striped"
@@ -198,18 +242,20 @@ class JobManage extends Component {
     }
 }
 
-function mapStateToProps({ job, location }) {
-    return { job, location };
+function mapStateToProps({ job, readonly }) {
+    return { job, readonly };
 }
 
 JobManage.defaultProps = {
-    job: {},
-    location: {},
+    readonly: true,
+    job: {
+        TaskGroups: [],
+    },
 };
 
 JobManage.propTypes = {
+    readonly: PropTypes.bool.isRequired,
     job: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
 };
 

@@ -1,4 +1,4 @@
-import { FETCHED_JOB, FETCHED_JOBS } from '../sagas/event';
+import { FETCHED_JOB, FETCHED_JOBS, READONLY } from '../sagas/event';
 
 export function JobInfoReducer(state = { TaskGroups: [] }, action) {
     switch (action.type) {
@@ -23,6 +23,15 @@ export function JobInfoReducer(state = { TaskGroups: [] }, action) {
 export function JobListReducer(state = [], action) {
     switch (action.type) {
     case FETCHED_JOBS:
+        return action.payload;
+    default:
+    }
+    return state;
+}
+
+export function ReadOnlyReducer(state = true, action) {
+    switch (action.type) {
+    case READONLY:
         return action.payload;
     default:
     }

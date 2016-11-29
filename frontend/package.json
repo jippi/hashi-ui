@@ -27,6 +27,7 @@
     "bootstrap": "^3.3.6",
     "chart.js": "^2.1.6",
     "json-formatter-js": "^1.1.0",
+    "lodash": "^4.17.2",
     "moment": "^2.15.1",
     "moment-duration-format": "^1.3.0",
     "node-uuid": "^1.4.7",
