@@ -92,7 +92,6 @@ class JobManage extends Component {
             float: 'right',
             marginRight: '7px',
         };
-        const floatRight = { float: 'right' };
 
         this.state.job.TaskGroups.map((taskGroup, gdix) => {
             let max = 10000;

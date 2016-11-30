@@ -2,6 +2,8 @@ import { delay, eventChannel } from 'redux-saga';
 import { fork, take, call, put } from 'redux-saga/effects';
 
 export const READONLY = 'READONLY';
+export const ERROR = 'ERROR';
+export const SUCCESS = 'SUCCESS';
 
 export const FETCHED_JOBS = 'FETCHED_JOBS';
 export const FETCHED_JOB = 'FETCHED_JOB';
