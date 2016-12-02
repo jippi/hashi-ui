@@ -42,10 +42,10 @@ webpackConfig = merge(webpackConfig, {
         ]
     },
     plugins: [
+        new webpack.DefinePlugin({'process.env.NODE_ENV': '"production"'}),
         new ExtractTextPlugin('static/[name].[contenthash].css'),
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.optimize.DedupePlugin(),
-        new webpack.DefinePlugin({'process.env.NODE_ENV': '"production"'}),
         new webpack.optimize.UglifyJsPlugin({
             compressor: {
                 screw_ie8: true,
