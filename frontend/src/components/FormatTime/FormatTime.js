@@ -3,7 +3,6 @@ import ReactTooltip from 'react-tooltip';
 // eslint-disable-next-line no-unused-vars
 import momentDurationFormat from 'moment-duration-format';
 import moment from 'moment';
-import uuid from 'node-uuid';
 import getMoment from '../../helpers/time';
 
 class FormatTime extends Component {
@@ -22,13 +21,12 @@ class FormatTime extends Component {
     const time = getMoment(this.props.time);
     const now = getMoment(this.props.now);
     const format = this.props.timeFormat;
-    const uuidValue = uuid.v1();
 
     if (this.props.display === 'relative') {
       return (
         <span>
-          <ReactTooltip id={ `tooltip-${uuidValue}` }>{ time.format(format) }</ReactTooltip>
-          <span data-tip data-for={ `tooltip-${uuidValue}` } className="dotted">
+          <ReactTooltip id={ `time-${this.props.identifier}` }>{ time.format(format) }</ReactTooltip>
+          <span data-tip data-for={ `time-${this.props.identifier}` } className="dotted">
             {this.getTimeDiff(time, now)}
           </span>
         </span>
@@ -37,8 +35,8 @@ class FormatTime extends Component {
 
     return (
       <span>
-        <ReactTooltip id={ `tooltip-${uuidValue}` }>{ this.getTimeDiff(time, now) }</ReactTooltip>
-        <span data-tip data-for={ `tooltip-${uuidValue}` } className="dotted">{ time.format(format) }</span>
+        <ReactTooltip id={ `time-${this.props.identifier}` }>{ this.getTimeDiff(time, now) }</ReactTooltip>
+        <span data-tip data-for={ `time-${this.props.identifier}` } className="dotted">{ time.format(format) }</span>
       </span>
     );
   }
@@ -59,6 +57,7 @@ FormatTime.propTypes = {
     PropTypes.string,
     PropTypes.number,
   ]),
+  identifier: PropTypes.string.isRequired,
   display: PropTypes.string.isRequired,
   timeFormat: PropTypes.string.isRequired,
   durationInterval: PropTypes.string,

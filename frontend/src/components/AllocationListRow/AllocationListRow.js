@@ -75,7 +75,7 @@ class AllocationListRow extends Component {
         </td>
         <td>{ renderDesiredStatus(allocation) }</td>
         { clientColumn(allocation, nodes, showClientColumn) }
-        <td><FormatTime time={ allocation.CreateTime } /></td>
+        <td><FormatTime identifier={ allocation.ID } time={ allocation.CreateTime } /></td>
         <td className="td-actions">
           <NomadLink
             className="btn btn-xs btn-info btn-simple"
