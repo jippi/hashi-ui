@@ -43,7 +43,7 @@ webpackConfig = merge(webpackConfig, {
                 exclude: /node_modules/,
                 loaders: [
                     'react-hot',
-                    'babel?presets[]=es2015,presets[]=es2016,presets[]=react,plugins[]=syntax-trailing-function-commas,plugins[]=transform-runtime,plugins[]=transform-class-properties,plugins[]=transform-object-rest-spread'
+                    'babel?presets[]=es2015&presets[]=es2016&presets[]=react&presets[]=react-optimize&plugins[]=transform-react-inline-elements&plugins[]=syntax-trailing-function-commas&plugins[]=transform-runtime&plugins[]=transform-class-properties&plugins[]=transform-object-rest-spread'
                 ]
             },
             {

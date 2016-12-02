@@ -2,7 +2,8 @@ module.exports = {
   presets: [
     'babel-preset-es2015',
     'babel-preset-es2016',
-    'babel-preset-react'
+    'babel-preset-react',
+    'react-optimize'
   ].map(require.resolve),
   plugins: [
     'babel-plugin-transform-runtime',
