@@ -39,100 +39,100 @@ export const CLEAR_FILE_PATH = 'CLEAR_FILE_PATH';
 export const CLEAR_RECEIVED_FILE_DATA = 'CLEAR_RECEIVED_FILE_DATA';
 
 function subscribe(socket) {
-    return eventChannel((emit) => {
+  return eventChannel((emit) => {
         // eslint-disable-next-line no-param-reassign
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            emit({
-                type: data.Type,
-                payload: data.Payload,
-            });
-        };
-        return () => {};
-    });
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      emit({
+        type: data.Type,
+        payload: data.Payload,
+      });
+    };
+    return () => {};
+  });
 }
 
 function* read(socket) {
-    const channel = yield call(subscribe, socket);
-    while (true) {
-        const action = yield take(channel);
-        yield put(action);
-    }
+  const channel = yield call(subscribe, socket);
+  while (true) {
+    const action = yield take(channel);
+    yield put(action);
+  }
 }
 
 function* write(socket) {
-    while (true) {
-        const action = yield take([
-            WATCH_JOB,
-            UNWATCH_JOB,
-            WATCH_ALLOC,
-            UNWATCH_ALLOC,
-            WATCH_EVAL,
-            UNWATCH_EVAL,
-            WATCH_NODE,
-            UNWATCH_NODE,
-            FETCH_NODE,
-            WATCH_MEMBER,
-            UNWATCH_MEMBER,
-            FETCH_MEMBER,
-            FETCH_DIR,
-            WATCH_FILE,
-            UNWATCH_FILE,
-        ]);
-        socket.send(JSON.stringify(action));
-    }
+  while (true) {
+    const action = yield take([
+      WATCH_JOB,
+      UNWATCH_JOB,
+      WATCH_ALLOC,
+      UNWATCH_ALLOC,
+      WATCH_EVAL,
+      UNWATCH_EVAL,
+      WATCH_NODE,
+      UNWATCH_NODE,
+      FETCH_NODE,
+      WATCH_MEMBER,
+      UNWATCH_MEMBER,
+      FETCH_MEMBER,
+      FETCH_DIR,
+      WATCH_FILE,
+      UNWATCH_FILE,
+    ]);
+    socket.send(JSON.stringify(action));
+  }
 }
 
 function* transport(socket) {
-    yield fork(read, socket);
-    yield fork(write, socket);
+  yield fork(read, socket);
+  yield fork(write, socket);
 }
 
 function connectTo(url) {
-    const socket = new WebSocket(url);
+  const socket = new WebSocket(url);
 
-    const resolver = (resolve, reject) => {
-        const timeout = setTimeout(() => {
-            reject('Unable to connect to the backend...');
-        }, 2000);
+  const resolver = (resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject('Unable to connect to the backend...');
+    }, 2000);
 
-        socket.onopen = () => {
-            resolve(socket);
-            clearTimeout(timeout);
-        };
+    socket.onopen = () => {
+      resolve(socket);
+      clearTimeout(timeout);
     };
+  };
 
-    return new Promise(resolver.bind(socket));
+  return new Promise(resolver.bind(socket));
 }
 
 function* events(socket) {
-    while (true) {
-        yield call(transport, socket);
-        yield delay(5000);
-    }
+  while (true) {
+    yield call(transport, socket);
+    yield delay(5000);
+  }
 }
 
 export default function eventSaga() {
-    return new Promise((resolve, reject) => {
-        const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return new Promise((resolve, reject) => {
+    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
 
         // If we build production page, assume /ws run inside the go-binary
         // and such on same host+port otherwise assume development, where we
         // re-use the hostname but use GO_PORT end with fallback to :3000.
-        let hostname;
-        if (process.env.NODE_ENV === 'production') {
-            hostname = location.host;
-        } else {
-            hostname = `${location.hostname}:${process.env.GO_PORT}` || 3000;
-        }
+    let hostname;
+    if (process.env.NODE_ENV === 'production') {
+      hostname = location.host;
+    } else {
+      hostname = `${location.hostname}:${process.env.GO_PORT}` || 3000;
+    }
 
-        const url = `${protocol}//${hostname}/ws`;
-        const p = connectTo(url);
+    const url = `${protocol}//${hostname}/ws`;
+    const p = connectTo(url);
 
-        return p.then((socket) => {
-            resolve(function* eventGenerator() { yield fork(events, socket); });
-        }).catch((err) => {
-            reject(err);
-        });
+    return p.then((socket) => {
+      resolve(function* eventGenerator() { yield fork(events, socket); });
+    }).catch((err) => {
+      reject(err);
     });
+  });
 }

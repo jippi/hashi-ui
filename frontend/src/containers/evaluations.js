@@ -15,15 +15,15 @@ const Evaluations = ({ evaluations }) =>
   </div>;
 
 function mapStateToProps({ evaluations }) {
-    return { evaluations };
+  return { evaluations };
 }
 
 Evaluations.defaultProps = {
-    evaluations: {},
+  evaluations: {},
 };
 
 Evaluations.propTypes = {
-    evaluations: PropTypes.array.isRequired,
+  evaluations: PropTypes.array.isRequired,
 };
 
 export default connect(mapStateToProps)(Evaluations);

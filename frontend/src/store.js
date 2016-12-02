@@ -4,9 +4,9 @@ import rootReducer from './reducers/root';
 import eventSaga from './sagas/event';
 
 export default function configureStore(initialState) {
-    const sagaMiddleware = createSagaMiddleware();
+  const sagaMiddleware = createSagaMiddleware();
 
-    const store = createStore(
+  const store = createStore(
         rootReducer,
         initialState,
         compose(
@@ -21,25 +21,25 @@ export default function configureStore(initialState) {
         )
     );
 
-    if (module.hot) {
+  if (module.hot) {
         // Enable Webpack hot module replacement for reducers
-        module.hot.accept('./reducers/root', () => {
+    module.hot.accept('./reducers/root', () => {
             // eslint-disable-next-line global-require
-            const nextRootReducer = require('./reducers/root').default;
+      const nextRootReducer = require('./reducers/root').default;
 
-            store.replaceReducer(nextRootReducer);
-        });
-    }
-
-    store.runSaga = sagaMiddleware.run;
-    store.close = () => store.dispatch(END);
-
-    return new Promise((resolve, reject) => {
-        eventSaga().then((gen) => {
-            sagaMiddleware.run(gen);
-            resolve(store);
-        }).catch((err) => {
-            reject(err);
-        });
+      store.replaceReducer(nextRootReducer);
     });
+  }
+
+  store.runSaga = sagaMiddleware.run;
+  store.close = () => store.dispatch(END);
+
+  return new Promise((resolve, reject) => {
+    eventSaga().then((gen) => {
+      sagaMiddleware.run(gen);
+      resolve(store);
+    }).catch((err) => {
+      reject(err);
+    });
+  });
 }

@@ -22,10 +22,10 @@ const Tabs = ({ children, tabs, tabSlug, basePath }) =>
   </div>;
 
 Tabs.propTypes = {
-    tabs: PropTypes.array.isRequired,
-    tabSlug: PropTypes.string.isRequired,
-    basePath: PropTypes.string.isRequired,
-    children: PropTypes.object.isRequired,
+  tabs: PropTypes.array.isRequired,
+  tabSlug: PropTypes.string.isRequired,
+  basePath: PropTypes.string.isRequired,
+  children: PropTypes.object.isRequired,
 };
 
 export default Tabs;

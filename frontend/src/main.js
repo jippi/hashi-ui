@@ -11,12 +11,12 @@ import '../assets/css/pe-icon-7-stroke.css';
 import '../assets/sass/nomad-ui.scss';
 
 configureStore().then((store) => {
-    ReactDOM.render(
-      <Provider store={ store }>
-        <AppRouter history={ browserHistory } />
-      </Provider>,
+  ReactDOM.render(
+    <Provider store={ store }>
+      <AppRouter history={ browserHistory } />
+    </Provider>,
     document.getElementById('app')
    );
 }).catch((err) => {
-    console.log(err);
+  console.log(err);
 });

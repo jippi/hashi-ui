@@ -8,18 +8,18 @@ import { NodeInfoReducer, NodeListReducer } from './node';
 import { DirectoryReducer, FileReducer } from './filesystem';
 
 const rootReducer = combineReducers({
-    member: MemberInfoReducer,
-    members: MemberListReducer,
-    job: JobInfoReducer,
-    jobs: JobListReducer,
-    node: NodeInfoReducer,
-    nodes: NodeListReducer,
-    allocation: AllocInfoReducer,
-    allocations: AllocListReducer,
-    evaluation: EvalInfoReducer,
-    evaluations: EvalListReducer,
-    directory: DirectoryReducer,
-    file: FileReducer,
+  member: MemberInfoReducer,
+  members: MemberListReducer,
+  job: JobInfoReducer,
+  jobs: JobListReducer,
+  node: NodeInfoReducer,
+  nodes: NodeListReducer,
+  allocation: AllocInfoReducer,
+  allocations: AllocListReducer,
+  evaluation: EvalInfoReducer,
+  evaluations: EvalListReducer,
+  directory: DirectoryReducer,
+  file: FileReducer,
 });
 
 export default rootReducer;

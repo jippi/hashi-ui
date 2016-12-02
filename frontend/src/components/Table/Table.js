@@ -15,9 +15,9 @@ const Table = ({ classes, headers, body }) =>
   </div>;
 
 Table.propTypes = {
-    classes: PropTypes.string.isRequired,
-    headers: PropTypes.array.isRequired,
-    body: PropTypes.array.isRequired,
+  classes: PropTypes.string.isRequired,
+  headers: PropTypes.array.isRequired,
+  body: PropTypes.array.isRequired,
 };
 
 export default Table;

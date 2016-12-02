@@ -9,11 +9,11 @@ const EvaluationRaw = ({ evaluation }) =>
   </div>;
 
 function mapStateToProps({ evaluation }) {
-    return { evaluation };
+  return { evaluation };
 }
 
 EvaluationRaw.propTypes = {
-    evaluation: PropTypes.object.isRequired,
+  evaluation: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(EvaluationRaw);

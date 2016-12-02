@@ -42,11 +42,11 @@ const Clients = ({ nodes }) =>
   </div>;
 
 function mapStateToProps({ nodes }) {
-    return { nodes };
+  return { nodes };
 }
 
 Clients.propTypes = {
-    nodes: PropTypes.array.isRequired,
+  nodes: PropTypes.array.isRequired,
 };
 
 export default connect(mapStateToProps)(Clients);

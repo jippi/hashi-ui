@@ -5,23 +5,23 @@ import FormatTime from '../components/FormatTime/FormatTime';
 
 class Events extends Component {
 
-    render() {
-        const taskEvents = [];
-        this.props.allocations.forEach((allocation) => {
-            if (allocation.TaskStates != null) {
-                Object.keys(allocation.TaskStates).forEach((task) => {
-                    allocation.TaskStates[task].Events.reverse().forEach((event) => {
-                        if (taskEvents.length === 10) return;
-                        const eventID = `${task}.${event.Time}`;
-                        taskEvents.push(
-                          <tr key={ eventID }>
-                            <td>
-                              <NomadLink jobId={ allocation.JobID } allocId={ allocation.ID } >
-                                { allocation.JobID }.{ task }
-                              </NomadLink>
-                            </td>
-                            <td>{ event.Type }</td>
-                            <td>{
+  render() {
+    const taskEvents = [];
+    this.props.allocations.forEach((allocation) => {
+      if (allocation.TaskStates != null) {
+        Object.keys(allocation.TaskStates).forEach((task) => {
+          allocation.TaskStates[task].Events.reverse().forEach((event) => {
+            if (taskEvents.length === 10) return;
+            const eventID = `${task}.${event.Time}`;
+            taskEvents.push(
+              <tr key={ eventID }>
+                <td>
+                  <NomadLink jobId={ allocation.JobID } allocId={ allocation.ID } >
+                    { allocation.JobID }.{ task }
+                  </NomadLink>
+                </td>
+                <td>{ event.Type }</td>
+                <td>{
                                 event.KillError ||
                                 event.DriverError ||
                                 event.DownloadError ||
@@ -29,50 +29,50 @@ class Events extends Component {
                                 event.Message ||
                                 '<none>'
                             }
-                            </td>
-                            <td><FormatTime time={ event.Time } /></td>
-                          </tr>
+                </td>
+                <td><FormatTime time={ event.Time } /></td>
+              </tr>
                         );
-                    });
-                });
-            }
+          });
         });
+      }
+    });
 
-        return (
-          <div className="row">
-            <div className="col-md-12">
-              <div className="card">
-                <div className="header">
-                  <h4 className="title">Task Events</h4>
-                </div>
-                <div className="content table-responsive table-full-width">
-                  <table className="table table-hover table-striped">
-                    <thead>
-                      <tr>
-                        <th>Task</th>
-                        <th>Type</th>
-                        <th>Message</th>
-                        <th>Time</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      { taskEvents }
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+    return (
+      <div className="row">
+        <div className="col-md-12">
+          <div className="card">
+            <div className="header">
+              <h4 className="title">Task Events</h4>
+            </div>
+            <div className="content table-responsive table-full-width">
+              <table className="table table-hover table-striped">
+                <thead>
+                  <tr>
+                    <th>Task</th>
+                    <th>Type</th>
+                    <th>Message</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  { taskEvents }
+                </tbody>
+              </table>
             </div>
           </div>
-        );
-    }
+        </div>
+      </div>
+    );
+  }
 }
 
 function mapStateToProps({ allocations }) {
-    return { allocations };
+  return { allocations };
 }
 
 Events.propTypes = {
-    allocations: PropTypes.array.isRequired,
+  allocations: PropTypes.array.isRequired,
 };
 
 export default connect(mapStateToProps)(Events);

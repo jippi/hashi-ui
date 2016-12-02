@@ -4,37 +4,37 @@ import AllocationList from '../AllocationList/AllocationList';
 
 class ClientAllocations extends PureComponent {
 
-    render() {
-        const nodeId = this.props.params.nodeId;
-        const allocs = this.props.allocations.filter(allocation => allocation.NodeID === nodeId);
+  render() {
+    const nodeId = this.props.params.nodeId;
+    const allocs = this.props.allocations.filter(allocation => allocation.NodeID === nodeId);
 
-        return (
-          <div className="tab-pane active">
-            <AllocationList
-              showClientColumn={ false }
-              allocations={ allocs }
-              location={ this.props.location }
-              containerClassName="nested-content"
-            />
-          </div>
-        );
-    }
+    return (
+      <div className="tab-pane active">
+        <AllocationList
+          showClientColumn={ false }
+          allocations={ allocs }
+          location={ this.props.location }
+          containerClassName="nested-content"
+        />
+      </div>
+    );
+  }
 }
 
 function mapStateToProps({ allocations }) {
-    return { allocations };
+  return { allocations };
 }
 
 ClientAllocations.defaultProps = {
-    allocations: [],
-    params: {},
-    location: {},
+  allocations: [],
+  params: {},
+  location: {},
 };
 
 ClientAllocations.propTypes = {
-    allocations: PropTypes.array.isRequired,
-    params: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
+  allocations: PropTypes.array.isRequired,
+  params: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(ClientAllocations);

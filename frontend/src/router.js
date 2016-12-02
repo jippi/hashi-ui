@@ -94,7 +94,7 @@ const AppRouter = ({ history }) =>
   </Router>;
 
 AppRouter.propTypes = {
-    history: PropTypes.instanceOf(browserHistory.constructor).isRequired,
+  history: PropTypes.instanceOf(browserHistory.constructor).isRequired,
 };
 
 export default AppRouter;

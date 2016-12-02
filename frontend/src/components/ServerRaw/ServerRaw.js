@@ -9,11 +9,11 @@ const ServerRaw = ({ member }) =>
   </div>;
 
 function mapStateToProps({ member }) {
-    return { member };
+  return { member };
 }
 
 ServerRaw.propTypes = {
-    member: PropTypes.object.isRequired,
+  member: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(ServerRaw);

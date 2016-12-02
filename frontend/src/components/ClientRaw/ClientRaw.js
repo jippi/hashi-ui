@@ -11,11 +11,11 @@ const ClientRaw = ({ node }) =>
   </div>;
 
 function mapStateToProps({ node }) {
-    return { node };
+  return { node };
 }
 
 ClientRaw.propTypes = {
-    node: PropTypes.object.isRequired,
+  node: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(ClientRaw);

@@ -9,11 +9,11 @@ const JobRaw = ({ job }) =>
   </div>;
 
 function mapStateToProps({ job }) {
-    return { job };
+  return { job };
 }
 
 JobRaw.propTypes = {
-    job: PropTypes.object.isRequired,
+  job: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(JobRaw);

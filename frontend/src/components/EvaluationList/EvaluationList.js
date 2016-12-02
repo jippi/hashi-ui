@@ -36,13 +36,13 @@ const EvaluationList = ({ evaluations, containerClassName }) =>
   </div>;
 
 EvaluationList.defaultProps = {
-    evaluations: [],
-    containerClassName: '',
+  evaluations: [],
+  containerClassName: '',
 };
 
 EvaluationList.propTypes = {
-    evaluations: PropTypes.array.isRequired,
-    containerClassName: PropTypes.string.isRequired,
+  evaluations: PropTypes.array.isRequired,
+  containerClassName: PropTypes.string.isRequired,
 };
 
 export default EvaluationList;

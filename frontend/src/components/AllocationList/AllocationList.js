@@ -1,316 +1,316 @@
 import React, { Component, PropTypes } from 'react';
 import { DropdownButton, Glyphicon } from 'react-bootstrap';
 import { Link } from 'react-router';
+import ReactTooltip from 'react-tooltip';
 import NomadLink from '../NomadLink/NomadLink';
 import FormatTime from '../FormatTime/FormatTime';
 import shortUUID from '../../helpers/uuid';
-import ReactTooltip from 'react-tooltip';
 
 const getAllocationNumberFromName = (allocationName) => {
-    const match = /[\d+]/.exec(allocationName);
-    return match[0];
+  const match = /[\d+]/.exec(allocationName);
+  return match[0];
 };
 
 const clientStatusIcon = {
-    complete: <span><Glyphicon glyph="stop" /></span>,
-    running: <span className="text-success"><Glyphicon glyph="play" /></span>,
-    lost: <span className="text-danger"><Glyphicon glyph="remove" /></span>,
-    failed: <span className="text-danger"><Glyphicon glyph="exclamation-sign" /></span>,
+  complete: <span><Glyphicon glyph="stop" /></span>,
+  running: <span className="text-success"><Glyphicon glyph="play" /></span>,
+  lost: <span className="text-danger"><Glyphicon glyph="remove" /></span>,
+  failed: <span className="text-danger"><Glyphicon glyph="exclamation-sign" /></span>,
 };
 
 const optionsGlyph = <Glyphicon glyph="option-vertical" />;
 
 const jobHeaderColumn = display =>
-    (display ? <th>Job</th> : null);
+  (display ? <th>Job</th> : null);
 
 const jobColumn = (allocation, display) =>
-    (display ? <td><NomadLink jobId={ allocation.JobID } short="true" /></td> : null);
+  (display ? <td><NomadLink jobId={ allocation.JobID } short="true" /></td> : null);
 
 const clientHeaderColumn = display =>
-    (display ? <th width="120">Client</th> : null);
+  (display ? <th width="120">Client</th> : null);
 
 const clientColumn = (allocation, nodes, display) =>
-    (display ? <td><NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short="true" /></td> : null);
+  (display ? <td><NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short="true" /></td> : null);
 
 const renderDesiredStatus = (allocation) => {
-    if (allocation.DesiredDescription) {
-        return (
-          <div>
-            <ReactTooltip id={ `tooltip-${allocation.ID}` }>{allocation.DesiredDescription}</ReactTooltip>
-            <span data-tip data-for={ `tooltip-${allocation.ID}` } className="dotted">
-              {allocation.DesiredStatus}
-            </span>
-          </div>
-        );
-    }
-
-    return <div>{allocation.DesiredStatus}</div>;
-}
-
-const renderClientStatus = (allocation) => {
-    let icon = null;
-
-    if (allocation.ClientStatus in clientStatusIcon) {
-        icon = clientStatusIcon[allocation.ClientStatus];
-    }
-
+  if (allocation.DesiredDescription) {
     return (
       <div>
-        <ReactTooltip id={ `client-status-${allocation.ID}` }>{allocation.ClientStatus}</ReactTooltip>
-        <span data-tip data-for={ `client-status-${allocation.ID}` }>{icon}</span>
+        <ReactTooltip id={ `tooltip-${allocation.ID}` }>{allocation.DesiredDescription}</ReactTooltip>
+        <span data-tip data-for={ `tooltip-${allocation.ID}` } className="dotted">
+          {allocation.DesiredStatus}
+        </span>
       </div>
     );
-}
+  }
+
+  return <div>{allocation.DesiredStatus}</div>;
+};
+
+const renderClientStatus = (allocation) => {
+  let icon = null;
+
+  if (allocation.ClientStatus in clientStatusIcon) {
+    icon = clientStatusIcon[allocation.ClientStatus];
+  }
+
+  return (
+    <div>
+      <ReactTooltip id={ `client-status-${allocation.ID}` }>{allocation.ClientStatus}</ReactTooltip>
+      <span data-tip data-for={ `client-status-${allocation.ID}` }>{icon}</span>
+    </div>
+  );
+};
 
 let nodeIdToNameCache = {};
 
 class AllocationList extends Component {
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.nodes !== this.props.nodes) {
-            nodeIdToNameCache = {};
-        }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.nodes !== this.props.nodes) {
+      nodeIdToNameCache = {};
+    }
+  }
+
+  findNodeNameById(nodeId) {
+    if (nodeId in nodeIdToNameCache) {
+      return nodeIdToNameCache[nodeId];
     }
 
-    findNodeNameById(nodeId) {
-        if (nodeId in nodeIdToNameCache) {
-            return nodeIdToNameCache[nodeId];
-        }
-
-        const r = Object.keys(this.props.nodes)
+    const r = Object.keys(this.props.nodes)
             .filter(node =>
                 this.props.nodes[node].ID === nodeId
             );
 
-        if (r.length !== 0) {
-            nodeIdToNameCache[nodeId] = this.props.nodes[r].Name;
-        } else {
-            nodeIdToNameCache[nodeId] = nodeId;
-        }
-
-        return nodeIdToNameCache[nodeId];
+    if (r.length !== 0) {
+      nodeIdToNameCache[nodeId] = this.props.nodes[r].Name;
+    } else {
+      nodeIdToNameCache[nodeId] = nodeId;
     }
 
-    filteredAllocations() {
-        const query = this.props.location.query || {};
-        let allocations = this.props.allocations;
+    return nodeIdToNameCache[nodeId];
+  }
 
-        if ('status' in query) {
-            allocations = allocations.filter(allocation => allocation.ClientStatus === query.status);
-        }
+  filteredAllocations() {
+    const query = this.props.location.query || {};
+    let allocations = this.props.allocations;
 
-        if ('client' in query) {
-            allocations = allocations.filter(allocation => allocation.NodeID === query.client);
-        }
-
-        if ('job' in query) {
-            allocations = allocations.filter(allocation => allocation.JobID === query.job);
-        }
-
-        return allocations;
+    if ('status' in query) {
+      allocations = allocations.filter(allocation => allocation.ClientStatus === query.status);
     }
 
-    clientStatusFilter() {
-        const location = this.props.location;
-        const query = this.props.location.query || {};
-
-        let title = 'Client Status';
-        if ('status' in query) {
-            title = <span>{title}: <code>{ query.status }</code></span>;
-        }
-
-        return (
-          <DropdownButton title={ title } key="filter-client-status" id="filter-client-status">
-            <li><Link to={ location.pathname } query={{ ...query, status: undefined }}>- Any -</Link></li>
-            <li><Link to={ location.pathname } query={{ ...query, status: 'running' }}>Running</Link></li>
-            <li><Link to={ location.pathname } query={{ ...query, status: 'complete' }}>Complete</Link></li>
-            <li><Link to={ location.pathname } query={{ ...query, status: 'pending' }}>Pending</Link></li>
-            <li><Link to={ location.pathname } query={{ ...query, status: 'lost' }}>Lost</Link></li>
-            <li><Link to={ location.pathname } query={{ ...query, status: 'failed' }}>Failed</Link></li>
-          </DropdownButton>
-        );
+    if ('client' in query) {
+      allocations = allocations.filter(allocation => allocation.NodeID === query.client);
     }
 
-    jobIdFilter() {
-        const location = this.props.location;
-        const query = this.props.location.query || {};
+    if ('job' in query) {
+      allocations = allocations.filter(allocation => allocation.JobID === query.job);
+    }
 
-        let title = 'Job';
-        if ('job' in query) {
-            title = <span>{title}: <code>{ query.job }</code></span>;
-        }
+    return allocations;
+  }
 
-        const jobs = this.props.allocations
+  clientStatusFilter() {
+    const location = this.props.location;
+    const query = this.props.location.query || {};
+
+    let title = 'Client Status';
+    if ('status' in query) {
+      title = <span>{title}: <code>{ query.status }</code></span>;
+    }
+
+    return (
+      <DropdownButton title={ title } key="filter-client-status" id="filter-client-status">
+        <li><Link to={ location.pathname } query={{ ...query, status: undefined }}>- Any -</Link></li>
+        <li><Link to={ location.pathname } query={{ ...query, status: 'running' }}>Running</Link></li>
+        <li><Link to={ location.pathname } query={{ ...query, status: 'complete' }}>Complete</Link></li>
+        <li><Link to={ location.pathname } query={{ ...query, status: 'pending' }}>Pending</Link></li>
+        <li><Link to={ location.pathname } query={{ ...query, status: 'lost' }}>Lost</Link></li>
+        <li><Link to={ location.pathname } query={{ ...query, status: 'failed' }}>Failed</Link></li>
+      </DropdownButton>
+    );
+  }
+
+  jobIdFilter() {
+    const location = this.props.location;
+    const query = this.props.location.query || {};
+
+    let title = 'Job';
+    if ('job' in query) {
+      title = <span>{title}: <code>{ query.job }</code></span>;
+    }
+
+    const jobs = this.props.allocations
           .map((allocation) => {
-              return allocation.JobID;
+            return allocation.JobID;
           })
           .filter((v, i, a) => {
-              return a.indexOf(v) === i;
+            return a.indexOf(v) === i;
           })
           .map((job) => {
-              return (
-                <li key={ job }>
-                  <Link to={ location.pathname } query={{ ...query, job }}>{ job }</Link>
-                </li>
-              );
+            return (
+              <li key={ job }>
+                <Link to={ location.pathname } query={{ ...query, job }}>{ job }</Link>
+              </li>
+            );
           });
 
-        jobs.unshift(
-          <li key="any-job"><Link to={ location.pathname } query={{ ...query, job: undefined }}>- Any -</Link></li>
+    jobs.unshift(
+      <li key="any-job"><Link to={ location.pathname } query={{ ...query, job: undefined }}>- Any -</Link></li>
         );
 
-        return (
-          <DropdownButton title={ title } key="filter-job" id="filter-job">
-            { jobs }
-          </DropdownButton>
-        );
+    return (
+      <DropdownButton title={ title } key="filter-job" id="filter-job">
+        { jobs }
+      </DropdownButton>
+    );
+  }
+
+  clientFilter() {
+    const location = this.props.location;
+    const query = this.props.location.query || {};
+
+    let title = 'Client';
+    if ('client' in query) {
+      title = <span>{title}: <code>{ this.findNodeNameById(query.client) }</code></span>;
     }
 
-    clientFilter() {
-        const location = this.props.location;
-        const query = this.props.location.query || {};
-
-        let title = 'Client';
-        if ('client' in query) {
-            title = <span>{title}: <code>{ this.findNodeNameById(query.client) }</code></span>;
-        }
-
-        const clients = this.props.allocations
+    const clients = this.props.allocations
           .map((allocation) => {
-              return allocation.NodeID;
+            return allocation.NodeID;
           })
           .filter((v, i, a) => {
-              return a.indexOf(v) === i;
+            return a.indexOf(v) === i;
           })
           .map((client) => {
-              return (
-                <li key={ client }>
-                  <Link to={ location.pathname } query={{ ...query, client }}>{ this.findNodeNameById(client) }</Link>
-                </li>
-              );
+            return (
+              <li key={ client }>
+                <Link to={ location.pathname } query={{ ...query, client }}>{ this.findNodeNameById(client) }</Link>
+              </li>
+            );
           });
 
-        clients.unshift(
-          <li key="any-client">
-            <Link to={ location.pathname } query={{ ...query, client: undefined }}>- Any -</Link>
-          </li>
+    clients.unshift(
+      <li key="any-client">
+        <Link to={ location.pathname } query={{ ...query, client: undefined }}>- Any -</Link>
+      </li>
         );
 
-        return (
-          <DropdownButton title={ title } key="filter-client" id="filter-client">
-            { clients }
-          </DropdownButton>
-        );
-    }
+    return (
+      <DropdownButton title={ title } key="filter-client" id="filter-client">
+        { clients }
+      </DropdownButton>
+    );
+  }
 
-    render() {
-        const showJobColumn = this.props.showJobColumn;
-        const showClientColumn = this.props.showClientColumn;
-        const allocations = this.props.allocations;
-        const nodes = this.props.nodes;
-        const className = this.props.containerClassName;
+  render() {
+    const showJobColumn = this.props.showJobColumn;
+    const showClientColumn = this.props.showClientColumn;
+    const allocations = this.props.allocations;
+    const nodes = this.props.nodes;
+    const className = this.props.containerClassName;
 
-        return (
-          <div className={ className }>
-            <div className="inline-pad">
-              { this.clientFilter() }
+    return (
+      <div className={ className }>
+        <div className="inline-pad">
+          { this.clientFilter() }
               &nbsp;
-              { this.clientStatusFilter() }
+          { this.clientStatusFilter() }
               &nbsp;
-              { this.jobIdFilter() }
-            </div>
-            <div className="table-responsive table-full-width">
-              <table className="table table-hover table-striped">
-                <thead>
-                  <tr>
-                    <th width="40"></th>
-                    <th width="100">ID</th>
-                    { jobHeaderColumn(showJobColumn) }
-                    <th>Task Group</th>
-                    <th width="100">Status</th>
-                    { clientHeaderColumn(showClientColumn) }
-                    <th width="120">Age</th>
-                    <th width="50">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.filteredAllocations().map((allocation, index) => {
-                      return (
-                        <tr key={ allocation.ID }>
-                          <td>{ renderClientStatus(allocation) }</td>
-                          <td><NomadLink allocId={ allocation.ID } short="true" /></td>
-                          { jobColumn(allocation, showJobColumn, nodes) }
-                          <td>
-                            <NomadLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId }>
-                              { allocation.TaskGroup } (#{ getAllocationNumberFromName(allocation.Name) })
+          { this.jobIdFilter() }
+        </div>
+        <div className="table-responsive table-full-width">
+          <table className="table table-hover table-striped">
+            <thead>
+              <tr>
+                <th width="40"></th>
+                <th width="100">ID</th>
+                { jobHeaderColumn(showJobColumn) }
+                <th>Task Group</th>
+                <th width="100">Status</th>
+                { clientHeaderColumn(showClientColumn) }
+                <th width="120">Age</th>
+                <th width="50">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.filteredAllocations().map((allocation, index) => {
+                return (
+                  <tr key={ allocation.ID }>
+                    <td>{ renderClientStatus(allocation) }</td>
+                    <td><NomadLink allocId={ allocation.ID } short="true" /></td>
+                    { jobColumn(allocation, showJobColumn, nodes) }
+                    <td>
+                      <NomadLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId }>
+                        { allocation.TaskGroup } (#{ getAllocationNumberFromName(allocation.Name) })
                             </NomadLink>
-                          </td>
-                          <td>{ renderDesiredStatus(allocation) }</td>
-                          { clientColumn(allocation, nodes, showClientColumn) }
-                          <td><FormatTime time={ allocation.CreateTime } /></td>
-                          <td className="td-actions">
-                            <NomadLink
-                              className="btn btn-xs btn-info btn-simple"
-                              allocId={ allocation.ID }
-                              linkAppend="/files?path=/alloc/logs/"
-                            >
-                              <Glyphicon glyph="align-left" />
-                            </NomadLink>
+                    </td>
+                    <td>{ renderDesiredStatus(allocation) }</td>
+                    { clientColumn(allocation, nodes, showClientColumn) }
+                    <td><FormatTime time={ allocation.CreateTime } /></td>
+                    <td className="td-actions">
+                      <NomadLink
+                        className="btn btn-xs btn-info btn-simple"
+                        allocId={ allocation.ID }
+                        linkAppend="/files?path=/alloc/logs/"
+                      >
+                        <Glyphicon glyph="align-left" />
+                      </NomadLink>
 
-                            <DropdownButton
-                              noCaret
-                              pullRight
-                              dropup={ index > allocations.length - 4 }
-                              className="btn btn-xs btn-simple pull-right"
-                              title={ optionsGlyph }
-                              key={ allocation.Name }
-                              id={ `actions-${allocation.Name}` }
-                            >
-                              <li>
-                                <NomadLink role="menuitem" evalId={ allocation.EvalID }>
+                      <DropdownButton
+                        noCaret
+                        pullRight
+                        dropup={ index > allocations.length - 4 }
+                        className="btn btn-xs btn-simple pull-right"
+                        title={ optionsGlyph }
+                        key={ allocation.Name }
+                        id={ `actions-${allocation.Name}` }
+                      >
+                        <li>
+                          <NomadLink role="menuitem" evalId={ allocation.EvalID }>
                                   Evaluation <code>{ shortUUID(allocation.EvalID) }</code>
-                                </NomadLink>
-                              </li>
-                              <li>
-                                <NomadLink role="menuitem" allocId={ allocation.ID } linkAppend="/files">
+                          </NomadLink>
+                        </li>
+                        <li>
+                          <NomadLink role="menuitem" allocId={ allocation.ID } linkAppend="/files">
                                   Files
                                 </NomadLink>
-                              </li>
-                              <li>
-                                <NomadLink role="menuitem" allocId={ allocation.ID }>Task States</NomadLink>
-                              </li>
-                            </DropdownButton>
-                          </td>
-                        </tr>
-                      );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>);
-    }
+                        </li>
+                        <li>
+                          <NomadLink role="menuitem" allocId={ allocation.ID }>Task States</NomadLink>
+                        </li>
+                      </DropdownButton>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>);
+  }
 }
 
 AllocationList.defaultProps = {
-    allocations: [],
-    nodes: [],
-    location: {},
+  allocations: [],
+  nodes: [],
+  location: {},
 
-    showJobColumn: true,
-    showClientColumn: true,
+  showJobColumn: true,
+  showClientColumn: true,
 
-    containerClassName: '',
+  containerClassName: '',
 };
 
 AllocationList.propTypes = {
-    allocations: PropTypes.array.isRequired,
-    nodes: PropTypes.array.isRequired,
-    location: PropTypes.object.isRequired,
+  allocations: PropTypes.array.isRequired,
+  nodes: PropTypes.array.isRequired,
+  location: PropTypes.object.isRequired,
 
-    showJobColumn: PropTypes.bool.isRequired,
-    showClientColumn: PropTypes.bool.isRequired,
+  showJobColumn: PropTypes.bool.isRequired,
+  showClientColumn: PropTypes.bool.isRequired,
 
-    containerClassName: PropTypes.string.isRequired,
+  containerClassName: PropTypes.string.isRequired,
 };
 
 export default AllocationList;

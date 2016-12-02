@@ -3,25 +3,25 @@ import { connect } from 'react-redux';
 import MetaPayload from '../MetaPayload/MetaPayload';
 
 const nodeProps = [
-    'ID',
-    'Name',
-    'Status',
-    'Datacenter',
-    'Drain',
-    'HTTPAddr',
-    'NodeClass',
+  'ID',
+  'Name',
+  'Status',
+  'Datacenter',
+  'Drain',
+  'HTTPAddr',
+  'NodeClass',
 ];
 
 const withPrefix = function withPrefix(obj, prefix) {
-    const result = {};
+  const result = {};
 
-    Object.keys(obj || {}).forEach((key) => {
-        if (key.startsWith(prefix)) {
-            result[key.replace(prefix, '')] = obj[key];
-        }
-    });
+  Object.keys(obj || {}).forEach((key) => {
+    if (key.startsWith(prefix)) {
+      result[key.replace(prefix, '')] = obj[key];
+    }
+  });
 
-    return result;
+  return result;
 };
 
 const ClientInfo = ({ node }) =>
@@ -68,11 +68,11 @@ const ClientInfo = ({ node }) =>
   </div>;
 
 function mapStateToProps({ node }) {
-    return { node };
+  return { node };
 }
 
 ClientInfo.propTypes = {
-    node: PropTypes.object.isRequired,
+  node: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(ClientInfo);

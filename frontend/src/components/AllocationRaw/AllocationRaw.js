@@ -9,11 +9,11 @@ const AllocationRaw = ({ allocation }) =>
   </div>;
 
 function mapStateToProps({ allocation }) {
-    return { allocation };
+  return { allocation };
 }
 
 AllocationRaw.propTypes = {
-    allocation: PropTypes.object.isRequired,
+  allocation: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(AllocationRaw);

@@ -2,12 +2,12 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 const evaluationProps = [
-    'ID',
-    'Status',
-    'Priority',
-    'Type',
-    'JobID',
-    'TriggeredBy',
+  'ID',
+  'Status',
+  'Priority',
+  'Type',
+  'JobID',
+  'TriggeredBy',
 ];
 
 const EvaluationInfo = ({ evaluation }) =>
@@ -28,11 +28,11 @@ const EvaluationInfo = ({ evaluation }) =>
   </div>;
 
 function mapStateToProps({ evaluation }) {
-    return { evaluation };
+  return { evaluation };
 }
 
 EvaluationInfo.propTypes = {
-    evaluation: PropTypes.object.isRequired,
+  evaluation: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps)(EvaluationInfo);
