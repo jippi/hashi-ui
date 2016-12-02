@@ -6,6 +6,7 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 var webpackConfig = require("./webpack-base.config.js");
+
 webpackConfig = merge(webpackConfig, {
     output: {
         filename: 'static/[name].[chunkhash].js',
