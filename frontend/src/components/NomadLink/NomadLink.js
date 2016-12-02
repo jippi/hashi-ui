@@ -4,6 +4,11 @@ import shortUUID from '../../helpers/uuid';
 
 let nodeIdToNameCache = {};
 
+const NomadLinkException = (message) => {
+  this.message = message;
+  this.name = 'NomadLinkException';
+};
+
 export default class NomadLink extends Component {
 
   componentWillReceiveProps(nextProps) {
@@ -37,25 +42,28 @@ export default class NomadLink extends Component {
 
     let children = this.props.children;
     const linkProps = Object.assign({}, this.props);
-    Object.keys(linkProps).filter(key => key.endsWith('Id')).forEach((key) => {
-      delete linkProps[key];
-    });
+    Object.keys(linkProps)
+      .filter(key => key.endsWith('Id'))
+      .forEach((key) => {
+        delete linkProps[key];
+      });
+
     delete linkProps.short;
     delete linkProps.nodeList;
     delete linkProps.linkAppend;
 
-        // member
+    // member
     if (this.props.memberId !== undefined) {
       const memberId = this.props.memberId;
+
       if (children === undefined) {
         children = short ? shortUUID(memberId) : memberId;
       }
-      return (
-        <Link { ...linkProps } to={ `/servers/${memberId}` }>{ children }</Link>
-      );
+
+      return (<Link { ...linkProps } to={ `/servers/${memberId}` }>{ children }</Link>);
     }
 
-        // node
+    // node
     if (this.props.nodeId !== undefined) {
       const nodeId = this.props.nodeId;
       if (children === undefined) {
@@ -68,35 +76,31 @@ export default class NomadLink extends Component {
         }
       }
 
-      return (
-        <Link { ...linkProps } to={ `/clients/${nodeId}${linkAppend}` }>{ children }</Link>
-      );
+      return (<Link { ...linkProps } to={ `/clients/${nodeId}${linkAppend}` }>{ children }</Link>);
     }
 
-        // eval
+    // eval
     if (this.props.evalId !== undefined) {
       const evalId = this.props.evalId;
+
       if (children === undefined) {
         children = short ? shortUUID(evalId) : evalId;
       }
-      return (
-        <Link { ...linkProps } to={ `/evaluations/${evalId}${linkAppend}` }>{ children }</Link>
-      );
+
+      return (<Link { ...linkProps } to={ `/evaluations/${evalId}${linkAppend}` }>{ children }</Link>);
     }
 
-        // alloc
+    // alloc
     if (this.props.allocId !== undefined) {
       const allocId = this.props.allocId;
       if (children === undefined) {
         children = short ? shortUUID(allocId) : allocId;
       }
 
-      return (
-        <Link { ...linkProps } to={ `/allocations/${allocId}${linkAppend}` }>{ children }</Link>
-      );
+      return (<Link { ...linkProps } to={ `/allocations/${allocId}${linkAppend}` }>{ children }</Link>);
     }
 
-        // tasks
+    // tasks
     if (this.props.taskId !== undefined) {
       if (this.props.jobId !== undefined && this.props.taskGroupId !== undefined) {
         const jobId = this.props.jobId;
@@ -113,10 +117,11 @@ export default class NomadLink extends Component {
           </Link>
         );
       }
-      console.error('NomadLink: You must also provide taskGroupId and jobId for task links!');
+
+      throw new NomadLinkException('NomadLink: You must also provide taskGroupId and jobId for task links!');
     }
 
-        // taskGroup (must be after task)
+    // taskGroup (must be after task)
     if (this.props.taskGroupId !== undefined) {
       if (this.props.jobId !== undefined) {
         const jobId = this.props.jobId;
@@ -133,7 +138,8 @@ export default class NomadLink extends Component {
           </Link>
         );
       }
-      console.error('NomadLink: You must also provide jobId for taskGroup links!');
+
+      throw new NomadLinkException('NomadLink: You must also provide jobId for taskGroup links!');
     }
 
     // job (must be after task & taskGroup
@@ -144,13 +150,11 @@ export default class NomadLink extends Component {
       if (children === undefined) {
         children = short ? shortUUID(jobId) : jobId;
       }
-      return (
-        <Link { ...linkProps } to={ `/jobs/${jobIdUrl}${linkAppend}` }>{ children }</Link>
-      );
+
+      return (<Link { ...linkProps } to={ `/jobs/${jobIdUrl}${linkAppend}` }>{ children }</Link>);
     }
 
-        // nothing by default
-    return null;
+    throw new NomadLinkException('NomadLink: I did not understand the props you send, unable to generate a link');
   }
 }
 

@@ -24,7 +24,7 @@ const jobHeaderColumn = display =>
   (display ? <th>Job</th> : null);
 
 const jobColumn = (allocation, display) =>
-  (display ? <td><NomadLink jobId={ allocation.JobID } short="true" /></td> : null);
+  (display ? <td><NomadLink jobId={ allocation.JobID } /></td> : null);
 
 const clientHeaderColumn = display =>
   (display ? <th width="120">Client</th> : null);
@@ -157,7 +157,7 @@ class AllocationList extends Component {
 
     jobs.unshift(
       <li key="any-job"><Link to={ location.pathname } query={{ ...query, job: undefined }}>- Any -</Link></li>
-        );
+    );
 
     return (
       <DropdownButton title={ title } key="filter-job" id="filter-job">
@@ -171,6 +171,7 @@ class AllocationList extends Component {
     const query = this.props.location.query || {};
 
     let title = 'Client';
+
     if ('client' in query) {
       title = <span>{title}: <code>{ this.findNodeNameById(query.client) }</code></span>;
     }
@@ -194,7 +195,7 @@ class AllocationList extends Component {
       <li key="any-client">
         <Link to={ location.pathname } query={{ ...query, client: undefined }}>- Any -</Link>
       </li>
-        );
+    );
 
     return (
       <DropdownButton title={ title } key="filter-client" id="filter-client">
@@ -243,7 +244,7 @@ class AllocationList extends Component {
                     <td>
                       <NomadLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId }>
                         { allocation.TaskGroup } (#{ getAllocationNumberFromName(allocation.Name) })
-                            </NomadLink>
+                      </NomadLink>
                     </td>
                     <td>{ renderDesiredStatus(allocation) }</td>
                     { clientColumn(allocation, nodes, showClientColumn) }
@@ -268,13 +269,13 @@ class AllocationList extends Component {
                       >
                         <li>
                           <NomadLink role="menuitem" evalId={ allocation.EvalID }>
-                                  Evaluation <code>{ shortUUID(allocation.EvalID) }</code>
+                            Evaluation <code>{ shortUUID(allocation.EvalID) }</code>
                           </NomadLink>
                         </li>
                         <li>
                           <NomadLink role="menuitem" allocId={ allocation.ID } linkAppend="/files">
-                                  Files
-                                </NomadLink>
+                            Files
+                          </NomadLink>
                         </li>
                         <li>
                           <NomadLink role="menuitem" allocId={ allocation.ID }>Task States</NomadLink>
