@@ -1,66 +1,13 @@
 import React, { Component, PropTypes } from 'react';
-import { DropdownButton, Glyphicon } from 'react-bootstrap';
+import { DropdownButton } from 'react-bootstrap';
 import { Link } from 'react-router';
-import ReactTooltip from 'react-tooltip';
-import NomadLink from '../NomadLink/NomadLink';
-import FormatTime from '../FormatTime/FormatTime';
-import shortUUID from '../../helpers/uuid';
-
-const getAllocationNumberFromName = (allocationName) => {
-  const match = /[\d+]/.exec(allocationName);
-  return match[0];
-};
-
-const clientStatusIcon = {
-  complete: <span><Glyphicon glyph="stop" /></span>,
-  running: <span className="text-success"><Glyphicon glyph="play" /></span>,
-  lost: <span className="text-danger"><Glyphicon glyph="remove" /></span>,
-  failed: <span className="text-danger"><Glyphicon glyph="exclamation-sign" /></span>,
-};
-
-const optionsGlyph = <Glyphicon glyph="option-vertical" />;
+import AllocationListRow from '../AllocationListRow/AllocationListRow';
 
 const jobHeaderColumn = display =>
   (display ? <th>Job</th> : null);
 
-const jobColumn = (allocation, display) =>
-  (display ? <td><NomadLink jobId={ allocation.JobID } /></td> : null);
-
 const clientHeaderColumn = display =>
   (display ? <th width="120">Client</th> : null);
-
-const clientColumn = (allocation, nodes, display) =>
-  (display ? <td><NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short="true" /></td> : null);
-
-const renderDesiredStatus = (allocation) => {
-  if (allocation.DesiredDescription) {
-    return (
-      <div>
-        <ReactTooltip id={ `tooltip-${allocation.ID}` }>{allocation.DesiredDescription}</ReactTooltip>
-        <span data-tip data-for={ `tooltip-${allocation.ID}` } className="dotted">
-          {allocation.DesiredStatus}
-        </span>
-      </div>
-    );
-  }
-
-  return <div>{allocation.DesiredStatus}</div>;
-};
-
-const renderClientStatus = (allocation) => {
-  let icon = null;
-
-  if (allocation.ClientStatus in clientStatusIcon) {
-    icon = clientStatusIcon[allocation.ClientStatus];
-  }
-
-  return (
-    <div>
-      <ReactTooltip id={ `client-status-${allocation.ID}` }>{allocation.ClientStatus}</ReactTooltip>
-      <span data-tip data-for={ `client-status-${allocation.ID}` }>{icon}</span>
-    </div>
-  );
-};
 
 let nodeIdToNameCache = {};
 
@@ -205,10 +152,9 @@ class AllocationList extends Component {
   }
 
   render() {
+    const props = this.props;
     const showJobColumn = this.props.showJobColumn;
     const showClientColumn = this.props.showClientColumn;
-    const allocations = this.props.allocations;
-    const nodes = this.props.nodes;
     const className = this.props.containerClassName;
 
     return (
@@ -235,55 +181,13 @@ class AllocationList extends Component {
               </tr>
             </thead>
             <tbody>
-              {this.filteredAllocations().map((allocation, index) => {
+              {this.filteredAllocations().map((allocation) => {
                 return (
-                  <tr key={ allocation.ID }>
-                    <td>{ renderClientStatus(allocation) }</td>
-                    <td><NomadLink allocId={ allocation.ID } short="true" /></td>
-                    { jobColumn(allocation, showJobColumn, nodes) }
-                    <td>
-                      <NomadLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId }>
-                        { allocation.TaskGroup } (#{ getAllocationNumberFromName(allocation.Name) })
-                      </NomadLink>
-                    </td>
-                    <td>{ renderDesiredStatus(allocation) }</td>
-                    { clientColumn(allocation, nodes, showClientColumn) }
-                    <td><FormatTime time={ allocation.CreateTime } /></td>
-                    <td className="td-actions">
-                      <NomadLink
-                        className="btn btn-xs btn-info btn-simple"
-                        allocId={ allocation.ID }
-                        linkAppend="/files?path=/alloc/logs/"
-                      >
-                        <Glyphicon glyph="align-left" />
-                      </NomadLink>
-
-                      <DropdownButton
-                        noCaret
-                        pullRight
-                        dropup={ index > allocations.length - 4 }
-                        className="btn btn-xs btn-simple pull-right"
-                        title={ optionsGlyph }
-                        key={ allocation.Name }
-                        id={ `actions-${allocation.Name}` }
-                      >
-                        <li>
-                          <NomadLink role="menuitem" evalId={ allocation.EvalID }>
-                            Evaluation <code>{ shortUUID(allocation.EvalID) }</code>
-                          </NomadLink>
-                        </li>
-                        <li>
-                          <NomadLink role="menuitem" allocId={ allocation.ID } linkAppend="/files">
-                            Files
-                          </NomadLink>
-                        </li>
-                        <li>
-                          <NomadLink role="menuitem" allocId={ allocation.ID }>Task States</NomadLink>
-                        </li>
-                      </DropdownButton>
-                    </td>
-                  </tr>
-                );
+                  <AllocationListRow
+                    { ...props }
+                    key={ allocation.ID }
+                    allocation={ allocation }
+                  />);
               })}
             </tbody>
           </table>
