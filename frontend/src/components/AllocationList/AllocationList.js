@@ -182,12 +182,7 @@ class AllocationList extends Component {
             </thead>
             <tbody>
               {this.filteredAllocations().map((allocation) => {
-                return (
-                  <AllocationListRow
-                    { ...props }
-                    key={ allocation.ID }
-                    allocation={ allocation }
-                  />);
+                return <AllocationListRow { ...props } key={ allocation.ID } allocation={ allocation } />;
               })}
             </tbody>
           </table>
