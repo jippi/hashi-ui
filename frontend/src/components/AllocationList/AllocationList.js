@@ -268,7 +268,7 @@ class AllocationList extends Component {
                             >
                               <li>
                                 <NomadLink role="menuitem" evalId={ allocation.EvalID }>
-                                  Allocation <code>{ shortUUID(allocation.EvalID) }</code>
+                                  Evaluation <code>{ shortUUID(allocation.EvalID) }</code>
                                 </NomadLink>
                               </li>
                               <li>
