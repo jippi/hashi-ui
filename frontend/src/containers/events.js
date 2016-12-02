@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import NomadLink from '../components/link';
-import FormatTime from '../components/format/time';
+import NomadLink from '../components/NomadLink/NomadLink';
+import FormatTime from '../components/FormatTime/FormatTime';
 
 class Events extends Component {
 

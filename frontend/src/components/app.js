@@ -1,6 +1,6 @@
 import React, { PureComponent, PropTypes } from 'react';
-import Sidebar from './sidebar';
-import Topbar from './topbar';
+import Sidebar from './Sidebar/Sidebar';
+import Topbar from './Topbar/Topbar';
 
 class App extends PureComponent {
 

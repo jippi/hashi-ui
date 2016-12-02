@@ -1,8 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-
-import Tabs from '../components/tabs';
-
+import Tabs from '../components/Tabs/Tabs';
 import { WATCH_NODE, UNWATCH_NODE } from '../sagas/event';
 
 class Client extends Component {

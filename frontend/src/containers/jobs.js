@@ -2,14 +2,57 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { DropdownButton } from 'react-bootstrap';
-import { getJobStatisticsHeader, getJobStatisticsRow } from '../helpers/statistics';
-import NomadLink from '../components/link';
+import NomadLink from '../components/NomadLink/NomadLink';
 
 const jobStatusColors = {
     running: '',
     pending: 'warning',
     dead: 'danger',
 };
+
+const summaryLabels = ['Starting', 'Running', 'Queued', 'Complete', 'Failed', 'Lost'];
+
+const getJobStatisticsHeader = () => {
+    const output = [];
+
+    summaryLabels.forEach((key) => {
+        output.push(<th width="75" key={ `statistics-header-for-${key}` }>{ key }</th>);
+    });
+
+    return output;
+}
+
+const getJobStatisticsRow = (job) => {
+    const counter = {
+        Queued: 0,
+        Complete: 0,
+        Failed: 0,
+        Running: 0,
+        Starting: 0,
+        Lost: 0,
+    };
+
+    if (job.JobSummary !== null) {
+        const summary = job.JobSummary.Summary;
+        Object.keys(summary).forEach((taskGroupID) => {
+            counter.Queued += summary[taskGroupID].Queued;
+            counter.Complete += summary[taskGroupID].Complete;
+            counter.Failed += summary[taskGroupID].Failed;
+            counter.Running += summary[taskGroupID].Running;
+            counter.Starting += summary[taskGroupID].Starting;
+            counter.Lost += summary[taskGroupID].Lost;
+        });
+    } else {
+        Object.keys(counter).forEach(key => (counter[key] = 'N/A'));
+    }
+
+    const output = [];
+    summaryLabels.forEach((key) => {
+        output.push(<td key={ `${job.ID}-${key}` }>{counter[key]}</td>);
+    });
+
+    return output;
+}
 
 class Jobs extends Component {
 

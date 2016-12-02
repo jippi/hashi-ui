@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import Progressbar from '../components/charts/progressbar';
+import Progressbar from '../components/Progressbar/Progressbar';
 
 const Statistics = ({ jobs }) => {
     const clientStatus = {

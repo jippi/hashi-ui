@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import NomadLink from '../components/link';
-import FormatBoolean from '../components/format/boolean';
+import NomadLink from '../components/NomadLink/NomadLink';
+import FormatBoolean from '../components/FormatBoolean/FormatBoolean';
 
 const Servers = ({ members }) => {
     return (

@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import NomadLink from '../components/link';
-import FormatBoolean from '../components/format/boolean';
-import NodeStatus from '../components/node/status';
+import NomadLink from '../components/NomadLink/NomadLink';
+import FormatBoolean from '../components/FormatBoolean/FormatBoolean';
+import NodeStatus from '../components/NodeStatus/NodeStatus';
 
 const Clients = ({ nodes }) =>
   <div className="row">

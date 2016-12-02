@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import Progressbar from '../components/charts/progressbar';
+import Progressbar from '../components/Progressbar/Progressbar';
 import Events from './events';
 import Statistics from './statistics';
 

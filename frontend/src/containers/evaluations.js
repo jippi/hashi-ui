@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import EvaluationList from '../components/evaluation/list';
+import EvaluationList from '../components/EvaluationList/EvaluationList';
 
 const Evaluations = ({ evaluations }) =>
   <div className="row">

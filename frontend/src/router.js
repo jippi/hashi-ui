@@ -6,36 +6,36 @@ import Cluster from './containers/cluster';
 
 import Jobs from './containers/jobs';
 import Job from './containers/job';
-import JobInfo from './components/job/info';
-import JobAllocs from './components/job/allocs';
-import JobEvals from './components/job/evals';
-import JobTasks from './components/job/tasks';
-import JobTaskGroups from './components/job/taskGroups';
-import JobRaw from './components/job/raw';
+import JobInfo from './components/JobInfo/JobInfo';
+import JobAllocs from './components/JobAllocations/JobAllocations';
+import JobEvals from './components/JobEvaluations/JobEvaluations';
+import JobTasks from './components/JobTasks/JobTasks';
+import JobTaskGroups from './components/JobTaskGroups/JobTaskGroups';
+import JobRaw from './components/JobRaw/JobRaw';
 
 import Allocations from './containers/allocations';
 import Allocation from './containers/allocation';
-import AllocInfo from './components/allocation/info';
-import AllocFiles from './components/allocation/files';
-import AllocRaw from './components/allocation/raw';
+import AllocInfo from './components/AllocationInfo/AllocationInfo';
+import AllocFiles from './components/AllocationFiles/AllocationFiles';
+import AllocRaw from './components/AllocationRaw/AllocationRaw';
 
 import Evaluations from './containers/evaluations';
 import Evaluation from './containers/evaluation';
-import EvalInfo from './components/evaluation/info';
-import EvalAlloc from './components/evaluation/allocs';
-import EvalRaw from './components/evaluation/raw';
+import EvalInfo from './components/EvaluationInfo/EvaluationInfo';
+import EvalAllocations from './components/EvaluationAllocations/EvaluationAllocations';
+import EvalRaw from './components/EvaluationRaw/EvaluationRaw';
 
 import Clients from './containers/clients';
 import Client from './containers/client';
-import ClientInfo from './components/client/info';
-import ClientAllocations from './components/client/allocations';
-import ClientEvaluations from './components/client/evaluations';
-import ClientRaw from './components/client/raw';
+import ClientInfo from './components/ClientInfo/ClientInfo';
+import ClientAllocations from './components/ClientAllocations/ClientAllocations';
+import ClientEvaluations from './components/ClientEvaluations/ClientEvaluations';
+import ClientRaw from './components/ClientRaw/ClientRaw';
 
 import Servers from './containers/servers';
 import Server from './containers/server';
-import ServerInfo from './components/server/info';
-import ServerRaw from './components/server/raw';
+import ServerInfo from './components/ServerInfo/ServerInfo';
+import ServerRaw from './components/ServerRaw/ServerRaw';
 
 const AppRouter = ({ history }) =>
   <Router history={ history }>
@@ -87,7 +87,7 @@ const AppRouter = ({ history }) =>
       <Route path="/evaluations/:evalId" component={ Evaluation }>
         <IndexRedirect to="/evaluations/:evalId/info" />
         <Route path="/evaluations/:evalId/info" component={ EvalInfo } />
-        <Route path="/evaluations/:evalId/allocations" component={ EvalAlloc } />
+        <Route path="/evaluations/:evalId/allocations" component={ EvalAllocations } />
         <Route path="/evaluations/:evalId/raw" component={ EvalRaw } />
       </Route>
     </Route>
