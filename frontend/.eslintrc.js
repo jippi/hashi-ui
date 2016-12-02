@@ -5,7 +5,7 @@ module.exports = {
     },
     "extends": "airbnb",
     "rules": {
-      'indent': ['error', 4],
+      'indent': ['error', 2],
       'no-constant-condition': ['error', { checkLoops: false }],
       'no-console': 0,
       'no-plusplus': 0,
