@@ -4,10 +4,10 @@ import shortUUID from '../../helpers/uuid';
 
 let nodeIdToNameCache = {};
 
-const NomadLinkException = (message) => {
+function NomadLinkException(message) {
   this.message = message;
   this.name = 'NomadLinkException';
-};
+}
 
 export default class NomadLink extends Component {
 
@@ -154,7 +154,8 @@ export default class NomadLink extends Component {
       return (<Link { ...linkProps } to={ `/jobs/${jobIdUrl}${linkAppend}` }>{ children }</Link>);
     }
 
-    throw new NomadLinkException('NomadLink: I did not understand the props you send, unable to generate a link');
+    console.log(this.props);
+    throw new NomadLinkException('NomadLink: Unable to generate a link (check console for props)');
   }
 }
 

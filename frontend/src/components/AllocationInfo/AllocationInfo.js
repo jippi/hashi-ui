@@ -51,6 +51,7 @@ class AllocationInfo extends Component {
                       <FormatTime
                         time={ element.Time }
                         now={ lastEventTime }
+                        identifier={ allocation.ID }
                         durationInterval="ms"
                         durationFormat="h [hour] m [min] s [seconds]"
                       />
@@ -97,12 +98,19 @@ class AllocationInfo extends Component {
       return null;
     });
 
+    // don't render anything big until we got the allocation from the API
+    if (!jobId) {
+      return <div>Loading ...</div>;
+    }
+
     allocValues.Job = <NomadLink jobId={ jobId } />;
+
     allocValues.TaskGroup = (
       <NomadLink jobId={ jobId } taskGroupId={ taskGroupId } >
         {allocation.TaskGroup}
       </NomadLink>
-        );
+    );
+
     allocValues.Node = <NomadLink nodeId={ nodeId } nodeList={ this.props.nodes } />;
 
     const states = [];
