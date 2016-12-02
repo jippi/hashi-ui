@@ -136,7 +136,7 @@ export default class NomadLink extends Component {
       console.error('NomadLink: You must also provide jobId for taskGroup links!');
     }
 
-        // job (must be after task & taskGroup
+    // job (must be after task & taskGroup
     if (this.props.jobId !== undefined) {
       const jobId = this.props.jobId;
       const jobIdUrl = encodeURIComponent(jobId);
