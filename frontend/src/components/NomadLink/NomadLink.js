@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import shortUUID from '../../helpers/uuid';
 
-let nodeIdToNameCache = {};
+const nodeIdToNameCache = {};
 
 function NomadLinkException(message) {
   this.message = message;
@@ -10,12 +10,6 @@ function NomadLinkException(message) {
 }
 
 export default class NomadLink extends Component {
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.nodeList !== this.props.nodeList) {
-      nodeIdToNameCache = {};
-    }
-  }
 
   findNodeNameById(nodeId) {
     if (nodeId in nodeIdToNameCache) {

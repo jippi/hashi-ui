@@ -1,11 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { DropdownButton, Glyphicon } from 'react-bootstrap';
+import { Glyphicon } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
 import NomadLink from '../NomadLink/NomadLink';
 import FormatTime from '../FormatTime/FormatTime';
-import shortUUID from '../../helpers/uuid';
-
-const optionsGlyph = <Glyphicon glyph="option-vertical" />;
 
 const clientStatusIcon = {
   complete: <span><Glyphicon glyph="stop" /></span>,
@@ -84,29 +81,6 @@ class AllocationListRow extends Component {
           >
             <Glyphicon glyph="align-left" />
           </NomadLink>
-
-          <DropdownButton
-            noCaret
-            pullRight
-            className="btn btn-xs btn-simple pull-right"
-            title={ optionsGlyph }
-            key={ allocation.Name }
-            id={ `actions-${allocation.Name}` }
-          >
-            <li>
-              <NomadLink role="menuitem" evalId={ allocation.EvalID }>
-                Evaluation <code>{ shortUUID(allocation.EvalID) }</code>
-              </NomadLink>
-            </li>
-            <li>
-              <NomadLink role="menuitem" allocId={ allocation.ID } linkAppend="/files">
-                Files
-              </NomadLink>
-            </li>
-            <li>
-              <NomadLink role="menuitem" allocId={ allocation.ID }>Task States</NomadLink>
-            </li>
-          </DropdownButton>
         </td>
       </tr>
     );
