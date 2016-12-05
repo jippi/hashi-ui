@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import NomadLink from '../NomadLink/NomadLink';
-import Table from '../Table/Table';
+import TableHelper from '../TableHelper/TableHelper';
 import MetaPayload from '../MetaPayload/MetaPayload';
 import ConstraintTable from '../ConstraintTable/ConstraintTable';
 
@@ -93,7 +93,7 @@ class JobInfo extends Component {
           <div className="col-lg-12 col-md-12 col-sm-12 col-sx-12 tab-column">
             <legend>Task Groups</legend>
             { (taskGroups.length > 0) ?
-              <Table
+              <TableHelper
                 classes="table table-hover table-striped"
                 headers={ ['Name', 'Count', 'Tasks', 'Meta', 'Restart Policy', 'Constraints'] }
                 body={ taskGroups }
@@ -107,7 +107,7 @@ class JobInfo extends Component {
           <div className="col-lg-12 col-md-12 col-sm-12 col-sx-12 tab-column">
             <legend>Tasks</legend>
             { (tasks.length > 0) ?
-              <Table
+              <TableHelper
                 classes="table table-hover table-striped"
                 headers={ ['Task Group', 'Name', 'Driver', 'CPU', 'Memory', 'Disk', 'Constraints'] }
                 body={ tasks }

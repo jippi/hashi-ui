@@ -1,39 +1,62 @@
 import React, { PureComponent } from 'react';
+import AppBar from 'material-ui/AppBar';
+import { Link, withRouter } from 'react-router';
+import {Tabs, Tab} from 'material-ui/Tabs';
+import Slider from 'material-ui/Slider';
 
 class Topbar extends PureComponent {
 
-    /* eslint class-methods-use-this: 0*/
-  onClick() {
-    window.document.querySelector('html').classList.toggle('nav-open');
+  handleActive = (tab) => {
+    this.props.router.push(tab.props['data-route']);
+  }
+
+  getActiveTab = () => {
+    const location = this.props.location;
+
+    if (location.pathname.startsWith('/cluster')) {
+      return 'cluster';
+    }
+
+    if (location.pathname.startsWith('/jobs')) {
+      return 'jobs';
+    }
+
+    if (location.pathname.startsWith('/allocations')) {
+      return 'allocations';
+    }
+
+    if (location.pathname.startsWith('/evaluations')) {
+      return 'evaluations';
+    }
+
+    if (location.pathname.startsWith('/clients')) {
+      return 'clients';
+    }
+
+    if (location.pathname.startsWith('/servers')) {
+      return 'servers';
+    }
+
+    return 'cluster'
   }
 
   render() {
     return (
-      <nav className="navbar navbar-default hidden-md hidden-lg">
-        <div className="container-fluid">
-          <div className="navbar-minimize">
-            <button id="minimizeSidebar" className="btn btn-warning btn-fill btn-round btn-icon">
-              <i className="fa fa-ellipsis-v visible-on-sidebar-regular"></i>
-              <i className="fa fa-navicon visible-on-sidebar-mini"></i>
-            </button>
-          </div>
-          <div className="navbar-header">
-            <button type="button" onClick={ this.onClick } className="navbar-toggle" data-toggle="collapse">
-              <span className="sr-only">Toggle navigation</span>
-              <span className="icon-bar"></span>
-              <span className="icon-bar"></span>
-              <span className="icon-bar"></span>
-            </button>
-            <a className="navbar-brand" href="/">Nomad UI</a>
-          </div>
-        </div>
-      </nav>
+      <div>
+        <AppBar title="Nomad UI"></AppBar>
+        <Tabs value={ this.getActiveTab() }>
+          <Tab label="Cluster" value="cluster" data-route="/cluster" onActive={ this.handleActive } />
+          <Tab label="Jobs" value="jobs" data-route="/jobs" onActive={ this.handleActive } />
+          <Tab label="Allocations" value="allocations" data-route="/allocations" onActive={ this.handleActive } />
+          <Tab label="Evaluations" value="evaluations" data-route="/evaluations" onActive={ this.handleActive } />
+          <Tab label="Clients" value="clients" data-route="/clients" onActive={ this.handleActive } />
+          <Tab label="Servers" value="servers" data-route="/servers" onActive={ this.handleActive } />
+        </Tabs>
+      </div>
     );
   }
 }
 
-// Topbar.propTypes = {
-//     location: PropTypes.object.isRequired,
-// };
+const TopbarWithRouter = withRouter(Topbar);
 
-export default Topbar;
+export default TopbarWithRouter;

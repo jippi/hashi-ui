@@ -1,28 +1,42 @@
 import React, { PureComponent, PropTypes } from 'react';
-import Sidebar from './Sidebar/Sidebar';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+import { green500, green800, green900 } from 'material-ui/styles/colors';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Topbar from './Topbar/Topbar';
+
+const muiTheme = getMuiTheme({
+  palette: {
+    primary1Color: green500,
+    primary2Color: green800,
+    primary3Color: green900
+  },
+  appBar: {
+    height: 50,
+  },
+});
 
 class App extends PureComponent {
 
+  constructor(props) {
+    super(props);
+
+    injectTapEventPlugin();
+  }
+
   render() {
     return (
-      <div className="wrapper">
-        <Sidebar location={ this.props.location } />
-        <div className="main-panel">
-          <Topbar location={ this.props.location } />
-          <div className="content">
-            <div className="container-fluid">
-              { this.props.children }
-            </div>
-          </div>
+      <MuiThemeProvider muiTheme={ muiTheme }>
+        <div>
+          <Topbar { ...this.props } />
+          { this.props.children }
         </div>
-      </div>
+      </MuiThemeProvider>
     );
   }
 }
 
 App.propTypes = {
-  location: PropTypes.object.isRequired,
   children: PropTypes.object.isRequired,
 };
 

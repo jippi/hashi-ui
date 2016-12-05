@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Glyphicon } from 'react-bootstrap';
 import ReactTooltip from 'react-tooltip';
+import { TableRow, TableRowColumn } from 'material-ui/Table';
 import NomadLink from '../NomadLink/NomadLink';
 import FormatTime from '../FormatTime/FormatTime';
 
@@ -61,19 +62,19 @@ class AllocationListRow extends Component {
     const showClientColumn = this.props.showClientColumn;
 
     return (
-      <tr key={ allocation.ID }>
-        <td>{ renderClientStatus(allocation) }</td>
-        <td><NomadLink allocId={ allocation.ID } short="true" /></td>
+      <TableRow key={ allocation.ID }>
+        <TableRowColumn>{ renderClientStatus(allocation) }</TableRowColumn>
+        <TableRowColumn><NomadLink allocId={ allocation.ID } short="true" /></TableRowColumn>
         { jobColumn(allocation, showJobColumn, nodes) }
-        <td>
+        <TableRowColumn>
           <NomadLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId }>
             { allocation.TaskGroup } (#{ getAllocationNumberFromName(allocation.Name) })
           </NomadLink>
-        </td>
-        <td>{ renderDesiredStatus(allocation) }</td>
+        </TableRowColumn>
+        <TableRowColumn>{ renderDesiredStatus(allocation) }</TableRowColumn>
         { clientColumn(allocation, nodes, showClientColumn) }
-        <td><FormatTime identifier={ allocation.ID } time={ allocation.CreateTime } /></td>
-        <td className="td-actions">
+        <TableRowColumn><FormatTime identifier={ allocation.ID } time={ allocation.CreateTime } /></TableRowColumn>
+        <TableRowColumn className="td-actions">
           <NomadLink
             className="btn btn-xs btn-info btn-simple"
             allocId={ allocation.ID }
@@ -81,8 +82,8 @@ class AllocationListRow extends Component {
           >
             <Glyphicon glyph="align-left" />
           </NomadLink>
-        </td>
-      </tr>
+        </TableRowColumn>
+      </TableRow>
     );
   }
 }

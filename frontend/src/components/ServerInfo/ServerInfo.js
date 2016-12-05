@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import Table from '../Table/Table';
+import TableHelper from '../TableHelper/TableHelper';
 
 const memberProps = [
   'ID',
@@ -40,7 +40,7 @@ const ServerInfo = ({ member }) => {
         <br />
         <legend>Server Tags</legend>
         { (memberTags.length > 0) ?
-          <Table classes="table table-hover table-striped" headers={ ['Name', 'Value'] } body={ memberTags } />
+          <TableHelper classes="table table-hover table-striped" headers={ ['Name', 'Value'] } body={ memberTags } />
             : null
           }
       </div>

@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import NomadLink from '../NomadLink/NomadLink';
-import Table from '../Table/Table';
+import TableHelper from '../TableHelper/TableHelper';
 import RawJson from '../RawJson/RawJson';
 
 const taskHeaders = [
@@ -61,7 +61,7 @@ const JobTasks = ({ job, location }) => {
         <div className="col-md-6 tab-column">
           <legend>Tasks</legend>
           { (tasks.length > 0) ?
-            <Table
+            <TableHelper
               classes="table table-hover table-striped"
               headers={ taskHeaders }
               body={ tasks }

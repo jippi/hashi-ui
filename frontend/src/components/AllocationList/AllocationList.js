@@ -1,13 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 import { DropdownButton } from 'react-bootstrap';
 import { Link } from 'react-router';
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
+import SelectField from 'material-ui/SelectField';
 import AllocationListRow from '../AllocationListRow/AllocationListRow';
+import MenuItem from 'material-ui/MenuItem';
 
 const jobHeaderColumn = display =>
-  (display ? <th>Job</th> : null);
+  (display ? <TableHeaderColumn>Job</TableHeaderColumn> : null);
 
 const clientHeaderColumn = display =>
-  (display ? <th width="120">Client</th> : null);
+  (display ? <TableHeaderColumn width="120">Client</TableHeaderColumn> : null);
 
 let nodeIdToNameCache = {};
 
@@ -67,14 +70,14 @@ class AllocationList extends Component {
     }
 
     return (
-      <DropdownButton title={ title } key="filter-client-status" id="filter-client-status">
-        <li><Link to={ location.pathname } query={{ ...query, status: undefined }}>- Any -</Link></li>
-        <li><Link to={ location.pathname } query={{ ...query, status: 'running' }}>Running</Link></li>
-        <li><Link to={ location.pathname } query={{ ...query, status: 'complete' }}>Complete</Link></li>
-        <li><Link to={ location.pathname } query={{ ...query, status: 'pending' }}>Pending</Link></li>
-        <li><Link to={ location.pathname } query={{ ...query, status: 'lost' }}>Lost</Link></li>
-        <li><Link to={ location.pathname } query={{ ...query, status: 'failed' }}>Failed</Link></li>
-      </DropdownButton>
+      <SelectField floatingLabelText={ title } maxHeight={ 200 }>
+        <MenuItem><Link to={ location.pathname } query={{ ...query, status: undefined }}>- Any -</Link></MenuItem>
+        <MenuItem><Link to={ location.pathname } query={{ ...query, status: 'running' }}>Running</Link></MenuItem>
+        <MenuItem><Link to={ location.pathname } query={{ ...query, status: 'complete' }}>Complete</Link></MenuItem>
+        <MenuItem><Link to={ location.pathname } query={{ ...query, status: 'pending' }}>Pending</Link></MenuItem>
+        <MenuItem><Link to={ location.pathname } query={{ ...query, status: 'lost' }}>Lost</Link></MenuItem>
+        <MenuItem><Link to={ location.pathname } query={{ ...query, status: 'failed' }}>Failed</Link></MenuItem>
+      </SelectField>
     );
   }
 
@@ -96,20 +99,18 @@ class AllocationList extends Component {
           })
           .map((job) => {
             return (
-              <li key={ job }>
+              <MenuItem key={ job }>
                 <Link to={ location.pathname } query={{ ...query, job }}>{ job }</Link>
-              </li>
+              </MenuItem>
             );
           });
 
     jobs.unshift(
-      <li key="any-job"><Link to={ location.pathname } query={{ ...query, job: undefined }}>- Any -</Link></li>
+      <MenuItem key="any-job"><Link to={ location.pathname } query={{ ...query, job: undefined }}>- Any -</Link></MenuItem>
     );
 
     return (
-      <DropdownButton title={ title } key="filter-job" id="filter-job">
-        { jobs }
-      </DropdownButton>
+      <SelectField floatingLabelText={ title } maxHeight={ 200 }>{ jobs }</SelectField>
     );
   }
 
@@ -132,22 +133,22 @@ class AllocationList extends Component {
           })
           .map((client) => {
             return (
-              <li key={ client }>
+              <MenuItem key={ client }>
                 <Link to={ location.pathname } query={{ ...query, client }}>{ this.findNodeNameById(client) }</Link>
-              </li>
+              </MenuItem>
             );
           });
 
     clients.unshift(
-      <li key="any-client">
+      <MenuItem key="any-client">
         <Link to={ location.pathname } query={{ ...query, client: undefined }}>- Any -</Link>
-      </li>
+      </MenuItem>
     );
 
     return (
-      <DropdownButton title={ title } key="filter-client" id="filter-client">
+      <SelectField floatingLabelText={ title } maxHeight={ 200 }>
         { clients }
-      </DropdownButton>
+      </SelectField>
     );
   }
 
@@ -155,10 +156,9 @@ class AllocationList extends Component {
     const props = this.props;
     const showJobColumn = this.props.showJobColumn;
     const showClientColumn = this.props.showClientColumn;
-    const className = this.props.containerClassName;
 
     return (
-      <div className={ className }>
+      <div>
         <div className="inline-pad">
           { this.clientFilter() }
               &nbsp;
@@ -166,27 +166,25 @@ class AllocationList extends Component {
               &nbsp;
           { this.jobIdFilter() }
         </div>
-        <div className="table-responsive table-full-width">
-          <table className="table table-hover table-striped">
-            <thead>
-              <tr>
-                <th width="40"></th>
-                <th width="100">ID</th>
-                { jobHeaderColumn(showJobColumn) }
-                <th>Task Group</th>
-                <th width="100">Status</th>
-                { clientHeaderColumn(showClientColumn) }
-                <th width="120">Age</th>
-                <th width="50">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.filteredAllocations().map((allocation) => {
-                return <AllocationListRow { ...props } key={ allocation.ID } allocation={ allocation } />;
-              })}
-            </tbody>
-          </table>
-        </div>
+        <Table selectable={ false } showCheckboxes={ false }>
+          <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
+            <TableRow>
+              <TableHeaderColumn width="40" />
+              <TableHeaderColumn width="100">ID</TableHeaderColumn>
+              { jobHeaderColumn(showJobColumn) }
+              <TableHeaderColumn>Task Group</TableHeaderColumn>
+              <TableHeaderColumn width="100">Status</TableHeaderColumn>
+              { clientHeaderColumn(showClientColumn) }
+              <TableHeaderColumn width="120">Age</TableHeaderColumn>
+              <TableHeaderColumn width="50">Actions</TableHeaderColumn>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {this.filteredAllocations().map((allocation) => {
+              return <AllocationListRow { ...props } key={ allocation.ID } allocation={ allocation } />;
+            })}
+          </TableBody>
+        </Table>
       </div>);
   }
 }

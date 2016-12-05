@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import NomadLink from '../NomadLink/NomadLink';
-import Table from '../Table/Table';
+import TableHelper from '../TableHelper/TableHelper';
 import RawJson from '../RawJson/RawJson';
 import MetaPayload from '../MetaPayload/MetaPayload';
 
@@ -40,7 +40,7 @@ const JobTaskGroups = ({ job, location }) => {
         <div className="col-md-6 tab-column">
           <legend>Task Groups</legend>
           { (taskGroups.length > 0) ?
-            <Table
+            <TableHelper
               classes="table table-hover table-striped"
               headers={ taskGroupHeaders }
               body={ taskGroups }

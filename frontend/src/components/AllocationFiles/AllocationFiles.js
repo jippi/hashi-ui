@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { Button } from 'react-bootstrap';
-import Table from '../Table/Table';
+import TableHelper from '../TableHelper/TableHelper';
 import {
     FETCH_NODE,
     FETCH_DIR,
@@ -268,7 +268,7 @@ class AllocationFiles extends Component {
             <div className="card">
               <div className="header">Path: { this.props.location.query.path || '/' }</div>
               <div className="content">
-                <Table classes="table table-hover" headers={ ['Name', 'Size'] } body={ this.collectFiles() } />
+                <TableHelper classes="table table-hover" headers={ ['Name', 'Size'] } body={ this.collectFiles() } />
               </div>
             </div>
           </div>
