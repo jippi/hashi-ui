@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import Tabs from '../components/Tabs/Tabs';
+import ViewAllocationTopbar from '../components/ViewAllocationTopbar/ViewAllocationTopbar';
 import { WATCH_ALLOC, UNWATCH_ALLOC } from '../sagas/event';
 
 class Allocation extends Component {
@@ -52,19 +52,14 @@ class Allocation extends Component {
     const basePath = path.substring(0, path.lastIndexOf('/'));
 
     return (
-      <div className="row">
-        <div className="col-md-12">
-          <div className="card">
-            <div className="header">
-              <h4 className="title">Allocation: { this.props.allocation.Name }</h4>
-            </div>
-            <div className="tab-content">
-              <Tabs tabs={ this.state.tabs } tabSlug={ tabSlug } basePath={ basePath }>
-                { this.props.children }
-              </Tabs>
-            </div>
-          </div>
-        </div>
+      <div>
+        <ViewAllocationTopbar { ...this.props } />
+
+        <h2 style={{ padding: 10, paddingBottom: 0 }}>Allocation: { this.props.allocation.Name }</h2>
+
+        <br />
+
+        { this.props.children }
       </div>
     );
   }

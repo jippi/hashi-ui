@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { Panel, Accordion, Table } from 'react-bootstrap';
+import { Card, CardTitle, CardText } from 'material-ui/Card';
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 import { connect } from 'react-redux';
 import NomadLink from '../NomadLink/NomadLink';
 import MetaPayload from '../MetaPayload/MetaPayload';
@@ -19,35 +20,39 @@ class AllocationInfo extends Component {
   static taskState(allocation, name, states) {
     const title = (
       <h3>
-            Task state for {allocation.JobID}.{allocation.TaskGroup}.{name} (final state: {states.State})
-          </h3>
-        );
+        Task state history for {allocation.JobID}.{allocation.TaskGroup}.{name} (final state: {states.State})
+      </h3>
+    );
+
     let lastEventTime = null;
 
     return (
-      <Panel key={ name } header={ title }>
-        <div className="content table-responsive table-full-width">
-          <Table striped hover style={{ tableLayout: 'fixed' }}>
-            <thead>
-              <tr>
-                <th width="180">When</th>
-                <th width="180">Duration</th>
-                <th width="180">Type</th>
-                <th>Message / Reason</th>
-                <th width="180">Signal</th>
-                <th width="50">Code</th>
-              </tr>
-            </thead>
-            <tbody>
+      <Card>
+        <CardTitle title={ title } />
+        <CardText>
+          <Table selectable={ false } showCheckboxes={ false }>
+            <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
+              <TableRow>
+                <TableHeaderColumn style={{ width: 180 }}>When</TableHeaderColumn>
+                <TableHeaderColumn style={{ width: 180 }}>Duration</TableHeaderColumn>
+                <TableHeaderColumn style={{ width: 180 }}>Type</TableHeaderColumn>
+                <TableHeaderColumn>Message / Reason</TableHeaderColumn>
+                <TableHeaderColumn style={{ width: 180 }}>Signal</TableHeaderColumn>
+                <TableHeaderColumn style={{ width: 50 }}>Code</TableHeaderColumn>
+              </TableRow>
+            </TableHeader>
+            <TableBody preScanRows={ false } displayRowCheckbox={ false } showRowHover>
               { states.Events.map((element, index) => {
                 if (!lastEventTime) {
                   lastEventTime = element.Time;
                 }
 
                 const output = (
-                  <tr key={ index }>
-                    <td><FormatTime time={ element.Time } /></td>
-                    <td>
+                  <TableRow key={ index }>
+                    <TableRowColumn style={{ width: 180 }}>
+                      <FormatTime time={ element.Time } />
+                    </TableRowColumn>
+                    <TableRowColumn style={{ width: 180 }}>
                       <FormatTime
                         time={ element.Time }
                         now={ lastEventTime }
@@ -55,34 +60,40 @@ class AllocationInfo extends Component {
                         durationInterval="ms"
                         durationFormat="h [hour] m [min] s [seconds]"
                       />
-                    </td>
-                    <td>{ element.Type }</td>
-                    <td>
+                    </TableRowColumn>
+                    <TableRowColumn style={{ width: 180 }}>
+                      { element.Type }
+                    </TableRowColumn>
+                    <TableRowColumn>
                       {
-                              element.Message
-                              || element.SetupError
-                              || element.DriverError
-                              || element.KillError
-                              || element.DownloadError
-                              || element.ValidationError
-                              || element.VaultError
-                              || element.RestartReason
-                              || element.KillReason
-                              || element.TaskSignalReason
-                            }
-                    </td>
-                    <td>{ element.Signal || element.TaskSignal }</td>
-                    <td>{ element.ExitCode }</td>
-                  </tr>
-                      );
+                        element.Message
+                        || element.SetupError
+                        || element.DriverError
+                        || element.KillError
+                        || element.DownloadError
+                        || element.ValidationError
+                        || element.VaultError
+                        || element.RestartReason
+                        || element.KillReason
+                        || element.TaskSignalReason
+                      }
+                    </TableRowColumn>
+                    <TableRowColumn style={{ width: 180 }}>
+                      { element.Signal || element.TaskSignal }
+                    </TableRowColumn>
+                    <TableRowColumn style={{ width: 50 }}>
+                      { element.ExitCode }
+                    </TableRowColumn>
+                  </TableRow>
+                );
 
                 lastEventTime = element.Time;
                 return output;
               })}
-            </tbody>
+            </TableBody>
           </Table>
-        </div>
-      </Panel>
+        </CardText>
+      </Card>
     );
   }
 
@@ -94,7 +105,7 @@ class AllocationInfo extends Component {
 
     const allocValues = {};
     allocProps.map((allocProp) => {
-      allocValues[allocProp] = allocation[allocProp];
+      allocValues[allocProp] = allocation[allocProp] ? allocation[allocProp] : '-';
       return null;
     });
 
@@ -103,7 +114,7 @@ class AllocationInfo extends Component {
       return <div>Loading ...</div>;
     }
 
-    allocValues.Job = <NomadLink jobId={ jobId } />;
+    allocValues.Job = <NomadLink jobId={ jobId } nodeList={ this.props.nodes } />;
 
     allocValues.TaskGroup = (
       <NomadLink jobId={ jobId } taskGroupId={ taskGroupId } >
@@ -115,23 +126,20 @@ class AllocationInfo extends Component {
 
     const states = [];
     Object.keys(allocation.TaskStates || {}).forEach((key) => {
+      states.push(<br />);
       states.push(AllocationInfo.taskState(allocation, key, allocation.TaskStates[key]));
     });
 
     return (
-      <div className="tab-pane active">
-        <div className="row">
-          <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column">
-            <legend>Allocation Properties</legend>
+      <div style={{ padding: 10, paddingTop: 0 }}>
+        <Card>
+          <CardTitle title="Allocation Properties" />
+          <CardText>
             <MetaPayload metaBag={ allocValues } sortKeys={ false } />
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-lg-12 col-md-12 col-sm-12 col-sx-12 tab-column">
-            <legend>Task States</legend>
-            <Accordion>{ states }</Accordion>
-          </div>
-        </div>
+          </CardText>
+        </Card>
+
+        { states }
       </div>
     );
   }

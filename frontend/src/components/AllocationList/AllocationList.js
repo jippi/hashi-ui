@@ -161,6 +161,7 @@ class AllocationList extends Component {
               &nbsp;
           { this.jobIdFilter() }
         </div>
+
         <Table selectable={ false } showCheckboxes={ false }>
           <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
             <TableRow>
@@ -174,7 +175,7 @@ class AllocationList extends Component {
               <TableHeaderColumn style={{ width: 50 }}>Actions</TableHeaderColumn>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody preScanRows={ false } showRowHover>
             {this.filteredAllocations().map((allocation) => {
               return <AllocationListRow { ...props } key={ allocation.ID } allocation={ allocation } />;
             })}

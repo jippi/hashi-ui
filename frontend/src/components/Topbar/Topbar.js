@@ -1,3 +1,4 @@
+import FontIcon from 'material-ui/FontIcon';
 import React, { PureComponent } from 'react';
 import AppBar from 'material-ui/AppBar';
 import { Link, withRouter } from 'react-router';

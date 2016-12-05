@@ -2,7 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { Button } from 'react-bootstrap';
-import TableHelper from '../TableHelper/TableHelper';
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
+import { Card, CardTitle, CardText } from 'material-ui/Card';
 import {
     FETCH_NODE,
     FETCH_DIR,
@@ -17,15 +18,15 @@ class AllocationFiles extends Component {
   constructor(props) {
     super(props);
 
-        // if the alloc node already in props
-        // this only happens when you switch tab in the ui, this will never
-        // trigger if /allocations/:id/files are the directly url and first page
-        // you view
+    // if the alloc node already in props
+    // this only happens when you switch tab in the ui, this will never
+    // trigger if /allocations/:id/files are the directly url and first page
+    // you view
     if (this.findAllocNode(props)) {
       this.fetchDir(props, props.location.query.path || '/');
     }
 
-        // push our initial state
+    // push our initial state
     this.state = {
       contents: '',
       fileWatching: false,
@@ -112,15 +113,15 @@ class AllocationFiles extends Component {
   }
 
   findAllocNode(props) {
-        // Find the node that this alloc belongs to
+    // Find the node that this alloc belongs to
     const allocNode = props.nodes.find(node => node.ID === props.allocation.NodeID);
 
-        // No node for this alloc, so bail out
+    // No node for this alloc, so bail out
     if (allocNode === undefined) {
       return false;
     }
 
-        // Fetch the correct node information if the alloc node changed
+    // Fetch the correct node information if the alloc node changed
     if (props.node == null || allocNode.ID !== props.node.ID) {
       this.props.dispatch({
         type: FETCH_NODE,
@@ -130,7 +131,7 @@ class AllocationFiles extends Component {
       return false;
     }
 
-        // We've located the alloc node so go ahead and query the filesystem
+    // We've located the alloc node so go ahead and query the filesystem
     return true;
   }
 
@@ -201,22 +202,35 @@ class AllocationFiles extends Component {
 
   collectFiles() {
     const files = this.props.directory.map(file =>
-      <tr className="pointer" onClick={ () => this.handleClick(file) } key={ file.Name }>
-        <td>{ file.Name }{ file.IsDir ? '/' : '' }</td>
-        <td>{ file.IsDir ? '' : file.Size }</td>
-      </tr>
-        );
+      <TableRow key={ file.Name }>
+        <TableRowColumn>
+          <span onClick={ () => this.handleClick(file) }>
+            { file.Name }{ file.IsDir ? '/' : '' }
+          </span>
+        </TableRowColumn>
+        <TableRowColumn style={{ width: 100 }}>
+          <span onClick={ () => this.handleClick(file) }>
+            { file.IsDir ? ' - ' : file.Size }
+          </span>
+        </TableRowColumn>
+      </TableRow>
+    );
 
     if ((this.props.location.query.path || '/') !== '/') {
       files.unshift(
-        <tr className="pointer" onClick={ () => this.handleClick({ Name: 'back', IsDir: true }) } key="back">
-          <td id="back">..</td>
-          <td id="back"></td>
-        </tr>
-            );
+        <TableRow onClick={ () => this.handleClick({ Name: 'back', IsDir: true }) } key="back">
+          <TableRowColumn id="back">..</TableRowColumn>
+          <TableRowColumn style={{ width: 100 }} id="back"></TableRowColumn>
+        </TableRow>
+      );
     }
 
     return files;
+  }
+
+  selectRow(a,b, c) {
+    console.log(a, b, c);
+    console.log(this);
   }
 
   render() {
@@ -241,51 +255,53 @@ class AllocationFiles extends Component {
         <span>
           <ReactTooltip id={ `tooltip-${this.props.file.File}` }>
             <span className="file-size-warning">
-                  The file you are trying to view is too large.<br />
-                  Tailing has started from the last 250 lines. <br />
-                  Please download the file for the entire contents.
-                </span>
+              The file you are trying to view is too large.<br />
+              Tailing has started from the last 250 lines. <br />
+              Please download the file for the entire contents.
+            </span>
           </ReactTooltip>
         </span>
       </span>
-        );
+    );
 
     const baseUrl = `${location.protocol}//${hostname}`;
     const downloadPath = `download${this.props.file.File}`;
 
     const downloadBtn = this.props.file.File ? '' :
-          (<form className="file-download" method="get" action={ `${baseUrl}/${downloadPath}` } >
-            <input type="hidden" name="client" value={ this.props.node.HTTPAddr } />
-            <input type="hidden" name="allocID" value={ this.props.allocation.ID } />
-            { oversizedWarning }
-            <Button type="submit" className="btn-download">Download</Button>
-          </form>);
+      (<form className="file-download" method="get" action={ `${baseUrl}/${downloadPath}` } >
+        <input type="hidden" name="client" value={ this.props.node.HTTPAddr } />
+        <input type="hidden" name="allocID" value={ this.props.allocation.ID } />
+        { oversizedWarning }
+        <Button type="submit" className="btn-download">Download</Button>
+      </form>);
+
+    const title = "Path: " + (this.props.location.query.path || '/');
 
     return (
-      <div className="tab-pane active">
-        <div className="row">
-          <div className="col-md-3">
-            <div className="card">
-              <div className="header">Path: { this.props.location.query.path || '/' }</div>
-              <div className="content">
-                <TableHelper classes="table table-hover" headers={ ['Name', 'Size'] } body={ this.collectFiles() } />
-              </div>
-            </div>
-          </div>
-          <div className="col-md-9">
-            <div className="card">
-              <div className="header">File: { fileName }
-                { downloadBtn }
-              </div>
+      <Card>
+        <CardTitle title={ title } />
+        <CardText>
+          <Table selectable={ false } showCheckboxes={ false } onCellClick={ this.selectRow }>
+            <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
+              <TableRow>
+                <TableHeaderColumn>Name</TableHeaderColumn>
+                <TableHeaderColumn style={{ width: 100 }}>Size</TableHeaderColumn>
+              </TableRow>
+            </TableHeader>
+            <TableBody preScanRows={ false } displayRowCheckbox={ false } showRowHover>
+              { this.collectFiles() }
+            </TableBody>
+          </Table>
 
-              <hr className="file-content-hr" />
-              <div className="content content-file" ref={ (c) => { this.content = c; } }>
-                { this.state.contents }
-              </div>
+          <div className="card">
+            <div className="header">File: { fileName } { downloadBtn }</div>
+            <div className="content content-file" ref={ (c) => { this.content = c; } }>
+              { this.state.contents }
             </div>
           </div>
-        </div>
-      </div>
+
+        </CardText>
+      </Card>
     );
   }
 }

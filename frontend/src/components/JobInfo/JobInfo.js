@@ -1,3 +1,4 @@
+import Paper from 'material-ui/Paper';
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import NomadLink from '../NomadLink/NomadLink';
@@ -14,7 +15,7 @@ class JobInfo extends Component {
     const job = this.props.job;
     const jobMetaBag = job.Meta || {};
 
-        // Build the task groups table
+    // Build the task groups table
     const taskGroups = job.TaskGroups.map((taskGroup) => {
       taskGroup.Tasks.map((task) => {
         tasks.push(
@@ -59,7 +60,7 @@ class JobInfo extends Component {
     return (
       <div className="tab-pane active">
         <div className="row">
-          <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column">
+          <Paper zDepth={2}>
             <legend>Job Properties</legend>
             <dl className="dl-horizontal">
               { jobProps.map((jobProp) => {
@@ -75,7 +76,7 @@ class JobInfo extends Component {
                 return result;
               }, this)}
             </dl>
-          </div>
+          </Paper>
           <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column">
             <legend>Meta Properties</legend>
             <MetaPayload dtWithClass="wide" metaBag={ jobMetaBag } />

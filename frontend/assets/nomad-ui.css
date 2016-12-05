@@ -4,13 +4,14 @@ html {
 }
 
 body {
-    font-size: 15px;
-    line-height: 24px;
-    margin: 0;
+  font-size: 15px;
+  line-height: 24px;
+  margin: 0;
+  background: #f3f3f3
 }
 
 body, h1, h2, h3, h4, h5, h6 {
-    margin: 0;
+  margin: 0;
 }
 
 a {
@@ -19,4 +20,27 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+dl {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+dt {
+  float: left;
+  width: 160px;
+  overflow: hidden;
+  clear: left;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+dt:after {
+  content: " : ";
+}
+
+dd {
+  margin-left: 180px;
 }

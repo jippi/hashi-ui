@@ -49,7 +49,7 @@ class AllocationListRow extends Component {
     const showClientColumn = this.props.showClientColumn;
 
     return (
-      <TableRow key={ allocation.ID }>
+      <TableRow key={ allocation.ID } hoverable>
         <TableRowColumn style={{ width: 40 }}>
           <AllocationStatusIcon allocation={ allocation } />
         </TableRowColumn>
