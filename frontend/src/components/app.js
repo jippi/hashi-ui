@@ -9,7 +9,7 @@ const muiTheme = getMuiTheme({
   palette: {
     primary1Color: green500,
     primary2Color: green800,
-    primary3Color: green900
+    primary3Color: green900,
   },
   appBar: {
     height: 50,

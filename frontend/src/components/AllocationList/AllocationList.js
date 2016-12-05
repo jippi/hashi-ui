@@ -11,7 +11,7 @@ const jobHeaderColumn = display =>
 const clientHeaderColumn = display =>
   (display ? <TableHeaderColumn width="120">Client</TableHeaderColumn> : null);
 
-let nodeIdToNameCache = {};
+const nodeIdToNameCache = {};
 
 class AllocationList extends Component {
 
@@ -168,7 +168,7 @@ class AllocationList extends Component {
               <TableHeaderColumn style={{ width: 100 }}>ID</TableHeaderColumn>
               { jobHeaderColumn(showJobColumn) }
               <TableHeaderColumn>Task Group</TableHeaderColumn>
-              <TableHeaderColumn style={{ width: 100}}>Status</TableHeaderColumn>
+              <TableHeaderColumn style={{ width: 100 }}>Status</TableHeaderColumn>
               { clientHeaderColumn(showClientColumn) }
               <TableHeaderColumn style={{ width: 120 }}>Age</TableHeaderColumn>
               <TableHeaderColumn style={{ width: 50 }}>Actions</TableHeaderColumn>

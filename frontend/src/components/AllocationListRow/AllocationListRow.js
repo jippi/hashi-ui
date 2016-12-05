@@ -1,6 +1,6 @@
+import FontIcon from 'material-ui/FontIcon';
 import React, { Component, PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
-import { Glyphicon } from 'react-bootstrap';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 
 import AllocationStatusIcon from '../AllocationStatusIcon/AllocationStatusIcon';
@@ -62,7 +62,7 @@ class AllocationListRow extends Component {
             { allocation.TaskGroup } (#{ getAllocationNumberFromName(allocation.Name) })
           </NomadLink>
         </TableRowColumn>
-        <TableRowColumn style={{ width: 100}}>
+        <TableRowColumn style={{ width: 100 }}>
           { renderDesiredStatus(allocation) }
         </TableRowColumn>
         { clientColumn(allocation, nodes, showClientColumn) }
@@ -70,12 +70,8 @@ class AllocationListRow extends Component {
           <FormatTime identifier={ allocation.ID } time={ allocation.CreateTime } />
         </TableRowColumn>
         <TableRowColumn style={{ width: 50 }}>
-          <NomadLink
-            className="btn btn-xs btn-info btn-simple"
-            allocId={ allocation.ID }
-            linkAppend="/files?path=/alloc/logs/"
-          >
-            <Glyphicon glyph="align-left" />
+          <NomadLink allocId={ allocation.ID } linkAppend="/files?path=/alloc/logs/">
+            <FontIcon className="material-icons">format_align_left</FontIcon>
           </NomadLink>
         </TableRowColumn>
       </TableRow>
