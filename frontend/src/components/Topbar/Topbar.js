@@ -43,7 +43,7 @@ class Topbar extends PureComponent {
   render() {
     return (
       <div>
-        <AppBar title="Nomad UI"></AppBar>
+        <AppBar title="Nomad UI" showMenuIconButton={ false }></AppBar>
         <Tabs value={ this.getActiveTab() }>
           <Tab label="Cluster" value="cluster" data-route="/cluster" onActive={ this.handleActive } />
           <Tab label="Jobs" value="jobs" data-route="/jobs" onActive={ this.handleActive } />

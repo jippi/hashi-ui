@@ -1,10 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { DropdownButton } from 'react-bootstrap';
 import { Link } from 'react-router';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
 import SelectField from 'material-ui/SelectField';
-import AllocationListRow from '../AllocationListRow/AllocationListRow';
 import MenuItem from 'material-ui/MenuItem';
+import AllocationListRow from '../AllocationListRow/AllocationListRow';
 
 const jobHeaderColumn = display =>
   (display ? <TableHeaderColumn>Job</TableHeaderColumn> : null);
@@ -15,12 +14,6 @@ const clientHeaderColumn = display =>
 let nodeIdToNameCache = {};
 
 class AllocationList extends Component {
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.nodes !== this.props.nodes) {
-      nodeIdToNameCache = {};
-    }
-  }
 
   findNodeNameById(nodeId) {
     if (nodeId in nodeIdToNameCache) {
@@ -106,7 +99,9 @@ class AllocationList extends Component {
           });
 
     jobs.unshift(
-      <MenuItem key="any-job"><Link to={ location.pathname } query={{ ...query, job: undefined }}>- Any -</Link></MenuItem>
+      <MenuItem key="any-job">
+        <Link to={ location.pathname } query={{ ...query, job: undefined }}>- Any -</Link>
+      </MenuItem>
     );
 
     return (
@@ -169,14 +164,14 @@ class AllocationList extends Component {
         <Table selectable={ false } showCheckboxes={ false }>
           <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
             <TableRow>
-              <TableHeaderColumn width="40" />
-              <TableHeaderColumn width="100">ID</TableHeaderColumn>
+              <TableHeaderColumn style={{ width: 40 }} />
+              <TableHeaderColumn style={{ width: 100 }}>ID</TableHeaderColumn>
               { jobHeaderColumn(showJobColumn) }
               <TableHeaderColumn>Task Group</TableHeaderColumn>
-              <TableHeaderColumn width="100">Status</TableHeaderColumn>
+              <TableHeaderColumn style={{ width: 100}}>Status</TableHeaderColumn>
               { clientHeaderColumn(showClientColumn) }
-              <TableHeaderColumn width="120">Age</TableHeaderColumn>
-              <TableHeaderColumn width="50">Actions</TableHeaderColumn>
+              <TableHeaderColumn style={{ width: 120 }}>Age</TableHeaderColumn>
+              <TableHeaderColumn style={{ width: 50 }}>Actions</TableHeaderColumn>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -196,8 +191,6 @@ AllocationList.defaultProps = {
 
   showJobColumn: true,
   showClientColumn: true,
-
-  containerClassName: '',
 };
 
 AllocationList.propTypes = {
@@ -207,8 +200,6 @@ AllocationList.propTypes = {
 
   showJobColumn: PropTypes.bool.isRequired,
   showClientColumn: PropTypes.bool.isRequired,
-
-  containerClassName: PropTypes.string.isRequired,
 };
 
 export default AllocationList;
