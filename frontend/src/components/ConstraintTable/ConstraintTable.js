@@ -14,7 +14,7 @@ class ConstraintTable extends Component {
     }
 
     const table = (
-      <table className={ `table table-hover ${this.props.asTooltip ? '' : 'table-striped'}` }>
+      <table width="100%">
         <thead>
           <tr>
             <th>Key</th>
@@ -29,10 +29,10 @@ class ConstraintTable extends Component {
               idPrefix={ this.props.idPrefix }
               constraint={ constraint }
             />
-              )}
+          )}
         </tbody>
       </table>
-        )
+    )
 
     if (this.props.asTooltip) {
       return (
@@ -40,7 +40,7 @@ class ConstraintTable extends Component {
           <ReactTooltip id={ `tooltip-constraints-${this.props.idPrefix}` }>{ table }</ReactTooltip>
           <span data-tip data-for={ `tooltip-constraints-${this.props.idPrefix}` } className='dotted'>
             { this.props.constraints.length } constraints
-                </span>
+          </span>
         </div>
       )
     }

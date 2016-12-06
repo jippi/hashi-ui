@@ -54,3 +54,15 @@ dd {
   white-space: pre;
   background: #f5f5f5;
 }
+
+code {
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 90%;
+}
+
+th {
+  text-align: left
+}

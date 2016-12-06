@@ -5,7 +5,7 @@ const ConstraintRow = ({ constraint }) => {
   if (constraint.Operand === 'distinct_hosts') {
     return (
       <tr>
-        <td colSpan='3'><code>Distinct Hosts</code></td>
+        <td colSpan={ 3 }><code>Distinct Hosts</code></td>
       </tr>
     )
   }
@@ -13,7 +13,7 @@ const ConstraintRow = ({ constraint }) => {
   return (
     <tr>
       <td><code>{ constraint.LTarget }</code></td>
-      <td>{ constraint.Operand }</td>
+      <td><code>{ constraint.Operand }</code></td>
       <td><code>{ constraint.RTarget }</code></td>
     </tr>
   )
