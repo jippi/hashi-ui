@@ -14,7 +14,7 @@ class ConstraintTable extends Component {
     }
 
     const table = (
-      <table width="100%">
+      <table width='100%'>
         <thead>
           <tr>
             <th>Key</th>

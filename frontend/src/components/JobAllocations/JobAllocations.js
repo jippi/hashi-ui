@@ -9,11 +9,11 @@ class JobAllocations extends PureComponent {
 
     return (
       <AllocationList
-          showJobColumn={ false }
-          allocations={ allocs }
-          location={ this.props.location }
-          nodes={ this.props.nodes }
-        />
+        showJobColumn={ false }
+        allocations={ allocs }
+        location={ this.props.location }
+        nodes={ this.props.nodes }
+      />
     )
   }
 }

@@ -1,4 +1,3 @@
-import Paper from 'material-ui/Paper'
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Grid, Row, Col } from 'react-flexbox-grid'
@@ -92,7 +91,7 @@ class JobInfo extends Component {
             </Card>
           </Col>
         </Row>
-        <Row style={{ marginTop: 15 }}>
+        <Row style={{ marginTop: '1rem' }}>
           <Col key='constraints-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
             <Card>
               <CardTitle title='Constraints' />
@@ -102,12 +101,12 @@ class JobInfo extends Component {
             </Card>
           </Col>
         </Row>
-        <Row style={{ marginTop: 15 }}>
+        <Row style={{ marginTop: '1rem' }}>
           <Col key='task-groups-pane' xs={ 12 } sm={ 12 } md={ 12 } lg={ 12 }>
             <Card>
               <CardTitle title='Task Groups' />
               <CardText>
-                 { (taskGroups.length > 0) ?
+                { (taskGroups.length > 0) ?
                   <TableHelper
                     classes='table table-hover table-striped'
                     headers={ ['Name', 'Count', 'Tasks', 'Meta', 'Restart Policy', 'Constraints'] }
@@ -119,12 +118,12 @@ class JobInfo extends Component {
             </Card>
           </Col>
         </Row>
-        <Row style={{ marginTop: 15 }}>
+        <Row style={{ marginTop: '1rem' }}>
           <Col key='tasks-pane' xs={ 12 } sm={ 12 } md={ 12 } lg={ 12 }>
             <Card>
               <CardTitle title='Tasks' />
               <CardText>
-                 { (tasks.length > 0) ?
+                { (tasks.length > 0) ?
                   <TableHelper
                     classes='table table-hover table-striped'
                     headers={ ['Task Group', 'Name', 'Driver', 'CPU', 'Memory', 'Disk', 'Constraints'] }

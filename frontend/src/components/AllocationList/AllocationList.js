@@ -17,7 +17,7 @@ class AllocationList extends PureComponent {
 
   findNodeNameById (nodeId) {
     if (this.props.nodes.length === 0) {
-      return nodeId;
+      return nodeId
     }
 
     if (nodeId in nodeIdToNameCache) {

@@ -27,7 +27,13 @@ const getJobStatisticsHeader = () => {
   const output = []
 
   summaryLabels.forEach((key) => {
-    output.push(<TableHeaderColumn style={ columnFormat } key={ `statistics-header-for-${key}` }>{ key }</TableHeaderColumn>)
+    output.push(
+      <TableHeaderColumn
+        style={ columnFormat }
+        key={ `statistics-header-for-${key}` }
+      >
+        { key }
+      </TableHeaderColumn>)
   })
 
   return output
@@ -157,7 +163,10 @@ class Jobs extends Component {
           {this.jobTypeFilter()}
         </div>
 
-        <Table wrapperStyle={{ overflow: 'display' }} bodyStyle={{ tableLayout: 'auto', overflowX: 'inherit', overflowY: 'inherit' }}>
+        <Table
+          wrapperStyle={{ overflow: 'display' }}
+          bodyStyle={{ tableLayout: 'auto', overflowX: 'inherit', overflowY: 'inherit' }}
+        >
           <TableHeader displaySelectAll={ false } adjustForCheckbox={ false } enableSelectAll={ false }>
             <TableRow>
               <TableHeaderColumn style={ flexibleWidth }>ID</TableHeaderColumn>
