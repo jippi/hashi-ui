@@ -1,10 +1,10 @@
-import React, { Component, PropTypes } from 'react';
-import { Card, CardTitle, CardText } from 'material-ui/Card';
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
-import { connect } from 'react-redux';
-import NomadLink from '../NomadLink/NomadLink';
-import MetaPayload from '../MetaPayload/MetaPayload';
-import FormatTime from '../FormatTime/FormatTime';
+import React, { Component, PropTypes } from 'react'
+import { Card, CardTitle, CardText } from 'material-ui/Card'
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
+import { connect } from 'react-redux'
+import NomadLink from '../NomadLink/NomadLink'
+import MetaPayload from '../MetaPayload/MetaPayload'
+import FormatTime from '../FormatTime/FormatTime'
 
 const allocProps = [
   'ID',
@@ -12,19 +12,19 @@ const allocProps = [
   'ClientStatus',
   'ClientDescription',
   'DesiredStatus',
-  'DesiredDescription',
-];
+  'DesiredDescription'
+]
 
 class AllocationInfo extends Component {
 
-  static taskState(allocation, name, states) {
+  static taskState (allocation, name, states) {
     const title = (
       <h3>
         Task state history for {allocation.JobID}.{allocation.TaskGroup}.{name} (final state: {states.State})
       </h3>
-    );
+    )
 
-    let lastEventTime = null;
+    let lastEventTime = null
 
     return (
       <Card>
@@ -44,7 +44,7 @@ class AllocationInfo extends Component {
             <TableBody preScanRows={ false } displayRowCheckbox={ false } showRowHover>
               { states.Events.map((element, index) => {
                 if (!lastEventTime) {
-                  lastEventTime = element.Time;
+                  lastEventTime = element.Time
                 }
 
                 const output = (
@@ -57,8 +57,8 @@ class AllocationInfo extends Component {
                         time={ element.Time }
                         now={ lastEventTime }
                         identifier={ allocation.ID }
-                        durationInterval="ms"
-                        durationFormat="h [hour] m [min] s [seconds]"
+                        durationInterval='ms'
+                        durationFormat='h [hour] m [min] s [seconds]'
                       />
                     </TableRowColumn>
                     <TableRowColumn style={{ width: 180 }}>
@@ -85,55 +85,55 @@ class AllocationInfo extends Component {
                       { element.ExitCode }
                     </TableRowColumn>
                   </TableRow>
-                );
+                )
 
-                lastEventTime = element.Time;
-                return output;
+                lastEventTime = element.Time
+                return output
               })}
             </TableBody>
           </Table>
         </CardText>
       </Card>
-    );
+    )
   }
 
-  render() {
-    const allocation = this.props.allocation;
-    const jobId = allocation.JobID;
-    const nodeId = allocation.NodeID;
-    const taskGroupId = allocation.TaskGroupId;
+  render () {
+    const allocation = this.props.allocation
+    const jobId = allocation.JobID
+    const nodeId = allocation.NodeID
+    const taskGroupId = allocation.TaskGroupId
 
-    const allocValues = {};
+    const allocValues = {}
     allocProps.map((allocProp) => {
-      allocValues[allocProp] = allocation[allocProp] ? allocation[allocProp] : '-';
-      return null;
-    });
+      allocValues[allocProp] = allocation[allocProp] ? allocation[allocProp] : '-'
+      return null
+    })
 
     // don't render anything big until we got the allocation from the API
     if (!jobId) {
-      return <div>Loading ...</div>;
+      return <div>Loading ...</div>
     }
 
-    allocValues.Job = <NomadLink jobId={ jobId } nodeList={ this.props.nodes } />;
+    allocValues.Job = <NomadLink jobId={ jobId } nodeList={ this.props.nodes } />
 
     allocValues.TaskGroup = (
       <NomadLink jobId={ jobId } taskGroupId={ taskGroupId } >
         {allocation.TaskGroup}
       </NomadLink>
-    );
+    )
 
-    allocValues.Node = <NomadLink nodeId={ nodeId } nodeList={ this.props.nodes } />;
+    allocValues.Node = <NomadLink nodeId={ nodeId } nodeList={ this.props.nodes } />
 
-    const states = [];
+    const states = []
     Object.keys(allocation.TaskStates || {}).forEach((key) => {
-      states.push(<br />);
-      states.push(AllocationInfo.taskState(allocation, key, allocation.TaskStates[key]));
-    });
+      states.push(<br />)
+      states.push(AllocationInfo.taskState(allocation, key, allocation.TaskStates[key]))
+    })
 
     return (
-      <div style={{ padding: 10, paddingTop: 0 }}>
+      <div style={{ padding: 0 }}>
         <Card>
-          <CardTitle title="Allocation Properties" />
+          <CardTitle title='Allocation Properties' />
           <CardText>
             <MetaPayload metaBag={ allocValues } sortKeys={ false } />
           </CardText>
@@ -141,17 +141,17 @@ class AllocationInfo extends Component {
 
         { states }
       </div>
-    );
+    )
   }
 }
 
-function mapStateToProps({ allocation, nodes }) {
-  return { allocation, nodes };
+function mapStateToProps ({ allocation, nodes }) {
+  return { allocation, nodes }
 }
 
 AllocationInfo.propTypes = {
   allocation: PropTypes.object.isRequired,
-  nodes: PropTypes.array.isRequired,
-};
+  nodes: PropTypes.array.isRequired
+}
 
-export default connect(mapStateToProps)(AllocationInfo);
+export default connect(mapStateToProps)(AllocationInfo)

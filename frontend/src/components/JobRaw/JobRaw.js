@@ -1,19 +1,19 @@
-import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
+import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
 
-import RawJson from '../RawJson/RawJson';
+import RawJson from '../RawJson/RawJson'
 
 const JobRaw = ({ job }) =>
-  <div className="tab-pane active">
+  <div className='tab-pane active'>
     <RawJson json={ job } />
-  </div>;
+  </div>
 
-function mapStateToProps({ job }) {
-  return { job };
+function mapStateToProps ({ job }) {
+  return { job }
 }
 
 JobRaw.propTypes = {
-  job: PropTypes.object.isRequired,
-};
+  job: PropTypes.object.isRequired
+}
 
-export default connect(mapStateToProps)(JobRaw);
+export default connect(mapStateToProps)(JobRaw)

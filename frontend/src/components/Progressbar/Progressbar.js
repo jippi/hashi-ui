@@ -1,9 +1,9 @@
-import React, { Component, PropTypes } from 'react';
-import { ProgressBar } from 'react-bootstrap';
+import React, { Component, PropTypes } from 'react'
+import { ProgressBar } from 'react-bootstrap'
 
 class Progressbar extends Component {
 
-  colorIndex(index) {
+  colorIndex (index) {
     return {
             // client status
       ready: 'success',
@@ -31,22 +31,22 @@ class Progressbar extends Component {
       starting: 'warning',
       queued: 'info',
       failed: 'danger',
-      lost: 'danger',
-    }[index];
+      lost: 'danger'
+    }[index]
   }
 
-  render() {
-    const keys = Object.keys(this.props.data);
-    const normalizedValues = {};
-    keys.forEach(key => (normalizedValues[key.toLowerCase()] = this.props.data[key]));
-    const normalizedKeys = keys.map(string => string.toLowerCase());
+  render () {
+    const keys = Object.keys(this.props.data)
+    const normalizedValues = {}
+    keys.forEach(key => (normalizedValues[key.toLowerCase()] = this.props.data[key]))
+    const normalizedKeys = keys.map(string => string.toLowerCase())
     const sum = normalizedKeys.reduce((previous, currentValue) => {
-      return previous + normalizedValues[currentValue];
-    }, 0);
+      return previous + normalizedValues[currentValue]
+    }, 0)
 
     return (
-      <div className="card">
-        <div className="content">
+      <div className='card'>
+        <div className='content'>
           <h5>{ this.props.title }</h5>
 
           <ProgressBar>
@@ -59,7 +59,7 @@ class Progressbar extends Component {
                   now={ normalizedValues[index] }
                   key={ index }
                 />
-              );
+              )
             })}
           </ProgressBar>
 
@@ -69,17 +69,17 @@ class Progressbar extends Component {
                 <i className={ `fa fa-circle text-${this.colorIndex(index)}` }></i>
                 { index } ({ normalizedValues[index] })
                     </span>
-            );
+            )
           })}
         </div>
       </div>
-    );
+    )
   }
 }
 
 Progressbar.propTypes = {
   data: PropTypes.object.isRequired,
-  title: PropTypes.string.isRequired,
-};
+  title: PropTypes.string.isRequired
+}
 
-export default Progressbar;
+export default Progressbar

@@ -1,19 +1,19 @@
-import Paper from 'material-ui/Paper';
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import NomadLink from '../NomadLink/NomadLink';
-import TableHelper from '../TableHelper/TableHelper';
-import MetaPayload from '../MetaPayload/MetaPayload';
-import ConstraintTable from '../ConstraintTable/ConstraintTable';
+import Paper from 'material-ui/Paper'
+import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
+import NomadLink from '../NomadLink/NomadLink'
+import TableHelper from '../TableHelper/TableHelper'
+import MetaPayload from '../MetaPayload/MetaPayload'
+import ConstraintTable from '../ConstraintTable/ConstraintTable'
 
-const jobProps = ['ID', 'Name', 'Region', 'Datacenters', 'Status', 'Priority'];
+const jobProps = ['ID', 'Name', 'Region', 'Datacenters', 'Status', 'Priority']
 
 class JobInfo extends Component {
 
-  render() {
-    const tasks = [];
-    const job = this.props.job;
-    const jobMetaBag = job.Meta || {};
+  render () {
+    const tasks = []
+    const job = this.props.job
+    const jobMetaBag = job.Meta || {}
 
     // Build the task groups table
     const taskGroups = job.TaskGroups.map((taskGroup) => {
@@ -36,11 +36,11 @@ class JobInfo extends Component {
             <td>{ task.Resources.DiskMB }</td>
             <td><ConstraintTable idPrefix={ task.ID } asTooltip constraints={ task.Constraints } /></td>
           </tr>
-                );
-        return null;
-      });
+                )
+        return null
+      })
 
-      const taskGroupMeta = taskGroup.Meta || {};
+      const taskGroupMeta = taskGroup.Meta || {}
       return (
         <tr key={ taskGroup.ID }>
           <td>
@@ -54,48 +54,48 @@ class JobInfo extends Component {
           <td>{ taskGroup.RestartPolicy.Mode }</td>
           <td><ConstraintTable idPrefix={ taskGroup.ID } asTooltip constraints={ taskGroup.Constraints } /></td>
         </tr>
-      );
-    });
+      )
+    })
 
     return (
-      <div className="tab-pane active">
-        <div className="row">
-          <Paper zDepth={2}>
+      <div className='tab-pane active'>
+        <div className='row'>
+          <Paper zDepth={ 2 }>
             <legend>Job Properties</legend>
-            <dl className="dl-horizontal">
+            <dl className='dl-horizontal'>
               { jobProps.map((jobProp) => {
-                let jobPropValue = this.props.job[jobProp];
+                let jobPropValue = this.props.job[jobProp]
                 if (Array.isArray(jobPropValue)) {
-                  jobPropValue = jobPropValue.join(', ');
+                  jobPropValue = jobPropValue.join(', ')
                 }
 
-                const result = [];
-                result.push(<dt>{ jobProp }</dt>);
-                result.push(<dd>{ jobPropValue }</dd>);
+                const result = []
+                result.push(<dt>{ jobProp }</dt>)
+                result.push(<dd>{ jobPropValue }</dd>)
 
-                return result;
+                return result
               }, this)}
             </dl>
           </Paper>
-          <div className="col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column">
+          <div className='col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column'>
             <legend>Meta Properties</legend>
-            <MetaPayload dtWithClass="wide" metaBag={ jobMetaBag } />
+            <MetaPayload dtWithClass='wide' metaBag={ jobMetaBag } />
           </div>
         </div>
 
-        <div className="row">
-          <div className="col-lg-6 col-md-6 col-sm-12 col-sx-12 tab-column">
+        <div className='row'>
+          <div className='col-lg-6 col-md-6 col-sm-12 col-sx-12 tab-column'>
             <legend>Constraints</legend>
             <ConstraintTable idPrefix={ this.props.job.ID } constraints={ this.props.job.Constraints } />
           </div>
         </div>
 
-        <div className="row">
-          <div className="col-lg-12 col-md-12 col-sm-12 col-sx-12 tab-column">
+        <div className='row'>
+          <div className='col-lg-12 col-md-12 col-sm-12 col-sx-12 tab-column'>
             <legend>Task Groups</legend>
             { (taskGroups.length > 0) ?
               <TableHelper
-                classes="table table-hover table-striped"
+                classes='table table-hover table-striped'
                 headers={ ['Name', 'Count', 'Tasks', 'Meta', 'Restart Policy', 'Constraints'] }
                 body={ taskGroups }
               />
@@ -104,12 +104,12 @@ class JobInfo extends Component {
           </div>
         </div>
 
-        <div className="row">
-          <div className="col-lg-12 col-md-12 col-sm-12 col-sx-12 tab-column">
+        <div className='row'>
+          <div className='col-lg-12 col-md-12 col-sm-12 col-sx-12 tab-column'>
             <legend>Tasks</legend>
             { (tasks.length > 0) ?
               <TableHelper
-                classes="table table-hover table-striped"
+                classes='table table-hover table-striped'
                 headers={ ['Task Group', 'Name', 'Driver', 'CPU', 'Memory', 'Disk', 'Constraints'] }
                 body={ tasks }
               />
@@ -118,25 +118,24 @@ class JobInfo extends Component {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
 JobInfo.defaultProps = {
   job: {
-    constraints: [],
+    constraints: []
   },
   allocations: {},
-  evaluations: {},
-};
+  evaluations: {}
+}
 
-
-function mapStateToProps({ job, allocations, evaluations }) {
-  return { job, allocations, evaluations };
+function mapStateToProps ({ job, allocations, evaluations }) {
+  return { job, allocations, evaluations }
 }
 
 JobInfo.propTypes = {
-  job: PropTypes.object.isRequired,
-};
+  job: PropTypes.object.isRequired
+}
 
-export default connect(mapStateToProps)(JobInfo);
+export default connect(mapStateToProps)(JobInfo)

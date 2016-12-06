@@ -1,65 +1,65 @@
-import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
-import AllocationListRow from '../AllocationListRow/AllocationListRow';
+import React, { Component, PropTypes } from 'react'
+import { Link } from 'react-router'
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table'
+import SelectField from 'material-ui/SelectField'
+import MenuItem from 'material-ui/MenuItem'
+import AllocationListRow from '../AllocationListRow/AllocationListRow'
 
 const jobHeaderColumn = display =>
-  (display ? <TableHeaderColumn>Job</TableHeaderColumn> : null);
+  (display ? <TableHeaderColumn>Job</TableHeaderColumn> : null)
 
 const clientHeaderColumn = display =>
-  (display ? <TableHeaderColumn width="120">Client</TableHeaderColumn> : null);
+  (display ? <TableHeaderColumn width='120'>Client</TableHeaderColumn> : null)
 
-const nodeIdToNameCache = {};
+const nodeIdToNameCache = {}
 
 class AllocationList extends Component {
 
-  findNodeNameById(nodeId) {
+  findNodeNameById (nodeId) {
     if (nodeId in nodeIdToNameCache) {
-      return nodeIdToNameCache[nodeId];
+      return nodeIdToNameCache[nodeId]
     }
 
     const r = Object.keys(this.props.nodes)
             .filter(node =>
                 this.props.nodes[node].ID === nodeId
-            );
+            )
 
     if (r.length !== 0) {
-      nodeIdToNameCache[nodeId] = this.props.nodes[r].Name;
+      nodeIdToNameCache[nodeId] = this.props.nodes[r].Name
     } else {
-      nodeIdToNameCache[nodeId] = nodeId;
+      nodeIdToNameCache[nodeId] = nodeId
     }
 
-    return nodeIdToNameCache[nodeId];
+    return nodeIdToNameCache[nodeId]
   }
 
-  filteredAllocations() {
-    const query = this.props.location.query || {};
-    let allocations = this.props.allocations;
+  filteredAllocations () {
+    const query = this.props.location.query || {}
+    let allocations = this.props.allocations
 
     if ('status' in query) {
-      allocations = allocations.filter(allocation => allocation.ClientStatus === query.status);
+      allocations = allocations.filter(allocation => allocation.ClientStatus === query.status)
     }
 
     if ('client' in query) {
-      allocations = allocations.filter(allocation => allocation.NodeID === query.client);
+      allocations = allocations.filter(allocation => allocation.NodeID === query.client)
     }
 
     if ('job' in query) {
-      allocations = allocations.filter(allocation => allocation.JobID === query.job);
+      allocations = allocations.filter(allocation => allocation.JobID === query.job)
     }
 
-    return allocations;
+    return allocations
   }
 
-  clientStatusFilter() {
-    const location = this.props.location;
-    const query = this.props.location.query || {};
+  clientStatusFilter () {
+    const location = this.props.location
+    const query = this.props.location.query || {}
 
-    let title = 'Client Status';
+    let title = 'Client Status'
     if ('status' in query) {
-      title = <span>{title}: <code>{ query.status }</code></span>;
+      title = <span>{title}: <code>{ query.status }</code></span>
     }
 
     return (
@@ -71,90 +71,90 @@ class AllocationList extends Component {
         <MenuItem><Link to={ location.pathname } query={{ ...query, status: 'lost' }}>Lost</Link></MenuItem>
         <MenuItem><Link to={ location.pathname } query={{ ...query, status: 'failed' }}>Failed</Link></MenuItem>
       </SelectField>
-    );
+    )
   }
 
-  jobIdFilter() {
-    const location = this.props.location;
-    const query = this.props.location.query || {};
+  jobIdFilter () {
+    const location = this.props.location
+    const query = this.props.location.query || {}
 
-    let title = 'Job';
+    let title = 'Job'
     if ('job' in query) {
-      title = <span>{title}: <code>{ query.job }</code></span>;
+      title = <span>{title}: <code>{ query.job }</code></span>
     }
 
     const jobs = this.props.allocations
           .map((allocation) => {
-            return allocation.JobID;
+            return allocation.JobID
           })
           .filter((v, i, a) => {
-            return a.indexOf(v) === i;
+            return a.indexOf(v) === i
           })
           .map((job) => {
             return (
               <MenuItem key={ job }>
                 <Link to={ location.pathname } query={{ ...query, job }}>{ job }</Link>
               </MenuItem>
-            );
-          });
+            )
+          })
 
     jobs.unshift(
-      <MenuItem key="any-job">
+      <MenuItem key='any-job'>
         <Link to={ location.pathname } query={{ ...query, job: undefined }}>- Any -</Link>
       </MenuItem>
-    );
+    )
 
     return (
       <SelectField floatingLabelText={ title } maxHeight={ 200 }>{ jobs }</SelectField>
-    );
+    )
   }
 
-  clientFilter() {
-    const location = this.props.location;
-    const query = this.props.location.query || {};
+  clientFilter () {
+    const location = this.props.location
+    const query = this.props.location.query || {}
 
-    let title = 'Client';
+    let title = 'Client'
 
     if ('client' in query) {
-      title = <span>{title}: <code>{ this.findNodeNameById(query.client) }</code></span>;
+      title = <span>{title}: <code>{ this.findNodeNameById(query.client) }</code></span>
     }
 
     const clients = this.props.allocations
           .map((allocation) => {
-            return allocation.NodeID;
+            return allocation.NodeID
           })
           .filter((v, i, a) => {
-            return a.indexOf(v) === i;
+            return a.indexOf(v) === i
           })
           .map((client) => {
             return (
               <MenuItem key={ client }>
                 <Link to={ location.pathname } query={{ ...query, client }}>{ this.findNodeNameById(client) }</Link>
               </MenuItem>
-            );
-          });
+            )
+          })
 
     clients.unshift(
-      <MenuItem key="any-client">
+      <MenuItem key='any-client'>
         <Link to={ location.pathname } query={{ ...query, client: undefined }}>- Any -</Link>
       </MenuItem>
-    );
+    )
 
     return (
       <SelectField floatingLabelText={ title } maxHeight={ 200 }>
         { clients }
       </SelectField>
-    );
+    )
   }
 
-  render() {
-    const props = this.props;
-    const showJobColumn = this.props.showJobColumn;
-    const showClientColumn = this.props.showClientColumn;
+  render () {
+    const props = this.props
+    const showJobColumn = this.props.showJobColumn
+    const showClientColumn = this.props.showClientColumn
 
     return (
       <div>
-        <div className="inline-pad">
+        <div className='inline-pad'>
           { this.clientFilter() }
               &nbsp;
           { this.clientStatusFilter() }
@@ -177,11 +177,11 @@ class AllocationList extends Component {
           </TableHeader>
           <TableBody preScanRows={ false } showRowHover>
             {this.filteredAllocations().map((allocation) => {
-              return <AllocationListRow { ...props } key={ allocation.ID } allocation={ allocation } />;
+              return <AllocationListRow { ...props } key={ allocation.ID } allocation={ allocation } />
             })}
           </TableBody>
         </Table>
-      </div>);
+      </div>)
   }
 }
 
@@ -191,8 +191,8 @@ AllocationList.defaultProps = {
   location: {},
 
   showJobColumn: true,
-  showClientColumn: true,
-};
+  showClientColumn: true
+}
 
 AllocationList.propTypes = {
   allocations: PropTypes.array.isRequired,
@@ -200,7 +200,7 @@ AllocationList.propTypes = {
   location: PropTypes.object.isRequired,
 
   showJobColumn: PropTypes.bool.isRequired,
-  showClientColumn: PropTypes.bool.isRequired,
-};
+  showClientColumn: PropTypes.bool.isRequired
+}
 
-export default AllocationList;
+export default AllocationList

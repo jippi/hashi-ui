@@ -1,19 +1,19 @@
-import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
+import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
 
-import RawJson from '../RawJson/RawJson';
+import RawJson from '../RawJson/RawJson'
 
 const EvaluationRaw = ({ evaluation }) =>
-  <div className="tab-pane active">
+  <div className='tab-pane active'>
     <RawJson json={ evaluation } />
-  </div>;
+  </div>
 
-function mapStateToProps({ evaluation }) {
-  return { evaluation };
+function mapStateToProps ({ evaluation }) {
+  return { evaluation }
 }
 
 EvaluationRaw.propTypes = {
-  evaluation: PropTypes.object.isRequired,
-};
+  evaluation: PropTypes.object.isRequired
+}
 
-export default connect(mapStateToProps)(EvaluationRaw);
+export default connect(mapStateToProps)(EvaluationRaw)

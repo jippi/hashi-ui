@@ -1,5 +1,5 @@
-import React, { PropTypes } from 'react';
-import { Glyphicon } from 'react-bootstrap';
+import React, { PropTypes } from 'react'
+import { Glyphicon } from 'react-bootstrap'
 
 const FormatBoolean = ({
     title,
@@ -10,28 +10,28 @@ const FormatBoolean = ({
     trueText,
     falseText,
     falseIcon,
-    trueIcon,
+    trueIcon
 }) => {
-  let colorClass;
-  let icon;
-  let text;
+  let colorClass
+  let icon
+  let text
 
   if (withColor) {
-    colorClass = value ? 'text-success' : 'text-danger';
+    colorClass = value ? 'text-success' : 'text-danger'
   }
 
   if (withIcon) {
-    icon = <Glyphicon glyph={ value ? trueIcon : falseIcon } />;
+    icon = <Glyphicon glyph={ value ? trueIcon : falseIcon } />
   }
 
   if (withText) {
-    text = <span>{ value ? trueText : falseText }</span>;
+    text = <span>{ value ? trueText : falseText }</span>
   }
 
   return (
     <span title={ title } className={ colorClass }>{ icon } { text }</span>
-  );
-};
+  )
+}
 
 FormatBoolean.defaultProps = {
   value: null,
@@ -45,8 +45,8 @@ FormatBoolean.defaultProps = {
   trueIcon: 'ok',
 
   falseText: 'no',
-  falseIcon: 'remove',
-};
+  falseIcon: 'remove'
+}
 
 FormatBoolean.propTypes = {
   value: PropTypes.bool.isRequired,
@@ -60,7 +60,7 @@ FormatBoolean.propTypes = {
   trueIcon: PropTypes.string.isRequired,
 
   falseText: PropTypes.string.isRequired,
-  falseIcon: PropTypes.string.isRequired,
-};
+  falseIcon: PropTypes.string.isRequired
+}
 
-export default FormatBoolean;
+export default FormatBoolean

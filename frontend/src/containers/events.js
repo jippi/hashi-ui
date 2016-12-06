@@ -1,18 +1,18 @@
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import NomadLink from '../components/NomadLink/NomadLink';
-import FormatTime from '../components/FormatTime/FormatTime';
+import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
+import NomadLink from '../components/NomadLink/NomadLink'
+import FormatTime from '../components/FormatTime/FormatTime'
 
 class Events extends Component {
 
-  render() {
-    const taskEvents = [];
+  render () {
+    const taskEvents = []
     this.props.allocations.forEach((allocation) => {
       if (allocation.TaskStates != null) {
         Object.keys(allocation.TaskStates).forEach((task) => {
           allocation.TaskStates[task].Events.reverse().forEach((event) => {
-            if (taskEvents.length === 10) return;
-            const eventID = `${task}.${event.Time}`;
+            if (taskEvents.length === 10) return
+            const eventID = `${task}.${event.Time}`
             taskEvents.push(
               <tr key={ eventID }>
                 <td>
@@ -32,21 +32,21 @@ class Events extends Component {
                 </td>
                 <td><FormatTime time={ event.Time } /></td>
               </tr>
-                        );
-          });
-        });
+                        )
+          })
+        })
       }
-    });
+    })
 
     return (
-      <div className="row">
-        <div className="col-md-12">
-          <div className="card">
-            <div className="header">
-              <h4 className="title">Task Events</h4>
+      <div className='row'>
+        <div className='col-md-12'>
+          <div className='card'>
+            <div className='header'>
+              <h4 className='title'>Task Events</h4>
             </div>
-            <div className="content table-responsive table-full-width">
-              <table className="table table-hover table-striped">
+            <div className='content table-responsive table-full-width'>
+              <table className='table table-hover table-striped'>
                 <thead>
                   <tr>
                     <th>Task</th>
@@ -63,16 +63,16 @@ class Events extends Component {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
-function mapStateToProps({ allocations }) {
-  return { allocations };
+function mapStateToProps ({ allocations }) {
+  return { allocations }
 }
 
 Events.propTypes = {
-  allocations: PropTypes.array.isRequired,
-};
+  allocations: PropTypes.array.isRequired
+}
 
-export default connect(mapStateToProps)(Events);
+export default connect(mapStateToProps)(Events)

@@ -1,21 +1,21 @@
-import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
+import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
 
-import RawJson from '../RawJson/RawJson';
+import RawJson from '../RawJson/RawJson'
 
 const ClientRaw = ({ node }) =>
-  <div className="tab-pane active">
-    <div className="content">
+  <div className='tab-pane active'>
+    <div className='content'>
       <RawJson json={ node } />
     </div>
-  </div>;
+  </div>
 
-function mapStateToProps({ node }) {
-  return { node };
+function mapStateToProps ({ node }) {
+  return { node }
 }
 
 ClientRaw.propTypes = {
-  node: PropTypes.object.isRequired,
-};
+  node: PropTypes.object.isRequired
+}
 
-export default connect(mapStateToProps)(ClientRaw);
+export default connect(mapStateToProps)(ClientRaw)

@@ -1,14 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { browserHistory } from 'react-router';
-import { Provider } from 'react-redux';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { browserHistory } from 'react-router'
+import { Provider } from 'react-redux'
 
 // import Perf from 'react-addons-perf';
 // import 'bootstrap/dist/css/bootstrap.min.css';
-import '../assets/nomad-ui.css';
+import '../assets/nomad-ui.css'
 
-import AppRouter from './router';
-import configureStore from './store';
+import AppRouter from './router'
+import configureStore from './store'
 
 // Perf.start();
 
@@ -18,9 +18,9 @@ configureStore().then((store) => {
       <AppRouter history={ browserHistory } />
     </Provider>,
     document.getElementById('app')
-   );
+   )
 }).catch((err) => {
-  console.log(err);
-});
+  console.log(err)
+})
 
 // window.Perf = Perf;

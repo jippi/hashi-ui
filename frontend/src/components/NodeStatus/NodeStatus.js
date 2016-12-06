@@ -1,28 +1,28 @@
-import React, { PropTypes } from 'react';
-import FormatBoolean from '../FormatBoolean/FormatBoolean';
+import React, { PropTypes } from 'react'
+import FormatBoolean from '../FormatBoolean/FormatBoolean'
 
 const NodeStatus = ({ value }) => {
   switch (value) {
   case 'initializing':
-    return (<span>initializing</span>);
+    return (<span>initializing</span>)
 
   case 'ready':
-    return (<FormatBoolean value title={ value } />);
+    return (<FormatBoolean value title={ value } />)
 
   case 'down':
-    return (<FormatBoolean value={ false } title={ value } />);
+    return (<FormatBoolean value={ false } title={ value } />)
 
   default:
-    return (<span>{value}</span>);
+    return (<span>{value}</span>)
   }
-};
+}
 
 NodeStatus.defaultProps = {
-  value: null,
-};
+  value: null
+}
 
 NodeStatus.propTypes = {
-  value: PropTypes.string.isRequired,
-};
+  value: PropTypes.string.isRequired
+}
 
-export default NodeStatus;
+export default NodeStatus

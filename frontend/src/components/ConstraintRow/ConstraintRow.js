@@ -1,13 +1,13 @@
-import React, { PropTypes } from 'react';
+import React, { PropTypes } from 'react'
 
 const ConstraintRow = ({ constraint }) => {
     // unique case as it does not expose any LTarget or RTarget
   if (constraint.Operand === 'distinct_hosts') {
     return (
       <tr>
-        <td colSpan="3"><code>Distinct Hosts</code></td>
+        <td colSpan='3'><code>Distinct Hosts</code></td>
       </tr>
-    );
+    )
   }
 
   return (
@@ -16,15 +16,15 @@ const ConstraintRow = ({ constraint }) => {
       <td>{ constraint.Operand }</td>
       <td><code>{ constraint.RTarget }</code></td>
     </tr>
-  );
-};
+  )
+}
 
 ConstraintRow.defaultProps = {
-  constraint: {},
-};
+  constraint: {}
+}
 
 ConstraintRow.propTypes = {
-  constraint: PropTypes.object.isRequired,
-};
+  constraint: PropTypes.object.isRequired
+}
 
-export default ConstraintRow;
+export default ConstraintRow

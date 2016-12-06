@@ -1,19 +1,19 @@
-import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
+import React, { PropTypes } from 'react'
+import { connect } from 'react-redux'
 
-import RawJson from '../RawJson/RawJson';
+import RawJson from '../RawJson/RawJson'
 
 const AllocationRaw = ({ allocation }) =>
-  <div className="tab-pane active">
+  <div className='tab-pane active'>
     <RawJson json={ allocation } />
-  </div>;
+  </div>
 
-function mapStateToProps({ allocation }) {
-  return { allocation };
+function mapStateToProps ({ allocation }) {
+  return { allocation }
 }
 
 AllocationRaw.propTypes = {
-  allocation: PropTypes.object.isRequired,
-};
+  allocation: PropTypes.object.isRequired
+}
 
-export default connect(mapStateToProps)(AllocationRaw);
+export default connect(mapStateToProps)(AllocationRaw)

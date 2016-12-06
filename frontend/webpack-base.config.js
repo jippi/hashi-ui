@@ -17,7 +17,11 @@ module.exports = {
           }
         ],
         loaders: [
-
+          {
+            test: /\.css$/,
+            loader: 'style!css?modules',
+            include: /flexboxgrid/
+          }
         ]
     },
     eslint: {

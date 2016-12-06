@@ -1,14 +1,14 @@
 .PHONY: build
 build:
 	@echo "=> building frontend ..."
-	npm install
-	npm run-script build
+	yarn install
+	yarn run build
 
 .PHONY: lint
 lint:
 	@echo "=> running linter ..."
-	@test -e node_modules || npm install
-	npm run-script lint
+	@test -e node_modules || yarn install
+	yarn run lint
 
 .PHONY: clean
 clean:

@@ -1,56 +1,56 @@
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import Tabs from '../components/Tabs/Tabs';
-import { WATCH_MEMBER, UNWATCH_MEMBER } from '../sagas/event';
+import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
+import Tabs from '../components/Tabs/Tabs'
+import { WATCH_MEMBER, UNWATCH_MEMBER } from '../sagas/event'
 
 class Server extends Component {
 
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
 
     this.state = {
       tabs: [
         {
           name: 'Info',
-          path: 'info',
+          path: 'info'
         },
         {
           name: 'Raw',
-          path: 'raw',
-        },
-      ],
-    };
+          path: 'raw'
+        }
+      ]
+    }
   }
 
-  componentWillMount() {
+  componentWillMount () {
     this.props.dispatch({
       type: WATCH_MEMBER,
-      payload: this.props.params.memberId,
-    });
+      payload: this.props.params.memberId
+    })
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.props.dispatch({
       type: UNWATCH_MEMBER,
-      payload: this.props.params.memberId,
-    });
+      payload: this.props.params.memberId
+    })
   }
 
-  render() {
-    if (this.props.member == null) return (null);
+  render () {
+    if (this.props.member == null) return (null)
 
-    const path = this.props.location.pathname;
-    const tabSlug = path.split('/').pop();
-    const basePath = path.substring(0, path.lastIndexOf('/'));
+    const path = this.props.location.pathname
+    const tabSlug = path.split('/').pop()
+    const basePath = path.substring(0, path.lastIndexOf('/'))
 
     return (
-      <div className="row">
-        <div className="col-md-12">
-          <div className="card">
-            <div className="header">
-              <h4 className="title">Server: { this.props.member.Name }</h4>
+      <div className='row'>
+        <div className='col-md-12'>
+          <div className='card'>
+            <div className='header'>
+              <h4 className='title'>Server: { this.props.member.Name }</h4>
             </div>
-            <div className="content">
+            <div className='content'>
               <Tabs tabs={ this.state.tabs } tabSlug={ tabSlug } basePath={ basePath }>
                 { this.props.children }
               </Tabs>
@@ -58,12 +58,12 @@ class Server extends Component {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
-function mapStateToProps({ member }) {
-  return { member };
+function mapStateToProps ({ member }) {
+  return { member }
 }
 
 Server.propTypes = {
@@ -71,7 +71,7 @@ Server.propTypes = {
   params: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   member: PropTypes.object.isRequired,
-  children: PropTypes.object.isRequired,
-};
+  children: PropTypes.object.isRequired
+}
 
-export default connect(mapStateToProps)(Server);
+export default connect(mapStateToProps)(Server)

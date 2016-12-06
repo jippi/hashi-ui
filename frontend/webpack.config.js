@@ -41,7 +41,8 @@ webpackConfig = merge(webpackConfig, {
         loaders: [
             {
                 test: /\.css$/,
-                loader: 'style!css!postcss'
+                loader: 'style!css!postcss',
+                exclude: /flexboxgrid/
             },
             {
                 test: /\.jsx?$/,

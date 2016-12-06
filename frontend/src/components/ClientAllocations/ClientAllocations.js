@@ -1,40 +1,40 @@
-import React, { PureComponent, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import AllocationList from '../AllocationList/AllocationList';
+import React, { PureComponent, PropTypes } from 'react'
+import { connect } from 'react-redux'
+import AllocationList from '../AllocationList/AllocationList'
 
 class ClientAllocations extends PureComponent {
 
-  render() {
-    const nodeId = this.props.params.nodeId;
-    const allocs = this.props.allocations.filter(allocation => allocation.NodeID === nodeId);
+  render () {
+    const nodeId = this.props.params.nodeId
+    const allocs = this.props.allocations.filter(allocation => allocation.NodeID === nodeId)
 
     return (
-      <div className="tab-pane active">
+      <div className='tab-pane active'>
         <AllocationList
           showClientColumn={ false }
           allocations={ allocs }
           location={ this.props.location }
-          containerClassName="nested-content"
+          containerClassName='nested-content'
         />
       </div>
-    );
+    )
   }
 }
 
-function mapStateToProps({ allocations }) {
-  return { allocations };
+function mapStateToProps ({ allocations }) {
+  return { allocations }
 }
 
 ClientAllocations.defaultProps = {
   allocations: [],
   params: {},
-  location: {},
-};
+  location: {}
+}
 
 ClientAllocations.propTypes = {
   allocations: PropTypes.array.isRequired,
   params: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
-};
+  location: PropTypes.object.isRequired
+}
 
-export default connect(mapStateToProps)(ClientAllocations);
+export default connect(mapStateToProps)(ClientAllocations)

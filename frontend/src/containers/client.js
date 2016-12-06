@@ -1,64 +1,64 @@
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import Tabs from '../components/Tabs/Tabs';
-import { WATCH_NODE, UNWATCH_NODE } from '../sagas/event';
+import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
+import Tabs from '../components/Tabs/Tabs'
+import { WATCH_NODE, UNWATCH_NODE } from '../sagas/event'
 
 class Client extends Component {
 
-  constructor(props) {
-    super(props);
+  constructor (props) {
+    super(props)
 
     this.state = {
       tabs: [
         {
           name: 'Info',
-          path: 'info',
+          path: 'info'
         },
         {
           name: 'Allocations',
-          path: 'allocations',
+          path: 'allocations'
         },
         {
           name: 'Evaluations',
-          path: 'evaluations',
+          path: 'evaluations'
         },
         {
           name: 'Raw',
-          path: 'raw',
-        },
-      ],
-    };
+          path: 'raw'
+        }
+      ]
+    }
   }
 
-  componentWillMount() {
+  componentWillMount () {
     this.props.dispatch({
       type: WATCH_NODE,
-      payload: this.props.params.nodeId,
-    });
+      payload: this.props.params.nodeId
+    })
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.props.dispatch({
       type: UNWATCH_NODE,
-      payload: this.props.params.nodeId,
-    });
+      payload: this.props.params.nodeId
+    })
   }
 
-  render() {
-    if (this.props.node == null) return (null);
+  render () {
+    if (this.props.node == null) return (null)
 
-    const path = this.props.location.pathname;
-    const tabSlug = path.split('/').pop();
-    const basePath = path.substring(0, path.lastIndexOf('/'));
+    const path = this.props.location.pathname
+    const tabSlug = path.split('/').pop()
+    const basePath = path.substring(0, path.lastIndexOf('/'))
 
     return (
-      <div className="row">
-        <div className="col-md-12">
-          <div className="card">
-            <div className="header">
-              <h4 className="title">Client: { this.props.node.Name }</h4>
+      <div className='row'>
+        <div className='col-md-12'>
+          <div className='card'>
+            <div className='header'>
+              <h4 className='title'>Client: { this.props.node.Name }</h4>
             </div>
-            <div className="tab-content">
+            <div className='tab-content'>
               <Tabs tabs={ this.state.tabs } tabSlug={ tabSlug } basePath={ basePath }>
                 { this.props.children }
               </Tabs>
@@ -66,12 +66,12 @@ class Client extends Component {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
 
-function mapStateToProps({ node }) {
-  return { node };
+function mapStateToProps ({ node }) {
+  return { node }
 }
 
 Client.propTypes = {
@@ -79,7 +79,7 @@ Client.propTypes = {
   params: PropTypes.object.isRequired,
   node: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  children: PropTypes.object.isRequired,
-};
+  children: PropTypes.object.isRequired
+}
 
-export default connect(mapStateToProps)(Client);
+export default connect(mapStateToProps)(Client)

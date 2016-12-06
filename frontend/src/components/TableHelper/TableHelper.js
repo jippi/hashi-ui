@@ -1,5 +1,5 @@
-import React, { PropTypes } from 'react';
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
+import React, { PropTypes } from 'react'
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table'
 
 const TableHelper = ({ classes, headers, body }) =>
   <Table selectable={ false } showCheckboxes={ false } className={ classes }>
@@ -11,12 +11,12 @@ const TableHelper = ({ classes, headers, body }) =>
     <TableBody preScanRows={ false } showRowHover>
       { body }
     </TableBody>
-  </Table>;
+  </Table>
 
 TableHelper.propTypes = {
   classes: PropTypes.string.isRequired,
   headers: PropTypes.array.isRequired,
-  body: PropTypes.array.isRequired,
-};
+  body: PropTypes.array.isRequired
+}
 
-export default TableHelper;
+export default TableHelper

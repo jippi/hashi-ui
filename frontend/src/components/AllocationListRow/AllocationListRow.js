@@ -1,52 +1,52 @@
-import FontIcon from 'material-ui/FontIcon';
-import React, { Component, PropTypes } from 'react';
-import ReactTooltip from 'react-tooltip';
-import { TableRow, TableRowColumn } from 'material-ui/Table';
+import FontIcon from 'material-ui/FontIcon'
+import React, { Component, PropTypes } from 'react'
+import ReactTooltip from 'react-tooltip'
+import { TableRow, TableRowColumn } from 'material-ui/Table'
 
-import AllocationStatusIcon from '../AllocationStatusIcon/AllocationStatusIcon';
-import FormatTime from '../FormatTime/FormatTime';
-import NomadLink from '../NomadLink/NomadLink';
+import AllocationStatusIcon from '../AllocationStatusIcon/AllocationStatusIcon'
+import FormatTime from '../FormatTime/FormatTime'
+import NomadLink from '../NomadLink/NomadLink'
 
 const getAllocationNumberFromName = (allocationName) => {
-  const match = /[\d+]/.exec(allocationName);
-  return match[0];
-};
+  const match = /[\d+]/.exec(allocationName)
+  return match[0]
+}
 
 const jobColumn = (allocation, display) =>
-  (display ? <TableRowColumn><NomadLink jobId={ allocation.JobID } /></TableRowColumn> : null);
+  (display ? <TableRowColumn><NomadLink jobId={ allocation.JobID } /></TableRowColumn> : null)
 
 const clientColumn = (allocation, nodes, display) =>
   (display
     ?
       <TableRowColumn style={{ width: 120 }}>
-        <NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short="true" />
+        <NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short='true' />
       </TableRowColumn>
     :
       null
-  );
+  )
 
 const renderDesiredStatus = (allocation) => {
   if (allocation.DesiredDescription) {
     return (
       <div>
         <ReactTooltip id={ `tooltip-${allocation.ID}` }>{allocation.DesiredDescription}</ReactTooltip>
-        <span data-tip data-for={ `tooltip-${allocation.ID}` } className="dotted">
+        <span data-tip data-for={ `tooltip-${allocation.ID}` } className='dotted'>
           {allocation.DesiredStatus}
         </span>
       </div>
-    );
+    )
   }
 
-  return <div>{allocation.DesiredStatus}</div>;
-};
+  return <div>{allocation.DesiredStatus}</div>
+}
 
 class AllocationListRow extends Component {
 
-  render() {
-    const allocation = this.props.allocation;
-    const nodes = this.props.nodes;
-    const showJobColumn = this.props.showJobColumn;
-    const showClientColumn = this.props.showClientColumn;
+  render () {
+    const allocation = this.props.allocation
+    const nodes = this.props.nodes
+    const showJobColumn = this.props.showJobColumn
+    const showClientColumn = this.props.showClientColumn
 
     return (
       <TableRow key={ allocation.ID } hoverable>
@@ -54,7 +54,7 @@ class AllocationListRow extends Component {
           <AllocationStatusIcon allocation={ allocation } />
         </TableRowColumn>
         <TableRowColumn style={{ width: 100 }}>
-          <NomadLink allocId={ allocation.ID } short="true" />
+          <NomadLink allocId={ allocation.ID } short='true' />
         </TableRowColumn>
         { jobColumn(allocation, showJobColumn) }
         <TableRowColumn>
@@ -70,12 +70,12 @@ class AllocationListRow extends Component {
           <FormatTime identifier={ allocation.ID } time={ allocation.CreateTime } />
         </TableRowColumn>
         <TableRowColumn style={{ width: 50 }}>
-          <NomadLink allocId={ allocation.ID } linkAppend="/files?path=/alloc/logs/">
-            <FontIcon className="material-icons">format_align_left</FontIcon>
+          <NomadLink allocId={ allocation.ID } linkAppend='/files?path=/alloc/logs/'>
+            <FontIcon className='material-icons'>format_align_left</FontIcon>
           </NomadLink>
         </TableRowColumn>
       </TableRow>
-    );
+    )
   }
 }
 
@@ -84,15 +84,15 @@ AllocationListRow.defaultProps = {
   nodes: [],
 
   showJobColumn: true,
-  showClientColumn: true,
-};
+  showClientColumn: true
+}
 
 AllocationListRow.propTypes = {
   allocation: PropTypes.object.isRequired,
   nodes: PropTypes.array.isRequired,
 
   showJobColumn: PropTypes.bool.isRequired,
-  showClientColumn: PropTypes.bool.isRequired,
-};
+  showClientColumn: PropTypes.bool.isRequired
+}
 
-export default AllocationListRow;
+export default AllocationListRow
