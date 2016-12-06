@@ -16,6 +16,10 @@ const nodeIdToNameCache = {}
 class AllocationList extends PureComponent {
 
   findNodeNameById (nodeId) {
+    if (this.props.nodes.length === 0) {
+      return nodeId;
+    }
+
     if (nodeId in nodeIdToNameCache) {
       return nodeIdToNameCache[nodeId]
     }

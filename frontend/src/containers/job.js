@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import Tabs from '../components/Tabs/Tabs'
+import ViewJobTopbar from '../components/ViewJobTopbar/ViewJobTopbar'
 import { WATCH_JOB, UNWATCH_JOB } from '../sagas/event'
 
 class Job extends Component {
@@ -53,25 +53,20 @@ class Job extends Component {
   }
 
   render () {
-    if (this.props.job == null) return (null)
-
-    const path = this.props.location.pathname
-    const tabSlug = path.split('/').pop()
-    const basePath = path.substring(0, path.lastIndexOf('/'))
+    if (this.props.job == null) {
+      return null
+    }
 
     return (
-      <div className='row'>
-        <div className='col-md-12'>
-          <div className='card'>
-            <div className='header'>
-              <h4 className='title'>Job: { this.props.job.ID }</h4>
-            </div>
-            <div className='tab-content'>
-              <Tabs tabs={ this.state.tabs } tabSlug={ tabSlug } basePath={ basePath }>
-                { this.props.children }
-              </Tabs>
-            </div>
-          </div>
+      <div>
+        <ViewJobTopbar { ...this.props } />
+
+        <div style={{ padding: 10, paddingBottom: 0 }}>
+          <h2>Job: { this.props.job.Name }</h2>
+
+          <br />
+
+          { this.props.children }
         </div>
       </div>
     )

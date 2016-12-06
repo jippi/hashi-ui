@@ -5,21 +5,15 @@ import AllocationList from '../AllocationList/AllocationList'
 class JobAllocations extends PureComponent {
 
   render () {
-    const jobId = this.props.params.jobId
-    const allocs = this.props.allocations.filter(allocation =>
-            allocation.JobID === jobId
-        )
+    const allocs = this.props.allocations.filter(allocation => allocation.JobID === this.props.params.jobId)
 
     return (
-      <div className='tab-pane active'>
-        <AllocationList
+      <AllocationList
           showJobColumn={ false }
-          containerClassName='nested-content'
           allocations={ allocs }
           location={ this.props.location }
           nodes={ this.props.nodes }
         />
-      </div>
     )
   }
 }

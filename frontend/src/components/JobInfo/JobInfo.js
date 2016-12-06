@@ -1,6 +1,8 @@
 import Paper from 'material-ui/Paper'
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { Grid, Row, Col } from 'react-flexbox-grid'
+import { Card, CardTitle, CardText } from 'material-ui/Card'
 import JobLink from '../JobLink/JobLink'
 import TableHelper from '../TableHelper/TableHelper'
 import MetaPayload from '../MetaPayload/MetaPayload'
@@ -58,66 +60,83 @@ class JobInfo extends Component {
     })
 
     return (
-      <div className='tab-pane active'>
-        <div className='row'>
-          <Paper zDepth={ 2 }>
-            <legend>Job Properties</legend>
-            <dl className='dl-horizontal'>
-              { jobProps.map((jobProp) => {
-                let jobPropValue = this.props.job[jobProp]
-                if (Array.isArray(jobPropValue)) {
-                  jobPropValue = jobPropValue.join(', ')
-                }
+      <Grid fluid style={{ padding: 0 }}>
+        <Row>
+          <Col key='properties-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
+            <Card>
+              <CardTitle title='Job Properties' />
+              <CardText>
+                <dl className='dl-horizontal'>
+                  { jobProps.map((jobProp) => {
+                    let jobPropValue = this.props.job[jobProp]
+                    if (Array.isArray(jobPropValue)) {
+                      jobPropValue = jobPropValue.join(', ')
+                    }
 
-                const result = []
-                result.push(<dt>{ jobProp }</dt>)
-                result.push(<dd>{ jobPropValue }</dd>)
+                    const result = []
+                    result.push(<dt>{ jobProp }</dt>)
+                    result.push(<dd>{ jobPropValue }</dd>)
 
-                return result
-              }, this)}
-            </dl>
-          </Paper>
-          <div className='col-lg-6 col-md-6 col-sm-6 col-sx-6 tab-column'>
-            <legend>Meta Properties</legend>
-            <MetaPayload dtWithClass='wide' metaBag={ jobMetaBag } />
-          </div>
-        </div>
-
-        <div className='row'>
-          <div className='col-lg-6 col-md-6 col-sm-12 col-sx-12 tab-column'>
-            <legend>Constraints</legend>
-            <ConstraintTable idPrefix={ this.props.job.ID } constraints={ this.props.job.Constraints } />
-          </div>
-        </div>
-
-        <div className='row'>
-          <div className='col-lg-12 col-md-12 col-sm-12 col-sx-12 tab-column'>
-            <legend>Task Groups</legend>
-            { (taskGroups.length > 0) ?
-              <TableHelper
-                classes='table table-hover table-striped'
-                headers={ ['Name', 'Count', 'Tasks', 'Meta', 'Restart Policy', 'Constraints'] }
-                body={ taskGroups }
-              />
+                    return result
+                  }, this)}
+                </dl>
+              </CardText>
+            </Card>
+          </Col>
+          <Col key='meta-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
+            <Card>
+              <CardTitle title='Meta Properties' />
+              <CardText>
+                <MetaPayload dtWithClass='wide' metaBag={ jobMetaBag } />
+              </CardText>
+            </Card>
+          </Col>
+        </Row>
+        <Row style={{ marginTop: 15 }}>
+          <Col key='constraints-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
+            <Card>
+              <CardTitle title='Constraints' />
+              <CardText>
+                <ConstraintTable idPrefix={ this.props.job.ID } constraints={ this.props.job.Constraints } />
+              </CardText>
+            </Card>
+          </Col>
+        </Row>
+        <Row style={{ marginTop: 15 }}>
+          <Col key='task-groups-pane' xs={ 12 } sm={ 12 } md={ 12 } lg={ 12 }>
+            <Card>
+              <CardTitle title='Task Groups' />
+              <CardText>
+                 { (taskGroups.length > 0) ?
+                  <TableHelper
+                    classes='table table-hover table-striped'
+                    headers={ ['Name', 'Count', 'Tasks', 'Meta', 'Restart Policy', 'Constraints'] }
+                    body={ taskGroups }
+                  />
                   : null
                 }
-          </div>
-        </div>
-
-        <div className='row'>
-          <div className='col-lg-12 col-md-12 col-sm-12 col-sx-12 tab-column'>
-            <legend>Tasks</legend>
-            { (tasks.length > 0) ?
-              <TableHelper
-                classes='table table-hover table-striped'
-                headers={ ['Task Group', 'Name', 'Driver', 'CPU', 'Memory', 'Disk', 'Constraints'] }
-                body={ tasks }
-              />
+              </CardText>
+            </Card>
+          </Col>
+        </Row>
+        <Row style={{ marginTop: 15 }}>
+          <Col key='tasks-pane' xs={ 12 } sm={ 12 } md={ 12 } lg={ 12 }>
+            <Card>
+              <CardTitle title='Tasks' />
+              <CardText>
+                 { (tasks.length > 0) ?
+                  <TableHelper
+                    classes='table table-hover table-striped'
+                    headers={ ['Task Group', 'Name', 'Driver', 'CPU', 'Memory', 'Disk', 'Constraints'] }
+                    body={ tasks }
+                  />
                   : null
                 }
-          </div>
-        </div>
-      </div>
+              </CardText>
+            </Card>
+          </Col>
+        </Row>
+      </Grid>
     )
   }
 }

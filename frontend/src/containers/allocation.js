@@ -5,31 +5,6 @@ import { WATCH_ALLOC, UNWATCH_ALLOC } from '../sagas/event'
 
 class Allocation extends Component {
 
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      tabs: [
-        {
-          name: 'Info',
-          path: 'info'
-        },
-        {
-          name: 'Files',
-          path: 'files'
-        },
-        {
-          name: 'Logs',
-          path: 'logs'
-        },
-        {
-          name: 'Raw',
-          path: 'raw'
-        }
-      ]
-    }
-  }
-
   componentWillMount () {
     this.props.dispatch({
       type: WATCH_ALLOC,
