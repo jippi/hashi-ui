@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { PureComponent, PropTypes } from 'react'
 import { Link } from 'react-router'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table'
 import SelectField from 'material-ui/SelectField'
@@ -13,7 +13,7 @@ const clientHeaderColumn = display =>
 
 const nodeIdToNameCache = {}
 
-class AllocationList extends Component {
+class AllocationList extends PureComponent {
 
   findNodeNameById (nodeId) {
     if (nodeId in nodeIdToNameCache) {
@@ -177,7 +177,7 @@ class AllocationList extends Component {
           </TableHeader>
           <TableBody preScanRows={ false } showRowHover>
             {this.filteredAllocations().map((allocation) => {
-              return <AllocationListRow { ...props } key={ allocation.ID } allocation={ allocation } />
+              return <AllocationListRow key={ allocation.ID } { ...props } allocation={ allocation } />
             })}
           </TableBody>
         </Table>

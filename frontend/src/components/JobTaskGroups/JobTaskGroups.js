@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import NomadLink from '../NomadLink/NomadLink'
+import JobLink from '../JobLink/JobLink'
 import TableHelper from '../TableHelper/TableHelper'
 import RawJson from '../RawJson/RawJson'
 import MetaPayload from '../MetaPayload/MetaPayload'
@@ -19,7 +19,7 @@ const JobTaskGroups = ({ job, location }) => {
   job.TaskGroups.forEach((taskGroup) => {
     taskGroups.push(
       <tr key={ taskGroup.ID }>
-        <td><NomadLink taskGroupId={ taskGroup.ID } jobId={ job.ID } short='true' /></td>
+        <td><JobLink taskGroupId={ taskGroup.ID } jobId={ job.ID } /></td>
         <td>{ taskGroup.Name }</td>
         <td>{ taskGroup.Count }</td>
         <td><MetaPayload metaBag={ taskGroup.Meta } asTooltip /></td>

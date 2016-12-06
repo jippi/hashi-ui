@@ -5,6 +5,11 @@ import {Tabs, Tab} from 'material-ui/Tabs'
 
 class Topbar extends PureComponent {
 
+  constructor () {
+    super()
+    this._onClick = this.handleActive.bind(this)
+  }
+
   handleActive (tab) {
     this.props.router.push(tab.props['data-route'])
   }
@@ -44,12 +49,12 @@ class Topbar extends PureComponent {
       <div>
         <AppBar title='Nomad UI' showMenuIconButton={ false } />
         <Tabs value={ this.getActiveTab() }>
-          <Tab label='Cluster' value='cluster' data-route='/cluster' onActive={ this.handleActive } />
-          <Tab label='Jobs' value='jobs' data-route='/jobs' onActive={ this.handleActive } />
-          <Tab label='Allocations' value='allocations' data-route='/allocations' onActive={ this.handleActive } />
-          <Tab label='Evaluations' value='evaluations' data-route='/evaluations' onActive={ this.handleActive } />
-          <Tab label='Clients' value='clients' data-route='/clients' onActive={ this.handleActive } />
-          <Tab label='Servers' value='servers' data-route='/servers' onActive={ this.handleActive } />
+          <Tab label='Cluster' value='cluster' data-route='/cluster' onActive={ this._onClick } />
+          <Tab label='Jobs' value='jobs' data-route='/jobs' onActive={ this._onClick } />
+          <Tab label='Allocations' value='allocations' data-route='/allocations' onActive={ this._onClick } />
+          <Tab label='Evaluations' value='evaluations' data-route='/evaluations' onActive={ this._onClick } />
+          <Tab label='Clients' value='clients' data-route='/clients' onActive={ this._onClick } />
+          <Tab label='Servers' value='servers' data-route='/servers' onActive={ this._onClick } />
         </Tabs>
       </div>
     )

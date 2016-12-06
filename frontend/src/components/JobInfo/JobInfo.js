@@ -1,7 +1,7 @@
 import Paper from 'material-ui/Paper'
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import NomadLink from '../NomadLink/NomadLink'
+import JobLink from '../JobLink/JobLink'
 import TableHelper from '../TableHelper/TableHelper'
 import MetaPayload from '../MetaPayload/MetaPayload'
 import ConstraintTable from '../ConstraintTable/ConstraintTable'
@@ -21,14 +21,14 @@ class JobInfo extends Component {
         tasks.push(
           <tr key={ task.ID }>
             <td>
-              <NomadLink jobId={ job.ID } taskGroupId={ taskGroup.ID } >
+              <JobLink jobId={ job.ID } taskGroupId={ taskGroup.ID } >
                 { taskGroup.Name }
-              </NomadLink>
+              </JobLink>
             </td>
             <td>
-              <NomadLink jobId={ job.ID } taskGroupId={ taskGroup.ID } taskId={ task.ID } >
+              <JobLink jobId={ job.ID } taskGroupId={ taskGroup.ID } taskId={ task.ID } >
                 { task.Name }
-              </NomadLink>
+              </JobLink>
             </td>
             <td>{ task.Driver }</td>
             <td>{ task.Resources.CPU }</td>
@@ -44,9 +44,9 @@ class JobInfo extends Component {
       return (
         <tr key={ taskGroup.ID }>
           <td>
-            <NomadLink jobId={ job.ID } taskGroupId={ taskGroup.ID } >
+            <JobLink jobId={ job.ID } taskGroupId={ taskGroup.ID } >
               { taskGroup.Name }
-            </NomadLink>
+            </JobLink>
           </td>
           <td>{ taskGroup.Count }</td>
           <td>{ taskGroup.Tasks.length }</td>

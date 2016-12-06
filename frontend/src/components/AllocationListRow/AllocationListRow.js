@@ -2,10 +2,13 @@ import FontIcon from 'material-ui/FontIcon'
 import React, { Component, PropTypes } from 'react'
 import ReactTooltip from 'react-tooltip'
 import { TableRow, TableRowColumn } from 'material-ui/Table'
+import shallowEqual from 'recompose/shallowEqual'
 
 import AllocationStatusIcon from '../AllocationStatusIcon/AllocationStatusIcon'
 import FormatTime from '../FormatTime/FormatTime'
-import NomadLink from '../NomadLink/NomadLink'
+import ClientLink from '../ClientLink/ClientLink'
+import AllocationLink from '../AllocationLink/AllocationLink'
+import JobLink from '../JobLink/JobLink'
 
 const getAllocationNumberFromName = (allocationName) => {
   const match = /[\d+]/.exec(allocationName)
@@ -13,16 +16,21 @@ const getAllocationNumberFromName = (allocationName) => {
 }
 
 const jobColumn = (allocation, display) =>
-  (display ? <TableRowColumn><NomadLink jobId={ allocation.JobID } /></TableRowColumn> : null)
+  (display
+    ?
+      <TableRowColumn>
+        <JobLink jobId={ allocation.JobID } />
+      </TableRowColumn>
+    : null
+  )
 
-const clientColumn = (allocation, nodes, display) =>
+const clientColumn = (allocation, clients, display) =>
   (display
     ?
       <TableRowColumn style={{ width: 120 }}>
-        <NomadLink nodeId={ allocation.NodeID } nodeList={ nodes } short='true' />
+        <ClientLink clientId={ allocation.NodeID } clients={ clients } short />
       </TableRowColumn>
-    :
-      null
+    : null
   )
 
 const renderDesiredStatus = (allocation) => {
@@ -42,6 +50,22 @@ const renderDesiredStatus = (allocation) => {
 
 class AllocationListRow extends Component {
 
+  shouldComponentUpdate (nextProps, nextState, nextContext) {
+    return (
+      // if we don't got any nodes, and we are provided some nodes, update the component
+      (this.props.nodes.length === 0 && nextProps.nodes.length > 0) ||
+
+      // update if the allocation changed
+      !shallowEqual(this.props.allocation, nextProps.allocation) ||
+
+      // update on state change (could be removed, since we don't use state internally)
+      !shallowEqual(this.state, nextState) ||
+
+      // update on context change, (could be removed, don't think we use any state anyway)
+      !shallowEqual(this.context, nextContext)
+    )
+  }
+
   render () {
     const allocation = this.props.allocation
     const nodes = this.props.nodes
@@ -54,13 +78,13 @@ class AllocationListRow extends Component {
           <AllocationStatusIcon allocation={ allocation } />
         </TableRowColumn>
         <TableRowColumn style={{ width: 100 }}>
-          <NomadLink allocId={ allocation.ID } short='true' />
+          <AllocationLink allocationId={ allocation.ID } />
         </TableRowColumn>
         { jobColumn(allocation, showJobColumn) }
         <TableRowColumn>
-          <NomadLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId }>
+          <JobLink jobId={ allocation.JobID } taskGroupId={ allocation.TaskGroupId }>
             { allocation.TaskGroup } (#{ getAllocationNumberFromName(allocation.Name) })
-          </NomadLink>
+          </JobLink>
         </TableRowColumn>
         <TableRowColumn style={{ width: 100 }}>
           { renderDesiredStatus(allocation) }
@@ -70,9 +94,9 @@ class AllocationListRow extends Component {
           <FormatTime identifier={ allocation.ID } time={ allocation.CreateTime } />
         </TableRowColumn>
         <TableRowColumn style={{ width: 50 }}>
-          <NomadLink allocId={ allocation.ID } linkAppend='/files?path=/alloc/logs/'>
+          <AllocationLink allocationId={ allocation.ID } linkAppend='/files?path=/alloc/logs/'>
             <FontIcon className='material-icons'>format_align_left</FontIcon>
-          </NomadLink>
+          </AllocationLink>
         </TableRowColumn>
       </TableRow>
     )

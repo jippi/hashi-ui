@@ -2,7 +2,8 @@ import React, { Component, PropTypes } from 'react'
 import { Card, CardTitle, CardText } from 'material-ui/Card'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
 import { connect } from 'react-redux'
-import NomadLink from '../NomadLink/NomadLink'
+import JobLink from '../JobLink/JobLink'
+import ClientLink from '../ClientLink/ClientLink'
 import MetaPayload from '../MetaPayload/MetaPayload'
 import FormatTime from '../FormatTime/FormatTime'
 
@@ -114,15 +115,15 @@ class AllocationInfo extends Component {
       return <div>Loading ...</div>
     }
 
-    allocValues.Job = <NomadLink jobId={ jobId } nodeList={ this.props.nodes } />
+    allocValues.Job = <JobLink jobId={ jobId } nodeList={ this.props.nodes } />
 
     allocValues.TaskGroup = (
-      <NomadLink jobId={ jobId } taskGroupId={ taskGroupId } >
+      <JobLink jobId={ jobId } taskGroupId={ taskGroupId } >
         {allocation.TaskGroup}
-      </NomadLink>
+      </JobLink>
     )
 
-    allocValues.Node = <NomadLink nodeId={ nodeId } nodeList={ this.props.nodes } />
+    allocValues.Node = <ClientLink clientId={ nodeId } clients={ this.props.nodes } />
 
     const states = []
     Object.keys(allocation.TaskStates || {}).forEach((key) => {

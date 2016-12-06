@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { DropdownButton } from 'react-bootstrap'
-import NomadLink from '../components/NomadLink/NomadLink'
+import JobLink from '../components/JobLink/JobLink'
 
 const jobStatusColors = {
   running: '',
@@ -146,7 +146,7 @@ class Jobs extends Component {
                 <tbody>
                   { this.filteredJobs().map(job =>
                     <tr key={ job.ID } className={ jobStatusColors[job.Status] }>
-                      <td><NomadLink jobId={ job.ID } /></td>
+                      <td><JobLink jobId={ job.ID } /></td>
                       <td>{ job.Status }</td>
                       <td>{ job.Type }</td>
                       <td>{ job.Priority }</td>

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import NomadLink from '../NomadLink/NomadLink'
+import JobLink from '../JobLink/JobLink'
 import TableHelper from '../TableHelper/TableHelper'
 import RawJson from '../RawJson/RawJson'
 
@@ -20,26 +20,15 @@ const JobTasks = ({ job, location }) => {
     taskGroup.Tasks.forEach((task) => {
       tasks.push(
         <tr key={ task.ID }>
-          <td>
-            <NomadLink
-              taskId={ task.ID }
-              taskGroupId={ taskGroup.ID }
-              jobId={ job.ID }
-              short='true'
-            />
-          </td>
+          <td><JobLink jobId={ job.ID } taskId={ task.ID } taskGroupId={ taskGroup.ID } /></td>
           <td>{task.Name}</td>
-          <td>
-            <NomadLink taskGroupId={ taskGroup.ID } jobId={ job.ID } >
-              { taskGroup.Name }
-            </NomadLink>
-          </td>
+          <td><JobLink jobId={ job.ID } taskGroupId={ taskGroup.ID }>{ taskGroup.Name }</JobLink></td>
           <td>{ task.Driver }</td>
           <td>{ task.Resources.CPU }</td>
           <td>{ task.Resources.MemoryMB }</td>
           <td>{ task.Resources.DiskMB }</td>
         </tr>
-            )
+      )
     })
   })
 

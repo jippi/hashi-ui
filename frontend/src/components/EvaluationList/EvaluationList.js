@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
-import NomadLink from '../NomadLink/NomadLink'
+import EvaluationLink from '../EvaluationLink/EvaluationLink'
+import JobLink from '../JobLink/JobLink'
 
 const EvaluationList = ({ evaluations, containerClassName }) =>
   <div className={ containerClassName }>
@@ -20,13 +21,13 @@ const EvaluationList = ({ evaluations, containerClassName }) =>
         <tbody>
           { evaluations.map(evaluation =>
             <tr key={ evaluation.ID }>
-              <td><NomadLink evalId={ evaluation.ID } short='true' /></td>
-              <td><NomadLink jobId={ evaluation.JobID } short='true' /></td>
+              <td><EvaluationLink evaluationId={ evaluation.ID } /></td>
+              <td><JobLink jobId={ evaluation.JobID } /></td>
               <td>{ evaluation.Type }</td>
               <td>{ evaluation.Priority }</td>
               <td>{ evaluation.Status }</td>
               <td>{ evaluation.StatusDescription }</td>
-              <td><NomadLink evalId={ evaluation.PreviousEval } short='true' /></td>
+              <td><EvaluationLink evaluationId={ evaluation.PreviousEval } /></td>
               <td>{ evaluation.TriggeredBy }</td>
             </tr>
           )}

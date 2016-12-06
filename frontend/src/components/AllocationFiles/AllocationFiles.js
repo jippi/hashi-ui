@@ -38,19 +38,6 @@ class AllocationFiles extends Component {
     }
   }
 
-  updateDimensions () {
-    const element = document.getElementById('file_browser_pane')
-    const positionInfo = element.getBoundingClientRect()
-    const width = positionInfo.width - 75
-
-    this.setState({ width })
-  }
-
-  componentDidMount () {
-    window.addEventListener('resize', this.updateDimensions)
-    this.updateDimensions()
-  }
-
   componentWillReceiveProps (nextProps) {
     if (!this.findAllocNode(nextProps)) {
       return
@@ -111,14 +98,19 @@ class AllocationFiles extends Component {
     }
   }
 
+  componentDidMount () {
+    window.addEventListener('resize', () => this.updateDimensions())
+    this.updateDimensions()
+  }
+
   componentWillUnmount () {
-    window.removeEventListener('resize', this.updateDimensions)
+    window.removeEventListener('resize', () => this.updateDimensions())
 
     this.props.dispatch({
       type: CLEAR_FILE_PATH
     })
 
-    if (!this.state.fileWatching || !this.props.location.query.file) {
+    if (!this.state.fileWatching) {
       return
     }
 
@@ -129,6 +121,14 @@ class AllocationFiles extends Component {
       fileWatching: false,
       initialDirectoryFetched: false
     })
+  }
+
+  updateDimensions () {
+    const element = document.getElementById('file_browser_pane')
+    const positionInfo = element.getBoundingClientRect()
+    const width = positionInfo.width - 75
+
+    this.setState({ width })
   }
 
   findAllocNode (props) {
@@ -203,14 +203,14 @@ class AllocationFiles extends Component {
         path = `${path}${file.Name}/`
       }
 
-      this.props.history.push({
+      this.props.router.push({
         pathname: this.props.location.pathname,
         query: { path }
       })
       return
     }
 
-    this.props.history.push({
+    this.props.router.push({
       pathname: this.props.location.pathname,
       query: {
         path,
@@ -219,11 +219,28 @@ class AllocationFiles extends Component {
     })
   }
 
+  formatSizeUnits (bytes) {
+    if (bytes >= 1073741824) {
+      bytes = (bytes / 1073741824).toFixed(2) + ' GB'
+    } else if (bytes >= 1048576) {
+      bytes = (bytes / 1048576).toFixed(2) + ' MB'
+    } else if (bytes >= 1024) {
+      bytes = (bytes / 1024).toFixed(2) + ' KB'
+    } else if (bytes > 1) {
+      bytes = bytes + ' bytes'
+    } else if (bytes === 1) {
+      bytes = bytes + ' byte'
+    } else {
+      bytes = '0 byte'
+    }
+    return bytes
+  }
+
   collectFiles () {
     const files = this.props.directory.map((file) => {
       const a = file.IsDir ? '/' : ''
-      const b = file.Name + ' ' + a
-      const c = file.IsDir ? ' - ' : file.Size
+      const b = file.Name + a
+      const c = file.IsDir ? '' : this.formatSizeUnits(file.Size)
       const i = file.IsDir
         ? <FontIcon className='material-icons'>folder</FontIcon>
         : <FontIcon className='material-icons'>attachment</FontIcon>
@@ -295,6 +312,7 @@ class AllocationFiles extends Component {
       </form>)
 
     const title = <span>Current path: <strong>{this.props.location.query.path || '/'}</strong></span>
+    const padding = { padding: 10 }
 
     return (
       <Grid fluid style={{ padding: 0 }}>
@@ -307,8 +325,8 @@ class AllocationFiles extends Component {
           </Col>
           <Col key='content-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 8 }>
             <Paper>
-              <div key='headline'>File: { fileName } { downloadBtn }</div>
-              <div key='contents' className='content content-file' ref={ (c) => { this.content = c } }>
+              <div key='headline' style={ padding }>File: { fileName } { downloadBtn }</div>
+              <div key='contents' style={ padding } className='content-file' ref={ (c) => { this.content = c } }>
                 { this.state.contents }
               </div>
             </Paper>
@@ -330,7 +348,8 @@ AllocationFiles.propTypes = {
   dispatch: PropTypes.func.isRequired,
   file: PropTypes.object.isRequired,
   directory: PropTypes.array.isRequired,
-  history: PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  router: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(AllocationFiles)

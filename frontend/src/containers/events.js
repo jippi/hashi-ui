@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import NomadLink from '../components/NomadLink/NomadLink'
+import AllocationLink from '../components/AllocationLink/AllocationLink'
 import FormatTime from '../components/FormatTime/FormatTime'
 
 class Events extends Component {
@@ -16,23 +16,22 @@ class Events extends Component {
             taskEvents.push(
               <tr key={ eventID }>
                 <td>
-                  <NomadLink jobId={ allocation.JobID } allocId={ allocation.ID } >
+                  <AllocationLink allocationId={ allocation.ID } >
                     { allocation.JobID }.{ task }
-                  </NomadLink>
+                  </AllocationLink>
                 </td>
                 <td>{ event.Type }</td>
-                <td>{
-                                event.KillError ||
-                                event.DriverError ||
-                                event.DownloadError ||
-                                event.RestartReason ||
-                                event.Message ||
-                                '<none>'
-                            }
+                <td>{ event.KillError ||
+                      event.DriverError ||
+                      event.DownloadError ||
+                      event.RestartReason ||
+                      event.Message ||
+                      '<none>'
+                    }
                 </td>
                 <td><FormatTime time={ event.Time } /></td>
               </tr>
-                        )
+            )
           })
         })
       }

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import NomadLink from '../components/NomadLink/NomadLink'
+import ServerLink from '../components/ServerLink/ServerLink'
 import FormatBoolean from '../components/FormatBoolean/FormatBoolean'
 
 const Servers = ({ members }) => {
@@ -31,7 +31,7 @@ const Servers = ({ members }) => {
                 { members.map((member) => {
                   return (
                     <tr key={ member.ID }>
-                      <td><NomadLink memberId={ member.ID } short='true' /></td>
+                      <td><ServerLink serverId={ member.ID } /></td>
                       <td>{ member.Name }</td>
                       <td>{ member.Addr }</td>
                       <td>{ member.Port }</td>

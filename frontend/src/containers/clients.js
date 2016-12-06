@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import NomadLink from '../components/NomadLink/NomadLink'
+import ClientLink from '../components/ClientLink/ClientLink'
 import FormatBoolean from '../components/FormatBoolean/FormatBoolean'
 import NodeStatus from '../components/NodeStatus/NodeStatus'
 
@@ -26,7 +26,7 @@ const Clients = ({ nodes }) =>
             <tbody>
               { nodes.map(node =>
                 <tr key={ node.ID }>
-                  <td><NomadLink nodeId={ node.ID } short='true' /></td>
+                  <td><ClientLink clientId={ node.ID } clients={ nodes } /></td>
                   <td>{ node.Name }</td>
                   <td><NodeStatus value={ node.Status } /></td>
                   <td><FormatBoolean value={ node.Drain } /></td>

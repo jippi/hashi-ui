@@ -1,11 +1,11 @@
-import React, { Component, PropTypes } from 'react'
+import React, { PureComponent, PropTypes } from 'react'
 import ReactTooltip from 'react-tooltip'
 // eslint-disable-next-line no-unused-vars
 import momentDurationFormat from 'moment-duration-format'
 import moment from 'moment'
 import getMoment from '../../helpers/time'
 
-class FormatTime extends Component {
+class FormatTime extends PureComponent {
 
   getTimeDiff (time, now) {
     if (this.props.durationInterval && this.props.durationFormat) {
