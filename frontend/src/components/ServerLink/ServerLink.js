@@ -23,8 +23,9 @@ ServerLink.defaultProps = {
 }
 
 ServerLink.propTypes = {
-  serverId: PropTypes.string.isRequired,
+  children: PropTypes.array,
   linkAppend: PropTypes.string,
+  serverId: PropTypes.string.isRequired,
   shortUUID: PropTypes.boolean.isRequired
 }
 

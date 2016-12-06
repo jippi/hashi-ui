@@ -14,7 +14,7 @@ class JobLink extends PureComponent {
 
     if (taskId) {
       if (!taskGroupId) {
-        throw new ('Cant link to a job taskId without a taskGroupId')
+        throw new Error('Cant link to a job taskId without a taskGroupId')
       }
 
       linkAppend = linkAppend + '/tasks'
@@ -39,9 +39,9 @@ JobLink.defaultProps = {
 JobLink.propTypes = {
   children: PropTypes.array,
   jobId: PropTypes.string.isRequired,
-  taskId: PropTypes.string.isRequired,
   linkAppend: PropTypes.string,
-  taskGroupId: PropTypes.string
+  taskGroupId: PropTypes.string,
+  taskId: PropTypes.string.isRequired
 }
 
 export default JobLink

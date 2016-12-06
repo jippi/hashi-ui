@@ -20,10 +20,7 @@ class AllocationList extends PureComponent {
       return nodeIdToNameCache[nodeId]
     }
 
-    const r = Object.keys(this.props.nodes)
-            .filter(node =>
-                this.props.nodes[node].ID === nodeId
-            )
+    const r = Object.keys(this.props.nodes).filter(node => this.props.nodes[node].ID === nodeId)
 
     if (r.length !== 0) {
       nodeIdToNameCache[nodeId] = this.props.nodes[r].Name
@@ -64,12 +61,24 @@ class AllocationList extends PureComponent {
 
     return (
       <SelectField floatingLabelText={ title } maxHeight={ 200 }>
-        <MenuItem><Link to={ location.pathname } query={{ ...query, status: undefined }}>- Any -</Link></MenuItem>
-        <MenuItem><Link to={ location.pathname } query={{ ...query, status: 'running' }}>Running</Link></MenuItem>
-        <MenuItem><Link to={ location.pathname } query={{ ...query, status: 'complete' }}>Complete</Link></MenuItem>
-        <MenuItem><Link to={ location.pathname } query={{ ...query, status: 'pending' }}>Pending</Link></MenuItem>
-        <MenuItem><Link to={ location.pathname } query={{ ...query, status: 'lost' }}>Lost</Link></MenuItem>
-        <MenuItem><Link to={ location.pathname } query={{ ...query, status: 'failed' }}>Failed</Link></MenuItem>
+        <MenuItem>
+          <Link to={{ pathname: location.pathname, query: { ...query, status: undefined } }}>- Any -</Link>
+        </MenuItem>
+        <MenuItem>
+          <Link to={{ pathname: location.pathname, query: { ...query, status: 'running' } }}>Running</Link>
+        </MenuItem>
+        <MenuItem>
+          <Link to={{ pathname: location.pathname, query: { ...query, status: 'complete' } }}>Complete</Link>
+        </MenuItem>
+        <MenuItem>
+          <Link to={{ pathname: location.pathname, query: { ...query, status: 'pending' } }}>Pending</Link>
+        </MenuItem>
+        <MenuItem>
+          <Link to={{ pathname: location.pathname, query: { ...query, status: 'lost' } }}>Lost</Link>
+        </MenuItem>
+        <MenuItem>
+          <Link to={{ pathname: location.pathname, query: { ...query, status: 'failed' } }}>Failed</Link>
+        </MenuItem>
       </SelectField>
     )
   }
@@ -93,14 +102,14 @@ class AllocationList extends PureComponent {
           .map((job) => {
             return (
               <MenuItem key={ job }>
-                <Link to={ location.pathname } query={{ ...query, job }}>{ job }</Link>
+                <Link to={{ pathname: location.pathname, query: { ...query, job } }}>{ job }</Link>
               </MenuItem>
             )
           })
 
     jobs.unshift(
       <MenuItem key='any-job'>
-        <Link to={ location.pathname } query={{ ...query, job: undefined }}>- Any -</Link>
+        <Link to={{ pathname: location.pathname, query: { ...query, job: undefined } }}>- Any -</Link>
       </MenuItem>
     )
 
@@ -129,14 +138,16 @@ class AllocationList extends PureComponent {
           .map((client) => {
             return (
               <MenuItem key={ client }>
-                <Link to={ location.pathname } query={{ ...query, client }}>{ this.findNodeNameById(client) }</Link>
+                <Link to={{ pathname: location.pathname, query: { ...query, client } }}>
+                  { this.findNodeNameById(client) }
+                </Link>
               </MenuItem>
             )
           })
 
     clients.unshift(
       <MenuItem key='any-client'>
-        <Link to={ location.pathname } query={{ ...query, client: undefined }}>- Any -</Link>
+        <Link to={{ pathname: location.pathname, query: { ...query, client: undefined } }}>- Any -</Link>
       </MenuItem>
     )
 
@@ -154,7 +165,7 @@ class AllocationList extends PureComponent {
 
     return (
       <div>
-        <div className='inline-pad'>
+        <div style={{ padding: 10 }}>
           { this.clientFilter() }
               &nbsp;
           { this.clientStatusFilter() }
