@@ -1,11 +1,9 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router'
-import SelectField from 'material-ui/SelectField'
-import MenuItem from 'material-ui/MenuItem'
 import { Card, CardHeader, CardText } from 'material-ui/Card'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from '../components/Table'
-
+import JobStatusFilter from '../components/JobStatusFilter/JobStatusFilter'
+import JobTypeFilter from '../components/JobTypeFilter/JobTypeFilter'
 import JobLink from '../components/JobLink/JobLink'
 
 const columnFormat = {
@@ -29,12 +27,10 @@ const getJobStatisticsHeader = () => {
 
   summaryLabels.forEach((key) => {
     output.push(
-      <TableHeaderColumn
-        style={ columnFormat }
-        key={ `statistics-header-for-${key}` }
-      >
+      <TableHeaderColumn style={ columnFormat } key={ `statistics-header-for-${key}` }>
         { key }
-      </TableHeaderColumn>)
+      </TableHeaderColumn>
+    )
   })
 
   return output
@@ -66,7 +62,11 @@ const getJobStatisticsRow = (job) => {
 
   const output = []
   summaryLabels.forEach((key) => {
-    output.push(<TableRowColumn style={ columnFormat } key={ `${job.ID}-${key}` }>{counter[key]}</TableRowColumn>)
+    output.push(
+      <TableRowColumn style={ columnFormat } key={ `${job.ID}-${key}` }>
+        {counter[key]}
+      </TableRowColumn>
+    )
   })
 
   return output
@@ -89,60 +89,6 @@ class Jobs extends Component {
     return jobs
   }
 
-  jobTypeFilter () {
-    const location = this.props.location
-    const query = this.props.location.query || {}
-
-    let title = 'Job Type'
-    if ('job_type' in query) {
-      title = <span>{ title }: <code>{ query.job_type }</code></span>
-    }
-
-    return (
-      <SelectField floatingLabelText={ title } maxHeight={ 200 }>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, job_type: undefined } }}>- Any -</Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, job_type: 'system' } }}>System</Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, job_type: 'batch' } }}>Batch</Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, job_type: 'service' } }}>Service</Link>
-        </MenuItem>
-      </SelectField>
-    )
-  }
-
-  jobStatusFilter () {
-    const location = this.props.location
-    const query = this.props.location.query || {}
-
-    let title = 'Job Status'
-    if ('job_status' in query) {
-      title = <span>{ title }: <code>{ query.job_status }</code></span>
-    }
-
-    return (
-      <SelectField floatingLabelText={ title } maxHeight={ 200 }>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, job_status: undefined } }}>- Any -</Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, job_status: 'running' } }}>Running</Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, job_status: 'pending' } }}>Pending</Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, job_status: 'dead' } }}>Dead</Link>
-        </MenuItem>
-      </SelectField>
-    )
-  }
-
   taskGroupCount (job) {
     let taskGroupCount = 'N/A'
 
@@ -161,9 +107,9 @@ class Jobs extends Component {
         <Card>
           <CardHeader title='Filter list by status or type' actAsExpander showExpandableButton />
           <CardText style={{ paddingTop: 0 }} expandable>
-            {this.jobStatusFilter()}
+            <JobStatusFilter />
             &nbsp;
-            {this.jobTypeFilter()}
+            <JobTypeFilter />
           </CardText>
         </Card>
 
