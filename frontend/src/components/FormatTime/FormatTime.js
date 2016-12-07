@@ -1,45 +1,42 @@
-import React, { PureComponent, PropTypes } from 'react'
+import React, { PropTypes } from 'react'
 import ReactTooltip from 'react-tooltip'
 // eslint-disable-next-line no-unused-vars
 import momentDurationFormat from 'moment-duration-format'
 import moment from 'moment'
 import getMoment from '../../helpers/time'
 
-class FormatTime extends PureComponent {
+const FormatTime = ({ time, now, identifier, display, timeFormat, durationInterval, durationFormat }) => {
+  const _time = getMoment(time)
+  const _now = getMoment(now)
 
-  getTimeDiff (time, now) {
-    if (this.props.durationInterval && this.props.durationFormat) {
-      return moment
-                .duration(time.diff(now), this.props.durationInterval)
-                .format(this.props.durationFormat, { forceLength: true })
-    }
+  let timeDiff = undefined;
 
-    return time.from(now, true)
+  if (durationInterval && durationFormat) {
+    timeDiff = moment
+              .duration(_time.diff(_now), durationInterval)
+              .format(durationFormat, { forceLength: true })
+  } else {
+    timeDiff = _time.from(_now, true)
   }
 
-  render () {
-    const time = getMoment(this.props.time)
-    const now = getMoment(this.props.now)
-    const format = this.props.timeFormat
-
-    if (this.props.display === 'relative') {
-      return (
-        <span>
-          <ReactTooltip id={ `time-${this.props.identifier}` }>{ time.format(format) }</ReactTooltip>
-          <span data-tip data-for={ `time-${this.props.identifier}` } className='dotted'>
-            {this.getTimeDiff(time, now)}
-          </span>
-        </span>
-      )
-    }
-
+  if (display === 'relative') {
     return (
       <span>
-        <ReactTooltip id={ `time-${this.props.identifier}` }>{ this.getTimeDiff(time, now) }</ReactTooltip>
-        <span data-tip data-for={ `time-${this.props.identifier}` } className='dotted'>{ time.format(format) }</span>
+        <ReactTooltip id={ `time-${identifier}` }>{ _time.format(timeFormat) }</ReactTooltip>
+        <span data-tip data-for={ `time-${identifier}` }>
+          { timeDiff }
+        </span>
       </span>
     )
   }
+
+  return (
+    <span>
+      <ReactTooltip id={ `time-${identifier}` }>{ timeDiff }</ReactTooltip>
+      <span data-tip data-for={ `time-${identifier}` }>{ _time.format(timeFormat) }</span>
+    </span>
+  )
+
 }
 
 FormatTime.defaultProps = {

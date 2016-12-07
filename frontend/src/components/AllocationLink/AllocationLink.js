@@ -1,20 +1,19 @@
-import React, { PureComponent, PropTypes } from 'react'
+import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
-import shortUUID from '../../helpers/uuid'
+import { default as shortenUUID } from '../../helpers/uuid'
 
-class AllocationLink extends PureComponent {
+const AllocationLink = ({ children, allocationId, linkAppend, shortUUID }) => {
+  let innerChildren = children;
 
-  render () {
-    const linkAppend = this.props.linkAppend
-    const allocationId = this.props.allocationId
-    let children = this.props.children
-
-    if (children === undefined) {
-      children = this.props.shortUUID ? shortUUID(allocationId) : allocationId
-    }
-
-    return <Link to={{ pathname: `/allocations/${allocationId}${linkAppend}` }}>{ children }</Link>
+  if (children === undefined) {
+    innerChildren = shortUUID ? shortenUUID(allocationId) : allocationId
   }
+
+  return (
+    <Link to={{ pathname: `/allocations/${allocationId}${linkAppend}` }}>
+      { innerChildren }
+    </Link>
+  )
 }
 
 AllocationLink.defaultProps = {

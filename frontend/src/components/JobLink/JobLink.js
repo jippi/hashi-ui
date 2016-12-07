@@ -1,35 +1,31 @@
-import React, { PureComponent, PropTypes } from 'react'
+import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 
-class JobLink extends PureComponent {
+const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId }) => {
 
-  render () {
-    const jobId = this.props.jobId
-    const JobIdUrl = encodeURIComponent(jobId)
-    const taskId = this.props.taskId
-    const taskGroupId = this.props.taskGroupId
+  const JobIdUrl = encodeURIComponent(jobId)
 
-    let linkAppend = this.props.linkAppend
-    let children = this.props.children
-
-    if (taskId) {
-      if (!taskGroupId) {
-        throw new Error('Cant link to a job taskId without a taskGroupId')
-      }
-
-      linkAppend = linkAppend + '/tasks'
+  if (taskId) {
+    if (!taskGroupId) {
+      throw new Error('Cant link to a job taskId without a taskGroupId')
     }
 
-    if (taskGroupId) {
-      linkAppend = linkAppend + '/taskGroups'
-    }
-
-    if (children === undefined) {
-      children = jobId
-    }
-
-    return <Link to={{ pathname: `/jobs/${JobIdUrl}${linkAppend}`, query: { taskGroupId, taskId } }}>{ children }</Link>
+    linkAppend = linkAppend + '/tasks'
   }
+
+  if (taskGroupId) {
+    linkAppend = linkAppend + '/taskGroups'
+  }
+
+  if (children === undefined) {
+    children = jobId
+  }
+
+  return (
+    <Link to={{ pathname: `/jobs/${JobIdUrl}${linkAppend}`, query: { taskGroupId, taskId } }}>
+      { children }
+    </Link>
+  )
 }
 
 JobLink.defaultProps = {
