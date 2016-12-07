@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
-import { Glyphicon } from 'react-bootstrap'
+import FontIcon from 'material-ui/FontIcon'
+import { green500, red500 } from 'material-ui/styles/colors'
 
 const FormatBoolean = ({
     title,
@@ -12,16 +13,16 @@ const FormatBoolean = ({
     falseIcon,
     trueIcon
 }) => {
-  let colorClass
+  let color
   let icon
   let text
 
   if (withColor) {
-    colorClass = value ? 'text-success' : 'text-danger'
+    color = value ? green500 : red500
   }
 
   if (withIcon) {
-    icon = <Glyphicon glyph={ value ? trueIcon : falseIcon } />
+    icon = <FontIcon className='material-icons' style={{ color }}>{ value ? trueIcon : falseIcon }</FontIcon>
   }
 
   if (withText) {
@@ -29,7 +30,7 @@ const FormatBoolean = ({
   }
 
   return (
-    <span title={ title } className={ colorClass }>{ icon } { text }</span>
+    <span title={ title }>{ icon } { text }</span>
   )
 }
 
@@ -42,10 +43,10 @@ FormatBoolean.defaultProps = {
   withText: false,
 
   trueText: 'yes',
-  trueIcon: 'ok',
+  trueIcon: 'check',
 
   falseText: 'no',
-  falseIcon: 'remove'
+  falseIcon: 'close'
 }
 
 FormatBoolean.propTypes = {

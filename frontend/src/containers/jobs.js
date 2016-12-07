@@ -135,10 +135,10 @@ class Jobs extends Component {
                   { getJobStatisticsHeader() }
                 </TableRow>
               </TableHeader>
-              <TableBody showRowHover preScanRows={ false } displayRowCheckbox={ false }>
+              <TableBody>
                 { this.filteredJobs().map((job) => {
                   return (
-                    <TableRow key={ job.ID } hoverable selectable={ false }>
+                    <TableRow key={ job.ID }>
                       <TableRowColumn style={ flexibleWidth }><JobLink jobId={ job.ID } /></TableRowColumn>
                       <TableRowColumn style={ columnFormat }>{ job.Status }</TableRowColumn>
                       <TableRowColumn style={ columnFormat }>{ job.Type }</TableRowColumn>

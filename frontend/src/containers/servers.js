@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { Card, CardHeader, CardText } from 'material-ui/Card'
 import { WATCH_MEMBERS, UNWATCH_MEMBERS } from '../sagas/event'
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from '../components/Table'
 import ServerLink from '../components/ServerLink/ServerLink'
 import FormatBoolean from '../components/FormatBoolean/FormatBoolean'
 
@@ -16,51 +18,47 @@ class Servers extends Component {
 
   render() {
     return (
-      <div className='row'>
-        <div className='col-md-12'>
-          <div className='card'>
-            <div className='header'>
-              <h4 className='title'>Servers</h4>
-            </div>
-            <div className='content table-responsive table-full-width'>
-              <table className='table table-hover table-striped'>
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Address</th>
-                    <th>Port</th>
-                    <th>Status</th>
-                    <th>Leader</th>
-                    <th>Protocol</th>
-                    <th>Build</th>
-                    <th>Datacenter</th>
-                    <th>Region</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  { this.props.members.map((member) => {
-                    return (
-                      <tr key={ member.ID }>
-                        <td><ServerLink serverId={ member.ID } /></td>
-                        <td>{ member.Name }</td>
-                        <td>{ member.Addr }</td>
-                        <td>{ member.Port }</td>
-                        <td>{ member.Status }</td>
-                        <td><FormatBoolean value={ member.Leader } /></td>
-                        <td>{ member.ProtocolCur }</td>
-                        <td>{ member.Tags.build }</td>
-                        <td>{ member.Tags.dc }</td>
-                        <td>{ member.Tags.region }</td>
-                      </tr>
-                    )
-                  })
-                  }
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+      <div>
+        <Card>
+          <CardHeader title='Servers' />
+          <CardText>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHeaderColumn>ID</TableHeaderColumn>
+                  <TableHeaderColumn>Name</TableHeaderColumn>
+                  <TableHeaderColumn>Address</TableHeaderColumn>
+                  <TableHeaderColumn>Port</TableHeaderColumn>
+                  <TableHeaderColumn>Status</TableHeaderColumn>
+                  <TableHeaderColumn>Leader</TableHeaderColumn>
+                  <TableHeaderColumn>Protocol</TableHeaderColumn>
+                  <TableHeaderColumn>Build</TableHeaderColumn>
+                  <TableHeaderColumn>Datacenter</TableHeaderColumn>
+                  <TableHeaderColumn>Region</TableHeaderColumn>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                { this.props.members.map((member) => {
+                  return (
+                    <TableRow key={ member.ID }>
+                      <TableRowColumn><ServerLink serverId={ member.ID } /></TableRowColumn>
+                      <TableRowColumn>{ member.Name }</TableRowColumn>
+                      <TableRowColumn>{ member.Addr }</TableRowColumn>
+                      <TableRowColumn>{ member.Port }</TableRowColumn>
+                      <TableRowColumn>{ member.Status }</TableRowColumn>
+                      <TableRowColumn><FormatBoolean value={ member.Leader } /></TableRowColumn>
+                      <TableRowColumn>{ member.ProtocolCur }</TableRowColumn>
+                      <TableRowColumn>{ member.Tags.build }</TableRowColumn>
+                      <TableRowColumn>{ member.Tags.dc }</TableRowColumn>
+                      <TableRowColumn>{ member.Tags.region }</TableRowColumn>
+                    </TableRow>
+                  )
+                })
+              }
+              </TableBody>
+            </Table>
+          </CardText>
+        </Card>
       </div>
     )
   }

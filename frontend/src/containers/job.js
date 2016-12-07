@@ -5,51 +5,12 @@ import { WATCH_JOB, UNWATCH_JOB } from '../sagas/event'
 
 class Job extends Component {
 
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      tabs: [
-        {
-          name: 'Info',
-          path: 'info'
-        },
-        {
-          name: 'Allocations',
-          path: 'allocations'
-        },
-        {
-          name: 'Evaluations',
-          path: 'evaluations'
-        },
-        {
-          name: 'Tasks Groups',
-          path: 'taskGroups'
-        },
-        {
-          name: 'Tasks',
-          path: 'tasks'
-        },
-        {
-          name: 'Raw',
-          path: 'raw'
-        }
-      ]
-    }
-  }
-
   componentWillMount () {
-    this.props.dispatch({
-      type: WATCH_JOB,
-      payload: this.props.params.jobId
-    })
+    this.props.dispatch({ type: WATCH_JOB, payload: this.props.params.jobId })
   }
 
   componentWillUnmount () {
-    this.props.dispatch({
-      type: UNWATCH_JOB,
-      payload: this.props.params.jobId
-    })
+    this.props.dispatch({ type: UNWATCH_JOB, payload: this.props.params.jobId })
   }
 
   render () {

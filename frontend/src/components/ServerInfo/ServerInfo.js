@@ -1,16 +1,23 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { Grid, Row, Col } from 'react-flexbox-grid'
+import { Card, CardTitle, CardText } from 'material-ui/Card'
+import { TableRow, TableRowColumn } from '../Table'
 import TableHelper from '../TableHelper/TableHelper'
 
 const memberProps = [
   'ID',
   'Name',
-  'Address',
+  'Addr',
   'Port',
-  'Status'
+  'Status',
 ]
 
 const ServerInfo = ({ member }) => {
+  if (!member) {
+    return 'Loading ...';
+  }
+
   const tags = member.Tags
 
   const memberTags = Object.keys(tags).map((key) => {
@@ -18,33 +25,44 @@ const ServerInfo = ({ member }) => {
     const value = tags[key]
 
     return (
-      <tr key={ name }>
-        <td>{ name }</td>
-        <td>{ value }</td>
-      </tr>
+      <TableRow key={ name }>
+        <TableRowColumn>{ name }</TableRowColumn>
+        <TableRowColumn>{ value }</TableRowColumn>
+      </TableRow>
     )
   })
 
   return (
-    <div className='tab-pane active'>
-      <div className='content'>
-        <legend>Server Properties</legend>
-        <dl className='dl-horizontal'>
-          { memberProps.map(memberProp =>
-            <div key={ memberProp }>
-              <dt>{ memberProp }</dt>
-              <dd>{ member[memberProp] }</dd>
-            </div>
-            )}
-        </dl>
-        <br />
-        <legend>Server Tags</legend>
-        { (memberTags.length > 0) ?
-          <TableHelper classes='table table-hover table-striped' headers={ ['Name', 'Value'] } body={ memberTags } />
-            : null
-          }
-      </div>
-    </div>
+    <Grid fluid style={{ padding: 0 }}>
+      <Row>
+        <Col key='properties-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
+          <Card>
+            <CardTitle title='Server Properties' />
+            <CardText>
+              <dl className='dl-horizontal'>
+                { memberProps.map(memberProp =>
+                  <div key={ memberProp }>
+                    <dt>{ memberProp }</dt>
+                    <dd>{ member[memberProp] }</dd>
+                  </div>
+                  )}
+              </dl>
+            </CardText>
+          </Card>
+        </Col>
+        <Col key='tags-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
+          <Card>
+            <CardTitle title='Server tags' />
+            <CardText>
+              { (memberTags.length > 0)
+                ? <TableHelper headers={ ['Name', 'Value'] } body={ memberTags } />
+                : null
+              }
+            </CardText>
+          </Card>
+        </Col>
+      </Row>
+    </Grid>
   )
 }
 
