@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { Card, CardTitle, CardText } from 'material-ui/Card'
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from '../Table'
 import { connect } from 'react-redux'
 import JobLink from '../JobLink/JobLink'
 import ClientLink from '../ClientLink/ClientLink'

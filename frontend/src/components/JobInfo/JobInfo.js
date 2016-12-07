@@ -6,6 +6,7 @@ import JobLink from '../JobLink/JobLink'
 import TableHelper from '../TableHelper/TableHelper'
 import MetaPayload from '../MetaPayload/MetaPayload'
 import ConstraintTable from '../ConstraintTable/ConstraintTable'
+import { TableRow, TableRowColumn } from '../Table'
 
 const jobProps = ['ID', 'Name', 'Region', 'Datacenters', 'Status', 'Priority']
 
@@ -20,41 +21,44 @@ class JobInfo extends Component {
     const taskGroups = job.TaskGroups.map((taskGroup) => {
       taskGroup.Tasks.map((task) => {
         tasks.push(
-          <tr key={ task.ID }>
-            <td>
+          <TableRow key={ task.ID }>
+            <TableRowColumn>
               <JobLink jobId={ job.ID } taskGroupId={ taskGroup.ID } >
                 { taskGroup.Name }
               </JobLink>
-            </td>
-            <td>
+            </TableRowColumn>
+            <TableRowColumn>
               <JobLink jobId={ job.ID } taskGroupId={ taskGroup.ID } taskId={ task.ID } >
                 { task.Name }
               </JobLink>
-            </td>
-            <td>{ task.Driver }</td>
-            <td>{ task.Resources.CPU }</td>
-            <td>{ task.Resources.MemoryMB }</td>
-            <td>{ task.Resources.DiskMB }</td>
-            <td><ConstraintTable idPrefix={ task.ID } asTooltip constraints={ task.Constraints } /></td>
-          </tr>
-                )
-        return null
+            </TableRowColumn>
+            <TableRowColumn>{ task.Driver }</TableRowColumn>
+            <TableRowColumn>{ task.Resources.CPU }</TableRowColumn>
+            <TableRowColumn>{ task.Resources.MemoryMB }</TableRowColumn>
+            <TableRowColumn>{ task.Resources.DiskMB }</TableRowColumn>
+            <TableRowColumn>
+              <ConstraintTable idPrefix={ task.ID } asTooltip constraints={ task.Constraints } />
+            </TableRowColumn>
+          </TableRow>
+        )
       })
 
       const taskGroupMeta = taskGroup.Meta || {}
       return (
-        <tr key={ taskGroup.ID }>
-          <td>
+        <TableRow key={ taskGroup.ID }>
+          <TableRowColumn>
             <JobLink jobId={ job.ID } taskGroupId={ taskGroup.ID } >
               { taskGroup.Name }
             </JobLink>
-          </td>
-          <td>{ taskGroup.Count }</td>
-          <td>{ taskGroup.Tasks.length }</td>
-          <td><MetaPayload asTooltip metaBag={ taskGroupMeta } /></td>
-          <td>{ taskGroup.RestartPolicy.Mode }</td>
-          <td><ConstraintTable idPrefix={ taskGroup.ID } asTooltip constraints={ taskGroup.Constraints } /></td>
-        </tr>
+          </TableRowColumn>
+          <TableRowColumn>{ taskGroup.Count }</TableRowColumn>
+          <TableRowColumn>{ taskGroup.Tasks.length }</TableRowColumn>
+          <TableRowColumn><MetaPayload asTooltip metaBag={ taskGroupMeta } /></TableRowColumn>
+          <TableRowColumn>{ taskGroup.RestartPolicy.Mode }</TableRowColumn>
+          <TableRowColumn>
+            <ConstraintTable idPrefix={ taskGroup.ID } asTooltip constraints={ taskGroup.Constraints } />
+          </TableRowColumn>
+        </TableRow>
       )
     })
 

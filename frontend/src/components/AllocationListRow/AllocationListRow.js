@@ -1,7 +1,7 @@
 import FontIcon from 'material-ui/FontIcon'
 import React, { Component, PropTypes } from 'react'
 import ReactTooltip from 'react-tooltip'
-import { TableRow, TableRowColumn } from 'material-ui/Table'
+import { TableRow, TableRowColumn } from '../Table'
 import shallowEqual from 'recompose/shallowEqual'
 
 import AllocationStatusIcon from '../AllocationStatusIcon/AllocationStatusIcon'
@@ -73,7 +73,7 @@ class AllocationListRow extends Component {
     const showClientColumn = this.props.showClientColumn
 
     return (
-      <TableRow key={ allocation.ID } hoverable>
+      <TableRow key={ allocation.ID }>
         <TableRowColumn style={{ width: 40 }}>
           <AllocationStatusIcon allocation={ allocation } />
         </TableRowColumn>

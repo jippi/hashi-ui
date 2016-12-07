@@ -1,13 +1,20 @@
 module.exports = {
-  "env": {
-    "es6": true,
-    "browser": true,
-    "node": true
+  root: true,
+  env: {
+    es6: true,
+    browser: true,
+    node: true,
   },
-  "parserOptions": {
-    "sourceType": "module",
+  extends: ['eslint:recommended', 'standard-react'],
+  parser: 'babel-eslint',
+  parserOptions: {
+    ecmaVersion: 7,
+    sourceType: 'module',
+    ecmaFeatures: {
+      jsx: true,
+      experimentalObjectRestSpread: true,
+    }
   },
-  "extends": ["standard", "standard-react"],
   "rules": {
     'indent': ['error', 2],
     'no-constant-condition': ['error', { checkLoops: false }],

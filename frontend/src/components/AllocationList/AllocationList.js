@@ -1,8 +1,9 @@
 import React, { PureComponent, PropTypes } from 'react'
 import { Link } from 'react-router'
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table'
+import { Card, CardHeader, CardText } from 'material-ui/Card'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from '../Table'
 import AllocationListRow from '../AllocationListRow/AllocationListRow'
 
 const jobHeaderColumn = display =>
@@ -169,33 +170,40 @@ class AllocationList extends PureComponent {
 
     return (
       <div>
-        <div style={{ padding: 10 }}>
-          { this.clientFilter() }
-              &nbsp;
-          { this.clientStatusFilter() }
-              &nbsp;
-          { this.jobIdFilter() }
-        </div>
+        <Card>
+          <CardHeader title='Filter list by client, status or job' actAsExpander showExpandableButton />
+          <CardText expandable>
+            { this.clientFilter() }
+                &nbsp;
+            { this.clientStatusFilter() }
+                &nbsp;
+            { this.jobIdFilter() }
+          </CardText>
+        </Card>
 
-        <Table selectable={ false } showCheckboxes={ false }>
-          <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
-            <TableRow>
-              <TableHeaderColumn style={{ width: 40 }} />
-              <TableHeaderColumn style={{ width: 100 }}>ID</TableHeaderColumn>
-              { jobHeaderColumn(showJobColumn) }
-              <TableHeaderColumn>Task Group</TableHeaderColumn>
-              <TableHeaderColumn style={{ width: 100 }}>Status</TableHeaderColumn>
-              { clientHeaderColumn(showClientColumn) }
-              <TableHeaderColumn style={{ width: 120 }}>Age</TableHeaderColumn>
-              <TableHeaderColumn style={{ width: 50 }}>Actions</TableHeaderColumn>
-            </TableRow>
-          </TableHeader>
-          <TableBody preScanRows={ false } showRowHover>
-            {this.filteredAllocations().map((allocation) => {
-              return <AllocationListRow key={ allocation.ID } { ...props } allocation={ allocation } />
-            })}
-          </TableBody>
-        </Table>
+        <Card style={{ marginTop: '1rem' }}>
+          <CardText>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHeaderColumn style={{ width: 40 }} />
+                  <TableHeaderColumn style={{ width: 100 }}>ID</TableHeaderColumn>
+                  { jobHeaderColumn(showJobColumn) }
+                  <TableHeaderColumn>Task Group</TableHeaderColumn>
+                  <TableHeaderColumn style={{ width: 100 }}>Status</TableHeaderColumn>
+                  { clientHeaderColumn(showClientColumn) }
+                  <TableHeaderColumn style={{ width: 120 }}>Age</TableHeaderColumn>
+                  <TableHeaderColumn style={{ width: 50 }}>Actions</TableHeaderColumn>
+                </TableRow>
+              </TableHeader>
+              <TableBody preScanRows={ false } showRowHover>
+                {this.filteredAllocations().map((allocation) => {
+                  return <AllocationListRow key={ allocation.ID } { ...props } allocation={ allocation } />
+                })}
+              </TableBody>
+            </Table>
+          </CardText>
+        </Card>
       </div>)
   }
 }

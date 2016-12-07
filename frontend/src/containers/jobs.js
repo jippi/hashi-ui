@@ -3,7 +3,8 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import SelectField from 'material-ui/SelectField'
 import MenuItem from 'material-ui/MenuItem'
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
+import { Card, CardHeader, CardText } from 'material-ui/Card'
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from '../components/Table'
 
 import JobLink from '../components/JobLink/JobLink'
 
@@ -157,42 +158,46 @@ class Jobs extends Component {
 
     return (
       <div>
-        <div style={{ padding: 10 }}>
-          {this.jobStatusFilter()}
-          &nbsp;
-          {this.jobTypeFilter()}
-        </div>
+        <Card>
+          <CardHeader title='Filter list by status or type' actAsExpander showExpandableButton />
+          <CardText style={{ paddingTop: 0 }} expandable>
+            {this.jobStatusFilter()}
+            &nbsp;
+            {this.jobTypeFilter()}
+          </CardText>
+        </Card>
 
-        <Table
-          wrapperStyle={{ overflow: 'display' }}
-          bodyStyle={{ tableLayout: 'auto', overflowX: 'inherit', overflowY: 'inherit' }}
-        >
-          <TableHeader displaySelectAll={ false } adjustForCheckbox={ false } enableSelectAll={ false }>
-            <TableRow>
-              <TableHeaderColumn style={ flexibleWidth }>ID</TableHeaderColumn>
-              <TableHeaderColumn style={ columnFormat }>Status</TableHeaderColumn>
-              <TableHeaderColumn style={ columnFormat }>Type</TableHeaderColumn>
-              <TableHeaderColumn style={ columnFormat }>Priority</TableHeaderColumn>
-              <TableHeaderColumn style={ columnFormat }>Task Groups</TableHeaderColumn>
-              { getJobStatisticsHeader() }
-            </TableRow>
-          </TableHeader>
-          <TableBody showRowHover preScanRows={ false } displayRowCheckbox={ false }>
-            { this.filteredJobs().map((job) => {
-              return (
-                <TableRow key={ job.ID } hoverable selectable={ false }>
-                  <TableRowColumn style={ flexibleWidth }><JobLink jobId={ job.ID } /></TableRowColumn>
-                  <TableRowColumn style={ columnFormat }>{ job.Status }</TableRowColumn>
-                  <TableRowColumn style={ columnFormat }>{ job.Type }</TableRowColumn>
-                  <TableRowColumn style={ columnFormat }>{ job.Priority }</TableRowColumn>
-                  <TableRowColumn style={ columnFormat }>{ this.taskGroupCount(job) }</TableRowColumn>
-                  { getJobStatisticsRow(job) }
+        <Card style={{ marginTop: '1rem' }}>
+          <CardText>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHeaderColumn style={ flexibleWidth }>ID</TableHeaderColumn>
+                  <TableHeaderColumn style={ columnFormat }>Status</TableHeaderColumn>
+                  <TableHeaderColumn style={ columnFormat }>Type</TableHeaderColumn>
+                  <TableHeaderColumn style={ columnFormat }>Priority</TableHeaderColumn>
+                  <TableHeaderColumn style={ columnFormat }>Task Groups</TableHeaderColumn>
+                  { getJobStatisticsHeader() }
                 </TableRow>
-              )
-            })
-          }
-          </TableBody>
-        </Table>
+              </TableHeader>
+              <TableBody showRowHover preScanRows={ false } displayRowCheckbox={ false }>
+                { this.filteredJobs().map((job) => {
+                  return (
+                    <TableRow key={ job.ID } hoverable selectable={ false }>
+                      <TableRowColumn style={ flexibleWidth }><JobLink jobId={ job.ID } /></TableRowColumn>
+                      <TableRowColumn style={ columnFormat }>{ job.Status }</TableRowColumn>
+                      <TableRowColumn style={ columnFormat }>{ job.Type }</TableRowColumn>
+                      <TableRowColumn style={ columnFormat }>{ job.Priority }</TableRowColumn>
+                      <TableRowColumn style={ columnFormat }>{ this.taskGroupCount(job) }</TableRowColumn>
+                      { getJobStatisticsRow(job) }
+                    </TableRow>
+                  )
+                })
+              }
+              </TableBody>
+            </Table>
+          </CardText>
+        </Card>
       </div>
     )
   }
