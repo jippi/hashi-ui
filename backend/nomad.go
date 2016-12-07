@@ -97,16 +97,6 @@ func NewNomad(url string, updateCh chan *Action) (*Nomad, error) {
 	}, nil
 }
 
-// FlushAll sends the current Nomad state to the connection. This is used to pass
-// all known state to the client connection.
-func (n *Nomad) FlushAll(c *Connection) {
-	c.send <- &Action{Type: fetchedAllocs, Payload: n.allocs}
-	c.send <- &Action{Type: fetchedEvals, Payload: n.evals}
-	c.send <- &Action{Type: fetchedJobs, Payload: n.jobs}
-	c.send <- &Action{Type: fetchedNodes, Payload: n.nodes}
-	c.send <- &Action{Type: fetchedMembers, Payload: n.members}
-}
-
 // MembersWithID is used to query all of the known server members.
 func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 	members, err := n.Client.Agent().Members()
@@ -170,7 +160,7 @@ func (n *Nomad) watchAllocs() {
 			continue
 		}
 		n.allocs = allocs
-		n.updateCh <- &Action{Type: fetchedAllocs, Payload: allocs}
+		n.updateCh <- &Action{Type: fetchedAllocs, Payload: allocs, Index: meta.LastIndex}
 
 		// Guard for zero LastIndex in case of timeout
 		waitIndex := meta.LastIndex
@@ -191,7 +181,7 @@ func (n *Nomad) watchEvals() {
 			continue
 		}
 		n.evals = evals
-		n.updateCh <- &Action{Type: fetchedEvals, Payload: evals}
+		n.updateCh <- &Action{Type: fetchedEvals, Payload: evals, Index: meta.LastIndex}
 
 		// Guard for zero LastIndex in case of timeout
 		waitIndex := meta.LastIndex
@@ -212,7 +202,7 @@ func (n *Nomad) watchJobs() {
 			continue
 		}
 		n.jobs = jobs
-		n.updateCh <- &Action{Type: fetchedJobs, Payload: jobs}
+		n.updateCh <- &Action{Type: fetchedJobs, Payload: jobs, Index: meta.LastIndex}
 
 		// Guard for zero LastIndex in case of timeout
 		waitIndex := meta.LastIndex
@@ -233,7 +223,7 @@ func (n *Nomad) watchNodes() {
 			continue
 		}
 		n.nodes = nodes
-		n.updateCh <- &Action{Type: fetchedNodes, Payload: nodes}
+		n.updateCh <- &Action{Type: fetchedNodes, Payload: nodes, Index: meta.LastIndex}
 
 		// Guard for zero LastIndex in case of timeout
 		waitIndex := meta.LastIndex
@@ -254,7 +244,7 @@ func (n *Nomad) watchMembers() {
 		}
 
 		n.members = members
-		n.updateCh <- &Action{Type: fetchedMembers, Payload: members}
+		n.updateCh <- &Action{Type: fetchedMembers, Payload: members, Index: 0}
 
 		time.Sleep(10 * time.Second)
 	}

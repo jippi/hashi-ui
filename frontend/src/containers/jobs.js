@@ -5,6 +5,7 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowCol
 import JobStatusFilter from '../components/JobStatusFilter/JobStatusFilter'
 import JobTypeFilter from '../components/JobTypeFilter/JobTypeFilter'
 import JobLink from '../components/JobLink/JobLink'
+import { WATCH_JOBS, UNWATCH_JOBS } from '../sagas/event'
 
 const columnFormat = {
   width: 50,
@@ -73,6 +74,14 @@ const getJobStatisticsRow = (job) => {
 }
 
 class Jobs extends Component {
+
+  componentDidMount() {
+    this.props.dispatch({type: WATCH_JOBS})
+  }
+
+  componentWillUnmount() {
+    this.props.dispatch({type: UNWATCH_JOBS})
+  }
 
   filteredJobs () {
     const query = this.props.location.query || {}
@@ -160,7 +169,8 @@ Jobs.defaultProps = {
 
 Jobs.propTypes = {
   jobs: PropTypes.array.isRequired,
-  location: PropTypes.object.isRequired
+  location: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
 }
 
 export default connect(mapStateToProps)(Jobs)

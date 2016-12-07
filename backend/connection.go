@@ -82,9 +82,6 @@ func (c *Connection) readPump() {
 	// Register this connection with the hub for broadcast updates
 	c.hub.register <- c
 
-	// Flush all current state to the websocket
-	c.hub.nomad.FlushAll(c)
-
 	var action Action
 	for {
 		err := c.socket.ReadJSON(&action)
@@ -96,36 +93,95 @@ func (c *Connection) readPump() {
 }
 
 func (c *Connection) process(action Action) {
+	logger.Infof("Processing event %s (index %d)", action.Type, action.Index)
+
 	switch action.Type {
-	case fetchMember:
-		c.fetchMember(action)
-	case fetchNode:
-		c.fetchNode(action)
-	case fetchDir:
-		c.fetchDir(action)
-	case watchJob:
-		go c.watchJob(action)
-	case watchAlloc:
-		go c.watchAlloc(action)
-	case watchEval:
-		go c.watchEval(action)
-	case watchMember:
-		go c.watchMember(action)
+	//
+	// Actions for a list of members (aka servers in the UI)
+	//
+	case watchMembers:
+		go c.watchGenericBroadcast("members", fetchedMembers, c.hub.nomad.members)
+	case unwatchMembers:
+		c.unwatchGenericBroadcast("members")
+
+	//
+	// Actions for a list of jobs
+	//
+	case watchJobs:
+		go c.watchGenericBroadcast("jobs", fetchedJobs, c.hub.nomad.jobs)
+	case unwatchJobs:
+		c.unwatchGenericBroadcast("jobs")
+
+	//
+	// Actions for a list of allocations
+	//
+	case watchAllocs:
+		go c.watchGenericBroadcast("allocs", fetchedAllocs, c.hub.nomad.allocs)
+	case unwatchAllocs:
+		c.unwatchGenericBroadcast("allocs")
+
+	//
+	// Actions for a list of nodes (aka clients in the UI)
+	//
+	case watchNodes:
+		go c.watchGenericBroadcast("nodes", fetchedNodes, c.hub.nomad.nodes)
+	case unwatchNodes:
+		c.unwatchGenericBroadcast("nodes")
+
+	//
+	// Actions for a list of evaluations
+	//
+	case watchEvals:
+		go c.watchGenericBroadcast("evaluations", fetchedEvals, c.hub.nomad.evals)
+	case unwatchEvals:
+		c.unwatchGenericBroadcast("evaluations")
+
+	//
+	// Actions for a single node (aka client in the UI)
+	//
 	case watchNode:
 		go c.watchNode(action)
-	case watchFile:
-		go c.watchFile(action)
-	case unwatchEval:
-		fallthrough
-	case unwatchMember:
-		fallthrough
 	case unwatchNode:
-		fallthrough
+		c.watches.Remove(action.Payload.(string))
+	case fetchNode:
+		go c.fetchNode(action)
+
+	//
+	// Actions for a single job
+	//
+	case watchJob:
+		go c.watchJob(action)
 	case unwatchJob:
-		fallthrough
+		c.watches.Remove(action.Payload.(string))
+
+	//
+	// Actions for a single allocation
+	//
+	case watchAlloc:
+		go c.watchAlloc(action)
 	case unwatchAlloc:
 		c.watches.Remove(action.Payload.(string))
-	case unwatchFile:
+	case fetchDir: // for file browsing in an allocation
+		go c.fetchDir(action)
+	case watchFile: // for following (tail -f) a file in an allocation
+		go c.watchFile(action)
+	case unwatchFile: // for stopping a follow of a file (tail -f)
+		c.watches.Remove(action.Payload.(string))
+
+	//
+	// Actions for a single member (aka server in the UI)
+	//
+	case watchMember:
+		go c.watchMember(action)
+	case unwatchMember:
+		c.watches.Remove(action.Payload.(string))
+	case fetchMember:
+		go c.fetchMember(action)
+
+	// Actions for a single evaluation
+	case watchEval:
+		go c.watchEval(action)
+	case unwatchEval:
 		c.watches.Remove(action.Payload.(string))
 	}
 }
@@ -166,7 +222,7 @@ func (c *Connection) watchAlloc(action Action) {
 			if !c.watches.Has(allocID) {
 				return
 			}
-			c.send <- &Action{Type: fetchedAlloc, Payload: alloc}
+			c.send <- &Action{Type: fetchedAlloc, Payload: alloc, Index: meta.LastIndex}
 
 			waitIndex := meta.LastIndex
 			if q.WaitIndex > meta.LastIndex {
@@ -203,7 +259,7 @@ func (c *Connection) watchEval(action Action) {
 			if !c.watches.Has(evalID) {
 				return
 			}
-			c.send <- &Action{Type: fetchedEval, Payload: eval}
+			c.send <- &Action{Type: fetchedEval, Payload: eval, Index: meta.LastIndex}
 
 			waitIndex := meta.LastIndex
 			if q.WaitIndex > meta.LastIndex {
@@ -292,7 +348,7 @@ func (c *Connection) watchNode(action Action) {
 			if !c.watches.Has(nodeID) {
 				return
 			}
-			c.send <- &Action{Type: fetchedNode, Payload: node}
+			c.send <- &Action{Type: fetchedNode, Payload: node, Index: meta.LastIndex}
 
 			waitIndex := meta.LastIndex
 			if q.WaitIndex > meta.LastIndex {
@@ -301,6 +357,40 @@ func (c *Connection) watchNode(action Action) {
 			q = &api.QueryOptions{WaitIndex: waitIndex, WaitTime: 10 * time.Second}
 		}
 	}
+}
+
+func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, initialPayload interface{}) {
+	defer func() {
+		c.watches.Remove(watchKey)
+		logger.Infof("Stopped watching %s", watchKey)
+	}()
+	c.watches.Add(watchKey)
+
+	logger.Infof("Sending our current %s list", watchKey)
+	c.send <- &Action{Type: actionEvent, Payload: initialPayload, Index: 0}
+
+	logger.Infof("Started watching %s", watchKey)
+	for {
+		if !c.watches.Has(watchKey) {
+			logger.Infof("Connection is no longer subscribed to %s", watchKey)
+			return
+		}
+
+		logger.Infof("Waiting on %s pipe", watchKey)
+		channelAction := <-c.hub.nomad.updateCh
+
+		if channelAction.Type != actionEvent {
+			logger.Infof("Type mismatch: %s <> %s", channelAction.Type, actionEvent)
+			continue
+		}
+
+		c.send <- channelAction
+	}
+}
+
+func (c *Connection) unwatchGenericBroadcast(watchKey string) {
+	logger.Infof("Removing subscription for %s", watchKey)
+	c.watches.Remove(watchKey)
 }
 
 func (c *Connection) watchJob(action Action) {
@@ -329,7 +419,7 @@ func (c *Connection) watchJob(action Action) {
 			if !c.watches.Has(jobID) {
 				return
 			}
-			c.send <- &Action{Type: fetchedJob, Payload: job}
+			c.send <- &Action{Type: fetchedJob, Payload: job, Index: meta.LastIndex}
 
 			waitIndex := meta.LastIndex
 			if q.WaitIndex > meta.LastIndex {
@@ -368,7 +458,7 @@ func (c *Connection) fetchDir(action Action) {
 		logger.Errorf("Unable to fetch directory: %s", err)
 	}
 
-	c.send <- &Action{Type: fetchedDir, Payload: dir}
+	c.send <- &Action{Type: fetchedDir, Payload: dir, Index: 0}
 }
 
 type Line struct {
@@ -426,6 +516,7 @@ func (c *Connection) watchFile(action Action) {
 			}{
 				path: path,
 			},
+			Index: 0,
 		}
 
 		logger.Errorf("Unable to stream file: %s", err)
@@ -471,6 +562,7 @@ func (c *Connection) watchFile(action Action) {
 			Data:      "",
 			Oversized: oversized,
 		},
+		Index: 0,
 	}
 
 	ticker := time.NewTicker(10 * time.Second)
@@ -493,6 +585,7 @@ func (c *Connection) watchFile(action Action) {
 					Data:      string(line),
 					Oversized: oversized,
 				},
+				Index: 0,
 			}
 		case <-ticker.C:
 			if !c.watches.Has(path) {
