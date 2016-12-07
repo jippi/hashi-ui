@@ -13,9 +13,9 @@ const (
 	unwatchEvals = "UNWATCH_EVALS"
 	fetchedEvals = "FETCHED_EVALS"
 
-	fetchedEval  = "FETCHED_EVAL"
-	watchEval    = "WATCH_EVAL"
-	unwatchEval  = "UNWATCH_EVAL"
+	fetchedEval = "FETCHED_EVAL"
+	watchEval   = "WATCH_EVAL"
+	unwatchEval = "UNWATCH_EVAL"
 
 	watchJobs   = "WATCH_JOBS"
 	unwatchJobs = "UNWATCH_JOBS"
