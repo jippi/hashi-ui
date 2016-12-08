@@ -235,7 +235,7 @@ class AllocationFiles extends Component {
             fileName = '<please select a file>';
         }
 
-        const oversizedWarning = !this.props.file.Oversized ? '' :
+        const oversizedWarning = !this.props.file.Oversized ? '' : (
           <span>
             <i className="pe-7s-attention" data-tip data-for={ `tooltip-${this.props.file.File}` }></i>
             <span>
@@ -247,18 +247,18 @@ class AllocationFiles extends Component {
                 </span>
               </ReactTooltip>
             </span>
-          </span>;
+          </span>);
 
         const baseUrl = `${location.protocol}//${hostname}`;
         const downloadPath = `download${this.props.file.File}`;
 
-        const downloadBtn = this.props.file.File ? '' :
+        const downloadBtn = this.props.file.File ? '' : (
           <form className="file-download" method="get" action={ `${baseUrl}/${downloadPath}` } >
             <input type="hidden" name="client" value={ this.props.node.HTTPAddr } />
             <input type="hidden" name="allocID" value={ this.props.allocation.ID } />
             { oversizedWarning }
             <Button type="submit" className="btn-download">Download</Button>
-          </form>;
+          </form>);
 
         return (
           <div className="tab-pane active">

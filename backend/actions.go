@@ -1,6 +1,8 @@
 package main
 
 const (
+	readOnly = "READONLY"
+
 	fetchedAllocs = "FETCHED_ALLOCS"
 	fetchedAlloc  = "FETCHED_ALLOC"
 	watchAlloc    = "WATCH_ALLOC"
@@ -15,6 +17,9 @@ const (
 	fetchedJob  = "FETCHED_JOB"
 	watchJob    = "WATCH_JOB"
 	unwatchJob  = "UNWATCH_JOB"
+	runJob      = "RUN_JOB"
+	stopJob     = "STOP_JOB"
+	planJob     = "PLAN_JOB"
 
 	fetchedNodes = "FETCHED_NODES"
 	fetchedNode  = "FETCHED_NODE"

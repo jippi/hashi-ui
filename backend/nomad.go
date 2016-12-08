@@ -73,6 +73,8 @@ type Nomad struct {
 	members []*AgentMemberWithID
 
 	updateCh chan *Action
+
+	readOnly bool
 }
 
 // NewNomad configures the Nomad API client and initializes the internal state.
@@ -94,12 +96,14 @@ func NewNomad(url string, updateCh chan *Action) (*Nomad, error) {
 		nodes:    make([]*api.NodeListStub, 0),
 		members:  make([]*AgentMemberWithID, 0),
 		jobs:     make([]*api.JobListStub, 0),
+		readOnly: *flagReadOnly,
 	}, nil
 }
 
 // FlushAll sends the current Nomad state to the connection. This is used to pass
 // all known state to the client connection.
 func (n *Nomad) FlushAll(c *Connection) {
+	c.send <- &Action{Type: readOnly, Payload: n.readOnly}
 	c.send <- &Action{Type: fetchedAllocs, Payload: n.allocs}
 	c.send <- &Action{Type: fetchedEvals, Payload: n.evals}
 	c.send <- &Action{Type: fetchedJobs, Payload: n.jobs}

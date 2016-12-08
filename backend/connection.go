@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"strconv"
 	"time"
 
 	"gopkg.in/fatih/set.v0"
@@ -97,6 +99,12 @@ func (c *Connection) readPump() {
 
 func (c *Connection) process(action Action) {
 	switch action.Type {
+	case runJob:
+		c.runJob(action)
+	case planJob:
+		c.planJob(action)
+	case stopJob:
+		c.stopJob(action)
 	case fetchMember:
 		c.fetchMember(action)
 	case fetchNode:
@@ -138,6 +146,71 @@ func (c *Connection) Handle() {
 
 	// Kill any remaining watcher routines
 	close(c.destroyCh)
+}
+
+func (c *Connection) runJob(action Action) {
+	if *flagReadOnly == true {
+		logger.Errorf("Unable to run jon: READONLY is set to true")
+		c.send <- &Action{Type: "ERROR", Payload: "The backend serveur is set to readonly: " + strconv.FormatBool(*flagReadOnly)}
+		return
+	}
+	jobjson := action.Payload.(string)
+	runjob := api.Job{}
+	json.Unmarshal([]byte(jobjson), &runjob)
+
+	logger.Infof("Started run job with id: %s", runjob.ID)
+
+	_, _, err := c.hub.nomad.Client.Jobs().Register(&runjob, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to register job : %s", err)
+		c.send <- &Action{Type: "ERROR", Payload: fmt.Sprintf("Connection: unable to register job : %s", err)}
+		return
+	}
+	c.send <- &Action{Type: "SUCCESS", Payload: "The job has been successfully registered."}
+}
+
+func (c *Connection) stopJob(action Action) {
+	if *flagReadOnly == true {
+		logger.Errorf("Unable to stop jon: READONLY is set to true")
+		c.send <- &Action{Type: "ERROR", Payload: "The backend serveur is set to readonly: " + strconv.FormatBool(*flagReadOnly)}
+		return
+	}
+	jobjson := action.Payload.(string)
+	stopjob := api.Job{}
+	json.Unmarshal([]byte(jobjson), &stopjob)
+
+	logger.Infof("Started stop job with id: %s", stopjob.ID)
+
+	job, _, err := c.hub.nomad.Client.Jobs().Deregister(stopjob.ID, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to stop job : %s", err)
+		c.send <- &Action{Type: "ERROR", Payload: fmt.Sprintf("Connection: unable to deregister job : %s", err)}
+		return
+	}
+
+	c.send <- &Action{Type: "JOB_STOPPED", Payload: job}
+}
+
+func (c *Connection) planJob(action Action) {
+	if *flagReadOnly == true {
+		logger.Errorf("Unable to plan jon: READONLY is set to true")
+		c.send <- &Action{Type: "ERROR", Payload: "The backend serveur is set to readonly: " + strconv.FormatBool(*flagReadOnly)}
+		return
+	}
+	jobjson := action.Payload.(string)
+	planjob := api.Job{}
+	json.Unmarshal([]byte(jobjson), &planjob)
+
+	logger.Infof("Started plan job with id: %s", planjob.ID)
+
+	plan, _, err := c.hub.nomad.Client.Jobs().Plan(&planjob, true, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to plan job : %s", err)
+		c.send <- &Action{Type: "ERROR", Payload: fmt.Sprintf("Connection: unable to plan job : %s", err)}
+		return
+	}
+
+	c.send <- &Action{Type: "JOB_PLAN", Payload: plan}
 }
 
 func (c *Connection) watchAlloc(action Action) {
