@@ -51,7 +51,7 @@ class ClusterEvents extends Component {
 
     return (
       <Card>
-        <CardTitle>Task events</CardTitle>
+        <CardTitle title='Task events'></CardTitle>
         <CardText>
           <TableHelper
             headers={ ['Task', 'Type', 'Message', 'Time'] }
