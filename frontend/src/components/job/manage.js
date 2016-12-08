@@ -86,11 +86,23 @@ class JobManage extends Component {
         const taskGroups = [];
         const inputStyle = {
             display: 'inline',
-            width: 'inherit',
+            width: '85%',
         };
         const updateStyle = {
             float: 'right',
             marginRight: '7px',
+        };
+        const tdWidthBtn = {
+            width: '131px',
+        };
+        const tdWidthId = {
+            width: '25%',
+        };
+        const tdWidthName = {
+            width: '12%',
+        };
+        const tdWidthDriver = {
+            width: '11%',
         };
 
         this.state.job.TaskGroups.map((taskGroup, gdix) => {
@@ -100,7 +112,13 @@ class JobManage extends Component {
             }
             taskGroups.push(
               <tr key={ taskGroup.ID }>
-                <td><NomadLink taskGroupId={ taskGroup.ID } jobId={ this.state.job.ID } short="true" /></td>
+                <td style={ tdWidthId }>
+                  <NomadLink
+                    taskGroupId={ taskGroup.ID }
+                    jobId={ this.state.job.ID }
+                    short="true"
+                  />
+                </td>
                 <td>{ taskGroup.Name }</td>
                 <td>
                   { (this.state.edit) ?
@@ -109,7 +127,7 @@ class JobManage extends Component {
                       min="0"
                       max={ max }
                       style={ inputStyle }
-                      className="form-control"
+                      className="form-control input-sm"
                       value={ taskGroup.Count }
                       onChange={ this.onCount(taskGroup.ID) }
                     />
@@ -118,11 +136,11 @@ class JobManage extends Component {
                 </td>
                 <td><MetaDisplay metaBag={ taskGroup.Meta } asTooltip /></td>
                 <td>{ taskGroup.RestartPolicy.Mode }</td>
-                <td>
+                <td style={ tdWidthBtn }>
                   { (this.state.edit && this.props.job.TaskGroups[gdix].Count !== 0) ?
                     <button
                       type="button"
-                      className="btn btn-danger"
+                      className="btn btn-danger btn-sm"
                       style={ updateStyle }
                       onClick={ this.onPause(taskGroup.ID) }
                     >
@@ -138,10 +156,13 @@ class JobManage extends Component {
 
         this.state.job.TaskGroups.forEach((taskGroup) => {
             const disabled = taskGroup.Count === 0;
-            taskGroup.Tasks.forEach((task) => {
+            console.log(taskGroup.Tasks);
+            const test = taskGroup.Tasks.sort((aa, b) => ((aa.Name > b.Name) ? 1 : -1));
+            console.log(test);
+            test.forEach((task) => {
                 tasks.push(
                   <tr key={ task.ID }>
-                    <td>
+                    <td style={ tdWidthId }>
                       <NomadLink
                         taskId={ task.ID }
                         taskGroupId={ taskGroup.ID }
@@ -149,15 +170,15 @@ class JobManage extends Component {
                         short="true"
                       />
                     </td>
-                    <td>{ task.Name }</td>
-                    <td>{ task.Driver }</td>
+                    <td style={ tdWidthName }>{ task.Name }</td>
+                    <td style={ tdWidthDriver }>{ task.Driver }</td>
                     { (this.state.edit && task.Driver === 'docker') ? (
                       <td>
                         Image: <input
                           type="text"
                           name="name"
                           style={ inputStyle }
-                          className="form-control"
+                          className="form-control input-sm"
                           value={ task.Config.image }
                           onChange={ this.onImage(task.ID, taskGroup.ID) }
                           disabled={ disabled }
@@ -173,7 +194,7 @@ class JobManage extends Component {
             { (this.state.edit && !this.props.readonly) ?
               <button
                 type="button"
-                className="btn btn-danger"
+                className="btn btn-danger btn-sm"
                 style={ updateStyle }
                 onClick={ this.onEdit }
               >
@@ -184,7 +205,7 @@ class JobManage extends Component {
             { (!this.state.edit && !this.props.readonly) ?
               <button
                 type="button"
-                className="btn btn-success"
+                className="btn btn-success btn-sm"
                 style={ updateStyle }
                 onClick={ this.onEdit }
               >
@@ -193,11 +214,13 @@ class JobManage extends Component {
               : null
             }
             <div className="table-responsive">
-              <legend>Task Groups</legend>
+              <legend>
+                Task Groups
+              </legend>
               { (this.state.edit) ?
                 <button
                   type="button"
-                  className="btn btn-success"
+                  className="btn btn-success btn-sm"
                   style={ updateStyle }
                   onClick={ this.onRun }
                 >
@@ -219,7 +242,7 @@ class JobManage extends Component {
               { (this.state.edit) ?
                 <button
                   type="button"
-                  className="btn btn-success"
+                  className="btn btn-success btn-sm"
                   style={ updateStyle }
                   onClick={ this.onRun }
                 >
