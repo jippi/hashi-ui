@@ -18,7 +18,7 @@ class Progressbar extends Component {
     this.setState({ activeIndex: index, showLabel: false });
   }
 
-  onPieLeave(data, index) {
+  onPieLeave() {
     this.setState({ showLabel: true })
   }
 

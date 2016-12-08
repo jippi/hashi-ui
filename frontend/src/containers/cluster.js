@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import Progressbar from '../components/Progressbar/Progressbar'
 import ClusterEvents from '../components/ClusterEvents/ClusterEvents'
 import ClusterStatistics from '../components/ClusterStatistics/ClusterStatistics'
-import { Card, CardText } from 'material-ui/Card'
 import { Grid, Row, Col } from 'react-flexbox-grid'
 import {
   WATCH_JOBS, UNWATCH_JOBS,

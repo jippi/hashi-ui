@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { Grid, Row, Col } from 'react-flexbox-grid'
 import ReactTooltip from 'react-tooltip'
 import { connect } from 'react-redux'
-import { Button } from 'react-bootstrap'
+import RaisedButton from 'material-ui/RaisedButton';
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
 import FontIcon from 'material-ui/FontIcon'
@@ -309,13 +309,17 @@ class AllocationFiles extends Component {
     const baseUrl = `${location.protocol}//${hostname}`
     const downloadPath = `download${this.props.file.File}`
 
-    const downloadBtn = this.props.file.File ? '' :
-      (<form className='file-download' method='get' action={ `${baseUrl}/${downloadPath}` } >
-        <input type='hidden' name='client' value={ this.props.node.HTTPAddr } />
-        <input type='hidden' name='allocID' value={ this.props.allocation.ID } />
-        { oversizedWarning }
-        <Button type='submit' className='btn-download'>Download</Button>
-      </form>)
+    const downloadBtn = this.props.file.File.indexOf('<') >= 0
+      ? ''
+      : (
+        <form
+          style={{ display: 'inline', float: 'right' }} method='get' action={ `${baseUrl}/${downloadPath}` } >
+          <input type='hidden' name='client' value={ this.props.node.HTTPAddr } />
+          <input type='hidden' name='allocID' value={ this.props.allocation.ID } />
+          { oversizedWarning }
+          <RaisedButton label='Download' type='submit' className='btn-download' />
+        </form>
+        )
 
     const title = <span>Current path: <strong>{this.props.location.query.path || '/'}</strong></span>
     const padding = { padding: 10 }
