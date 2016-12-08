@@ -1,37 +1,91 @@
 import React, { Component, PropTypes } from 'react'
-import { ProgressBar } from 'react-bootstrap'
+import { ResponsiveContainer, PieChart, Pie, Cell, Sector } from 'recharts';
+import { green500, red500, blue500, yellow500 } from 'material-ui/styles/colors'
+import { Card, CardTitle, CardText } from 'material-ui/Card'
+
+//
+// borrowed from http://recharts.org/examples#CustomActiveShapePieChart
+//
 
 class Progressbar extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = { activeIndex: 0, showLabel: true }
+  }
+
+  onPieEnter(data, index) {
+    this.setState({ activeIndex: index, showLabel: false });
+  }
+
+  onPieLeave(data, index) {
+    this.setState({ showLabel: true })
+  }
+
+  renderActiveShape(props) {
+    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent } = props;
+    const p = (percent * 100).toFixed(0)
+
+    const textY = cy - 25
+
+    return (
+      <g>
+        <text x={ cx } y={ textY } dy={ 8 } textAnchor='middle' fill={ fill }>
+          <tspan x={ cx } dy='1.2em'>{ payload.name }</tspan>
+          <tspan x={ cx } dy='1.2em'>{ payload.value }</tspan>
+          <tspan x={ cx } dy='1.2em'>{ p }%</tspan>
+        </text>
+        <Sector
+          cx={ cx }
+          cy={ cy }
+          innerRadius={ innerRadius }
+          outerRadius={ outerRadius }
+          startAngle={ startAngle }
+          endAngle={ endAngle }
+          fill={ fill }
+        />
+        <Sector
+          cx={ cx }
+          cy={ cy }
+          startAngle={ startAngle }
+          endAngle={ endAngle }
+          innerRadius={ outerRadius + 6 }
+          outerRadius={ outerRadius + 8 }
+          fill={ fill }
+        />
+      </g>
+    )
+  }
+
   colorIndex (index) {
     return {
-            // client status
-      ready: 'success',
-      initializing: 'warning',
-      down: 'danger',
+      // client status
+      ready: green500,
+      initializing: red500,
+      down: blue500,
 
-            // server status
-      alive: 'success',
-      leaving: 'warning',
-      left: 'danger',
-      shutdown: 'danger',
+      // server status
+      alive: green500,
+      leaving: red500,
+      left: blue500,
+      shutdown: yellow500,
 
-            // job status
-      running: 'success',
-      pending: 'warning',
-      dead: 'info',
+      // job status
+      running: green500,
+      pending: red500,
+      dead: blue500,
 
-            // job type
-      service: 'success',
-      batch: 'info',
-      system: 'primary',
+      // job type
+      service: green500,
+      batch: red500,
+      system: blue500,
 
-            // task states
-            // running: 'success',
-      starting: 'warning',
-      queued: 'info',
-      failed: 'danger',
-      lost: 'danger'
+      // task states
+      // running: 'success',
+      starting: green500,
+      queued: red500,
+      failed: blue500,
+      lost: yellow500
     }[index]
   }
 
@@ -40,39 +94,40 @@ class Progressbar extends Component {
     const normalizedValues = {}
     keys.forEach(key => (normalizedValues[key.toLowerCase()] = this.props.data[key]))
     const normalizedKeys = keys.map(string => string.toLowerCase())
-    const sum = normalizedKeys.reduce((previous, currentValue) => {
-      return previous + normalizedValues[currentValue]
-    }, 0)
+
+    let data = normalizedKeys.map((index) => {
+      return {
+        name: index,
+        value: normalizedValues[index]
+      }
+    })
 
     return (
-      <div className='card'>
-        <div className='content'>
-          <h5>{ this.props.title }</h5>
-
-          <ProgressBar>
-            {normalizedKeys.map((index) => {
-              return (
-                <ProgressBar
-                  bsStyle={ this.colorIndex(index) }
-                  min={ 0 }
-                  max={ sum }
-                  now={ normalizedValues[index] }
-                  key={ index }
-                />
-              )
-            })}
-          </ProgressBar>
-
-          {normalizedKeys.map((index) => {
-            return (
-              <span style={{ paddingRight: '10px' }} key={ index }>
-                <i className={ `fa fa-circle text-${this.colorIndex(index)}` }></i>
-                { index } ({ normalizedValues[index] })
-                    </span>
-            )
-          })}
-        </div>
-      </div>
+      <Card>
+        <CardTitle title={ this.props.title } />
+        <CardText>
+          <ResponsiveContainer minHeight={ 200 }>
+            <PieChart
+              onMouseEnter={ (data, index) => { this.onPieEnter(data, index) } }
+              onMouseLeave={ (data, index) => { this.onPieLeave(data, index) } }
+            >
+              <Pie
+                activeIndex={ this.state.activeIndex }
+                activeShape={ this.renderActiveShape }
+                data={ data }
+                innerRadius={ 60 }
+                outerRadius={ 80 }
+                isAnimationActive={ false }
+                label={ this.state.showLabel }
+              >
+                {
+                  data.map((entry) => <Cell fill={ this.colorIndex(entry.name) } />)
+                }
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+        </CardText>
+      </Card>
     )
   }
 }

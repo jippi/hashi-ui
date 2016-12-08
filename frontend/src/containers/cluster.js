@@ -1,10 +1,29 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import Progressbar from '../components/Progressbar/Progressbar'
-import Events from './events'
-import Statistics from './statistics'
+import ClusterEvents from '../components/ClusterEvents/ClusterEvents'
+import ClusterStatistics from '../components/ClusterStatistics/ClusterStatistics'
+import { Card, CardText } from 'material-ui/Card'
+import { Grid, Row, Col } from 'react-flexbox-grid'
+import {
+  WATCH_JOBS, UNWATCH_JOBS,
+  WATCH_NODES, UNWATCH_NODES,
+  WATCH_MEMBERS, UNWATCH_MEMBERS
+} from '../sagas/event'
 
 class Cluster extends Component {
+
+  componentWillMount () {
+    this.props.dispatch({ type: WATCH_JOBS })
+    this.props.dispatch({ type: WATCH_NODES })
+    this.props.dispatch({ type: WATCH_MEMBERS })
+  }
+
+  componentWillUnmount () {
+    this.props.dispatch({ type: UNWATCH_JOBS })
+    this.props.dispatch({ type: UNWATCH_NODES })
+    this.props.dispatch({ type: UNWATCH_MEMBERS })
+  }
 
   getChartData () {
     const stats = {
@@ -51,24 +70,30 @@ class Cluster extends Component {
     const data = this.getChartData()
 
     return (
-      <div>
-        <div className='row'>
-          <div className='col-xs-12 col-sm-6 col-md-6 col-lg-6'>
+      <Grid fluid style={{ padding: 0 }}>
+        <Row>
+          <Col key='client-pane' xs={ 12 } sm={ 6 } md={ 3 } lg={ 2 }>
             <Progressbar title='Client Status' data={ data.nodeStatus } />
-          </div>
-          <div className='col-xs-12 col-sm-6 col-md-6 col-lg-6'>
+          </Col>
+          <Col key='member-pane' xs={ 12 } sm={ 6 } md={ 3 } lg={ 2 }>
             <Progressbar title='Server Status' data={ data.memberStatus } />
-          </div>
-          <div className='col-xs-12 col-sm-6 col-md-6 col-lg-6'>
+          </Col>
+          <Col key='job-status-pane' xs={ 12 } sm={ 6 } md={ 3 } lg={ 2 }>
             <Progressbar title='Job Status' data={ data.jobStatus } />
-          </div>
-          <div className='col-xs-12 col-sm-6 col-md-6 col-lg-6'>
+          </Col>
+          <Col key='job-type-pane' xs={ 12 } sm={ 6 } md={ 3 } lg={ 2 }>
             <Progressbar title='Job Type' data={ data.jobTypes } />
-          </div>
-        </div>
-        <Statistics />
-        <Events />
-      </div>
+          </Col>
+          <Col key='cluster-type-pane' xs={ 12 } sm={ 6 } md={ 3 } lg={ 2 }>
+            <ClusterStatistics />
+          </Col>
+        </Row>
+        <Row style={{ marginTop: '1rem' }}>
+          <Col key='events-pane' xs={ 12 } sm={ 12 } md={ 12 } lg={ 12 }>
+            <ClusterEvents />
+          </Col>
+        </Row>
+      </Grid>
     )
   }
 }
@@ -80,7 +105,8 @@ function mapStateToProps ({ jobs, nodes, members }) {
 Cluster.propTypes = {
   jobs: PropTypes.array.isRequired,
   nodes: PropTypes.array.isRequired,
-  members: PropTypes.array.isRequired
+  members: PropTypes.array.isRequired,
+  dispatch: PropTypes.func.isRequired,
 }
 
 export default connect(mapStateToProps)(Cluster)

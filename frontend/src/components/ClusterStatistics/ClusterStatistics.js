@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import Progressbar from '../components/Progressbar/Progressbar'
+import Progressbar from '../Progressbar/Progressbar'
 
-const Statistics = ({ jobs }) => {
+const ClusterStatistics = ({ jobs }) => {
   const clientStatus = {
     Running: 0,
     Starting: 0
@@ -33,21 +33,15 @@ const Statistics = ({ jobs }) => {
 
   delete clientStatus.Complete
 
-  return (
-    <div className='row'>
-      <div className='col-xs-12 col-sm-12 col-md-12 col-lg-12'>
-        <Progressbar title='Task Stats' data={ clientStatus } />
-      </div>
-    </div>
-  )
+  return <Progressbar title='Task Stats' data={ clientStatus } />
 }
 
 function mapStateToProps ({ jobs }) {
   return { jobs }
 }
 
-Statistics.propTypes = {
+ClusterStatistics.propTypes = {
   jobs: PropTypes.array.isRequired
 }
 
-export default connect(mapStateToProps)(Statistics)
+export default connect(mapStateToProps)(ClusterStatistics)
