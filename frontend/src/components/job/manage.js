@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import Modal from 'react-modal';
 import _ from 'lodash';
 import NomadLink from '../link';
 import Table from '../table';
@@ -11,18 +12,27 @@ class JobManage extends Component {
         super(props);
         this.onRun = () => this.run();
         this.onEdit = () => this.edit();
+        this.onEditModal = () => this.editModal();
+        this.onRunModal = () => this.runModal();
+        this.onOpenModal = () => this.openModal();
+        this.onCloseModal = () => this.closeModal();
         this.onImage = (taskId, taskGroupId) => this.image(taskId, taskGroupId);
         this.onPause = taskGroupId => this.pause(taskGroupId);
         this.onCount = taskGroupId => this.count(taskGroupId);
         this.state = {
             job: _.cloneDeep(props.job),
+            advancedjob: _.cloneDeep(props.job),
             edit: false,
+            advancedMode: false,
         };
     }
 
     componentWillReceiveProps(props) {
         if (!this.state.edit) {
-            this.setState({ job: _.cloneDeep(props.job) });
+            this.setState({
+                job: _.cloneDeep(props.job),
+                advancedjob: _.cloneDeep(props.job),
+            });
         }
     }
 
@@ -30,6 +40,34 @@ class JobManage extends Component {
         this.setState({
             job: _.cloneDeep(this.props.job),
             edit: !this.state.edit,
+        });
+    }
+
+    editModal() {
+        return (event) => {
+            this.setState({
+                advancedjob: JSON.parse(event.target.value),
+            });
+        };
+    }
+
+    runModal() {
+        this.props.dispatch({
+            type: RUN_JOB,
+            payload: JSON.stringify(this.state.advancedjob),
+        });
+    }
+
+    openModal() {
+        this.setState({
+            advancedMode: true,
+        });
+    }
+
+    closeModal() {
+        this.setState({
+            advancedMode: false,
+            advancedjob: _.cloneDeep(this.props.job),
         });
     }
 
@@ -104,6 +142,18 @@ class JobManage extends Component {
         const tdWidthDriver = {
             width: '11%',
         };
+        const customStyles = {
+            content: {
+                top: '50%',
+                left: '50%',
+                right: 'auto',
+                bottom: 'auto',
+                marginRight: '-50%',
+                transform: 'translate(-50%, -50%)',
+                width: '60%',
+                height: '90%',
+            },
+        };
 
         this.state.job.TaskGroups.map((taskGroup, gdix) => {
             let max = 10000;
@@ -156,10 +206,7 @@ class JobManage extends Component {
 
         this.state.job.TaskGroups.forEach((taskGroup) => {
             const disabled = taskGroup.Count === 0;
-            console.log(taskGroup.Tasks);
-            const test = taskGroup.Tasks.sort((aa, b) => ((aa.Name > b.Name) ? 1 : -1));
-            console.log(test);
-            test.forEach((task) => {
+            taskGroup.Tasks.forEach((task) => {
                 tasks.push(
                   <tr key={ task.ID }>
                     <td style={ tdWidthId }>
@@ -191,6 +238,58 @@ class JobManage extends Component {
         });
         return (
           <div className="nested-content">
+            <div>
+              <button
+                type="button"
+                className="btn btn-warning btn-sm"
+                style={ updateStyle }
+                onClick={ this.onOpenModal }
+              >
+                Advanced Edit
+              </button>
+              <Modal
+                isOpen={ this.state.advancedMode }
+                onRequestClose={ this.onCloseModal }
+                style={ customStyles }
+                contentLabel="Example Modal"
+              >
+                <div className="modal-header">
+                  <button
+                    onClick={ this.onCloseModal }
+                    type="button"
+                    className="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                  <h2 className="modal-title" id="myModalLabel">
+                    Job: { this.state.advancedjob.Name }
+                  </h2>
+                </div>
+                <div className="modal-body">
+                  <textarea rows="30" cols="120" onChange={ this.onEditModal() }>
+                    { JSON.stringify(this.state.advancedjob, null, 4) }
+                  </textarea>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-success btn-sm"
+                  style={ updateStyle }
+                  onClick={ this.onRunModal }
+                >
+                    Update
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger btn-sm"
+                  style={ updateStyle }
+                  onClick={ this.onCloseModal }
+                >
+                    Close
+                </button>
+              </Modal>
+            </div>
             { (this.state.edit && !this.props.readonly) ?
               <button
                 type="button"
