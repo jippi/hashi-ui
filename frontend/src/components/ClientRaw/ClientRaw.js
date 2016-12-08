@@ -1,14 +1,15 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-
+import { Card, CardTitle, CardText } from 'material-ui/Card'
 import RawJson from '../RawJson/RawJson'
 
 const ClientRaw = ({ node }) =>
-  <div className='tab-pane active'>
-    <div className='content'>
+  <Card>
+    <CardTitle title='Raw node data' />
+    <CardText>
       <RawJson json={ node } />
-    </div>
-  </div>
+    </CardText>
+  </Card>
 
 function mapStateToProps ({ node }) {
   return { node }

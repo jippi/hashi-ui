@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { Card, CardHeader, CardText } from 'material-ui/Card'
+import { Card, CardText } from 'material-ui/Card'
 import { WATCH_MEMBERS, UNWATCH_MEMBERS } from '../sagas/event'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from '../components/Table'
 import ServerLink from '../components/ServerLink/ServerLink'
@@ -20,7 +20,6 @@ class Servers extends Component {
     return (
       <div>
         <Card>
-          <CardHeader title='Servers' />
           <CardText>
             <Table>
               <TableHeader>

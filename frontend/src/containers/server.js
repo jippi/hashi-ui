@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import ViewServerTopbar from '../components/ViewServerTopbar/ViewServerTopbar'
+import ServerTopbar from '../components/ServerTopbar/ServerTopbar'
 import { WATCH_MEMBER, UNWATCH_MEMBER } from '../sagas/event'
 
 class Server extends Component {
@@ -20,7 +20,7 @@ class Server extends Component {
 
     return (
       <div>
-        <ViewServerTopbar { ...this.props } />
+        <ServerTopbar { ...this.props } />
 
         <div style={{ padding: 10, paddingBottom: 0 }}>
           <h2>Server: { this.props.member.Name }</h2>

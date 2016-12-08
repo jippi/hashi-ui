@@ -1,18 +1,23 @@
-import React, { PureComponent, PropTypes } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { WATCH_EVALS, UNWATCH_EVALS } from '../../sagas/event'
 import EvaluationList from '../EvaluationList/EvaluationList'
 
-class ClientEvaluations extends PureComponent {
+class ClientEvaluations extends Component {
+
+  componentWillMount () {
+    this.props.dispatch({ type: WATCH_EVALS})
+  }
+
+  componentWillUnmount () {
+    this.props.dispatch({ type: UNWATCH_EVALS })
+  }
 
   render () {
     const nodeId = this.props.params.nodeId
     const evals = this.props.evaluations.filter(evaluation => evaluation.NodeID === nodeId)
 
-    return (
-      <div className='tab-pane active'>
-        <EvaluationList evaluations={ evals } containerClassName='nested-content' />
-      </div>
-    )
+    return <EvaluationList evaluations={ evals } />
   }
 }
 
@@ -27,7 +32,8 @@ ClientEvaluations.defaultProps = {
 
 ClientEvaluations.propTypes = {
   evaluations: PropTypes.array.isRequired,
-  params: PropTypes.object.isRequired
+  params: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
 }
 
 export default connect(mapStateToProps)(ClientEvaluations)

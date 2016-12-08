@@ -13,7 +13,9 @@ import {
     CLEAR_RECEIVED_FILE_DATA,
     CLEAR_FILE_PATH,
     UNWATCH_FILE,
-    WATCH_FILE
+    WATCH_FILE,
+    WATCH_NODES,
+    UNWATCH_NODES
 } from '../../sagas/event'
 
 class AllocationFiles extends Component {
@@ -100,15 +102,15 @@ class AllocationFiles extends Component {
 
   componentDidMount () {
     window.addEventListener('resize', () => this.updateDimensions())
+    this.props.dispatch({ type: WATCH_NODES })
     this.updateDimensions()
   }
 
   componentWillUnmount () {
     window.removeEventListener('resize', () => this.updateDimensions())
 
-    this.props.dispatch({
-      type: CLEAR_FILE_PATH
-    })
+    this.props.dispatch({ type: UNWATCH_NODES })
+    this.props.dispatch({ type: CLEAR_FILE_PATH })
 
     if (!this.state.fileWatching) {
       return
@@ -353,7 +355,7 @@ AllocationFiles.propTypes = {
   file: PropTypes.object.isRequired,
   directory: PropTypes.array.isRequired,
   history: PropTypes.object.isRequired,
-  router: PropTypes.object.isRequired
+  router: PropTypes.object.isRequired,
 }
 
 export default connect(mapStateToProps)(AllocationFiles)

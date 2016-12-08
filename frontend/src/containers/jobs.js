@@ -114,7 +114,7 @@ class Jobs extends Component {
     return (
       <div>
         <Card>
-          <CardHeader title='Filter list by status or type' actAsExpander showExpandableButton />
+          <CardHeader title='Filter list' actAsExpander showExpandableButton />
           <CardText style={{ paddingTop: 0 }} expandable>
             <JobStatusFilter />
             &nbsp;

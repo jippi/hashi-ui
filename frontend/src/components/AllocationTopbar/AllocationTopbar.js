@@ -6,9 +6,9 @@ import { withRouter } from 'react-router'
 const infoIcon = <FontIcon className='material-icons'>info_outline</FontIcon>
 const filesIcon = <FontIcon className='material-icons'>storage</FontIcon>
 const logsIcon = <FontIcon className='material-icons'>subject</FontIcon>
-const rawIcon = <FontIcon className='material-icons'>highlight</FontIcon>
+const rawIcon = <FontIcon className='material-icons'>code</FontIcon>
 
-class _ViewAllocationTopbar extends PureComponent {
+class _AllocationTopbar extends PureComponent {
 
   handleActive (tab) {
     let path = location.pathname.split('/')
@@ -59,11 +59,11 @@ class _ViewAllocationTopbar extends PureComponent {
   }
 }
 
-_ViewAllocationTopbar.propTypes = {
+_AllocationTopbar.propTypes = {
   router: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired
 }
 
-const ViewAllocationTopbar = withRouter(_ViewAllocationTopbar)
+const AllocationTopbar = withRouter(_AllocationTopbar)
 
-export default ViewAllocationTopbar
+export default AllocationTopbar

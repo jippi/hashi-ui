@@ -14,18 +14,7 @@ class Evaluations extends Component {
   }
 
   render() {
-    return (
-      <div className='row'>
-        <div className='col-md-12'>
-          <div className='card'>
-            <div className='header'>
-              <h4 className='title'>Evaluations</h4>
-            </div>
-            <EvaluationList evaluations={ this.props.evaluations } containerClassName='content' />
-          </div>
-        </div>
-      </div>
-    )
+    return <EvaluationList evaluations={ this.props.evaluations } containerClassName='content' />
   }
 }
 

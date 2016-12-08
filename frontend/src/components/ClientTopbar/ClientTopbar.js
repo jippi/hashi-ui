@@ -6,10 +6,9 @@ import { withRouter } from 'react-router'
 const infoIcon = <FontIcon className='material-icons'>info_outline</FontIcon>
 const allocationIcon = <FontIcon className='material-icons'>apps</FontIcon>
 const evaluationIcon = <FontIcon className='material-icons'>share</FontIcon>
-const taskGroupIcon = <FontIcon className='material-icons'>layers</FontIcon>
-const rawIcon = <FontIcon className='material-icons'>highlight</FontIcon>
+const rawIcon = <FontIcon className='material-icons'>code</FontIcon>
 
-class _ViewJobTopbar extends PureComponent {
+class _ClientTopbar extends PureComponent {
 
   handleActive (tab) {
     let path = location.pathname.split('/')
@@ -34,12 +33,8 @@ class _ViewJobTopbar extends PureComponent {
       return 2
     }
 
-    if (end.startsWith('taskGroups')) {
-      return 3
-    }
-
     if (end.startsWith('raw')) {
-      return 4
+      return 3
     }
 
     return 0
@@ -71,11 +66,6 @@ class _ViewJobTopbar extends PureComponent {
           onTouchTap={ () => this.handleActive('evaluations') }
         />
         <BottomNavigationItem
-          label='Task Groups'
-          icon={ taskGroupIcon }
-          onTouchTap={ () => this.handleActive('taskGroups') }
-        />
-        <BottomNavigationItem
           label='Raw'
           icon={ rawIcon }
           onTouchTap={ () => this.handleActive('raw') }
@@ -85,11 +75,11 @@ class _ViewJobTopbar extends PureComponent {
   }
 }
 
-_ViewJobTopbar.propTypes = {
+_ClientTopbar.propTypes = {
   router: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired
 }
 
-const ViewJobTopbar = withRouter(_ViewJobTopbar)
+const ClientTopbar = withRouter(_ClientTopbar)
 
-export default ViewJobTopbar
+export default ClientTopbar

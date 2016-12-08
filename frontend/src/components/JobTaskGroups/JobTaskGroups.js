@@ -1,5 +1,8 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { Grid, Row, Col } from 'react-flexbox-grid'
+import { Card, CardTitle, CardText } from 'material-ui/Card'
+import { TableRow, TableRowColumn } from '../Table'
 import JobLink from '../JobLink/JobLink'
 import TableHelper from '../TableHelper/TableHelper'
 import RawJson from '../RawJson/RawJson'
@@ -18,14 +21,14 @@ const JobTaskGroups = ({ job, location }) => {
 
   job.TaskGroups.forEach((taskGroup) => {
     taskGroups.push(
-      <tr key={ taskGroup.ID }>
-        <td><JobLink taskGroupId={ taskGroup.ID } jobId={ job.ID } /></td>
-        <td>{ taskGroup.Name }</td>
-        <td>{ taskGroup.Count }</td>
-        <td><MetaPayload metaBag={ taskGroup.Meta } asTooltip /></td>
-        <td>{ taskGroup.RestartPolicy.Mode }</td>
-      </tr>
-        )
+      <TableRow key={ taskGroup.ID }>
+        <TableRowColumn><JobLink taskGroupId={ taskGroup.ID } jobId={ job.ID } /></TableRowColumn>
+        <TableRowColumn>{ taskGroup.Name }</TableRowColumn>
+        <TableRowColumn>{ taskGroup.Count }</TableRowColumn>
+        <TableRowColumn><MetaPayload metaBag={ taskGroup.Meta } asTooltip /></TableRowColumn>
+        <TableRowColumn>{ taskGroup.RestartPolicy.Mode }</TableRowColumn>
+      </TableRow>
+    )
   })
 
   let taskGroupId = location.query.taskGroupId
@@ -34,31 +37,35 @@ const JobTaskGroups = ({ job, location }) => {
   if (!taskGroupId && job.TaskGroups.length === 1) {
     taskGroupId = job.TaskGroups[0].ID
   }
+
   return (
-    <div className='tab-pane active'>
-      <div className='row'>
-        <div className='col-md-6 tab-column'>
-          <legend>Task Groups</legend>
-          { (taskGroups.length > 0) ?
-            <TableHelper
-              classes='table table-hover table-striped'
-              headers={ taskGroupHeaders }
-              body={ taskGroups }
-            />
-              : null
-            }
-        </div>
-        <div className='col-md-6 tab-column'>
-          <legend>Task Group: { taskGroupId }</legend>
-          { job.TaskGroups
-                .filter(taskGroup => taskGroup.ID === taskGroupId)
-                .map(taskGroup => <RawJson json={ taskGroup } />)
-                .pop()
-            }
-        </div>
-      </div>
-    </div>
-  )
+    <Grid fluid style={{ padding: 0 }}>
+      <Row>
+        <Col key='task-groups-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 5 }>
+          <Card>
+            <CardTitle title='Task Groups' />
+            <CardText>
+              { (taskGroups.length > 0)
+                ? <TableHelper headers={ taskGroupHeaders } body={ taskGroups } />
+                : null
+              }
+            </CardText>
+          </Card>
+        </Col>
+        <Col key='data-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 7 }>
+          <Card>
+            <CardTitle title={ taskGroupId } />
+            <CardText>
+              { job.TaskGroups
+                  .filter(taskGroup => taskGroup.ID === taskGroupId)
+                  .map(taskGroup => <RawJson json={ taskGroup } />)
+                  .pop()
+              }
+            </CardText>
+          </Card>
+        </Col>
+      </Row>
+    </Grid>)
 }
 
 function mapStateToProps ({ job }) {

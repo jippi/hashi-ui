@@ -1,9 +1,9 @@
 import React, { PureComponent, PropTypes } from 'react'
 import AppBar from 'material-ui/AppBar'
 import { withRouter } from 'react-router'
-import {Tabs, Tab} from 'material-ui/Tabs'
+import { Tabs, Tab } from 'material-ui/Tabs'
 
-class Topbar extends PureComponent {
+class AppTopbar extends PureComponent {
 
   constructor () {
     super()
@@ -61,11 +61,11 @@ class Topbar extends PureComponent {
   }
 }
 
-Topbar.propTypes = {
+AppTopbar.propTypes = {
   router: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired
 }
 
-const TopbarWithRouter = withRouter(Topbar)
+const AppTopbarWithRouter = withRouter(AppTopbar)
 
-export default TopbarWithRouter
+export default AppTopbarWithRouter

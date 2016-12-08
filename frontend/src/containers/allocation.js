@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import ViewAllocationTopbar from '../components/ViewAllocationTopbar/ViewAllocationTopbar'
+import AllocationTopbar from '../components/AllocationTopbar/AllocationTopbar'
 import { WATCH_ALLOC, UNWATCH_ALLOC } from '../sagas/event'
 
 class Allocation extends Component {
@@ -26,7 +26,7 @@ class Allocation extends Component {
 
     return (
       <div>
-        <ViewAllocationTopbar { ...this.props } />
+        <AllocationTopbar { ...this.props } />
 
         <div style={{ padding: 10, paddingBottom: 0 }}>
           <h2>Allocation: { this.props.allocation.Name }</h2>

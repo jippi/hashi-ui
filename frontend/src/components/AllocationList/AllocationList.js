@@ -171,13 +171,13 @@ class AllocationList extends PureComponent {
     return (
       <div>
         <Card>
-          <CardHeader title='Filter list by client, status or job' actAsExpander showExpandableButton />
+          <CardHeader title='Filter list' actAsExpander showExpandableButton />
           <CardText expandable>
             { this.clientFilter() }
                 &nbsp;
             { this.clientStatusFilter() }
                 &nbsp;
-            { this.jobIdFilter() }
+            { showJobColumn ? this.jobIdFilter() : null }
           </CardText>
         </Card>
 

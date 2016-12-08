@@ -4,9 +4,10 @@ import { BottomNavigation, BottomNavigationItem } from 'material-ui/BottomNaviga
 import { withRouter } from 'react-router'
 
 const infoIcon = <FontIcon className='material-icons'>info_outline</FontIcon>
-const rawIcon = <FontIcon className='material-icons'>highlight</FontIcon>
+const allocationIcon = <FontIcon className='material-icons'>apps</FontIcon>
+const rawIcon = <FontIcon className='material-icons'>code</FontIcon>
 
-class _ViewServerTopbar extends PureComponent {
+class _EvaluationTopbar extends PureComponent {
 
   handleActive (tab) {
     let path = location.pathname.split('/')
@@ -23,8 +24,12 @@ class _ViewServerTopbar extends PureComponent {
       return 0
     }
 
-    if (end.startsWith('raw')) {
+    if (end.startsWith('allocations')) {
       return 1
+    }
+
+    if (end.startsWith('raw')) {
+      return 2
     }
 
     return 0
@@ -46,6 +51,11 @@ class _ViewServerTopbar extends PureComponent {
           onTouchTap={ () => this.handleActive('info') }
         />
         <BottomNavigationItem
+          label='Allocations'
+          icon={ allocationIcon }
+          onTouchTap={ () => this.handleActive('allocations') }
+        />
+        <BottomNavigationItem
           label='Raw'
           icon={ rawIcon }
           onTouchTap={ () => this.handleActive('raw') }
@@ -55,11 +65,11 @@ class _ViewServerTopbar extends PureComponent {
   }
 }
 
-_ViewServerTopbar.propTypes = {
+_EvaluationTopbar.propTypes = {
   router: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired
 }
 
-const ViewServerTopbar = withRouter(_ViewServerTopbar)
+const ViewEvaluationTopbar = withRouter(_EvaluationTopbar)
 
-export default ViewServerTopbar
+export default ViewEvaluationTopbar

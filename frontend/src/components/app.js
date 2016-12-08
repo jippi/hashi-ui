@@ -3,7 +3,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import { green800, green900 } from 'material-ui/styles/colors'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import Topbar from './Topbar/Topbar'
+import AppTopbar from './AppTopbar/AppTopbar'
 
 const muiTheme = getMuiTheme({
   palette: {
@@ -28,7 +28,7 @@ class App extends PureComponent {
     return (
       <MuiThemeProvider muiTheme={ muiTheme }>
         <div>
-          <Topbar { ...this.props } />
+          <AppTopbar { ...this.props } />
           { this.props.children }
         </div>
       </MuiThemeProvider>

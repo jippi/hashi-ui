@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import ViewJobTopbar from '../components/ViewJobTopbar/ViewJobTopbar'
+import JobTopbar from '../components/JobTopbar/JobTopbar'
 import { WATCH_JOB, UNWATCH_JOB } from '../sagas/event'
 
 class Job extends Component {
@@ -20,7 +20,7 @@ class Job extends Component {
 
     return (
       <div>
-        <ViewJobTopbar { ...this.props } />
+        <JobTopbar { ...this.props } />
 
         <div style={{ padding: 10, paddingBottom: 0 }}>
           <h2>Job: { this.props.job.Name }</h2>

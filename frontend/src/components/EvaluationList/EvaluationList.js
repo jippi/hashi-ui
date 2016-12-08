@@ -1,49 +1,49 @@
 import React, { PropTypes } from 'react'
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from '../Table'
+import { Card, CardText } from 'material-ui/Card'
 import EvaluationLink from '../EvaluationLink/EvaluationLink'
 import JobLink from '../JobLink/JobLink'
 
-const EvaluationList = ({ evaluations, containerClassName }) =>
-  <div className={ containerClassName }>
-    <div className='table-responsive table-full-width'>
-      <table className='table table-hover table-striped'>
-        <thead>
-          <tr>
-            <th width='150'>ID</th>
-            <th>Job</th>
-            <th width='150'>Type</th>
-            <th width='150'>Priority</th>
-            <th width='150'>Status</th>
-            <th>Status Description</th>
-            <th width='150'>Parent</th>
-            <th width='150'>Triggered by</th>
-          </tr>
-        </thead>
-        <tbody>
+const EvaluationList = ({ evaluations }) =>
+  <Card>
+    <CardText>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHeaderColumn style={{ width: 150 }}>ID</TableHeaderColumn>
+            <TableHeaderColumn>Job</TableHeaderColumn>
+            <TableHeaderColumn style={{ width: 150 }}>Type</TableHeaderColumn>
+            <TableHeaderColumn style={{ width: 150 }}>Priority</TableHeaderColumn>
+            <TableHeaderColumn style={{ width: 150 }}>Status</TableHeaderColumn>
+            <TableHeaderColumn>Status Description</TableHeaderColumn>
+            <TableHeaderColumn style={{ width: 150 }}>Parent</TableHeaderColumn>
+            <TableHeaderColumn style={{ width: 150 }}>Triggered by</TableHeaderColumn>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           { evaluations.map(evaluation =>
-            <tr key={ evaluation.ID }>
-              <td><EvaluationLink evaluationId={ evaluation.ID } /></td>
-              <td><JobLink jobId={ evaluation.JobID } /></td>
-              <td>{ evaluation.Type }</td>
-              <td>{ evaluation.Priority }</td>
-              <td>{ evaluation.Status }</td>
-              <td>{ evaluation.StatusDescription }</td>
-              <td><EvaluationLink evaluationId={ evaluation.PreviousEval } /></td>
-              <td>{ evaluation.TriggeredBy }</td>
-            </tr>
+            <TableRow key={ evaluation.ID }>
+              <TableRowColumn><EvaluationLink evaluationId={ evaluation.ID } /></TableRowColumn>
+              <TableRowColumn><JobLink jobId={ evaluation.JobID } /></TableRowColumn>
+              <TableRowColumn>{ evaluation.Type }</TableRowColumn>
+              <TableRowColumn>{ evaluation.Priority }</TableRowColumn>
+              <TableRowColumn>{ evaluation.Status }</TableRowColumn>
+              <TableRowColumn>{ evaluation.StatusDescription }</TableRowColumn>
+              <TableRowColumn><EvaluationLink evaluationId={ evaluation.PreviousEval } /></TableRowColumn>
+              <TableRowColumn>{ evaluation.TriggeredBy }</TableRowColumn>
+            </TableRow>
           )}
-        </tbody>
-      </table>
-    </div>
-  </div>
+        </TableBody>
+      </Table>
+    </CardText>
+  </Card>
 
 EvaluationList.defaultProps = {
-  evaluations: [],
-  containerClassName: ''
+  evaluations: []
 }
 
 EvaluationList.propTypes = {
-  evaluations: PropTypes.array.isRequired,
-  containerClassName: PropTypes.string.isRequired
+  evaluations: PropTypes.array.isRequired
 }
 
 export default EvaluationList
