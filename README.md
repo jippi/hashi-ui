@@ -3,11 +3,11 @@ Nomad UI [![Build Status](https://travis-ci.org/iverberk/nomad-ui.svg?branch=mas
 
 [![Join the chat at https://gitter.im/nomad-ui/Lobby](https://badges.gitter.im/nomad-ui/Lobby.svg)](https://gitter.im/nomad-ui/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-An awesome user interface for an awesome scheduler, plain and simple :-)
+An awesome user interface (even for mobile devices!) for an awesome scheduler, plain and simple :-)
 
-![Nomad UI](http://www.ivoverberk.nl/dl/nomad-ui.jpg)
-![Nomad UI](http://www.ivoverberk.nl/dl/nomad-ui-2.jpg)
-![Nomad UI](http://www.ivoverberk.nl/dl/nomad-ui-3.jpg)
+![Nomad UI](https://dl.dropboxusercontent.com/u/27514/nomad-screenshots/0.5/cluster-overview-small.jpg)
+
+[More screenshots](https://github.com/iverberk/nomad-ui/blob/master/SCREENSHOTS.md)
 
 # Usage
 
