@@ -173,7 +173,7 @@ class AllocationList extends PureComponent {
         <Card>
           <CardHeader title='Filter list' actAsExpander showExpandableButton />
           <CardText expandable>
-            { this.clientFilter() }
+            { showClientColumn ? this.clientFilter() : null }
                 &nbsp;
             { this.clientStatusFilter() }
                 &nbsp;
