@@ -115,6 +115,7 @@ func (c *Connection) readPump() {
 		if err != nil {
 			break
 		}
+
 		c.process(action)
 	}
 }
@@ -200,10 +201,10 @@ func (c *Connection) process(action Action) {
 	//
 	case watchMember:
 		go c.watchMember(action)
-	case unwatchMember:
-		c.watches.Remove(action.Payload.(string))
 	case fetchMember:
 		go c.fetchMember(action)
+	case unwatchMember:
+		c.watches.Remove(action.Payload.(string))
 
 	// Actions for a single evaluation
 	case watchEval:
@@ -514,6 +515,7 @@ func (c *Connection) watchFile(action Action) {
 		logger.Error("Could not decode payload")
 		return
 	}
+
 	addr := params["addr"].(string)
 	path := params["path"].(string)
 	allocID := params["allocID"].(string)
@@ -578,9 +580,15 @@ func (c *Connection) watchFile(action Action) {
 	go func() {
 		for {
 			n, err := r.Read(b[:cap(b)])
+
+			if !c.watches.Has(path) {
+				return
+			}
+
 			if err != nil {
 				return
 			}
+
 			if n > 0 {
 				lines <- b[0:n]
 			}
@@ -588,6 +596,7 @@ func (c *Connection) watchFile(action Action) {
 	}()
 
 	c.watches.Add(path)
+
 	defer func() {
 		c.Infof("Stopped watching file with path: %s", path)
 		c.watches.Remove(path)
@@ -609,15 +618,19 @@ func (c *Connection) watchFile(action Action) {
 		Index: 0,
 	}
 
-	ticker := time.NewTicker(10 * time.Second)
+	ticker := time.NewTicker(1 * time.Second)
+
 	for {
 		select {
+
 		case <-c.destroyCh:
 			return
+
 		case line := <-lines:
 			if !c.watches.Has(path) {
 				return
 			}
+
 			c.send <- &Action{
 				Type: fetchedFile,
 				Payload: struct {
@@ -631,6 +644,7 @@ func (c *Connection) watchFile(action Action) {
 				},
 				Index: 0,
 			}
+
 		case <-ticker.C:
 			if !c.watches.Has(path) {
 				return
