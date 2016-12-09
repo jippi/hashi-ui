@@ -22,10 +22,6 @@ class Progressbar extends Component {
     this.setState({ showLabel: true })
   }
 
-  onPieClick() {
-    this.setState({ showLabel: !this.state.showLabel })
-  }
-
   renderActiveShape(props) {
     const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent } = props;
     const p = (percent * 100).toFixed(0)
@@ -114,7 +110,7 @@ class Progressbar extends Component {
             <PieChart
               onMouseEnter={ (data, index) => { this.onPieEnter(data, index) } }
               onMouseLeave={ (data, index) => { this.onPieLeave(data, index) } }
-              onClick={ (data, index) => { this.onPieClick(data, index) } }
+              onClick={ (data, index) => { this.onPieEnter(data, index) } }
             >
               <Pie
                 activeIndex={ this.state.activeIndex }

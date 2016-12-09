@@ -94,7 +94,7 @@ class AllocationListRow extends Component {
           <FormatTime identifier={ allocation.ID } time={ allocation.CreateTime } />
         </TableRowColumn>
         <TableRowColumn style={{ width: 50 }}>
-          <AllocationLink allocationId={ allocation.ID } linkAppend='/files?path=/alloc/logs/'>
+          <AllocationLink allocationId={ allocation.ID } linkAppend='/files' linkQuery={{ path: '/alloc/logs/' }}>
             <FontIcon className='material-icons'>format_align_left</FontIcon>
           </AllocationLink>
         </TableRowColumn>

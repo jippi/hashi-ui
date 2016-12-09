@@ -61,7 +61,8 @@ class AllocationFiles extends Component {
     }
 
     if (this.state.fileWatching && currentFile && currentFile !== nextFile) {
-      this.unwatchFile(nextProps, currentFile)
+      this.unwatchFile(this.props)
+
       nextState.contents = ''
       nextState.fileWatching = false
       stateHaveChanged = true
@@ -116,7 +117,7 @@ class AllocationFiles extends Component {
       return
     }
 
-    this.unwatchFile(this.props, this.props.location.query.file)
+    this.unwatchFile(this.props)
 
     this.setState({
       contents: '',
@@ -184,14 +185,10 @@ class AllocationFiles extends Component {
     })
   }
 
-  unwatchFile (props, file) {
-    if (!this.findAllocNode(props)) {
-      return
-    }
-
+  unwatchFile (props) {
     props.dispatch({
       type: UNWATCH_FILE,
-      payload: file
+      payload: props.location.query.path + props.location.query.file
     })
   }
 
@@ -209,6 +206,7 @@ class AllocationFiles extends Component {
         pathname: this.props.location.pathname,
         query: { path }
       })
+
       return
     }
 
