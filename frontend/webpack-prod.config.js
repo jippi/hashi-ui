@@ -21,9 +21,8 @@ webpackConfig = merge(webpackConfig, {
   module: {
     loaders: [
       {
-        test: /\.css$/,
-        loader: 'style!css!postcss',
-        exclude: /flexboxgrid/
+        test: /(\.scss|\.css)$/,
+        loader: ExtractTextPlugin.extract('style', 'css?sourceMap&modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss!sass')
       },
       {
         test: /\.jsx?$/,
