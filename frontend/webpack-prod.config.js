@@ -21,18 +21,25 @@ webpackConfig = merge(webpackConfig, {
   module: {
     loaders: [
       {
-        test: /(\.scss)$/,
-        loader: ExtractTextPlugin.extract('style', 'css?sourceMap&modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss!sass')
+        test: /\.scss$/,
+        exclude: /flexboxgrid/,
+        loader: ExtractTextPlugin.extract('style', 'css?sourceMap&modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss!sass'),
       },
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style', 'css!postcss')
+        include: /flexboxgrid/,
+        loader: ExtractTextPlugin.extract('style', 'css'),
+      },
+      {
+        test: /\.css$/,
+        exclude: /flexboxgrid/,
+        loader: ExtractTextPlugin.extract('style', 'css!postcss'),
       },
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         loader: 'babel',
-        query: require('./config/babel.prod')
+        query: require('./config/babel.prod'),
       }
     ]
   },
