@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
+	"strings"
 	"syscall"
 	"time"
-	"strings"
-	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/op/go-logging"

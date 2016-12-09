@@ -3,13 +3,14 @@ import ReactDOM from 'react-dom'
 import { browserHistory } from 'react-router'
 import { Provider } from 'react-redux'
 
-import Perf from 'react-addons-perf'
-import '../assets/nomad-ui.css'
+// import Perf from 'react-addons-perf'
 
 import AppRouter from './router'
 import configureStore from './store'
 
-Perf.start()
+import '../assets/nomad-ui.css'
+
+// Perf.start()
 
 configureStore().then((store) => {
   ReactDOM.render(
@@ -22,4 +23,4 @@ configureStore().then((store) => {
   console.log(err)
 })
 
-window.Perf = Perf
+// window.Perf = Perf

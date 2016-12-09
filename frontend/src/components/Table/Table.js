@@ -25,7 +25,7 @@ class Table extends MaterialTable {
 
   render() {
     return (
-      <div className='table-responsive'>
+      <div className='nomad-table-responsive'>
         { Object.getPrototypeOf(Table.prototype).render.call(this) }
       </div>
     )

@@ -42,8 +42,12 @@ webpackConfig = merge(webpackConfig, {
   module: {
     loaders: [
       {
-        test: /(\.scss|\.css)$/,
+        test: /(\.scss)$/,
         loader: ExtractTextPlugin.extract('style', 'css?sourceMap&modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss!sass')
+      },
+      {
+        test: /\.css$/,
+        loader: ExtractTextPlugin.extract('style', 'css!postcss')
       },
       {
         test: /\.jsx?$/,
