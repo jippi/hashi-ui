@@ -1,3 +1,4 @@
+import React from 'react'
 import { Table as MaterialTable } from 'material-ui/Table'
 
 class Table extends MaterialTable {
@@ -22,6 +23,13 @@ class Table extends MaterialTable {
     }
   }
 
+  render() {
+    return (
+      <div className='table-responsive'>
+        { Object.getPrototypeOf(Table.prototype).render.call(this) }
+      </div>
+    )
+  }
 }
 
 export default Table
