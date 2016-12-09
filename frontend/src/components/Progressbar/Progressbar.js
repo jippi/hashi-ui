@@ -106,7 +106,7 @@ class Progressbar extends Component {
       <Card>
         <CardTitle title={ this.props.title } />
         <CardText>
-          <ResponsiveContainer minHeight={ 200 }>
+          <ResponsiveContainer minHeight={ 200 } minWidth={ 200 }>
             <PieChart
               onMouseEnter={ (data, index) => { this.onPieEnter(data, index) } }
               onMouseLeave={ (data, index) => { this.onPieLeave(data, index) } }

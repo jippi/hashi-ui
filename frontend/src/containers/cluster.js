@@ -71,19 +71,19 @@ class Cluster extends Component {
     return (
       <Grid fluid style={{ padding: 0 }}>
         <Row>
-          <Col key='client-pane' xs={ 12 } sm={ 6 } md={ 3 } lg={ 2 }>
+          <Col key='client-pane' xs={ 6 } sm={ 4 } md={ 3 } lg={ 3 }>
             <Progressbar title='Client Status' data={ data.nodeStatus } />
           </Col>
-          <Col key='member-pane' xs={ 12 } sm={ 6 } md={ 3 } lg={ 2 }>
+          <Col key='member-pane' xs={ 6 } sm={ 4 } md={ 3 } lg={ 3 }>
             <Progressbar title='Server Status' data={ data.memberStatus } />
           </Col>
-          <Col key='job-status-pane' xs={ 12 } sm={ 6 } md={ 3 } lg={ 2 }>
+          <Col key='job-status-pane' xs={ 6 } sm={ 4 } md={ 3 } lg={ 3 }>
             <Progressbar title='Job Status' data={ data.jobStatus } />
           </Col>
-          <Col key='job-type-pane' xs={ 12 } sm={ 6 } md={ 3 } lg={ 2 }>
+          <Col key='job-type-pane' xs={ 6 } sm={ 4 } md={ 3 } lg={ 3 }>
             <Progressbar title='Job Type' data={ data.jobTypes } />
           </Col>
-          <Col key='cluster-type-pane' xs={ 12 } sm={ 6 } md={ 3 } lg={ 2 }>
+          <Col key='cluster-type-pane' xs={ 6 } sm={ 4 } md={ 3 } lg={ 3 }>
             <ClusterStatistics />
           </Col>
         </Row>
