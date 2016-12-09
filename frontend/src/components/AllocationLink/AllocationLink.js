@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import { default as shortenUUID } from '../../helpers/uuid'
 
-const AllocationLink = ({ children, allocationId, linkAppend, shortUUID }) => {
+const AllocationLink = ({ children, allocationId, linkAppend, shortUUID, linkQuery }) => {
   let innerChildren = children;
 
   if (children === undefined) {
@@ -10,7 +10,7 @@ const AllocationLink = ({ children, allocationId, linkAppend, shortUUID }) => {
   }
 
   return (
-    <Link to={{ pathname: `/allocations/${allocationId}${linkAppend}` }}>
+    <Link to={{ pathname: `/allocations/${allocationId}${linkAppend}`, query: linkQuery}}>
       { innerChildren }
     </Link>
   )
@@ -18,13 +18,15 @@ const AllocationLink = ({ children, allocationId, linkAppend, shortUUID }) => {
 
 AllocationLink.defaultProps = {
   shortUUID: true,
-  linkAppend: ''
+  linkAppend: '',
+  linkQuery: {},
 }
 
 AllocationLink.propTypes = {
   children: PropTypes.array,
   allocationId: PropTypes.string.isRequired,
   linkAppend: PropTypes.string,
+  linkQuery: PropTypes.object,
   shortUUID: PropTypes.boolean.isRequired
 }
 
