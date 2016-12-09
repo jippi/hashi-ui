@@ -1,37 +1,33 @@
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import AllocationList from '../components/allocation/list';
+import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
+import AllocationList from '../components/AllocationList/AllocationList'
+import { WATCH_ALLOCS, UNWATCH_ALLOCS, WATCH_NODES, UNWATCH_NODES } from '../sagas/event'
 
 class Allocations extends Component {
 
-    render() {
-        return (
-          <div className="row">
-            <div className="col-md-12">
-              <div className="card">
-                <div className="header">
-                  <h4 className="title">Allocations</h4>
-                </div>
-                <AllocationList
-                  { ...this.props }
-                  allocations={ this.props.allocations }
-                  nodes={ this.props.nodes }
-                  containerClassName="content"
-                />
-              </div>
-            </div>
-          </div>
-        );
-    }
+  componentDidMount() {
+    this.props.dispatch({type: WATCH_ALLOCS })
+    this.props.dispatch({type: WATCH_NODES })
+  }
+
+  componentWillUnmount() {
+    this.props.dispatch({type: UNWATCH_ALLOCS })
+    this.props.dispatch({type: UNWATCH_NODES })
+  }
+
+  render () {
+    return <AllocationList { ...this.props } />
+  }
 }
 
-function mapStateToProps({ allocations, nodes }) {
-    return { allocations, nodes };
+function mapStateToProps ({ allocations, nodes }) {
+  return { allocations, nodes }
 }
 
 Allocations.propTypes = {
-    allocations: PropTypes.array.isRequired,
-    nodes: PropTypes.array.isRequired,
-};
+  allocations: PropTypes.array.isRequired, // eslint-disable-line no-unused-vars
+  nodes: PropTypes.array.isRequired, // eslint-disable-line no-unused-vars
+  dispatch: PropTypes.func.isRequired,
+}
 
-export default connect(mapStateToProps)(Allocations);
+export default connect(mapStateToProps)(Allocations)

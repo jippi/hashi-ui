@@ -1,87 +1,49 @@
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-
-import Tabs from '../components/tabs';
-
-import { WATCH_NODE, UNWATCH_NODE } from '../sagas/event';
+import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
+import ClientTopbar from '../components/ClientTopbar/ClientTopbar'
+import { WATCH_NODE, UNWATCH_NODE } from '../sagas/event'
 
 class Client extends Component {
 
-    constructor(props) {
-        super(props);
+  componentWillMount () {
+    this.props.dispatch({ type: WATCH_NODE, payload: this.props.params.nodeId })
+  }
 
-        this.state = {
-            tabs: [
-                {
-                    name: 'Info',
-                    path: 'info',
-                },
-                {
-                    name: 'Allocations',
-                    path: 'allocations',
-                },
-                {
-                    name: 'Evaluations',
-                    path: 'evaluations',
-                },
-                {
-                    name: 'Raw',
-                    path: 'raw',
-                },
-            ],
-        };
+  componentWillUnmount () {
+    this.props.dispatch({ type: UNWATCH_NODE, payload: this.props.params.nodeId })
+  }
+
+  render () {
+    if (this.props.node == null) {
+      return null
     }
 
-    componentWillMount() {
-        this.props.dispatch({
-            type: WATCH_NODE,
-            payload: this.props.params.nodeId,
-        });
-    }
+    return (
+      <div>
+        <ClientTopbar { ...this.props } />
 
-    componentWillUnmount() {
-        this.props.dispatch({
-            type: UNWATCH_NODE,
-            payload: this.props.params.nodeId,
-        });
-    }
+        <div style={{ padding: 10, paddingBottom: 0 }}>
+          <h2>Client: { this.props.node.Name }</h2>
 
-    render() {
-        if (this.props.node == null) return (null);
+          <br />
 
-        const path = this.props.location.pathname;
-        const tabSlug = path.split('/').pop();
-        const basePath = path.substring(0, path.lastIndexOf('/'));
-
-        return (
-          <div className="row">
-            <div className="col-md-12">
-              <div className="card">
-                <div className="header">
-                  <h4 className="title">Client: { this.props.node.Name }</h4>
-                </div>
-                <div className="tab-content">
-                  <Tabs tabs={ this.state.tabs } tabSlug={ tabSlug } basePath={ basePath }>
-                    { this.props.children }
-                  </Tabs>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-    }
+          { this.props.children }
+        </div>
+      </div>
+    )
+  }
 }
 
-function mapStateToProps({ node }) {
-    return { node };
+function mapStateToProps ({ node }) {
+  return { node }
 }
 
 Client.propTypes = {
-    dispatch: PropTypes.func.isRequired,
-    params: PropTypes.object.isRequired,
-    node: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
-    children: PropTypes.object.isRequired,
-};
+  dispatch: PropTypes.func.isRequired,
+  params: PropTypes.object.isRequired,
+  node: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  children: PropTypes.object.isRequired
+}
 
-export default connect(mapStateToProps)(Client);
+export default connect(mapStateToProps)(Client)

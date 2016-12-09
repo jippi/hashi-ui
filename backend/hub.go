@@ -39,16 +39,19 @@ func NewHub(nomad *Nomad, broadcast chan *Action) *Hub {
 func (h *Hub) Run() {
 	for {
 		select {
+
 		case c := <-h.register:
 			h.connections[c] = true
+
 		case c := <-h.unregister:
 			if _, ok := h.connections[c]; ok {
 				delete(h.connections, c)
 				close(c.send)
 			}
+
 		case action := <-h.broadcast:
 			for c := range h.connections {
-				c.send <- action
+				c.process(*action)
 			}
 		}
 	}

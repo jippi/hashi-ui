@@ -6,12 +6,14 @@ EXTERNAL_TOOLS=\
 
 GOFILES_NOVENDOR = $(shell find . -type f -name '*.go' -not -path "./backend/vendor/*")
 
+.PHONY: bootstrap
 bootstrap:
 	@for tool in $(EXTERNAL_TOOLS); do \
 		echo "Installing $$tool" ; \
     go get $$tool; \
 	done
 
+.PHONY: fmt
 fmt:
 	@echo "--> Running go fmt" ;
 	@if [ -n "`go fmt ${GOFILES_NOVENDOR}`" ]; then \
@@ -19,7 +21,8 @@ fmt:
 		exit 1; \
 	fi
 
-vet:
+.PHONY: vet
+vet: fmt
 	@go tool vet 2>/dev/null ; if [ $$? -eq 3 ]; then \
 		go get golang.org/x/tools/cmd/vet; \
 	fi
@@ -30,29 +33,38 @@ vet:
 		echo "and fix them if necessary before submitting the code for review."; \
 	fi
 
+.PHONY: frontend
 frontend:
 	@echo "=> building frontend ..."
 	$(MAKE) -C frontend build
 
-backend/bindata_assetfs.go:
+.PHONY: backend/bindata_assetfs.go
+backend/bindata_assetfs.go: frontend
 	@echo "=> packaging assets ..."
 	go-bindata-assetfs -prefix frontend frontend/build/...
 	mv -f bindata_assetfs.go backend/
 
+.PHONY: build
 build: fmt vet bootstrap frontend backend/bindata_assetfs.go
 	$(MAKE) -C backend build
 
+.PHONY: rebuild
+rebuild:
+	rm -f backend/bindata_assetfs.go
+	rm -f backend/build/nomad-ui-darwin-amd64
+	$(MAKE) -j build
+
+.PHONY: clean
 clean:
 	@echo "=> cleaning ..."
 	$(MAKE) -C backend clean
 	$(MAKE) -C frontend clean
 	rm -f backend/bindata_assetfs.go
 
+.PHONY: docker
 docker:
 	@echo "=> build and push Docker image ..."
 	@docker login -e $(DOCKER_EMAIL) -u $(DOCKER_USER) -p $(DOCKER_PASS)
 	docker build -f Dockerfile -t iverberk/nomad-ui:$(COMMIT) .
 	docker tag iverberk/nomad-ui:$(COMMIT) iverberk/nomad-ui:$(TAG)
 	docker push iverberk/nomad-ui:$(TAG)
-
-.PHONY: docker clean build backend frontend fmt vet

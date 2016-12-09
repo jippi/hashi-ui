@@ -1,11 +1,5 @@
-function shortUUID(ID) {
-    const re = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-    if (ID.match(re)) {
-        return ID.substring(0, 8);
-    }
-
-    return ID;
+function shortUUID (ID) {
+  return ID.substring(0, 8)
 }
 
-export default shortUUID;
+export default shortUUID

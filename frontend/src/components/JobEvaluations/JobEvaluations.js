@@ -1,0 +1,44 @@
+import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
+import EvaluationList from '../EvaluationList/EvaluationList'
+import { WATCH_EVALS, UNWATCH_EVALS } from '../../sagas/event'
+
+class JobEvaluations extends Component {
+
+  componentWillMount () {
+    this.props.dispatch({ type: WATCH_EVALS })
+  }
+
+  componentWillUnmount () {
+    this.props.dispatch({ type: UNWATCH_EVALS })
+  }
+
+  render () {
+    const jobId = this.props.params.jobId
+    const evals = this.props.evaluations.filter(evaluation => evaluation.JobID === jobId)
+
+    return (
+      <div className='tab-pane active'>
+        <EvaluationList evaluations={ evals } containerClassName='nested-content' />
+      </div>
+    )
+  }
+}
+
+function mapStateToProps ({ evaluations }) {
+  return { evaluations }
+}
+
+JobEvaluations.defaultProps = {
+  evaluations: [],
+  params: {}
+}
+
+JobEvaluations.propTypes = {
+  evaluations: PropTypes.array.isRequired,
+  params: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+}
+
+export default connect(mapStateToProps)(JobEvaluations)
+

@@ -1,22 +1,26 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { browserHistory } from 'react-router';
-import { Provider } from 'react-redux';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { browserHistory } from 'react-router'
+import { Provider } from 'react-redux'
 
-import AppRouter from './router';
-import configureStore from './store';
+// import Perf from 'react-addons-perf'
 
-import '../assets/css/pe-icon-7-stroke.css';
-import '../assets/sass/nomad-ui.scss';
+import AppRouter from './router'
+import configureStore from './store'
+
+import '../assets/nomad-ui.css'
+
+// Perf.start()
 
 configureStore().then((store) => {
-    ReactDOM.render(
-      <Provider store={ store }>
-        <AppRouter history={ browserHistory } />
-      </Provider>,
+  ReactDOM.render(
+    <Provider store={ store }>
+      <AppRouter history={ browserHistory } />
+    </Provider>,
     document.getElementById('app')
-   );
+   )
 }).catch((err) => {
-    console.log(err);
-});
+  console.log(err)
+})
+
+// window.Perf = Perf

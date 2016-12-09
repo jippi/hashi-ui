@@ -1,52 +1,69 @@
-import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
-import NomadLink from '../components/link';
-import FormatBoolean from '../components/format/boolean';
-import NodeStatus from '../components/node/status';
+import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
+import { Card, CardText } from 'material-ui/Card'
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from '../components/Table'
+import { WATCH_NODES, UNWATCH_NODES } from '../sagas/event'
+import ClientLink from '../components/ClientLink/ClientLink'
+import FormatBoolean from '../components/FormatBoolean/FormatBoolean'
+import NodeStatus from '../components/NodeStatus/NodeStatus'
 
-const Clients = ({ nodes }) =>
-  <div className="row">
-    <div className="col-md-12">
-      <div className="card">
-        <div className="header">
-          <h4 className="title">Clients</h4>
-        </div>
-        <div className="content table-responsive table-full-width">
-          <table className="table table-hover table-striped">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Drain</th>
-                <th>Datacenter</th>
-                <th>Class</th>
-              </tr>
-            </thead>
-            <tbody>
-              { nodes.map(node =>
-                <tr key={ node.ID }>
-                  <td><NomadLink nodeId={ node.ID } short="true" /></td>
-                  <td>{ node.Name }</td>
-                  <td><NodeStatus value={ node.Status } /></td>
-                  <td><FormatBoolean value={ node.Drain } /></td>
-                  <td>{ node.Datacenter }</td>
-                  <td>{ node.NodeClass ? node.NodeClass : '<none>'}</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+class Clients extends Component {
+
+  componentDidMount() {
+    this.props.dispatch({ type: WATCH_NODES })
+  }
+
+  componentWillUnmount() {
+    this.props.dispatch({ type: UNWATCH_NODES })
+  }
+
+  render() {
+    return (
+      <div>
+        <Card>
+          <CardText>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHeaderColumn>ID</TableHeaderColumn>
+                  <TableHeaderColumn>Name</TableHeaderColumn>
+                  <TableHeaderColumn>Status</TableHeaderColumn>
+                  <TableHeaderColumn>Drain</TableHeaderColumn>
+                  <TableHeaderColumn>Datacenter</TableHeaderColumn>
+                  <TableHeaderColumn>Class</TableHeaderColumn>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                { this.props.nodes.map((node) => {
+                  return (
+                    <TableRow key={ node.ID }>
+                      <TableRowColumn><ClientLink clientId={ node.ID } clients={ this.props.nodes } /></TableRowColumn>
+                      <TableRowColumn>{ node.Name }</TableRowColumn>
+                      <TableRowColumn><NodeStatus value={ node.Status } /></TableRowColumn>
+                      <TableRowColumn><FormatBoolean value={ node.Drain } /></TableRowColumn>
+                      <TableRowColumn>{ node.Datacenter }</TableRowColumn>
+                      <TableRowColumn>{ node.NodeClass ? node.NodeClass : '<none>'}</TableRowColumn>
+
+                    </TableRow>
+                  )
+                })
+              }
+              </TableBody>
+            </Table>
+          </CardText>
+        </Card>
       </div>
-    </div>
-  </div>;
+    )
+  }
+}
 
-function mapStateToProps({ nodes }) {
-    return { nodes };
+function mapStateToProps ({ nodes }) {
+  return { nodes }
 }
 
 Clients.propTypes = {
-    nodes: PropTypes.array.isRequired,
-};
+  nodes: PropTypes.array.isRequired,
+  dispatch: PropTypes.func.isRequired,
+}
 
-export default connect(mapStateToProps)(Clients);
+export default connect(mapStateToProps)(Clients)

@@ -1,79 +1,49 @@
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-
-import Tabs from '../components/tabs';
-
-import { WATCH_MEMBER, UNWATCH_MEMBER } from '../sagas/event';
+import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
+import ServerTopbar from '../components/ServerTopbar/ServerTopbar'
+import { WATCH_MEMBER, UNWATCH_MEMBER } from '../sagas/event'
 
 class Server extends Component {
 
-    constructor(props) {
-        super(props);
+  componentWillMount () {
+    this.props.dispatch({ type: WATCH_MEMBER, payload: this.props.params.memberId })
+  }
 
-        this.state = {
-            tabs: [
-                {
-                    name: 'Info',
-                    path: 'info',
-                },
-                {
-                    name: 'Raw',
-                    path: 'raw',
-                },
-            ],
-        };
+  componentWillUnmount () {
+    this.props.dispatch({ type: UNWATCH_MEMBER, payload: this.props.params.memberId })
+  }
+
+  render () {
+    if (this.props.member == null) {
+      return 'Loading ...';
     }
 
-    componentWillMount() {
-        this.props.dispatch({
-            type: WATCH_MEMBER,
-            payload: this.props.params.memberId,
-        });
-    }
+    return (
+      <div>
+        <ServerTopbar { ...this.props } />
 
-    componentWillUnmount() {
-        this.props.dispatch({
-            type: UNWATCH_MEMBER,
-            payload: this.props.params.memberId,
-        });
-    }
+        <div style={{ padding: 10, paddingBottom: 0 }}>
+          <h2>Server: { this.props.member.Name }</h2>
 
-    render() {
-        if (this.props.member == null) return (null);
+          <br />
 
-        const path = this.props.location.pathname;
-        const tabSlug = path.split('/').pop();
-        const basePath = path.substring(0, path.lastIndexOf('/'));
-
-        return (
-          <div className="row">
-            <div className="col-md-12">
-              <div className="card">
-                <div className="header">
-                  <h4 className="title">Server: { this.props.member.Name }</h4>
-                </div>
-                <div className="content">
-                  <Tabs tabs={ this.state.tabs } tabSlug={ tabSlug } basePath={ basePath }>
-                    { this.props.children }
-                  </Tabs>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-    }
+          { this.props.children }
+        </div>
+      </div>
+    )
+  }
 }
 
-function mapStateToProps({ member }) {
-    return { member };
+function mapStateToProps ({ member }) {
+  return { member }
 }
 
 Server.propTypes = {
-    dispatch: PropTypes.func.isRequired,
-    params: PropTypes.object.isRequired,
-    location: PropTypes.object.isRequired,
-    member: PropTypes.object.isRequired,
-    children: PropTypes.object.isRequired,
-};
+  dispatch: PropTypes.func.isRequired,
+  params: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  member: PropTypes.object.isRequired,
+  children: PropTypes.object.isRequired
+}
 
-export default connect(mapStateToProps)(Server);
+export default connect(mapStateToProps)(Server)

@@ -1,138 +1,176 @@
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { Link } from 'react-router';
-import { DropdownButton } from 'react-bootstrap';
-import { getJobStatisticsHeader, getJobStatisticsRow } from '../helpers/statistics';
-import NomadLink from '../components/link';
+import React, { Component, PropTypes } from 'react'
+import { connect } from 'react-redux'
+import { Card, CardHeader, CardText } from 'material-ui/Card'
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from '../components/Table'
+import JobStatusFilter from '../components/JobStatusFilter/JobStatusFilter'
+import JobTypeFilter from '../components/JobTypeFilter/JobTypeFilter'
+import JobLink from '../components/JobLink/JobLink'
+import { WATCH_JOBS, UNWATCH_JOBS } from '../sagas/event'
 
-const jobStatusColors = {
-    running: '',
-    pending: 'warning',
-    dead: 'danger',
-};
+const columnFormat = {
+  width: 50,
+  maxWidth: 50,
+  overflow: 'inherit',
+  whiteSpace: 'normal'
+}
+
+const summaryLabels = [
+  'Starting',
+  'Running',
+  'Queued',
+  'Complete',
+  'Failed',
+  'Lost'
+]
+
+const getJobStatisticsHeader = () => {
+  const output = []
+
+  summaryLabels.forEach((key) => {
+    output.push(
+      <TableHeaderColumn style={ columnFormat } key={ `statistics-header-for-${key}` }>
+        { key }
+      </TableHeaderColumn>
+    )
+  })
+
+  return output
+}
+
+const getJobStatisticsRow = (job) => {
+  const counter = {
+    Queued: 0,
+    Complete: 0,
+    Failed: 0,
+    Running: 0,
+    Starting: 0,
+    Lost: 0
+  }
+
+  if (job.JobSummary !== null) {
+    const summary = job.JobSummary.Summary
+    Object.keys(summary).forEach((taskGroupID) => {
+      counter.Queued += summary[taskGroupID].Queued
+      counter.Complete += summary[taskGroupID].Complete
+      counter.Failed += summary[taskGroupID].Failed
+      counter.Running += summary[taskGroupID].Running
+      counter.Starting += summary[taskGroupID].Starting
+      counter.Lost += summary[taskGroupID].Lost
+    })
+  } else {
+    Object.keys(counter).forEach(key => (counter[key] = 'N/A'))
+  }
+
+  const output = []
+  summaryLabels.forEach((key) => {
+    output.push(
+      <TableRowColumn style={ columnFormat } key={ `${job.ID}-${key}` }>
+        {counter[key]}
+      </TableRowColumn>
+    )
+  })
+
+  return output
+}
 
 class Jobs extends Component {
 
-    filteredJobs() {
-        const query = this.props.location.query || {};
-        let jobs = this.props.jobs;
+  componentDidMount() {
+    this.props.dispatch({type: WATCH_JOBS})
+  }
 
-        if ('job_type' in query) {
-            jobs = jobs.filter(job => job.Type === query.job_type);
-        }
+  componentWillUnmount() {
+    this.props.dispatch({type: UNWATCH_JOBS})
+  }
 
-        if ('job_status' in query) {
-            jobs = jobs.filter(job => job.Status === query.job_status);
-        }
+  filteredJobs () {
+    const query = this.props.location.query || {}
+    let jobs = this.props.jobs
 
-        return jobs;
+    if ('job_type' in query) {
+      jobs = jobs.filter(job => job.Type === query.job_type)
     }
 
-    jobTypeFilter() {
-        const location = this.props.location;
-        const query = this.props.location.query || {};
-
-        let title = 'Job Type';
-        if ('job_type' in query) {
-            title = <span>{title}: <code>{ query.job_type }</code></span>;
-        }
-
-        return (
-          <DropdownButton title={ title } key="filter-job-type" id="filter-job-type">
-            <li><Link to={ location.pathname } query={{ ...query, job_type: undefined }}>- Any -</Link></li>
-            <li><Link to={ location.pathname } query={{ ...query, job_type: 'system' }}>System</Link></li>
-            <li><Link to={ location.pathname } query={{ ...query, job_type: 'batch' }}>Batch</Link></li>
-            <li><Link to={ location.pathname } query={{ ...query, job_type: 'service' }}>Service</Link></li>
-          </DropdownButton>
-        );
+    if ('job_status' in query) {
+      jobs = jobs.filter(job => job.Status === query.job_status)
     }
 
-    jobStatusFilter() {
-        const location = this.props.location;
-        const query = this.props.location.query || {};
+    return jobs
+  }
 
-        let title = 'Job Status';
-        if ('job_status' in query) {
-            title = <span>{title}: <code>{ query.job_status }</code></span>;
-        }
+  taskGroupCount (job) {
+    let taskGroupCount = 'N/A'
 
-        return (
-          <DropdownButton title={ title } key="filter-job-status" id="filter-job-status">
-            <li><Link to={ location.pathname } query={{ ...query, job_status: undefined }}>- Any -</Link></li>
-            <li><Link to={ location.pathname } query={{ ...query, job_status: 'running' }}>Running</Link></li>
-            <li><Link to={ location.pathname } query={{ ...query, job_status: 'pending' }}>Pending</Link></li>
-            <li><Link to={ location.pathname } query={{ ...query, job_status: 'dead' }}>Dead</Link></li>
-          </DropdownButton>
-        );
+    if (job.JobSummary !== null) {
+      taskGroupCount = Object.keys(job.JobSummary.Summary).length
     }
 
-    taskGroupCount(job) {
-        let taskGroupCount = 'N/A';
+    return taskGroupCount
+  }
 
-        if (job.JobSummary !== null) {
-            taskGroupCount = Object.keys(job.JobSummary.Summary).length;
-        }
+  render () {
+    const flexibleWidth = { width: 300, minWidth: 300, overflow: 'display', whiteSpace: 'normal' }
 
-        return taskGroupCount;
-    }
+    return (
+      <div>
+        <Card>
+          <CardHeader title='Filter list' actAsExpander showExpandableButton />
+          <CardText style={{ paddingTop: 0 }} expandable>
+            <JobStatusFilter />
+            &nbsp;
+            <JobTypeFilter />
+          </CardText>
+        </Card>
 
-    render() {
-        return (
-          <div className="row">
-            <div className="col-md-12">
-              <div className="card">
-                <div className="header">
-                  <h4 className="title">Jobs</h4>
-                  {this.jobStatusFilter()}
-                  &nbsp;
-                  {this.jobTypeFilter()}
-                </div>
-
-                <div className="content table-responsive table-full-width">
-                  <table className="table table-hover table-striped">
-                    <thead>
-                      <tr>
-                        <th>ID</th>
-                        <th width="100">Status</th>
-                        <th width="100">Type</th>
-                        <th width="100">Priority</th>
-                        <th width="100">Task Groups</th>
-                        { getJobStatisticsHeader() }
-                      </tr>
-                    </thead>
-                    <tbody>
-                      { this.filteredJobs().map(job =>
-                        <tr key={ job.ID } className={ jobStatusColors[job.Status] }>
-                          <td><NomadLink jobId={ job.ID } short="true" /></td>
-                          <td>{ job.Status }</td>
-                          <td>{ job.Type }</td>
-                          <td>{ job.Priority }</td>
-                          <td>{ this.taskGroupCount(job) }</td>
-                          { getJobStatisticsRow(job) }
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-    }
+        <Card style={{ marginTop: '1rem' }}>
+          <CardText>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHeaderColumn style={ flexibleWidth }>ID</TableHeaderColumn>
+                  <TableHeaderColumn style={ columnFormat }>Status</TableHeaderColumn>
+                  <TableHeaderColumn style={ columnFormat }>Type</TableHeaderColumn>
+                  <TableHeaderColumn style={ columnFormat }>Priority</TableHeaderColumn>
+                  <TableHeaderColumn style={ columnFormat }>Task Groups</TableHeaderColumn>
+                  { getJobStatisticsHeader() }
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                { this.filteredJobs().map((job) => {
+                  return (
+                    <TableRow key={ job.ID }>
+                      <TableRowColumn style={ flexibleWidth }><JobLink jobId={ job.ID } /></TableRowColumn>
+                      <TableRowColumn style={ columnFormat }>{ job.Status }</TableRowColumn>
+                      <TableRowColumn style={ columnFormat }>{ job.Type }</TableRowColumn>
+                      <TableRowColumn style={ columnFormat }>{ job.Priority }</TableRowColumn>
+                      <TableRowColumn style={ columnFormat }>{ this.taskGroupCount(job) }</TableRowColumn>
+                      { getJobStatisticsRow(job) }
+                    </TableRow>
+                  )
+                })
+              }
+              </TableBody>
+            </Table>
+          </CardText>
+        </Card>
+      </div>
+    )
+  }
 }
 
-function mapStateToProps({ jobs }) {
-    return { jobs };
+function mapStateToProps ({ jobs }) {
+  return { jobs }
 }
 
 Jobs.defaultProps = {
-    jobs: [],
-    location: {},
-};
+  jobs: [],
+  location: {}
+}
 
 Jobs.propTypes = {
-    jobs: PropTypes.array.isRequired,
-    location: PropTypes.object.isRequired,
-};
+  jobs: PropTypes.array.isRequired,
+  location: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+}
 
-export default connect(mapStateToProps)(Jobs);
+export default connect(mapStateToProps)(Jobs)

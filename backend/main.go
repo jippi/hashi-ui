@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
+	"strings"
 	"syscall"
 	"time"
-
-	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/op/go-logging"
@@ -15,16 +15,23 @@ import (
 
 var logger = logging.MustGetLogger("nomad-ui")
 
-func init() {
+func startLogging(logLevel string) {
 	logBackend := logging.NewLogBackend(os.Stderr, "", 0)
 
 	format := logging.MustStringFormatter(
-		`%{color}%{time:15:04:05.000} %{shortfile} ▶ %{level:.4s} %{color:reset} %{message}`,
+		`%{color}%{time:15:04:05.000} %{shortfile} ▶ %{level:.5s} %{color:reset} %{message}`,
 	)
 	logBackendFormatted := logging.NewBackendFormatter(logBackend, format)
 
 	logBackendFormattedAndLeveled := logging.AddModuleLevel(logBackendFormatted)
-	logBackendFormattedAndLeveled.SetLevel(logging.INFO, "")
+
+	realLogLevel, err := logging.LogLevel(strings.ToUpper(logLevel))
+	if err != nil {
+		fmt.Printf("%s (%s)", err, logLevel)
+		os.Exit(1)
+	}
+
+	logBackendFormattedAndLeveled.SetLevel(realLogLevel, "")
 
 	logging.SetBackend(logBackendFormattedAndLeveled)
 }
@@ -32,12 +39,14 @@ func init() {
 type Config struct {
 	Address       string
 	ListenAddress string
+	LogLevel      string
 }
 
 func DefaultConfig() *Config {
 	return &Config{
 		Address:       "http://127.0.0.1:4646",
 		ListenAddress: "0.0.0.0:3000",
+		LogLevel:      "info",
 	}
 }
 
@@ -48,10 +57,14 @@ func flagDefault(value string) string {
 var (
 	defaultConfig = DefaultConfig()
 
-	flagAddress = flag.String("address", "", "The address of the Nomad server. "+
+	flagAddress = flag.String("nomad.address", "", "The address of the Nomad server. "+
 		"Overrides the NOMAD_ADDR environment variable if set. "+flagDefault(defaultConfig.Address))
+
 	flagListenAddress = flag.String("web.listen-address", "",
 		"The address on which to expose the web interface. "+flagDefault(defaultConfig.ListenAddress))
+
+	flagLogLevel = flag.String("log.level", "",
+		"The log level for nomad-ui to run under. "+flagDefault(defaultConfig.LogLevel))
 )
 
 func (c *Config) Parse() {
@@ -67,6 +80,11 @@ func (c *Config) Parse() {
 		c.ListenAddress = fmt.Sprintf("0.0.0.0:%s", listenPort)
 	}
 
+	logLevel, ok := syscall.Getenv("NOMAD_LOG_LEVEL")
+	if ok {
+		c.LogLevel = logLevel
+	}
+
 	if *flagAddress != "" {
 		c.Address = *flagAddress
 	}
@@ -74,17 +92,25 @@ func (c *Config) Parse() {
 	if *flagListenAddress != "" {
 		c.ListenAddress = *flagListenAddress
 	}
+
+	if *flagLogLevel != "" {
+		c.LogLevel = *flagLogLevel
+	}
 }
 
 func main() {
 	cfg := DefaultConfig()
 	cfg.Parse()
-	logger.Infof("----------------------------------------------------------------------")
-	logger.Infof("|                          NOMAD UI                                  |")
-	logger.Infof("----------------------------------------------------------------------")
-	logger.Infof("| address            : %-45s |", cfg.Address)
-	logger.Infof("| web.listen-address : %-45s |", cfg.ListenAddress)
-	logger.Infof("----------------------------------------------------------------------")
+
+	startLogging(cfg.LogLevel)
+
+	logger.Infof("---------------------------------------------------------------------------")
+	logger.Infof("|                            NOMAD UI                                     |")
+	logger.Infof("---------------------------------------------------------------------------")
+	logger.Infof("| nomad.address      : %-50s |", cfg.Address)
+	logger.Infof("| web.listen-address : http://%-43s |", cfg.ListenAddress)
+	logger.Infof("| log.level          : %-50s |", cfg.LogLevel)
+	logger.Infof("---------------------------------------------------------------------------")
 	logger.Infof("")
 
 	broadcast := make(chan *Action)
