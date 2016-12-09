@@ -25,18 +25,25 @@ Another way to run nomad-ui is through Docker. Run the following command to
 start a webserver that will serve the application.
 
 ```
-docker run -e NOMAD_ADDR=... -p 8000:3000 iverberk/nomad-ui:v0.3.1
+docker run -e NOMAD_ADDR=... -p 8000:3000 iverberk/nomad-ui
 ```
 
-Check the releases page on Github to see which version is current.
+Check the releases page on GitHub to see which version is current.
 
 The user interface will be accessible on localhost, port `8000`. Adjust the Docker
 run parameters as needed. If you need to change the port that Nomad is listening
 on, you should do it with ```-e NOMAD_ADDR``` environment variable that contains
 both hostname and port.
 
-`NOMAD_ADDR` (IP or DNS name) should point to the correct location of your Nomad server.
-If you have a Node and Go environment you can also build the production version yourself.
+# Configuration
+
+Nomad-UI can be controlled by both ENV or CLI flags as described below
+
+| Environment        	| Flag                  	| Default                 	| Description                                                                                          	|
+|-------------------	|-----------------------	|-------------------------	|------------------------------------------------------------------------------------------------------	|
+| `NOMAD_ADDR`      	| `--nomad.address`      	| `http://127.0.0.1:4646` 	| Must point to the correct location of your Nomad server.                                             	|
+| `NOMAD_PORT_http` 	| `--web.listen-address` 	| `0.0.0.0:3000`          	| The IP + PORT to listen on                                                                           	|
+| `NOMAD_LOG_LEVEL` 	| `--log.level`          	| `info`                  	| Log level to use while running the nomad-ui server - (`critical`, `error`, `warning`, `notice`, `info`, `debug`) 	|
 
 # Try
 
@@ -85,8 +92,3 @@ Just run ```npm install``` and ```npm start``` and start developing. Hot reloadi
 changes will be visible in the browser immediately. Unfortunately there are no tests yet.
 
 If you would like to contribute please open a pull-request.
-
-# Credits
-
-The awesome dashboard theme is created by [Creative Tim](www.creative-tim.com)
-and can be found [here](http://www.creative-tim.com/product/light-bootstrap-dashboard-pro)

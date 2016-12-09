@@ -10,6 +10,8 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/hashicorp/nomad/api"
 	"github.com/hashicorp/nomad/command"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 const (
@@ -30,21 +32,23 @@ const (
 // received on the websocket and sends out actions on Nomad state changes. It
 // maintains a set to keep track of the running watches.
 type Connection struct {
-	socket *websocket.Conn
-
-	hub *Hub
-
-	receive chan *Action
-	send    chan *Action
-
+	ID        uuid.UUID
+	shortId   string
+	socket    *websocket.Conn
+	hub       *Hub
+	receive   chan *Action
+	send      chan *Action
 	destroyCh chan struct{}
-
-	watches *set.Set
+	watches   *set.Set
 }
 
 // NewConnection creates a new connection.
 func NewConnection(hub *Hub, socket *websocket.Conn) *Connection {
+	connectionId := uuid.NewV4()
+
 	return &Connection{
+		ID:        connectionId,
+		shortId:   fmt.Sprintf("%s", connectionId)[0:8],
 		watches:   set.New(),
 		hub:       hub,
 		socket:    socket,
@@ -54,20 +58,43 @@ func NewConnection(hub *Hub, socket *websocket.Conn) *Connection {
 	}
 }
 
+func (c *Connection) Warningf(format string, args ...interface{}) {
+	message := fmt.Sprintf("[%s] ", c.shortId) + format
+	logger.Warningf(message, args...)
+}
+
+func (c *Connection) Errorf(format string, args ...interface{}) {
+	message := fmt.Sprintf("[%s] ", c.shortId) + format
+	logger.Errorf(message, args...)
+}
+
+func (c *Connection) Infof(format string, args ...interface{}) {
+	message := fmt.Sprintf("[%s] ", c.shortId) + format
+	logger.Infof(message, args...)
+}
+
+func (c *Connection) Debugf(format string, args ...interface{}) {
+	message := fmt.Sprintf("[%s] ", c.shortId) + format
+	logger.Debugf(message, args...)
+}
+
 func (c *Connection) writePump() {
 	defer func() {
 		c.socket.Close()
 	}()
+
 	for {
 		action, ok := <-c.send
+
 		if !ok {
 			if err := c.socket.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
-				logger.Errorf("Could not write close message to websocket: %s", err)
+				c.Errorf("Could not write close message to websocket: %s", err)
 			}
 			return
 		}
+
 		if err := c.socket.WriteJSON(action); err != nil {
-			logger.Errorf("Could not write action to websocket: %s", err)
+			c.Errorf("Could not write action to websocket: %s", err)
 		}
 	}
 }
@@ -93,7 +120,7 @@ func (c *Connection) readPump() {
 }
 
 func (c *Connection) process(action Action) {
-	logger.Infof("Processing event %s (index %d)", action.Type, action.Index)
+	c.Debugf("Processing event %s (index %d)", action.Type, action.Index)
 
 	switch action.Type {
 	//
@@ -201,11 +228,11 @@ func (c *Connection) watchAlloc(action Action) {
 
 	defer func() {
 		c.watches.Remove(allocID)
-		logger.Infof("Stopped watching alloc with id: %s", allocID)
+		c.Infof("Stopped watching alloc with id: %s", allocID)
 	}()
 	c.watches.Add(allocID)
 
-	logger.Infof("Started watching alloc with id: %s", allocID)
+	c.Infof("Started watching alloc with id: %s", allocID)
 
 	q := &api.QueryOptions{WaitIndex: 1}
 	for {
@@ -215,7 +242,7 @@ func (c *Connection) watchAlloc(action Action) {
 		default:
 			alloc, meta, err := c.hub.nomad.Client.Allocations().Info(allocID, q)
 			if err != nil {
-				logger.Errorf("connection: unable to fetch alloc info: %s", err)
+				c.Errorf("connection: unable to fetch alloc info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
 			}
@@ -238,11 +265,11 @@ func (c *Connection) watchEval(action Action) {
 
 	defer func() {
 		c.watches.Remove(evalID)
-		logger.Infof("Stopped watching eval with id: %s", evalID)
+		c.Infof("Stopped watching eval with id: %s", evalID)
 	}()
 	c.watches.Add(evalID)
 
-	logger.Infof("Started watching eval with id: %s", evalID)
+	c.Infof("Started watching eval with id: %s", evalID)
 
 	q := &api.QueryOptions{WaitIndex: 1}
 	for {
@@ -252,7 +279,7 @@ func (c *Connection) watchEval(action Action) {
 		default:
 			eval, meta, err := c.hub.nomad.Client.Evaluations().Info(evalID, q)
 			if err != nil {
-				logger.Errorf("connection: unable to fetch eval info: %s", err)
+				c.Errorf("connection: unable to fetch eval info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
 			}
@@ -274,7 +301,7 @@ func (c *Connection) fetchMember(action Action) {
 	memberID := action.Payload.(string)
 	member, err := c.hub.nomad.MemberWithID(memberID)
 	if err != nil {
-		logger.Errorf("websocket: unable to fetch member %q: %s", memberID, err)
+		c.Errorf("websocket: unable to fetch member %q: %s", memberID, err)
 		return
 	}
 
@@ -286,11 +313,11 @@ func (c *Connection) watchMember(action Action) {
 
 	defer func() {
 		c.watches.Remove(memberID)
-		logger.Infof("Stopped watching member with id: %s", memberID)
+		c.Infof("Stopped watching member with id: %s", memberID)
 	}()
 	c.watches.Add(memberID)
 
-	logger.Infof("Started watching member with id: %s", memberID)
+	c.Infof("Started watching member with id: %s", memberID)
 
 	for {
 		select {
@@ -299,7 +326,7 @@ func (c *Connection) watchMember(action Action) {
 		default:
 			member, err := c.hub.nomad.MemberWithID(memberID)
 			if err != nil {
-				logger.Errorf("connection: unable to fetch member info: %s", err)
+				c.Errorf("connection: unable to fetch member info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
 			}
@@ -317,7 +344,7 @@ func (c *Connection) fetchNode(action Action) {
 	nodeID := action.Payload.(string)
 	node, _, err := c.hub.nomad.Client.Nodes().Info(nodeID, nil)
 	if err != nil {
-		logger.Errorf("websocket: unable to fetch node %q: %s", nodeID, err)
+		c.Errorf("websocket: unable to fetch node %q: %s", nodeID, err)
 	}
 	c.send <- &Action{Type: fetchedNode, Payload: node}
 }
@@ -327,11 +354,11 @@ func (c *Connection) watchNode(action Action) {
 
 	defer func() {
 		c.watches.Remove(nodeID)
-		logger.Infof("Stopped watching node with id: %s", nodeID)
+		c.Infof("Stopped watching node with id: %s", nodeID)
 	}()
 	c.watches.Add(nodeID)
 
-	logger.Infof("Started watching node with id: %s", nodeID)
+	c.Infof("Started watching node with id: %s", nodeID)
 
 	q := &api.QueryOptions{WaitIndex: 1}
 	for {
@@ -341,7 +368,7 @@ func (c *Connection) watchNode(action Action) {
 		default:
 			node, meta, err := c.hub.nomad.Client.Nodes().Info(nodeID, q)
 			if err != nil {
-				logger.Errorf("connection: unable to fetch node info: %s", err)
+				c.Errorf("connection: unable to fetch node info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
 			}
@@ -362,25 +389,33 @@ func (c *Connection) watchNode(action Action) {
 func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, initialPayload interface{}) {
 	defer func() {
 		c.watches.Remove(watchKey)
-		logger.Infof("Stopped watching %s", watchKey)
-	}()
-	c.watches.Add(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
 
-	logger.Infof("Sending our current %s list", watchKey)
-	c.send <- &Action{Type: actionEvent, Payload: initialPayload, Index: 0}
-
-	logger.Infof("Started watching %s", watchKey)
-	for {
-		if !c.watches.Has(watchKey) {
-			logger.Infof("Connection is no longer subscribed to %s", watchKey)
+		// recovering from panic caused by writing to a closed channel
+		if recover() == nil {
 			return
 		}
 
-		logger.Infof("Waiting on %s pipe", watchKey)
+		c.Warningf("Channel %s is closed. Thats sad :(", watchKey)
+	}()
+
+	c.watches.Add(watchKey)
+
+	c.Debugf("Sending our current %s list", watchKey)
+	c.send <- &Action{Type: actionEvent, Payload: initialPayload, Index: 0}
+
+	c.Debugf("Started watching %s", watchKey)
+	for {
+		if !c.watches.Has(watchKey) {
+			c.Infof("Connection is no longer subscribed to %s", watchKey)
+			return
+		}
+
+		c.Debugf("Waiting on %s pipe", watchKey)
 		channelAction := <-c.hub.nomad.updateCh
 
 		if channelAction.Type != actionEvent {
-			logger.Infof("Type mismatch: %s <> %s", channelAction.Type, actionEvent)
+			c.Debugf("Type mismatch: %s <> %s", channelAction.Type, actionEvent)
 			continue
 		}
 
@@ -389,7 +424,7 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 }
 
 func (c *Connection) unwatchGenericBroadcast(watchKey string) {
-	logger.Infof("Removing subscription for %s", watchKey)
+	c.Debugf("Removing subscription for %s", watchKey)
 	c.watches.Remove(watchKey)
 }
 
@@ -398,33 +433,38 @@ func (c *Connection) watchJob(action Action) {
 
 	defer func() {
 		c.watches.Remove(jobID)
-		logger.Infof("Stopped watching job with id: %s", jobID)
+		c.Infof("Stopped watching job with id: %s", jobID)
 	}()
 	c.watches.Add(jobID)
 
-	logger.Infof("Started watching job with id: %s", jobID)
+	c.Infof("Started watching job with id: %s", jobID)
 
 	q := &api.QueryOptions{WaitIndex: 1}
 	for {
 		select {
 		case <-c.destroyCh:
 			return
+
 		default:
 			job, meta, err := c.hub.nomad.Client.Jobs().Info(jobID, q)
+
 			if err != nil {
-				logger.Errorf("connection: unable to fetch job info: %s", err)
+				c.Errorf("connection: unable to fetch job info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
 			}
+
 			if !c.watches.Has(jobID) {
 				return
 			}
+
 			c.send <- &Action{Type: fetchedJob, Payload: job, Index: meta.LastIndex}
 
 			waitIndex := meta.LastIndex
 			if q.WaitIndex > meta.LastIndex {
 				waitIndex = q.WaitIndex
 			}
+
 			q = &api.QueryOptions{WaitIndex: waitIndex, WaitTime: 10 * time.Second}
 		}
 	}
@@ -433,7 +473,7 @@ func (c *Connection) watchJob(action Action) {
 func (c *Connection) fetchDir(action Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
-		logger.Errorf("Could not decode payload")
+		c.Errorf("Could not decode payload")
 		return
 	}
 	addr := params["addr"].(string)
@@ -448,14 +488,16 @@ func (c *Connection) fetchDir(action Action) {
 		logger.Fatalf("Could not create client: %s", err)
 		return
 	}
+
 	alloc, _, err := client.Allocations().Info(allocID, nil)
 	if err != nil {
-		logger.Errorf("Unable to fetch alloc: %s", err)
+		c.Errorf("Unable to fetch alloc: %s", err)
 		return
 	}
+
 	dir, _, err := client.AllocFS().List(alloc, path, nil)
 	if err != nil {
-		logger.Errorf("Unable to fetch directory: %s", err)
+		c.Errorf("Unable to fetch directory: %s", err)
 	}
 
 	c.send <- &Action{Type: fetchedDir, Payload: dir, Index: 0}
@@ -481,25 +523,27 @@ func (c *Connection) watchFile(action Action) {
 
 	client, err := api.NewClient(config)
 	if err != nil {
-		logger.Errorf("Could not create client: %s", err)
+		c.Errorf("Could not create client: %s", err)
 		return
 	}
+
 	alloc, _, err := client.Allocations().Info(allocID, nil)
 	if err != nil {
-		logger.Errorf("Unable to fetch alloc: %s", err)
+		c.Errorf("Unable to fetch alloc: %s", err)
 		return
 	}
 
 	// Get file stat info
 	file, _, err := client.AllocFS().Stat(alloc, path, nil)
 	if err != nil {
-		logger.Errorf("Unable to stat file: %s", err)
+		c.Errorf("Unable to stat file: %s", err)
 		return
 	}
 
 	var origin string = api.OriginStart
 	var offset int64 = 0
 	var oversized bool
+
 	if file.Size > maxFileSize {
 		origin = api.OriginEnd
 		offset = maxFileSize
@@ -519,7 +563,7 @@ func (c *Connection) watchFile(action Action) {
 			Index: 0,
 		}
 
-		logger.Errorf("Unable to stream file: %s", err)
+		c.Errorf("Unable to stream file: %s", err)
 		return
 	}
 
@@ -545,12 +589,12 @@ func (c *Connection) watchFile(action Action) {
 
 	c.watches.Add(path)
 	defer func() {
-		logger.Infof("Stopped watching file with path: %s", path)
+		c.Infof("Stopped watching file with path: %s", path)
 		c.watches.Remove(path)
 		r.Close()
 	}()
 
-	logger.Infof("Started watching file with path: %s", path)
+	c.Infof("Started watching file with path: %s", path)
 	c.send <- &Action{
 		Type: fetchedFile,
 		Payload: struct {
