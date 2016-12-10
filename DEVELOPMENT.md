@@ -40,4 +40,4 @@ Once its running you can access http://0.0.0.0:3333 for the hot-reloading reactj
 update your browser with any JS changes you do in your editor on file save.
 
 If your code involve Go changes as well, a workflow like the following is fairly efficient (from the `backend/`) directory
-`KEEP_BINDATA_ASSETFS=1 make rebuild && NOMAD_LOG_LEVEL=debug NOMAD_ADDR=http://localhost:4646 ./build/nomad-ui-darwin-amd64`
+`KEEP_BINDATA_ASSETFS=1 make rebuild && NOMAD_LOG_LEVEL=debug NOMAD_ADDR=http://localhost:4646 ./build/hashi-ui-darwin-amd64`
