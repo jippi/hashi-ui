@@ -19,7 +19,7 @@ env:
     - secure: "GbA5CVe7Jx9j/yP3rZyTaopuJiTnLtXqGeSzRIjmtO81xnyoXpKhooIr32/5F+TUBJGFfou17NhEbM/cGhmfpvSRLRJRsI/aV02rB2chLGwPklMPz/jeS58BdzgfkzuZr8pUmDQf2VFYeD8w/1m/hw6Sbrs34IqNs5x2ttzIElXoCnIFR4yoNPXN4UPdmF1cX3ZihyJjAOypYem/GEJT+amCk1+MpsRSIspXcpGZTpXGAVQmgjLYVYVx9cLItT63MhP4AOwMUFcSk51GT/S4oL6eoDcN4XNHXGvy9hPQRtkubledNqoeRL3XaaSbKuIFghnQKyd/LkN18Xv1CQybgF+Tzi/u97qi707aHJZrSwYmLzUxxv1FnlyBLpKJR3R0GxJOo37vM5mQBr0VbdwFMcD8rDegLL+1DkGkAYWpSh/xoR2LdkJoudp2xlUM0XRFZqffoU3DeabeaSRS3VjBb0CThpymT+/VR58EMA1YWCIdXl2BGL+/28EmiId0UR1CKafsOrL5/VSZrNmcO0g2mmrotM3HmO5hX5qI5SMFYWt2KszVKZNVAHy9mig8IA1wJirthUqjbya2ug9XncEmbSZal7mhrIY14FnKlJBK6aIv3V7LkIvNXMoyB8z9kG1cJ7oSuM707ckTA0/GcXyNdMiwzCMrpF+UMigug6PgaKo="
 
 script:
-  - GOBUILD=${GOBUILD} make build
+  - GOBUILD=${GOBUILD} make -j build
   - ls -la backend/build
 
 after_success:
