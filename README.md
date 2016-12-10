@@ -88,7 +88,4 @@ values.
 
 # Development
 
-Just run ```npm install``` and ```npm start``` and start developing. Hot reloading is enabled, so any
-changes will be visible in the browser immediately. Unfortunately there are no tests yet.
-
-If you would like to contribute please open a pull-request.
+See `DEVELOPMENT.md`

@@ -55,9 +55,6 @@ vet: fmt
 		echo "and fix them if necessary before submitting the code for review."; \
 	fi
 
-ifdef DONT_REBUILD_FRONTEND_ASSETS
-.PHONY: bindata_assetfs.go
-endif
 bindata_assetfs.go:
 	$(MAKE) -j -C .. frontend
 
