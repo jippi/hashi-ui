@@ -64,6 +64,13 @@ clean:
 	$(MAKE) -C frontend clean
 	rm -f backend/bindata_assetfs.go
 
+PHONY: dist-clean
+dist-clean:
+	@echo "=> dist-cleaning ..."
+	$(MAKE) -C backend dist-clean
+	$(MAKE) -C frontend dist-clean
+	rm -f backend/bindata_assetfs.go
+
 .PHONY: docker
 docker:
 	@echo "=> build and push Docker image ..."
