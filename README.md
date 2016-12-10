@@ -88,4 +88,4 @@ values.
 
 # Development
 
-If you would like to contribute please open a pull-request. See `DEVELOPMENT.md`
+If you would like to contribute please open a pull-request. See [DEVELOPMENT.md](https://github.com/jippi/hashi-ui/blob/master/DEVELOPMENT.md)
