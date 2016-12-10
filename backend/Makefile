@@ -17,7 +17,7 @@ GET_GOOS   = $(word 1,$(subst -, ,$1))
 GET_GOARCH = $(word 2,$(subst -, ,$1))
 
 BINARIES = $(addprefix $(BUILD_DIR)/hashi-ui-, $(GOBUILD))
-$(BINARIES): $(BUILD_DIR)/hashi-ui-%: $(BUILD_DIR)
+$(BINARIES): $(BUILD_DIR)/hashi-ui-%: $(BUILD_DIR) bindata_assetfs.go
 	@echo "=> building $@ ..."
 	GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 govendor build -o $@
 
@@ -54,6 +54,12 @@ vet: fmt
 		echo "and fix them if necessary before submitting the code for review."; \
 	fi
 
+bindata_assetfs.go:
+	$(MAKE) -C .. frontend
+
+	@echo "=> packaging assets ..."
+	go-bindata-assetfs -prefix frontend ../frontend/build/...
+
 .PHONY: build
 build: bootstrap fmt vet
 	$(MAKE) $(BINARIES)
@@ -66,6 +72,7 @@ rebuild: clean
 clean:
 	@echo "=> cleaning ..."
 	rm -rf $(BUILD_DIR)
+	rm -f bindata_assetfs.go
 
 .PHONY: dist-clean
 dist-clean: clean

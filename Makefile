@@ -3,12 +3,6 @@ frontend:
 	@echo "=> building frontend ..."
 	$(MAKE) -C frontend build
 
-.PHONY: backend/bindata_assetfs.go
-backend/bindata_assetfs.go: frontend
-	@echo "=> packaging assets ..."
-	go-bindata-assetfs -prefix frontend frontend/build/...
-	mv -f bindata_assetfs.go backend/
-
 .PHONY: backend
 backend:
 	$(MAKE) -C backend build
@@ -17,9 +11,7 @@ backend:
 build: frontend backend backend/bindata_assetfs.go
 
 .PHONY: rebuild
-rebuild:
-	rm -f backend/bindata_assetfs.go
-	rm -f backend/build/hashi-ui-darwin-amd64
+rebuild: clean
 	$(MAKE) -j build
 
 .PHONY: clean
