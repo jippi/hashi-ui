@@ -21,8 +21,8 @@ $(BINARIES): $(BUILD_DIR)/hashi-ui-%: $(BUILD_DIR) bindata_assetfs.go
 	@echo "=> building $@ ..."
 	GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 govendor build -o $@
 
-.PHONY: bootstrap
-bootstrap:
+.PHONY: install
+install:
 	@for tool in $(EXTERNAL_TOOLS); do \
 		echo "Installing $$tool" ; \
     go get $$tool; \
@@ -62,7 +62,7 @@ bindata_assetfs.go:
 	go-bindata-assetfs -prefix ../frontend ../frontend/build/...
 
 .PHONY: build
-build: bootstrap fmt vet
+build: install fmt vet
 	@echo "=> building backend ..."
 	$(MAKE) -j $(BINARIES)
 
@@ -75,7 +75,9 @@ rebuild: clean
 clean:
 	@echo "=> cleaning backend ..."
 	rm -rf $(BUILD_DIR)
+ifndef KEEP_BINDATA_ASSETFS
 	rm -f bindata_assetfs.go
+endif
 
 .PHONY: dist-clean
 dist-clean: clean

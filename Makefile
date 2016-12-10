@@ -17,6 +17,12 @@ build: backend
 rebuild: clean
 	$(MAKE) -j build
 
+.PHONY: install
+install:
+	@echo "=> install ..."
+	$(MAKE) -j -C backend install
+	$(MAKE) -j -C frontend install
+
 .PHONY: clean
 clean:
 	@echo "=> cleaning ..."

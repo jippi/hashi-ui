@@ -88,4 +88,4 @@ values.
 
 # Development
 
-See `DEVELOPMENT.md`
+If you would like to contribute please open a pull-request. See `DEVELOPMENT.md`
