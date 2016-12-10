@@ -28,5 +28,5 @@ Vagrant.configure(2) do |config|
   SHELL
 
   config.vm.synced_folder ".", "/vagrant", type: "nfs"
-  config.vm.define "nomad-ui"
+  config.vm.define "hashi-ui"
 end

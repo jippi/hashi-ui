@@ -51,7 +51,7 @@ build: fmt vet bootstrap frontend backend/bindata_assetfs.go
 .PHONY: rebuild
 rebuild:
 	rm -f backend/bindata_assetfs.go
-	rm -f backend/build/nomad-ui-darwin-amd64
+	rm -f backend/build/hashi-ui-darwin-amd64
 	$(MAKE) -j build
 
 .PHONY: clean
@@ -65,6 +65,6 @@ clean:
 docker:
 	@echo "=> build and push Docker image ..."
 	@docker login -e $(DOCKER_EMAIL) -u $(DOCKER_USER) -p $(DOCKER_PASS)
-	docker build -f Dockerfile -t iverberk/nomad-ui:$(COMMIT) .
-	docker tag iverberk/nomad-ui:$(COMMIT) iverberk/nomad-ui:$(TAG)
-	docker push iverberk/nomad-ui:$(TAG)
+	docker build -f Dockerfile -t jippi/hashi-ui:$(COMMIT) .
+	docker tag jippi/hashi-ui:$(COMMIT) jippi/hashi-ui:$(TAG)
+	docker push jippi/hashi-ui:$(TAG)

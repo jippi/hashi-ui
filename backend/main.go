@@ -13,7 +13,7 @@ import (
 	"github.com/op/go-logging"
 )
 
-var logger = logging.MustGetLogger("nomad-ui")
+var logger = logging.MustGetLogger("hashi-ui")
 
 func startLogging(logLevel string) {
 	logBackend := logging.NewLogBackend(os.Stderr, "", 0)
@@ -64,7 +64,7 @@ var (
 		"The address on which to expose the web interface. "+flagDefault(defaultConfig.ListenAddress))
 
 	flagLogLevel = flag.String("log.level", "",
-		"The log level for nomad-ui to run under. "+flagDefault(defaultConfig.LogLevel))
+		"The log level for hashi-ui to run under. "+flagDefault(defaultConfig.LogLevel))
 )
 
 func (c *Config) Parse() {

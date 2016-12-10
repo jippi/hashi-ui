@@ -2,6 +2,6 @@ FROM scratch
 
 EXPOSE 3000
 
-ADD ./backend/build/nomad-ui-linux-amd64 /nomad-ui
+ADD ./backend/build/hashi-ui-linux-amd64 /hashi-ui
 
-ENTRYPOINT ["/nomad-ui"]
+ENTRYPOINT ["/hashi-ui"]

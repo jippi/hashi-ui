@@ -1,6 +1,6 @@
-# Example Nomad jobspec for nomad-ui
+# Example Nomad jobspec for hashi-ui
 
-job "nomad-ui" {
+job "hashi-ui" {
   # Job should run in the US region
   region = "global"
 
@@ -17,11 +17,11 @@ job "nomad-ui" {
   }
 
   group "servers" {
-    # we want one nomad-ui server
+    # we want one hashi-ui server
     count = 1
 
     # create a web front end using a docker image
-    task "nomad-ui" {
+    task "hashi-ui" {
       constraint {
         attribute = "${attr.kernel.name}"
         value     = "linux"
@@ -30,11 +30,11 @@ job "nomad-ui" {
       driver = "exec"
 
       config {
-        command = "nomad-ui-linux-amd64"
+        command = "hashi-ui-linux-amd64"
       }
 
       artifact {
-        source = "https://github.com/iverberk/nomad-ui/releases/download/v0.2.1/nomad-ui-linux-amd64"
+        source = "https://github.com/jippi/hashi-ui/releases/download/v0.5.0/hashi-ui-linux-amd64"
 
         options {
           checksum = "sha256:4b6f0394698d45fcce05c536442b35b5ff83736cd6050d1c50c2a3959937dd14"

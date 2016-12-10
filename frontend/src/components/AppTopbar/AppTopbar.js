@@ -79,7 +79,7 @@ class AppTopbar extends PureComponent {
   render () {
     return (
       <section style={{ backgroundColor: '#4b9a7d' }}>
-        <AppBar title='Nomad UI' showMenuIconButton={ false } />
+        <AppBar title='Hashi UI' showMenuIconButton={ false } />
 
         <Tabs index={ this.getActiveTab() } onChange={ this._onClick } theme={ theme } fixed>
           <Tab label='Cluster' value='cluster' data-route='/cluster' />

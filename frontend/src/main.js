@@ -8,7 +8,7 @@ import { Provider } from 'react-redux'
 import AppRouter from './router'
 import configureStore from './store'
 
-import '../assets/nomad-ui.css'
+import '../assets/hashi-ui.css'
 
 // Perf.start()
 

@@ -619,6 +619,7 @@ func (c *Connection) watchFile(action Action) {
 	}
 
 	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
 
 	for {
 		select {
