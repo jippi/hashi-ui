@@ -1333,5 +1333,6 @@
 			"revision": "a5b47d31c556af34a302ce5d659e6fea44d90de0",
 			"revisionTime": "2016-09-28T15:37:09Z"
 		}
-	]
+	],
+	"rootPath": "github.com/jippi/hashi-ui/backend"
 }

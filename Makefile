@@ -1,38 +1,3 @@
-VETARGS?=-all
-EXTERNAL_TOOLS=\
-	github.com/kardianos/govendor \
-	github.com/jteeuwen/go-bindata/... \
-	github.com/elazarl/go-bindata-assetfs/...
-
-GOFILES_NOVENDOR = $(shell find . -type f -name '*.go' -not -path "./backend/vendor/*")
-
-.PHONY: bootstrap
-bootstrap:
-	@for tool in $(EXTERNAL_TOOLS); do \
-		echo "Installing $$tool" ; \
-    go get $$tool; \
-	done
-
-.PHONY: fmt
-fmt:
-	@echo "--> Running go fmt" ;
-	@if [ -n "`go fmt ${GOFILES_NOVENDOR}`" ]; then \
-		echo "[ERR] go fmt updated formatting. Please commit formatted code first."; \
-		exit 1; \
-	fi
-
-.PHONY: vet
-vet: fmt
-	@go tool vet 2>/dev/null ; if [ $$? -eq 3 ]; then \
-		go get golang.org/x/tools/cmd/vet; \
-	fi
-	@echo "--> Running go tool vet $(VETARGS) ${GOFILES_NOVENDOR}"
-	@go tool vet $(VETARGS) ${GOFILES_NOVENDOR} ; if [ $$? -eq 1 ]; then \
-		echo ""; \
-		echo "[LINT] Vet found suspicious constructs. Please check the reported constructs"; \
-		echo "and fix them if necessary before submitting the code for review."; \
-	fi
-
 .PHONY: frontend
 frontend:
 	@echo "=> building frontend ..."
@@ -49,7 +14,7 @@ backend:
 	$(MAKE) -C backend build
 
 .PHONY: build
-build: fmt vet bootstrap frontend backend backend/bindata_assetfs.go
+build: frontend backend backend/bindata_assetfs.go
 
 .PHONY: rebuild
 rebuild:
