@@ -44,9 +44,12 @@ backend/bindata_assetfs.go: frontend
 	go-bindata-assetfs -prefix frontend frontend/build/...
 	mv -f bindata_assetfs.go backend/
 
-.PHONY: build
-build: fmt vet bootstrap frontend backend/bindata_assetfs.go
+.PHONY: backend
+backend:
 	$(MAKE) -C backend build
+
+.PHONY: build
+build: fmt vet bootstrap frontend backend backend/bindata_assetfs.go
 
 .PHONY: rebuild
 rebuild:

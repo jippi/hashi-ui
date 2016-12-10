@@ -17,6 +17,9 @@ bootstrap:
 	@echo "=> installing go-ps library..."
 	go get github.com/mitchellh/go-ps
 
+	@echo "=> govendor sync..."
+	govendor sync
+
 build: bootstrap $(BINARIES)
 
 rebuild: clean bootstrap $(BINARIES)
@@ -24,5 +27,8 @@ rebuild: clean bootstrap $(BINARIES)
 clean:
 	@echo "=> cleaning ..."
 	rm -rf $(BUILD_DIR)
+
+dist-clean: clean
+	rm -rf vendor/{github.com,golang.org,gopkg.in}
 
 .PHONY: bootstrap build rebuild clean
