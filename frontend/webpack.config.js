@@ -20,7 +20,7 @@ webpackConfig = merge(webpackConfig, {
 
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'Nomad UI',
+      title: 'Hashi UI',
       inject: false,
       template: './index.html.ejs',
       favicon: './assets/img/favicon.png',
