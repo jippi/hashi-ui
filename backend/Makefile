@@ -56,7 +56,7 @@ vet: fmt
 	fi
 
 bindata_assetfs.go:
-	$(MAKE) -C .. frontend
+	$(MAKE) -j -C ..frontend
 
 	@echo "=> packaging assets ..."
 	go-bindata-assetfs -prefix frontend ../frontend/build/...
@@ -64,12 +64,12 @@ bindata_assetfs.go:
 .PHONY: build
 build: bootstrap fmt vet
 	@echo "=> building backend ..."
-	$(MAKE) $(BINARIES)
+	$(MAKE) -j $(BINARIES)
 
 .PHONY: rebuild
 rebuild: clean
 	@echo "=> rebuilding backend ..."
-	$(MAKE) build
+	$(MAKE) -j build
 
 .PHONY: clean
 clean:

@@ -1,11 +1,11 @@
 .PHONY: frontend
 frontend:
 	@echo "=> building frontend ..."
-	$(MAKE) -C frontend build
+	$(MAKE) -j -C frontend build
 
 .PHONY: backend
 backend:
-	$(MAKE) -C backend build
+	$(MAKE) -j -C backend build
 
 .PHONY: build
 build: frontend backend
@@ -17,14 +17,14 @@ rebuild: clean
 .PHONY: clean
 clean:
 	@echo "=> cleaning ..."
-	$(MAKE) -C backend clean
-	$(MAKE) -C frontend clean
+	$(MAKE) -j -C backend clean
+	$(MAKE) -j -C frontend clean
 
 PHONY: dist-clean
 dist-clean:
 	@echo "=> dist-cleaning ..."
-	$(MAKE) -C backend dist-clean
-	$(MAKE) -C frontend dist-clean
+	$(MAKE) -j -C backend dist-clean
+	$(MAKE) -j -C frontend dist-clean
 
 .PHONY: docker
 docker:
