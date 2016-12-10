@@ -12,6 +12,7 @@ cache:
   yarn: true
   directories:
     - backend/vendor
+    - frontend/node_modules
 
 env:
   global:
