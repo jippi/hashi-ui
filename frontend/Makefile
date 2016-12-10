@@ -1,13 +1,16 @@
 .PHONY: build
-build:
+build: install
 	@echo "=> building frontend ..."
-	yarn install
 	yarn run build
 
+.PHONY: install
+install:
+	@echo "=> install frontend"
+	yarn install --mutex file
+
 .PHONY: lint
-lint:
+lint: install
 	@echo "=> running linter ..."
-	@test -e node_modules || yarn install
 	yarn run lint
 
 .PHONY: clean
