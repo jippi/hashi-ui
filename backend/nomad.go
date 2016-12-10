@@ -159,6 +159,11 @@ func (n *Nomad) watchAllocs() {
 			time.Sleep(10 * time.Second)
 			continue
 		}
+
+		for i, _ := range allocs {
+			allocs[i].TaskStates = make(map[string]*api.TaskState)
+		}
+
 		n.allocs = allocs
 		n.updateCh <- &Action{Type: fetchedAllocs, Payload: allocs, Index: meta.LastIndex}
 
