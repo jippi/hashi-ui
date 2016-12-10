@@ -1,4 +1,6 @@
-node_modules
+frontend/node_modules
+backend/vendor
+
 .tern-port
 .sass-cache
 npm-debug.log
