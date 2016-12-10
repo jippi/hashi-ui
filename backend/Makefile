@@ -56,7 +56,7 @@ vet: fmt
 	fi
 
 bindata_assetfs.go:
-	$(MAKE) -j -C ..frontend
+	$(MAKE) -j -C .. frontend
 
 	@echo "=> packaging assets ..."
 	go-bindata-assetfs -prefix frontend ../frontend/build/...
