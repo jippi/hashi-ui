@@ -220,6 +220,10 @@ func (c *Connection) Handle() {
 	go c.writePump()
 	c.readPump()
 
+	c.Debugf("Connection closing down")
+
+	c.destroyCh <- struct{}{}
+
 	// Kill any remaining watcher routines
 	close(c.destroyCh)
 }
@@ -405,20 +409,23 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 
 	c.Debugf("Started watching %s", watchKey)
 	for {
-		if !c.watches.Has(watchKey) {
-			c.Infof("Connection is no longer subscribed to %s", watchKey)
+		select {
+		case <-c.destroyCh:
 			return
+
+		case channelAction := <-channel:
+			if !c.watches.Has(watchKey) {
+				c.Infof("Connection is no longer subscribed to %s", watchKey)
+				return
+			}
+
+			if channelAction.Type != actionEvent {
+				c.Debugf("Type mismatch: %s <> %s", channelAction.Type, actionEvent)
+				continue
+			}
+
+			c.send <- channelAction
 		}
-
-		c.Debugf("Waiting on %s pipe", watchKey)
-		channelAction := <-channel
-
-		if channelAction.Type != actionEvent {
-			c.Debugf("Type mismatch: %s <> %s", channelAction.Type, actionEvent)
-			continue
-		}
-
-		c.send <- channelAction
 	}
 }
 
