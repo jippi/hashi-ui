@@ -128,7 +128,7 @@ func (c *Connection) process(action Action) {
 	// Actions for a list of members (aka servers in the UI)
 	//
 	case watchMembers:
-		go c.watchGenericBroadcast("members", fetchedMembers, c.hub.nomad.members)
+		go c.watchGenericBroadcast("members", fetchedMembers, c.hub.nomad.BroadcastChannels.members, c.hub.nomad.members)
 	case unwatchMembers:
 		c.unwatchGenericBroadcast("members")
 
@@ -136,7 +136,7 @@ func (c *Connection) process(action Action) {
 	// Actions for a list of jobs
 	//
 	case watchJobs:
-		go c.watchGenericBroadcast("jobs", fetchedJobs, c.hub.nomad.jobs)
+		go c.watchGenericBroadcast("jobs", fetchedJobs, c.hub.nomad.BroadcastChannels.jobs, c.hub.nomad.jobs)
 	case unwatchJobs:
 		c.unwatchGenericBroadcast("jobs")
 
@@ -144,7 +144,7 @@ func (c *Connection) process(action Action) {
 	// Actions for a list of allocations
 	//
 	case watchAllocs:
-		go c.watchGenericBroadcast("allocs", fetchedAllocs, c.hub.nomad.allocs)
+		go c.watchGenericBroadcast("allocs", fetchedAllocs, c.hub.nomad.BroadcastChannels.allocations, c.hub.nomad.allocations)
 	case unwatchAllocs:
 		c.unwatchGenericBroadcast("allocs")
 
@@ -152,7 +152,7 @@ func (c *Connection) process(action Action) {
 	// Actions for a list of nodes (aka clients in the UI)
 	//
 	case watchNodes:
-		go c.watchGenericBroadcast("nodes", fetchedNodes, c.hub.nomad.nodes)
+		go c.watchGenericBroadcast("nodes", fetchedNodes, c.hub.nomad.BroadcastChannels.nodes, c.hub.nomad.nodes)
 	case unwatchNodes:
 		c.unwatchGenericBroadcast("nodes")
 
@@ -160,7 +160,7 @@ func (c *Connection) process(action Action) {
 	// Actions for a list of evaluations
 	//
 	case watchEvals:
-		go c.watchGenericBroadcast("evaluations", fetchedEvals, c.hub.nomad.evals)
+		go c.watchGenericBroadcast("evaluations", fetchedEvals, c.hub.nomad.BroadcastChannels.evaluations, c.hub.nomad.evaluations)
 	case unwatchEvals:
 		c.unwatchGenericBroadcast("evaluations")
 
@@ -387,17 +387,15 @@ func (c *Connection) watchNode(action Action) {
 	}
 }
 
-func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, initialPayload interface{}) {
+func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, channel chan *Action, initialPayload interface{}) {
 	defer func() {
 		c.watches.Remove(watchKey)
 		c.Infof("Stopped watching %s", watchKey)
 
 		// recovering from panic caused by writing to a closed channel
-		if recover() == nil {
-			return
+		if r := recover(); r != nil {
+			c.Warningf("Recover from panic: %s", r)
 		}
-
-		c.Warningf("Channel %s is closed. Thats sad :(", watchKey)
 	}()
 
 	c.watches.Add(watchKey)
@@ -413,7 +411,7 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 		}
 
 		c.Debugf("Waiting on %s pipe", watchKey)
-		channelAction := <-c.hub.nomad.updateCh
+		channelAction := <-channel
 
 		if channelAction.Type != actionEvent {
 			c.Debugf("Type mismatch: %s <> %s", channelAction.Type, actionEvent)

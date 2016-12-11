@@ -64,19 +64,18 @@ func NewAgentMemberWithID(member *api.AgentMember) (*AgentMemberWithID, error) {
 // evaluations, jobs and nodes and broadcasts them to all connected websockets.
 // It also exposes an API client for the Nomad server.
 type Nomad struct {
-	Client *api.Client
-
-	allocs  []*api.AllocationListStub
-	evals   []*api.Evaluation
-	jobs    []*api.JobListStub
-	nodes   []*api.NodeListStub
-	members []*AgentMemberWithID
-
-	updateCh chan *Action
+	Client            *api.Client
+	BroadcastChannels *BroadcastChannels
+	allocations       []*api.AllocationListStub
+	evaluations       []*api.Evaluation
+	jobs              []*api.JobListStub
+	members           []*AgentMemberWithID
+	nodes             []*api.NodeListStub
+	updateCh          chan *Action
 }
 
 // NewNomad configures the Nomad API client and initializes the internal state.
-func NewNomad(url string, updateCh chan *Action) (*Nomad, error) {
+func NewNomad(url string, updateCh chan *Action, channels *BroadcastChannels) (*Nomad, error) {
 	config := api.DefaultConfig()
 	config.Address = url
 	config.WaitTime = waitTime
@@ -87,13 +86,14 @@ func NewNomad(url string, updateCh chan *Action) (*Nomad, error) {
 	}
 
 	return &Nomad{
-		Client:   client,
-		updateCh: updateCh,
-		allocs:   make([]*api.AllocationListStub, 0),
-		evals:    make([]*api.Evaluation, 0),
-		nodes:    make([]*api.NodeListStub, 0),
-		members:  make([]*AgentMemberWithID, 0),
-		jobs:     make([]*api.JobListStub, 0),
+		Client:            client,
+		updateCh:          updateCh,
+		BroadcastChannels: channels,
+		allocations:       make([]*api.AllocationListStub, 0),
+		evaluations:       make([]*api.Evaluation, 0),
+		jobs:              make([]*api.JobListStub, 0),
+		members:           make([]*AgentMemberWithID, 0),
+		nodes:             make([]*api.NodeListStub, 0),
 	}, nil
 }
 
@@ -153,25 +153,26 @@ func (n *Nomad) MemberWithID(ID string) (*AgentMemberWithID, error) {
 func (n *Nomad) watchAllocs() {
 	q := &api.QueryOptions{WaitIndex: 1}
 	for {
-		allocs, meta, err := n.Client.Allocations().List(q)
+		allocations, meta, err := n.Client.Allocations().List(q)
 		if err != nil {
 			logger.Errorf("watch: unable to fetch allocations: %s", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}
 
-		for i, _ := range allocs {
-			allocs[i].TaskStates = make(map[string]*api.TaskState)
+		for i, _ := range allocations {
+			allocations[i].TaskStates = make(map[string]*api.TaskState)
 		}
 
-		n.allocs = allocs
-		n.updateCh <- &Action{Type: fetchedAllocs, Payload: allocs, Index: meta.LastIndex}
+		n.allocations = allocations
+		n.BroadcastChannels.allocations <- &Action{Type: fetchedAllocs, Payload: allocations, Index: meta.LastIndex}
 
 		// Guard for zero LastIndex in case of timeout
 		waitIndex := meta.LastIndex
 		if q.WaitIndex > meta.LastIndex {
 			waitIndex = q.WaitIndex
 		}
+
 		q = &api.QueryOptions{WaitIndex: waitIndex}
 	}
 }
@@ -179,14 +180,14 @@ func (n *Nomad) watchAllocs() {
 func (n *Nomad) watchEvals() {
 	q := &api.QueryOptions{WaitIndex: 1}
 	for {
-		evals, meta, err := n.Client.Evaluations().List(q)
+		evaluations, meta, err := n.Client.Evaluations().List(q)
 		if err != nil {
 			logger.Errorf("watch: unable to fetch evaluations: %s", err)
 			time.Sleep(10 * time.Second)
 			continue
 		}
-		n.evals = evals
-		n.updateCh <- &Action{Type: fetchedEvals, Payload: evals, Index: meta.LastIndex}
+		n.evaluations = evaluations
+		n.BroadcastChannels.evaluations <- &Action{Type: fetchedEvals, Payload: evaluations, Index: meta.LastIndex}
 
 		// Guard for zero LastIndex in case of timeout
 		waitIndex := meta.LastIndex
@@ -207,7 +208,7 @@ func (n *Nomad) watchJobs() {
 			continue
 		}
 		n.jobs = jobs
-		n.updateCh <- &Action{Type: fetchedJobs, Payload: jobs, Index: meta.LastIndex}
+		n.BroadcastChannels.jobs <- &Action{Type: fetchedJobs, Payload: jobs, Index: meta.LastIndex}
 
 		// Guard for zero LastIndex in case of timeout
 		waitIndex := meta.LastIndex
@@ -228,7 +229,7 @@ func (n *Nomad) watchNodes() {
 			continue
 		}
 		n.nodes = nodes
-		n.updateCh <- &Action{Type: fetchedNodes, Payload: nodes, Index: meta.LastIndex}
+		n.BroadcastChannels.nodes <- &Action{Type: fetchedNodes, Payload: nodes, Index: meta.LastIndex}
 
 		// Guard for zero LastIndex in case of timeout
 		waitIndex := meta.LastIndex
@@ -249,7 +250,7 @@ func (n *Nomad) watchMembers() {
 		}
 
 		n.members = members
-		n.updateCh <- &Action{Type: fetchedMembers, Payload: members, Index: 0}
+		n.BroadcastChannels.members <- &Action{Type: fetchedMembers, Payload: members, Index: 0}
 
 		time.Sleep(10 * time.Second)
 	}

@@ -16,18 +16,19 @@ var upgrader = websocket.Upgrader{
 type Hub struct {
 	nomad       *Nomad
 	connections map[*Connection]bool
-
-	register   chan *Connection
-	unregister chan *Connection
+	channels    *BroadcastChannels
+	register    chan *Connection
+	unregister  chan *Connection
 
 	broadcast chan *Action
 }
 
 // NewHub initializes a new hub.
-func NewHub(nomad *Nomad, broadcast chan *Action) *Hub {
+func NewHub(nomad *Nomad, broadcast chan *Action, channels *BroadcastChannels) *Hub {
 	return &Hub{
 		nomad:       nomad,
 		broadcast:   broadcast,
+		channels:    channels,
 		connections: make(map[*Connection]bool),
 		register:    make(chan *Connection),
 		unregister:  make(chan *Connection),

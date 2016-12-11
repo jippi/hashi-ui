@@ -42,6 +42,14 @@ type Config struct {
 	LogLevel      string
 }
 
+type BroadcastChannels struct {
+	allocations chan *Action
+	evaluations chan *Action
+	jobs        chan *Action
+	members     chan *Action
+	nodes       chan *Action
+}
+
 func DefaultConfig() *Config {
 	return &Config{
 		Address:       "http://127.0.0.1:4646",
@@ -115,8 +123,15 @@ func main() {
 
 	broadcast := make(chan *Action)
 
+	channels := &BroadcastChannels{}
+	channels.allocations = make(chan *Action)
+	channels.evaluations = make(chan *Action)
+	channels.jobs = make(chan *Action)
+	channels.members = make(chan *Action)
+	channels.nodes = make(chan *Action)
+
 	logger.Infof("Connecting to nomad ...")
-	nomad, err := NewNomad(cfg.Address, broadcast)
+	nomad, err := NewNomad(cfg.Address, broadcast, channels)
 	if err != nil {
 		logger.Fatalf("Could not create client: %s", err)
 	}
@@ -127,7 +142,7 @@ func main() {
 	go nomad.watchNodes()
 	go nomad.watchMembers()
 
-	hub := NewHub(nomad, broadcast)
+	hub := NewHub(nomad, broadcast, channels)
 	go hub.Run()
 
 	router := mux.NewRouter()
