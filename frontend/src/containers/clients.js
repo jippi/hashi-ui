@@ -37,13 +37,12 @@ class Clients extends Component {
                 { this.props.nodes.map((node) => {
                   return (
                     <TableRow key={ node.ID }>
-                      <TableRowColumn><ClientLink clientId={ node.ID } clients={ this.props.nodes } /></TableRowColumn>
+                      <TableRowColumn><ClientLink clientId={ node.ID } /></TableRowColumn>
                       <TableRowColumn>{ node.Name }</TableRowColumn>
                       <TableRowColumn><NodeStatus value={ node.Status } /></TableRowColumn>
                       <TableRowColumn><FormatBoolean value={ node.Drain } /></TableRowColumn>
                       <TableRowColumn>{ node.Datacenter }</TableRowColumn>
                       <TableRowColumn>{ node.NodeClass ? node.NodeClass : '<none>'}</TableRowColumn>
-
                     </TableRow>
                   )
                 })
