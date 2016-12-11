@@ -15,7 +15,6 @@ cache:
     - backend/vendor/go4.org
     - backend/vendor/golang.org
     - backend/vendor/gopkg.in
-    - frontend/node_modules
 
 env:
   global:
