@@ -7,6 +7,11 @@ const (
 	unwatchAllocsShallow = "UNWATCH_ALLOCS_SHALLOW"
 	fetchedAllocs        = "FETCHED_ALLOCS"
 
+	fetchClientStats   = "FETCH_CLIENT_STATS"
+	fetchedClientStats = "FETCHED_CLIENT_STATS"
+	watchClientStats   = "WATCH_CLIENT_STATS"
+	unwatchClientStats = "UNWATCH_CLIENT_STATS"
+
 	fetchedAlloc = "FETCHED_ALLOC"
 	watchAlloc   = "WATCH_ALLOC"
 	unwatchAlloc = "UNWATCH_ALLOC"

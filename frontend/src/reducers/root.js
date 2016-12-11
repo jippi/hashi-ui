@@ -4,7 +4,7 @@ import { MemberInfoReducer, MemberListReducer } from './member'
 import { JobInfoReducer, JobListReducer } from './job'
 import { AllocInfoReducer, AllocListReducer } from './allocation'
 import { EvalInfoReducer, EvalListReducer } from './evaluation'
-import { NodeInfoReducer, NodeListReducer } from './node'
+import { NodeInfoReducer, NodeStatsReducer, NodeListReducer } from './node'
 import { DirectoryReducer, FileReducer } from './filesystem'
 
 const rootReducer = combineReducers({
@@ -13,6 +13,7 @@ const rootReducer = combineReducers({
   job: JobInfoReducer,
   jobs: JobListReducer,
   node: NodeInfoReducer,
+  nodeStats: NodeStatsReducer,
   nodes: NodeListReducer,
   allocation: AllocInfoReducer,
   allocations: AllocListReducer,

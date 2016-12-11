@@ -40,6 +40,18 @@ dt {
   font-weight: 500
 }
 
+dl.metrics {
+  text-align: center;
+}
+
+dl.metrics dt {
+  width: 35%;
+}
+
+dl.metrics dd {
+  margin-left: 20px
+}
+
 dt:after {
   content: " : ";
 }

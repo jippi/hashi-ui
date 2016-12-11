@@ -204,6 +204,13 @@ func (c *Connection) process(action Action) {
 	case unwatchFile: // for stopping a follow of a file (tail -f)
 		c.watches.Remove(action.Payload.(string))
 
+	case fetchClientStats:
+		go c.fetchClientStats(action)
+	case watchClientStats:
+		go c.watchClientStats(action)
+	case unwatchClientStats:
+		c.watches.Remove("node-stats-" + action.Payload.(string))
+
 	//
 	// Actions for a single member (aka server in the UI)
 	//
@@ -498,6 +505,60 @@ func (c *Connection) watchJob(action Action) {
 				c.send <- &Action{Type: fetchedJob, Payload: job, Index: remoteWaitIndex}
 				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
 			}
+		}
+	}
+}
+
+func (c *Connection) fetchClientStats(action Action) {
+	nodeID, ok := action.Payload.(string)
+	if !ok {
+		c.Errorf("Could not decode payload")
+		return
+	}
+
+	stats, err := c.hub.nomad.Client.Nodes().Stats(nodeID, nil)
+	if err != nil {
+		c.Errorf("Unable to fetch node stats: %s", err)
+		return
+	}
+
+	c.send <- &Action{Type: fetchedClientStats, Payload: stats, Index: 0}
+}
+
+func (c *Connection) watchClientStats(action Action) {
+	nodeID, ok := action.Payload.(string)
+	if !ok {
+		c.Errorf("Could not decode payload")
+		return
+	}
+
+	defer func() {
+		c.watches.Remove("node-stats-" + nodeID)
+		c.Infof("Stopped watching client stats with id: %s", nodeID)
+	}()
+	c.watches.Add("node-stats-" + nodeID)
+
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		default:
+			stats, err := c.hub.nomad.Client.Nodes().Stats(nodeID, nil)
+			if err != nil {
+				logger.Errorf("watch: unable to fetch client stats: %s", err)
+				time.Sleep(3 * time.Second)
+				return
+			}
+
+			if !c.watches.Has("node-stats-" + nodeID) {
+				c.Infof("Connection is no longer subscribed to node stats with id %s", nodeID)
+				return
+			}
+
+			c.Debugf("Sending Client Stats")
+			c.send <- &Action{Type: fetchedClientStats, Payload: stats, Index: 0}
+			time.Sleep(3 * time.Second)
 		}
 	}
 }

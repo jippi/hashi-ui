@@ -5,6 +5,7 @@ import { withRouter } from 'react-router'
 
 const infoIcon = <FontIcon className='material-icons'>info_outline</FontIcon>
 const allocationIcon = <FontIcon className='material-icons'>apps</FontIcon>
+const statsIcon = <FontIcon className='material-icons'>show_chart</FontIcon>
 const evaluationIcon = <FontIcon className='material-icons'>share</FontIcon>
 const rawIcon = <FontIcon className='material-icons'>code</FontIcon>
 
@@ -25,16 +26,20 @@ class _ClientTopbar extends PureComponent {
       return 0
     }
 
-    if (end.startsWith('allocations')) {
+    if (end.startsWith('stats')) {
       return 1
     }
 
-    if (end.startsWith('evaluations')) {
+    if (end.startsWith('allocations')) {
       return 2
     }
 
-    if (end.startsWith('raw')) {
+    if (end.startsWith('evaluations')) {
       return 3
+    }
+
+    if (end.startsWith('raw')) {
+      return 4
     }
 
     return 0
@@ -54,6 +59,11 @@ class _ClientTopbar extends PureComponent {
           label='Info'
           icon={ infoIcon }
           onTouchTap={ () => this.handleActive('info') }
+        />
+        <BottomNavigationItem
+          label='Stats'
+          icon={ statsIcon }
+          onTouchTap={ () => this.handleActive('stats') }
         />
         <BottomNavigationItem
           label='Allocations'

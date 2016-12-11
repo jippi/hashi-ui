@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { TableRowColumn as MaterialTableRowColumn } from 'material-ui/Table'
+import deepmerge from 'deepmerge'
 
 class TableRowColumn extends Component {
 
@@ -11,7 +12,9 @@ class TableRowColumn extends Component {
       }
     }
 
-    return (<MaterialTableRowColumn { ...this.props } { ...overrideProps } />)
+    const props = deepmerge(this.props, overrideProps)
+
+    return (<MaterialTableRowColumn { ...props } />)
   }
 
 }

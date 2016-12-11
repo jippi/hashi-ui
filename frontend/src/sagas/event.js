@@ -27,6 +27,11 @@ export const FETCH_NODE = 'FETCH_NODE'
 export const WATCH_NODE = 'WATCH_NODE'
 export const UNWATCH_NODE = 'UNWATCH_NODE'
 
+export const FETCH_CLIENT_STATS = 'FETCH_CLIENT_STATS'
+export const WATCH_CLIENT_STATS = 'WATCH_CLIENT_STATS'
+export const UNWATCH_CLIENT_STATS = 'UNWATCH_CLIENT_STATS'
+export const FETCHED_CLIENT_STATS = 'FETCHED_CLIENT_STATS';
+
 export const WATCH_EVALS = 'WATCH_EVALS';
 export const UNWATCH_EVALS = 'UNWATCH_EVALS';
 export const FETCHED_EVALS = 'FETCHED_EVALS'
@@ -114,8 +119,11 @@ function* write (socket) {
       UNWATCH_MEMBER,
       FETCH_MEMBER,
 
-      FETCH_DIR,
+      FETCH_CLIENT_STATS,
+      WATCH_CLIENT_STATS,
+      UNWATCH_CLIENT_STATS,
 
+      FETCH_DIR,
       WATCH_FILE,
       UNWATCH_FILE
     ])
