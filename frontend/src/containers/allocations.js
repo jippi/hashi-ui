@@ -1,17 +1,17 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import AllocationList from '../components/AllocationList/AllocationList'
-import { WATCH_ALLOCS, UNWATCH_ALLOCS, WATCH_NODES, UNWATCH_NODES } from '../sagas/event'
+import { WATCH_ALLOCS_SHALLOW, UNWATCH_ALLOCS_SHALLOW, WATCH_NODES, UNWATCH_NODES } from '../sagas/event'
 
 class Allocations extends Component {
 
   componentDidMount() {
-    this.props.dispatch({type: WATCH_ALLOCS })
+    this.props.dispatch({type: WATCH_ALLOCS_SHALLOW })
     this.props.dispatch({type: WATCH_NODES })
   }
 
   componentWillUnmount() {
-    this.props.dispatch({type: UNWATCH_ALLOCS })
+    this.props.dispatch({type: UNWATCH_ALLOCS_SHALLOW })
     this.props.dispatch({type: UNWATCH_NODES })
   }
 

@@ -267,6 +267,12 @@
 			"revisionTime": "2016-05-26T04:38:13Z"
 		},
 		{
+			"checksumSHA1": "VWrFqIwBAa3aLxf9ImFoQ8r5j7U=",
+			"path": "github.com/cnf/structhash",
+			"revision": "f5315d4d2328a72285a323bf0542c3fb182634b7",
+			"revisionTime": "2016-05-30T21:21:21Z"
+		},
+		{
 			"checksumSHA1": "mswe275heIklTKj7mPTnVzAFoMk=",
 			"origin": "github.com/hashicorp/nomad/vendor/github.com/docker/docker/opts",
 			"path": "github.com/docker/docker/opts",

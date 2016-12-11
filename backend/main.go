@@ -43,11 +43,12 @@ type Config struct {
 }
 
 type BroadcastChannels struct {
-	allocations chan *Action
-	evaluations chan *Action
-	jobs        chan *Action
-	members     chan *Action
-	nodes       chan *Action
+	allocations        chan *Action
+	allocationsShallow chan *Action
+	evaluations        chan *Action
+	jobs               chan *Action
+	members            chan *Action
+	nodes              chan *Action
 }
 
 func DefaultConfig() *Config {
@@ -125,6 +126,7 @@ func main() {
 
 	channels := &BroadcastChannels{}
 	channels.allocations = make(chan *Action)
+	channels.allocationsShallow = make(chan *Action)
 	channels.evaluations = make(chan *Action)
 	channels.jobs = make(chan *Action)
 	channels.members = make(chan *Action)

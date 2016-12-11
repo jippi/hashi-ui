@@ -145,8 +145,12 @@ func (c *Connection) process(action Action) {
 	//
 	case watchAllocs:
 		go c.watchGenericBroadcast("allocs", fetchedAllocs, c.hub.nomad.BroadcastChannels.allocations, c.hub.nomad.allocations)
+	case watchAllocsShallow:
+		go c.watchGenericBroadcast("allocsShallow", fetchedAllocs, c.hub.nomad.BroadcastChannels.allocationsShallow, c.hub.nomad.allocationsShallow)
 	case unwatchAllocs:
 		c.unwatchGenericBroadcast("allocs")
+	case unwatchAllocsShallow:
+		c.unwatchGenericBroadcast("allocsShallow")
 
 	//
 	// Actions for a list of nodes (aka clients in the UI)
@@ -240,10 +244,12 @@ func (c *Connection) watchAlloc(action Action) {
 	c.Infof("Started watching alloc with id: %s", allocID)
 
 	q := &api.QueryOptions{WaitIndex: 1}
+
 	for {
 		select {
 		case <-c.destroyCh:
 			return
+
 		default:
 			alloc, meta, err := c.hub.nomad.Client.Allocations().Info(allocID, q)
 			if err != nil {
@@ -251,16 +257,19 @@ func (c *Connection) watchAlloc(action Action) {
 				time.Sleep(10 * time.Second)
 				continue
 			}
+
 			if !c.watches.Has(allocID) {
 				return
 			}
-			c.send <- &Action{Type: fetchedAlloc, Payload: alloc, Index: meta.LastIndex}
 
-			waitIndex := meta.LastIndex
-			if q.WaitIndex > meta.LastIndex {
-				waitIndex = q.WaitIndex
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				c.send <- &Action{Type: fetchedAlloc, Payload: alloc, Index: remoteWaitIndex}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
 			}
-			q = &api.QueryOptions{WaitIndex: waitIndex, WaitTime: 10 * time.Second}
 		}
 	}
 }
@@ -288,16 +297,19 @@ func (c *Connection) watchEval(action Action) {
 				time.Sleep(10 * time.Second)
 				continue
 			}
+
 			if !c.watches.Has(evalID) {
 				return
 			}
-			c.send <- &Action{Type: fetchedEval, Payload: eval, Index: meta.LastIndex}
 
-			waitIndex := meta.LastIndex
-			if q.WaitIndex > meta.LastIndex {
-				waitIndex = q.WaitIndex
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				c.send <- &Action{Type: fetchedEval, Payload: eval, Index: remoteWaitIndex}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
 			}
-			q = &api.QueryOptions{WaitIndex: waitIndex, WaitTime: 10 * time.Second}
 		}
 	}
 }
@@ -328,6 +340,7 @@ func (c *Connection) watchMember(action Action) {
 		select {
 		case <-c.destroyCh:
 			return
+
 		default:
 			member, err := c.hub.nomad.MemberWithID(memberID)
 			if err != nil {
@@ -335,9 +348,11 @@ func (c *Connection) watchMember(action Action) {
 				time.Sleep(10 * time.Second)
 				continue
 			}
+
 			if !c.watches.Has(memberID) {
 				return
 			}
+
 			c.send <- &Action{Type: fetchedMember, Payload: member}
 
 			time.Sleep(10 * time.Second)
@@ -351,6 +366,7 @@ func (c *Connection) fetchNode(action Action) {
 	if err != nil {
 		c.Errorf("websocket: unable to fetch node %q: %s", nodeID, err)
 	}
+
 	c.send <- &Action{Type: fetchedNode, Payload: node}
 }
 
@@ -370,6 +386,7 @@ func (c *Connection) watchNode(action Action) {
 		select {
 		case <-c.destroyCh:
 			return
+
 		default:
 			node, meta, err := c.hub.nomad.Client.Nodes().Info(nodeID, q)
 			if err != nil {
@@ -377,16 +394,19 @@ func (c *Connection) watchNode(action Action) {
 				time.Sleep(10 * time.Second)
 				continue
 			}
+
 			if !c.watches.Has(nodeID) {
 				return
 			}
-			c.send <- &Action{Type: fetchedNode, Payload: node, Index: meta.LastIndex}
 
-			waitIndex := meta.LastIndex
-			if q.WaitIndex > meta.LastIndex {
-				waitIndex = q.WaitIndex
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				c.send <- &Action{Type: fetchedNode, Payload: node, Index: remoteWaitIndex}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
 			}
-			q = &api.QueryOptions{WaitIndex: waitIndex, WaitTime: 10 * time.Second}
 		}
 	}
 }
@@ -464,14 +484,14 @@ func (c *Connection) watchJob(action Action) {
 				return
 			}
 
-			c.send <- &Action{Type: fetchedJob, Payload: job, Index: meta.LastIndex}
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
 
-			waitIndex := meta.LastIndex
-			if q.WaitIndex > meta.LastIndex {
-				waitIndex = q.WaitIndex
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				c.send <- &Action{Type: fetchedJob, Payload: job, Index: remoteWaitIndex}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
 			}
-
-			q = &api.QueryOptions{WaitIndex: waitIndex, WaitTime: 10 * time.Second}
 		}
 	}
 }

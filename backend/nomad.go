@@ -1,19 +1,23 @@
 package main
 
 import (
+	"bytes"
+	"crypto/md5"
+	"crypto/sha1"
+	"encoding/binary"
+	"encoding/gob"
+	"errors"
+	"fmt"
+	"github.com/cnf/structhash"
+	"github.com/gorilla/mux"
+	"github.com/hashicorp/nomad/api"
+	"io"
 	"net/http"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
-	"crypto/md5"
-	"encoding/binary"
-	"errors"
-	"fmt"
-	"io"
-
-	"github.com/gorilla/mux"
-	"github.com/hashicorp/nomad/api"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -64,14 +68,15 @@ func NewAgentMemberWithID(member *api.AgentMember) (*AgentMemberWithID, error) {
 // evaluations, jobs and nodes and broadcasts them to all connected websockets.
 // It also exposes an API client for the Nomad server.
 type Nomad struct {
-	Client            *api.Client
-	BroadcastChannels *BroadcastChannels
-	allocations       []*api.AllocationListStub
-	evaluations       []*api.Evaluation
-	jobs              []*api.JobListStub
-	members           []*AgentMemberWithID
-	nodes             []*api.NodeListStub
-	updateCh          chan *Action
+	Client             *api.Client
+	BroadcastChannels  *BroadcastChannels
+	allocations        []*api.AllocationListStub
+	allocationsShallow []*api.AllocationListStub // with TaskStates removed
+	evaluations        []*api.Evaluation
+	jobs               []*api.JobListStub
+	members            []*AgentMemberWithID
+	nodes              []*api.NodeListStub
+	updateCh           chan *Action
 }
 
 // NewNomad configures the Nomad API client and initializes the internal state.
@@ -86,14 +91,15 @@ func NewNomad(url string, updateCh chan *Action, channels *BroadcastChannels) (*
 	}
 
 	return &Nomad{
-		Client:            client,
-		updateCh:          updateCh,
-		BroadcastChannels: channels,
-		allocations:       make([]*api.AllocationListStub, 0),
-		evaluations:       make([]*api.Evaluation, 0),
-		jobs:              make([]*api.JobListStub, 0),
-		members:           make([]*AgentMemberWithID, 0),
-		nodes:             make([]*api.NodeListStub, 0),
+		Client:             client,
+		updateCh:           updateCh,
+		BroadcastChannels:  channels,
+		allocations:        make([]*api.AllocationListStub, 0),
+		allocationsShallow: make([]*api.AllocationListStub, 0),
+		evaluations:        make([]*api.Evaluation, 0),
+		jobs:               make([]*api.JobListStub, 0),
+		members:            make([]*AgentMemberWithID, 0),
+		nodes:              make([]*api.NodeListStub, 0),
 	}, nil
 }
 
@@ -142,16 +148,19 @@ func (n *Nomad) MemberWithID(ID string) (*AgentMemberWithID, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	for _, m := range members {
 		if m.ID == ID {
 			return m, nil
 		}
 	}
+
 	return nil, errors.New(fmt.Sprintf("Unable to find member with ID: %s", ID))
 }
 
 func (n *Nomad) watchAllocs() {
 	q := &api.QueryOptions{WaitIndex: 1}
+
 	for {
 		allocations, meta, err := n.Client.Allocations().List(q)
 		if err != nil {
@@ -160,20 +169,44 @@ func (n *Nomad) watchAllocs() {
 			continue
 		}
 
-		for i, _ := range allocations {
-			allocations[i].TaskStates = make(map[string]*api.TaskState)
+		remoteWaitIndex := meta.LastIndex
+		localWaitIndex := q.WaitIndex
+
+		// only work if the WaitIndex have changed
+		if remoteWaitIndex == localWaitIndex {
+			logger.Debugf("Allocations index is unchanged (%d <> %d)", localWaitIndex, remoteWaitIndex)
+			continue
+		}
+
+		// copy allocations into allocationsShallow
+		// where we chop off the TaskStates array to keep response size low
+		// when we don't really need that extra information
+		var mod bytes.Buffer
+		enc := gob.NewEncoder(&mod)
+		dec := gob.NewDecoder(&mod)
+
+		err = enc.Encode(allocations)
+		if err != nil {
+			logger.Fatal("encode error:", err)
+		}
+
+		var allocationsShallow []*api.AllocationListStub
+		err = dec.Decode(&allocationsShallow)
+		if err != nil {
+			logger.Fatal("decode error:", err)
+		}
+
+		for i, _ := range allocationsShallow {
+			allocationsShallow[i].TaskStates = make(map[string]*api.TaskState)
 		}
 
 		n.allocations = allocations
-		n.BroadcastChannels.allocations <- &Action{Type: fetchedAllocs, Payload: allocations, Index: meta.LastIndex}
+		n.allocationsShallow = allocationsShallow
 
-		// Guard for zero LastIndex in case of timeout
-		waitIndex := meta.LastIndex
-		if q.WaitIndex > meta.LastIndex {
-			waitIndex = q.WaitIndex
-		}
+		n.BroadcastChannels.allocations <- &Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex}
+		n.BroadcastChannels.allocationsShallow <- &Action{Type: fetchedAllocs, Payload: allocationsShallow, Index: remoteWaitIndex}
 
-		q = &api.QueryOptions{WaitIndex: waitIndex}
+		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }
 
@@ -186,15 +219,19 @@ func (n *Nomad) watchEvals() {
 			time.Sleep(10 * time.Second)
 			continue
 		}
-		n.evaluations = evaluations
-		n.BroadcastChannels.evaluations <- &Action{Type: fetchedEvals, Payload: evaluations, Index: meta.LastIndex}
 
-		// Guard for zero LastIndex in case of timeout
-		waitIndex := meta.LastIndex
-		if q.WaitIndex > meta.LastIndex {
-			waitIndex = q.WaitIndex
+		remoteWaitIndex := meta.LastIndex
+		localWaitIndex := q.WaitIndex
+
+		// only work if the WaitIndex have changed
+		if remoteWaitIndex == localWaitIndex {
+			logger.Debugf("Evaluations wait-index is unchanged (%d <> %d)", localWaitIndex, remoteWaitIndex)
+			continue
 		}
-		q = &api.QueryOptions{WaitIndex: waitIndex}
+
+		n.evaluations = evaluations
+		n.BroadcastChannels.evaluations <- &Action{Type: fetchedEvals, Payload: evaluations, Index: remoteWaitIndex}
+		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }
 
@@ -207,15 +244,19 @@ func (n *Nomad) watchJobs() {
 			time.Sleep(10 * time.Second)
 			continue
 		}
-		n.jobs = jobs
-		n.BroadcastChannels.jobs <- &Action{Type: fetchedJobs, Payload: jobs, Index: meta.LastIndex}
 
-		// Guard for zero LastIndex in case of timeout
-		waitIndex := meta.LastIndex
-		if q.WaitIndex > meta.LastIndex {
-			waitIndex = q.WaitIndex
+		remoteWaitIndex := meta.LastIndex
+		localWaitIndex := q.WaitIndex
+
+		// only work if the WaitIndex have changed
+		if remoteWaitIndex == localWaitIndex {
+			logger.Debugf("Jobs wait-index is unchanged (%d <> %d)", localWaitIndex, remoteWaitIndex)
+			continue
 		}
-		q = &api.QueryOptions{WaitIndex: waitIndex}
+
+		n.jobs = jobs
+		n.BroadcastChannels.jobs <- &Action{Type: fetchedJobs, Payload: jobs, Index: remoteWaitIndex}
+		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }
 
@@ -228,19 +269,32 @@ func (n *Nomad) watchNodes() {
 			time.Sleep(10 * time.Second)
 			continue
 		}
-		n.nodes = nodes
-		n.BroadcastChannels.nodes <- &Action{Type: fetchedNodes, Payload: nodes, Index: meta.LastIndex}
 
-		// Guard for zero LastIndex in case of timeout
-		waitIndex := meta.LastIndex
-		if q.WaitIndex > meta.LastIndex {
-			waitIndex = q.WaitIndex
+		remoteWaitIndex := meta.LastIndex
+		localWaitIndex := q.WaitIndex
+
+		// only work if the WaitIndex have changed
+		if remoteWaitIndex == localWaitIndex {
+			logger.Debugf("Nodes wait-index is unchanged (%d <> %d)", localWaitIndex, remoteWaitIndex)
+			continue
 		}
-		q = &api.QueryOptions{WaitIndex: waitIndex}
+
+		n.nodes = nodes
+		n.BroadcastChannels.nodes <- &Action{Type: fetchedNodes, Payload: nodes, Index: remoteWaitIndex}
+		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }
 
+// NameSorter sorts planets by name.
+type MembersNameSorter []*AgentMemberWithID
+
+func (a MembersNameSorter) Len() int           { return len(a) }
+func (a MembersNameSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a MembersNameSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
+
 func (n *Nomad) watchMembers() {
+	currentChecksum := ""
+
 	for {
 		members, err := n.MembersWithID()
 		if err != nil {
@@ -248,6 +302,21 @@ func (n *Nomad) watchMembers() {
 			time.Sleep(10 * time.Second)
 			continue
 		}
+
+		// http://stackoverflow.com/a/28999886
+		sort.Sort(MembersNameSorter(members))
+
+		newChecksum := fmt.Sprintf("%x", sha1.Sum(structhash.Dump(members, 1)))
+		newChecksum = newChecksum[0:8]
+
+		if newChecksum == currentChecksum {
+			logger.Debugf("Members checksum is unchanged (%s == %s)", currentChecksum, newChecksum)
+			time.Sleep(10 * time.Second)
+			continue
+		}
+
+		logger.Debugf("Members checksum is changed (%s != %s)", currentChecksum, newChecksum)
+		currentChecksum = newChecksum
 
 		n.members = members
 		n.BroadcastChannels.members <- &Action{Type: fetchedMembers, Payload: members, Index: 0}

@@ -1,18 +1,24 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import EvaluationTopbar from '../components/EvaluationTopbar/EvaluationTopbar'
-import { WATCH_EVAL, UNWATCH_EVAL, WATCH_ALLOCS, UNWATCH_ALLOCS } from '../sagas/event'
+import {
+  WATCH_EVAL, UNWATCH_EVAL,
+  WATCH_ALLOCS_SHALLOW, UNWATCH_ALLOCS_SHALLOW,
+  WATCH_NODES, UNWATCH_NODES
+} from '../sagas/event'
 
 class Evaluation extends Component {
 
   componentWillMount () {
     this.props.dispatch({ type: WATCH_EVAL, payload: this.props.params.evalId })
-    this.props.dispatch({ type: WATCH_ALLOCS })
+    this.props.dispatch({ type: WATCH_ALLOCS_SHALLOW })
+    this.props.dispatch({ type: WATCH_NODES })
   }
 
   componentWillUnmount () {
     this.props.dispatch({ type: UNWATCH_EVAL, payload: this.props.params.evalId })
-    this.props.dispatch({ type: UNWATCH_ALLOCS })
+    this.props.dispatch({ type: UNWATCH_ALLOCS_SHALLOW })
+    this.props.dispatch({ type: UNWATCH_NODES })
   }
 
   render () {

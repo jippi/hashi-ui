@@ -1,9 +1,11 @@
 package main
 
 const (
-	watchAllocs   = "WATCH_ALLOCS"
-	unwatchAllocs = "UNWATCH_ALLOCS"
-	fetchedAllocs = "FETCHED_ALLOCS"
+	watchAllocs          = "WATCH_ALLOCS"
+	watchAllocsShallow   = "WATCH_ALLOCS_SHALLOW"
+	unwatchAllocs        = "UNWATCH_ALLOCS"
+	unwatchAllocsShallow = "UNWATCH_ALLOCS_SHALLOW"
+	fetchedAllocs        = "FETCHED_ALLOCS"
 
 	fetchedAlloc = "FETCHED_ALLOC"
 	watchAlloc   = "WATCH_ALLOC"
