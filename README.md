@@ -5,6 +5,8 @@ Hashi UI [![Build Status](https://travis-ci.org/jippi/hashi-ui.svg?branch=master
 
 An awesome user interface (even for mobile devices!) for an awesome scheduler, plain and simple :-)
 
+This project was previously known as `iverberk/nomad-ui`
+
 ![Hashi UI](https://dl.dropboxusercontent.com/u/27514/nomad-screenshots/0.5/cluster-overview-small.jpg)
 
 [More screenshots](https://github.com/jippi/hashi-ui/blob/master/SCREENSHOTS.md)
