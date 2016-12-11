@@ -139,6 +139,7 @@ func main() {
 	}
 
 	go nomad.watchAllocs()
+	go nomad.watchAllocsShallow()
 	go nomad.watchEvals()
 	go nomad.watchJobs()
 	go nomad.watchNodes()

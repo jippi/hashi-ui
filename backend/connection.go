@@ -193,6 +193,10 @@ func (c *Connection) process(action Action) {
 		go c.watchAlloc(action)
 	case unwatchAlloc:
 		c.watches.Remove(action.Payload.(string))
+
+	//
+	// Actions for allocation FS
+	//
 	case fetchDir: // for file browsing in an allocation
 		go c.fetchDir(action)
 	case watchFile: // for following (tail -f) a file in an allocation
@@ -434,6 +438,8 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 			return
 
 		case channelAction := <-channel:
+			c.Debugf("got new data for %s (WaitIndex: %d)", watchKey, channelAction.Index)
+
 			if !c.watches.Has(watchKey) {
 				c.Infof("Connection is no longer subscribed to %s", watchKey)
 				return

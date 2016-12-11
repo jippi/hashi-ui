@@ -1,11 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"crypto/md5"
 	"crypto/sha1"
 	"encoding/binary"
-	"encoding/gob"
 	"errors"
 	"fmt"
 	"github.com/cnf/structhash"
@@ -174,37 +172,46 @@ func (n *Nomad) watchAllocs() {
 
 		// only work if the WaitIndex have changed
 		if remoteWaitIndex == localWaitIndex {
-			logger.Debugf("Allocations index is unchanged (%d <> %d)", localWaitIndex, remoteWaitIndex)
+			logger.Debugf("Allocations index is unchanged (%d == %d)", localWaitIndex, remoteWaitIndex)
 			continue
 		}
 
-		// copy allocations into allocationsShallow
-		// where we chop off the TaskStates array to keep response size low
-		// when we don't really need that extra information
-		var mod bytes.Buffer
-		enc := gob.NewEncoder(&mod)
-		dec := gob.NewDecoder(&mod)
-
-		err = enc.Encode(allocations)
-		if err != nil {
-			logger.Fatal("encode error:", err)
-		}
-
-		var allocationsShallow []*api.AllocationListStub
-		err = dec.Decode(&allocationsShallow)
-		if err != nil {
-			logger.Fatal("decode error:", err)
-		}
-
-		for i, _ := range allocationsShallow {
-			allocationsShallow[i].TaskStates = make(map[string]*api.TaskState)
-		}
+		logger.Debugf("Allocations index is changed (%d <> %d)", localWaitIndex, remoteWaitIndex)
 
 		n.allocations = allocations
-		n.allocationsShallow = allocationsShallow
-
 		n.BroadcastChannels.allocations <- &Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex}
-		n.BroadcastChannels.allocationsShallow <- &Action{Type: fetchedAllocs, Payload: allocationsShallow, Index: remoteWaitIndex}
+		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
+	}
+}
+
+func (n *Nomad) watchAllocsShallow() {
+	q := &api.QueryOptions{WaitIndex: 1}
+
+	for {
+		allocations, meta, err := n.Client.Allocations().List(q)
+		if err != nil {
+			logger.Errorf("watch: unable to fetch allocations: %s", err)
+			time.Sleep(10 * time.Second)
+			continue
+		}
+
+		remoteWaitIndex := meta.LastIndex
+		localWaitIndex := q.WaitIndex
+
+		// only work if the WaitIndex have changed
+		if remoteWaitIndex == localWaitIndex {
+			logger.Debugf("Allocations (shallow) index is unchanged (%d == %d)", localWaitIndex, remoteWaitIndex)
+			continue
+		}
+
+		logger.Debugf("Allocations (shallow) index is changed (%d <> %d)", localWaitIndex, remoteWaitIndex)
+
+		for i, _ := range allocations {
+			allocations[i].TaskStates = make(map[string]*api.TaskState)
+		}
+
+		n.allocationsShallow = allocations
+		n.BroadcastChannels.allocationsShallow <- &Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex}
 
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
