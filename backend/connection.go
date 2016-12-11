@@ -558,7 +558,7 @@ func (c *Connection) watchClientStats(action Action) {
 
 			c.Debugf("Sending Client Stats")
 			c.send <- &Action{Type: fetchedClientStats, Payload: stats, Index: 0}
-			time.Sleep(3 * time.Second)
+			time.Sleep(5 * time.Second)
 		}
 	}
 }
