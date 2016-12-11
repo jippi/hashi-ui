@@ -11,7 +11,10 @@ services:
 cache:
   yarn: true
   directories:
-    - backend/vendor
+    - backend/vendor/github.com
+    - backend/vendor/go4.org
+    - backend/vendor/golang.org
+    - backend/vendor/gopkg.in
     - frontend/node_modules
 
 env:
