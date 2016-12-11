@@ -44,6 +44,7 @@
 ## Details
 
 ![Nomad UI](https://dl.dropboxusercontent.com/u/27514/nomad-screenshots/0.5/client-details-info.jpg)
+![Nomad UI](https://dl.dropboxusercontent.com/u/27514/nomad-screenshots/0.5/client-details-stats.jpg)
 ![Nomad UI](https://dl.dropboxusercontent.com/u/27514/nomad-screenshots/0.5/client-details-allocations.jpg)
 ![Nomad UI](https://dl.dropboxusercontent.com/u/27514/nomad-screenshots/0.5/client-details-evaluations.jpg)
 ![Nomad UI](https://dl.dropboxusercontent.com/u/27514/nomad-screenshots/0.5/client-details-raw.jpg)
