@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/hashicorp/nomad/api"
 	"github.com/hashicorp/nomad/command"
+	"github.com/imkira/go-observer"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -422,7 +423,7 @@ func (c *Connection) watchNode(action Action) {
 	}
 }
 
-func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, channel chan *Action, initialPayload interface{}) {
+func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, prop observer.Property, initialPayload interface{}) {
 	defer func() {
 		c.watches.Remove(watchKey)
 		c.Infof("Stopped watching %s", watchKey)
@@ -438,13 +439,19 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 	c.Debugf("Sending our current %s list", watchKey)
 	c.send <- &Action{Type: actionEvent, Payload: initialPayload, Index: 0}
 
+	stream := prop.Observe()
+
 	c.Debugf("Started watching %s", watchKey)
 	for {
 		select {
 		case <-c.destroyCh:
 			return
 
-		case channelAction := <-channel:
+		case <-stream.Changes():
+			// advance to next value
+			stream.Next()
+
+			channelAction := stream.Value().(*Action)
 			c.Debugf("got new data for %s (WaitIndex: %d)", watchKey, channelAction.Index)
 
 			if !c.watches.Has(watchKey) {
@@ -457,6 +464,7 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 				continue
 			}
 
+			c.Debugf("Publishing change %s %s", channelAction.Type, watchKey)
 			c.send <- channelAction
 		}
 	}

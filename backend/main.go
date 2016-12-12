@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/imkira/go-observer"
 	"github.com/op/go-logging"
 )
 
@@ -43,12 +44,12 @@ type Config struct {
 }
 
 type BroadcastChannels struct {
-	allocations        chan *Action
-	allocationsShallow chan *Action
-	evaluations        chan *Action
-	jobs               chan *Action
-	members            chan *Action
-	nodes              chan *Action
+	allocations        observer.Property
+	allocationsShallow observer.Property
+	evaluations        observer.Property
+	jobs               observer.Property
+	members            observer.Property
+	nodes              observer.Property
 }
 
 func DefaultConfig() *Config {
@@ -125,12 +126,12 @@ func main() {
 	broadcast := make(chan *Action)
 
 	channels := &BroadcastChannels{}
-	channels.allocations = make(chan *Action)
-	channels.allocationsShallow = make(chan *Action)
-	channels.evaluations = make(chan *Action)
-	channels.jobs = make(chan *Action)
-	channels.members = make(chan *Action)
-	channels.nodes = make(chan *Action)
+	channels.allocations = observer.NewProperty(&Action{})
+	channels.allocationsShallow = observer.NewProperty(&Action{})
+	channels.evaluations = observer.NewProperty(&Action{})
+	channels.jobs = observer.NewProperty(&Action{})
+	channels.members = observer.NewProperty(&Action{})
+	channels.nodes = observer.NewProperty(&Action{})
 
 	logger.Infof("Connecting to nomad ...")
 	nomad, err := NewNomad(cfg.Address, broadcast, channels)

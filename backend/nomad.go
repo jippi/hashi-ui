@@ -179,7 +179,7 @@ func (n *Nomad) watchAllocs() {
 		logger.Debugf("Allocations index is changed (%d <> %d)", localWaitIndex, remoteWaitIndex)
 
 		n.allocations = allocations
-		n.BroadcastChannels.allocations <- &Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex}
+		n.BroadcastChannels.allocations.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }
@@ -211,7 +211,7 @@ func (n *Nomad) watchAllocsShallow() {
 		}
 
 		n.allocationsShallow = allocations
-		n.BroadcastChannels.allocationsShallow <- &Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex}
+		n.BroadcastChannels.allocationsShallow.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
 
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
@@ -237,7 +237,7 @@ func (n *Nomad) watchEvals() {
 		}
 
 		n.evaluations = evaluations
-		n.BroadcastChannels.evaluations <- &Action{Type: fetchedEvals, Payload: evaluations, Index: remoteWaitIndex}
+		n.BroadcastChannels.evaluations.Update(&Action{Type: fetchedEvals, Payload: evaluations, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }
@@ -262,7 +262,7 @@ func (n *Nomad) watchJobs() {
 		}
 
 		n.jobs = jobs
-		n.BroadcastChannels.jobs <- &Action{Type: fetchedJobs, Payload: jobs, Index: remoteWaitIndex}
+		n.BroadcastChannels.jobs.Update(&Action{Type: fetchedJobs, Payload: jobs, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }
@@ -287,7 +287,7 @@ func (n *Nomad) watchNodes() {
 		}
 
 		n.nodes = nodes
-		n.BroadcastChannels.nodes <- &Action{Type: fetchedNodes, Payload: nodes, Index: remoteWaitIndex}
+		n.BroadcastChannels.nodes.Update(&Action{Type: fetchedNodes, Payload: nodes, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }
@@ -326,7 +326,7 @@ func (n *Nomad) watchMembers() {
 		currentChecksum = newChecksum
 
 		n.members = members
-		n.BroadcastChannels.members <- &Action{Type: fetchedMembers, Payload: members, Index: 0}
+		n.BroadcastChannels.members.Update(&Action{Type: fetchedMembers, Payload: members, Index: 0})
 
 		time.Sleep(10 * time.Second)
 	}

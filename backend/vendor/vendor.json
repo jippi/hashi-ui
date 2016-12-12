@@ -1039,6 +1039,12 @@
 			"revisionTime": "2016-10-29T20:44:48Z"
 		},
 		{
+			"checksumSHA1": "uxdfA/xMBbIZ89WdzjeDYM2N8Gw=",
+			"path": "github.com/imkira/go-observer",
+			"revision": "2b5c0039075a41408f1a33aa6391bd77d3e5a132",
+			"revisionTime": "2016-09-18T09:16:08Z"
+		},
+		{
 			"checksumSHA1": "3/Bhy+ua/DCv2ElMD5GzOYSGN6g=",
 			"origin": "github.com/hashicorp/nomad/vendor/github.com/jmespath/go-jmespath",
 			"path": "github.com/jmespath/go-jmespath",
