@@ -1,8 +1,9 @@
 import React, { PureComponent, PropTypes } from 'react'
+import { connect } from 'react-redux'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import injectTapEventPlugin from 'react-tap-event-plugin'
-import { green800, green900 } from 'material-ui/styles/colors'
+import { red500, green800, green900 } from 'material-ui/styles/colors'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import AppBar from 'material-ui/AppBar';
 import AppTopbar from './AppTopbar/AppTopbar'
 
 const muiTheme = getMuiTheme({
@@ -18,16 +19,33 @@ const muiTheme = getMuiTheme({
 
 class App extends PureComponent {
 
-  constructor (props) {
-    super(props)
-
-    injectTapEventPlugin()
-  }
-
   render () {
+    let uncaughtExceptionBar = undefined;
+
+    if (this.props.route.uncaughtException) {
+      uncaughtExceptionBar = <AppBar
+        showMenuIconButton={ false }
+        style={{ backgroundColor: red500 }}
+        title={ `Error: ${this.props.route.uncaughtException}` }
+      />
+    }
+
+    if (Object.keys(this.props.appError).length > 0) {
+      const title = this.props.appError.error.reason
+        || this.props.appError.reason
+        || 'Unhandled application error, please check console'
+
+      uncaughtExceptionBar = <AppBar
+        showMenuIconButton={ false }
+        style={{ backgroundColor: red500 }}
+        title={ title }
+      />
+    }
+
     return (
       <MuiThemeProvider muiTheme={ muiTheme }>
         <div>
+          { uncaughtExceptionBar }
           <AppTopbar { ...this.props } />
           { this.props.children }
         </div>
@@ -36,8 +54,15 @@ class App extends PureComponent {
   }
 }
 
-App.propTypes = {
-  children: PropTypes.object.isRequired
+function mapStateToProps ({ appError }) {
+  return { appError }
 }
 
-export default App
+App.propTypes = {
+  children: PropTypes.object.isRequired,
+  uncaughtException: PropTypes.object,
+  appError: PropTypes.object,
+  route: PropTypes.object.isRequired,
+}
+
+export default connect(mapStateToProps)(App)

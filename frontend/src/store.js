@@ -34,11 +34,13 @@ export default function configureStore (initialState) {
   store.close = () => store.dispatch(END)
 
   return new Promise((resolve, reject) => {
-    eventSaga().then((gen) => {
-      sagaMiddleware.run(gen)
-      resolve(store)
-    }).catch((err) => {
-      reject(err)
-    })
+    eventSaga()
+      .then((gen) => {
+        sagaMiddleware.run(gen)
+        resolve(store)
+      })
+      .catch((err) => {
+        reject(err)
+      })
   })
 }

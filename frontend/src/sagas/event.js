@@ -60,8 +60,38 @@ export const FETCHED_FILE = 'FETCHED_FILE'
 export const CLEAR_FILE_PATH = 'CLEAR_FILE_PATH'
 export const CLEAR_RECEIVED_FILE_DATA = 'CLEAR_RECEIVED_FILE_DATA'
 
+export const APP_ERROR = 'APP_ERROR'
+
 function subscribe (socket) {
   return eventChannel((emit) => {
+
+    socket.eventChannel = emit;
+
+    socket.onclose = (err) => {
+      emit({
+        type: APP_ERROR,
+        payload: {
+          error: err,
+          source: 'ws_onclose',
+          reason: 'WebSocket connection was closed, please reload the window to retry (no automatic retry will be made)'
+        }
+      })
+
+      throw err;
+    }
+
+    socket.onerror = (err) => {
+      emit({
+        type: APP_ERROR,
+        payload: {
+          error: err,
+          source: 'ws_onerror'
+        }
+      })
+
+      throw err;
+    }
+
     // eslint-disable-next-line no-param-reassign
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data)
@@ -70,6 +100,7 @@ function subscribe (socket) {
         payload: data.Payload
       })
     }
+
     return () => {}
   })
 }
@@ -125,7 +156,9 @@ function* write (socket) {
 
       FETCH_DIR,
       WATCH_FILE,
-      UNWATCH_FILE
+      UNWATCH_FILE,
+
+      APP_ERROR
     ])
 
     socket.send(JSON.stringify(action))
@@ -178,10 +211,14 @@ export default function eventSaga () {
     const url = `${protocol}//${hostname}/ws`
     const p = connectTo(url)
 
-    return p.then((socket) => {
-      resolve(function* eventGenerator () { yield fork(events, socket) })
-    }).catch((err) => {
-      reject(err)
-    })
+    return p
+      .then((socket) => {
+        resolve(function* eventGenerator () {
+          yield fork(events, socket)
+        })
+      })
+      .catch((err) => {
+        reject(err);
+      })
   })
 }
