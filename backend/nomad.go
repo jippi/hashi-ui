@@ -229,6 +229,7 @@ func (n *Nomad) collectAggregateClusterStatistics() {
 
 	go func() {
 		defer close(quit)
+		defer ticker.Stop()
 
 		for {
 			select {
@@ -299,7 +300,6 @@ func (n *Nomad) collectAggregateClusterStatistics() {
 				n.BroadcastChannels.clusterStatistics.Update(&Action{Type: fetchedClusterStatistics, Payload: aggResult})
 
 			case <-quit:
-				ticker.Stop()
 				return
 			}
 		}
