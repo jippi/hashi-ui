@@ -2,6 +2,8 @@ Hashi UI [![Build Status](https://travis-ci.org/jippi/hashi-ui.svg?branch=master
 ========
 
 [![Join the chat at https://gitter.im/hashi-ui/Lobby](https://badges.gitter.im/hashi-ui/Lobby.svg)](https://gitter.im/hashi-ui/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Docker Stars](https://img.shields.io/docker/stars/jippi/hashi-ui.svg)](https://hub.docker.com/r/jippi/hashi-ui/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/jippi/hashi-ui.svg)](https://hub.docker.com/r/jippi/hashi-ui/)
 
 An awesome user interface (even for mobile devices!) for an awesome scheduler, plain and simple :-)
 
