@@ -1,6 +1,10 @@
 import { delay, eventChannel } from 'redux-saga'
 import { fork, take, call, put } from 'redux-saga/effects'
 
+export const WATCH_CLUSTER_STATISTICS = 'WATCH_CLUSTER_STATISTICS'
+export const FETCHED_CLUSTER_STATISTICS = 'FETCHED_CLUSTER_STATISTICS'
+export const UNWATCH_CLUSTER_STATISTICS = 'UNWATCH_CLUSTER_STATISTICS'
+
 export const WATCH_JOBS = 'WATCH_JOBS';
 export const FETCHED_JOBS = 'FETCHED_JOBS'
 export const UNWATCH_JOBS = 'UNWATCH_JOBS'
@@ -158,7 +162,10 @@ function* write (socket) {
       WATCH_FILE,
       UNWATCH_FILE,
 
-      APP_ERROR
+      APP_ERROR,
+
+      WATCH_CLUSTER_STATISTICS,
+      UNWATCH_CLUSTER_STATISTICS,
     ])
 
     socket.send(JSON.stringify(action))

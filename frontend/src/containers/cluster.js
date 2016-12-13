@@ -1,13 +1,16 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { green500, blue500 } from 'material-ui/styles/colors'
+import { Grid, Row, Col } from 'react-flexbox-grid'
 import Progressbar from '../components/Progressbar/Progressbar'
+import UtilizationPieChart from '../components/UtilizationPieChart/UtilizationPieChart'
 import ClusterEvents from '../components/ClusterEvents/ClusterEvents'
 import ClusterStatistics from '../components/ClusterStatistics/ClusterStatistics'
-import { Grid, Row, Col } from 'react-flexbox-grid'
 import {
   WATCH_JOBS, UNWATCH_JOBS,
   WATCH_NODES, UNWATCH_NODES,
-  WATCH_MEMBERS, UNWATCH_MEMBERS
+  WATCH_MEMBERS, UNWATCH_MEMBERS,
+  WATCH_CLUSTER_STATISTICS, UNWATCH_CLUSTER_STATISTICS,
 } from '../sagas/event'
 
 class Cluster extends Component {
@@ -16,12 +19,14 @@ class Cluster extends Component {
     this.props.dispatch({ type: WATCH_JOBS })
     this.props.dispatch({ type: WATCH_NODES })
     this.props.dispatch({ type: WATCH_MEMBERS })
+    this.props.dispatch({ type: WATCH_CLUSTER_STATISTICS })
   }
 
   componentWillUnmount () {
     this.props.dispatch({ type: UNWATCH_JOBS })
     this.props.dispatch({ type: UNWATCH_NODES })
     this.props.dispatch({ type: UNWATCH_MEMBERS })
+    this.props.dispatch({ type: UNWATCH_CLUSTER_STATISTICS })
   }
 
   getChartData () {
@@ -68,9 +73,50 @@ class Cluster extends Component {
   render () {
     const data = this.getChartData()
 
+    const UsedMemory = this.props.clusterStatistics.MemoryUsed / 1024 / 1024 / 1024;
+    const TotalMemory = this.props.clusterStatistics.MemoryTotal / 1024 / 1024 / 1024;
+    const memoryChart = [
+      {
+        name: "Used",
+        value: UsedMemory,
+        humanValue: UsedMemory.toFixed(2) + ' GB',
+        color: green500
+      },
+      {
+        name: "Available",
+        value: TotalMemory - UsedMemory,
+        humanValue: (TotalMemory - UsedMemory).toFixed(2) + ' GB',
+        color: blue500
+      }
+    ]
+
+    const CPU = this.props.clusterStatistics.CPUIdleTime / this.props.clusterStatistics.CPUCores;
+    const cpuChart = [
+      {
+        name: "busy",
+        value: 100 - Math.ceil(CPU),
+        humanValue: (100 - CPU).toFixed(0) + ' %',
+        color: green500
+      },
+      {
+        name: "idle",
+        value: Math.ceil(CPU),
+        humanValue: CPU.toFixed(0) + ' %',
+        color: blue500
+      }
+    ]
+
     return (
       <Grid fluid style={{ padding: 0 }}>
         <Row>
+          <Col key='cpu-status-pane' xs={ 12 } sm={ 4 } md={ 4 } lg={ 4 }>
+            <UtilizationPieChart title='Cluster CPU usage' data={ cpuChart } />
+          </Col>
+          <Col key='memory-type-pane' xs={ 12 } sm={ 4 } md={ 4 } lg={ 4 }>
+            <UtilizationPieChart title='Cluster RAM usage (GB)' data={ memoryChart } />
+          </Col>
+        </Row>
+        <Row style={{ marginTop: '1rem' }}>
           <Col key='job-status-pane' xs={ 12 } sm={ 4 } md={ 4 } lg={ 4 }>
             <Progressbar title='Job Status' data={ data.jobStatus } />
           </Col>
@@ -99,14 +145,15 @@ class Cluster extends Component {
   }
 }
 
-function mapStateToProps ({ jobs, nodes, members }) {
-  return { jobs, nodes, members }
+function mapStateToProps ({ jobs, nodes, members, clusterStatistics }) {
+  return { jobs, nodes, members, clusterStatistics }
 }
 
 Cluster.propTypes = {
   jobs: PropTypes.array.isRequired,
   nodes: PropTypes.array.isRequired,
   members: PropTypes.array.isRequired,
+  clusterStatistics: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
 }
 

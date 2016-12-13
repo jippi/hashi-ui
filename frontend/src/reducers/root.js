@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
 
-import { AppErrorReducer } from './app'
+import { AppErrorReducer, ClusterStatisticsReducer } from './app'
 import { MemberInfoReducer, MemberListReducer } from './member'
 import { JobInfoReducer, JobListReducer } from './job'
 import { AllocInfoReducer, AllocListReducer } from './allocation'
@@ -10,6 +10,7 @@ import { DirectoryReducer, FileReducer } from './filesystem'
 
 const rootReducer = combineReducers({
   appError: AppErrorReducer,
+  clusterStatistics: ClusterStatisticsReducer,
   member: MemberInfoReducer,
   members: MemberListReducer,
   job: JobInfoReducer,

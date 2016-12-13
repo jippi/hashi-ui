@@ -57,6 +57,10 @@ const (
 	unwatchedFile    = "UNWATCHED_FILE"
 	fetchedFile      = "FETCHED_FILE"
 	fileStreamFailed = "FILE_STREAM_FAILED"
+
+	watchClusterStatistics   = "WATCH_CLUSTER_STATISTICS"
+	fetchedClusterStatistics = "FETCHED_CLUSTER_STATISTICS"
+	unwatchClusterStatistics = "UNWATCH_CLUSTER_STATISTICS"
 )
 
 // Action represents a Redux action that is dispatched or received from the store

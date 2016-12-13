@@ -50,6 +50,7 @@ type BroadcastChannels struct {
 	jobs               observer.Property
 	members            observer.Property
 	nodes              observer.Property
+	clusterStatistics  observer.Property
 }
 
 func DefaultConfig() *Config {
@@ -132,6 +133,7 @@ func main() {
 	channels.jobs = observer.NewProperty(&Action{})
 	channels.members = observer.NewProperty(&Action{})
 	channels.nodes = observer.NewProperty(&Action{})
+	channels.clusterStatistics = observer.NewProperty(&Action{})
 
 	logger.Infof("Connecting to nomad ...")
 	nomad, err := NewNomad(cfg.Address, broadcast, channels)
@@ -145,6 +147,7 @@ func main() {
 	go nomad.watchJobs()
 	go nomad.watchNodes()
 	go nomad.watchMembers()
+	go nomad.collectAggregateClusterStatistics()
 
 	hub := NewHub(nomad, broadcast, channels)
 	go hub.Run()

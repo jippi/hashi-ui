@@ -164,6 +164,14 @@ func (c *Connection) process(action Action) {
 	//
 	// Actions for a list of evaluations
 	//
+	case watchClusterStatistics:
+		go c.watchGenericBroadcast("ClusterStatistics", fetchedClusterStatistics, c.hub.nomad.BroadcastChannels.clusterStatistics, c.hub.nomad.clusterStatistics)
+	case unwatchClusterStatistics:
+		c.unwatchGenericBroadcast("ClusterStatistics")
+
+	//
+	// Actions for a list of evaluations
+	//
 	case watchEvals:
 		go c.watchGenericBroadcast("evaluations", fetchedEvals, c.hub.nomad.BroadcastChannels.evaluations, c.hub.nomad.evaluations)
 	case unwatchEvals:
