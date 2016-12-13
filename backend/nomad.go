@@ -296,7 +296,7 @@ func (n *Nomad) collectAggregateClusterStatistics() {
 				)
 
 				n.clusterStatistics = aggResult
-				n.BroadcastChannels.clusterStatistics.Update(&Action{Type: fetchedAllocs, Payload: aggResult})
+				n.BroadcastChannels.clusterStatistics.Update(&Action{Type: fetchedClusterStatistics, Payload: aggResult})
 
 			case <-quit:
 				ticker.Stop()
