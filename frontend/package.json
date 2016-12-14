@@ -1,7 +1,7 @@
 {
   "name": "hashi-ui",
   "version": "0.0.1",
-  "description": "User interface for the HashiCorp Nomad scheduler.",
+  "description": "User interface for the HashiCorp tools (nomad, consul and vault).",
   "repository": "https://github.com/jippi/hashi-ui",
   "main": "src/main.js",
   "bin": {
@@ -17,7 +17,10 @@
     "lint": "eslint src"
   },
   "keywords": [
-    "nomad"
+    "nomad",
+    "consul",
+    "hashi-ui",
+    "hashicorp"
   ],
   "author": {
     "name": "Christian Winther",
