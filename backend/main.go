@@ -191,20 +191,23 @@ func main() {
 	hub := NewHub(nomad, broadcast, channels)
 	go hub.Run()
 
-	if cfg.NewRelicAppName != "" && cfg.NewRelicLicense != "" {
-		config := newrelic.NewConfig(cfg.NewRelicAppName, cfg.NewRelicLicense)
-		_, err := newrelic.NewApplication(config)
-		if err != nil {
-			logger.Error(err)
-			os.Exit(1)
-		}
+	config := newrelic.NewConfig(cfg.NewRelicAppName, cfg.NewRelicLicense)
+
+	if cfg.NewRelicAppName == "" || cfg.NewRelicLicense == "" {
+		config.Enabled = false
+	}
+
+	app, err := newrelic.NewApplication(config)
+	if err != nil {
+		logger.Error(err)
+		os.Exit(1)
 	}
 
 	myAssetFS := assetFS()
 
 	router := mux.NewRouter()
-	router.HandleFunc("/ws", hub.Handler)
-	router.HandleFunc("/download/{path:.*}", nomad.downloadFile)
+	router.HandleFunc(newrelic.WrapHandleFunc(app, "/ws", hub.Handler))
+	router.HandleFunc(newrelic.WrapHandleFunc(app, "/download/{path:.*}", nomad.downloadFile))
 	router.PathPrefix("/static").Handler(http.FileServer(myAssetFS))
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if bs, err := myAssetFS.Open("/index.html"); err != nil {
