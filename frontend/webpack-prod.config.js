@@ -63,7 +63,7 @@ webpackConfig = merge(webpackConfig, {
       }
     }),
     new HtmlWebpackPlugin({
-      title: 'Nomad UI',
+      title: 'Hashi-UI',
       inject: false,
       favicon: './assets/img/favicon.png',
       template: './index.html.ejs',

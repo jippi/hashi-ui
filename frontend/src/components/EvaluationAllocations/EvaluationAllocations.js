@@ -6,7 +6,7 @@ const EvaluationAllocations = ({ allocations, evaluation, nodes }) => {
   const allocs = allocations.filter(allocation => allocation.EvalID === evaluation.ID)
 
   return (
-    <AllocationList allocations={ allocs } nodes={ nodes } containerClassName='nested-content' />
+    <AllocationList allocations={ allocs } nodes={ nodes } nested />
   )
 }
 

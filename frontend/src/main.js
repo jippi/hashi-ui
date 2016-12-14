@@ -10,6 +10,7 @@ import AppRouter from './router'
 import configureStore from './store'
 
 import '../assets/hashi-ui.css'
+import '../assets/data-table.css'
 import ErrorApp from './components/error_app'
 
 // Perf.start()

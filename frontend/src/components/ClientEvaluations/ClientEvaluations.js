@@ -17,7 +17,7 @@ class ClientEvaluations extends Component {
     const nodeId = this.props.params.nodeId
     const evals = this.props.evaluations.filter(evaluation => evaluation.NodeID === nodeId)
 
-    return <EvaluationList evaluations={ evals } />
+    return <EvaluationList evaluations={ evals } nested />
   }
 }
 

@@ -2001,6 +2001,10 @@ find-up@^1.0.0:
     path-exists "^2.0.0"
     pinkie-promise "^2.0.0"
 
+fixed-data-table-2@^0.7.7:
+  version "0.7.7"
+  resolved "https://registry.yarnpkg.com/fixed-data-table-2/-/fixed-data-table-2-0.7.7.tgz#efd8616888d1c9b834e43f102c087c96a9687a09"
+
 flat-cache@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/flat-cache/-/flat-cache-1.2.1.tgz#6c837d6225a7de5659323740b36d5361f71691ff"

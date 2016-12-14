@@ -1,7 +1,7 @@
 {
   "name": "hashi-ui",
   "version": "0.0.1",
-  "description": "User interface for the HashiCorp Nomad scheduler.",
+  "description": "User interface for the HashiCorp tools (nomad, consul and vault).",
   "repository": "https://github.com/jippi/hashi-ui",
   "main": "src/main.js",
   "bin": {
@@ -17,7 +17,10 @@
     "lint": "eslint src"
   },
   "keywords": [
-    "nomad"
+    "nomad",
+    "consul",
+    "hashi-ui",
+    "hashicorp"
   ],
   "author": {
     "name": "Christian Winther",
@@ -41,6 +44,7 @@
     "eslint-config-standard-react": "^4.2.0",
     "eslint-plugin-promise": "^3.4.0",
     "eslint-plugin-standard": "^2.0.1",
+    "fixed-data-table-2": "^0.7.7",
     "flexboxgrid": "^6.3.1",
     "immutability-helper": "^2.0.0",
     "json-formatter-js": "^1.1.0",
