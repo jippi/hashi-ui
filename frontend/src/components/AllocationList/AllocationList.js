@@ -1,18 +1,106 @@
 import React, { PureComponent, PropTypes } from 'react'
+import { Grid, Row, Col } from 'react-flexbox-grid'
+import FontIcon from 'material-ui/FontIcon'
 import { Link } from 'react-router'
 import { Card, CardHeader, CardText } from 'material-ui/Card'
-import SelectField from 'material-ui/SelectField'
+import SelectField from '../SelectField/SelectField'
+import TextField from 'material-ui/TextField';
 import MenuItem from 'material-ui/MenuItem'
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from '../Table'
-import AllocationListRow from '../AllocationListRow/AllocationListRow'
-
-const jobHeaderColumn = display =>
-  (display ? <TableHeaderColumn>Job</TableHeaderColumn> : null)
-
-const clientHeaderColumn = display =>
-  (display ? <TableHeaderColumn width='120'>Client</TableHeaderColumn> : null)
+import { Table, Column, Cell } from 'fixed-data-table';
+import 'fixed-data-table/dist/fixed-data-table.css'
+import AllocationStatusIcon from '../AllocationStatusIcon/AllocationStatusIcon'
+import AllocationLink from '../AllocationLink/AllocationLink'
+import JobLink from '../JobLink/JobLink'
+import ClientLink from '../ClientLink/ClientLink'
+import FormatTime from '../FormatTime/FormatTime'
 
 const nodeIdToNameCache = {}
+
+const getAllocationNumberFromName = (allocationName) => {
+  const match = /[\d+]/.exec(allocationName)
+  return match[0]
+}
+
+/* eslint-disable react/prop-types */
+
+const AllocationStatusIconCell = ({ rowIndex, data, ...props }) => (
+  <Cell { ...props }>
+    <AllocationStatusIcon allocation={ data[rowIndex] } />
+  </Cell>
+);
+
+const AllocationLinkCell = ({ rowIndex, data, ...props }) => (
+  <Cell { ...props }>
+    <AllocationLink allocationId={ data[rowIndex].ID } />
+  </Cell>
+);
+
+const JobLinkCell = ({ rowIndex, data, ...props }) => (
+  <Cell { ...props }>
+    <JobLink jobId={ data[rowIndex].JobID } />
+  </Cell>
+);
+
+const JobTaskGroupLinkCell = ({ rowIndex, data, ...props }) => (
+  <Cell { ...props }>
+    <JobLink jobId={ data[rowIndex].JobID } taskGroupId={ data[rowIndex].TaskGroupId }>
+      { data[rowIndex].TaskGroup } (#{ getAllocationNumberFromName(data[rowIndex].Name) })
+    </JobLink>
+  </Cell>
+);
+
+const ClientLinkCell = ({ rowIndex, data, clients, ...props }) => (
+  <Cell { ...props }>
+    <ClientLink clientId={ data[rowIndex].NodeID } clients={ clients } short />
+  </Cell>
+);
+
+const AgeCell = ({ rowIndex, data, ...props }) => (
+  <Cell { ...props }>
+    <FormatTime identifier={ data[rowIndex].ID } time={ data[rowIndex].CreateTime } />
+  </Cell>
+);
+
+const StatusCell = ({ rowIndex, data, ...props }) => (
+  <Cell { ...props }>
+    { data[rowIndex].ClientStatus }
+  </Cell>
+);
+
+const ActionsCell = ({ rowIndex, data, ...props }) => (
+  <Cell { ...props }>
+    <AllocationLink allocationId={ data[rowIndex].ID } linkAppend='/files' linkQuery={{ path: '/alloc/logs/' }}>
+      <FontIcon className='material-icons'>format_align_left</FontIcon>
+    </AllocationLink>
+  </Cell>
+);
+
+/* eslint-disable react/prop-types */
+
+const jobColumn = (allocations, display) =>
+  (display
+    ?
+      <Column
+        header={ <Cell>Job</Cell> }
+        cell={ <JobLinkCell data={ allocations } /> }
+        fixed
+        flexGrow={ 2 }
+        width={ 200 }
+      />
+    : null
+  )
+
+const clientColumn = (allocations, display, clients) =>
+  (display
+    ?
+      <Column
+        header={ <Cell>Client</Cell> }
+        cell={ <ClientLinkCell data={ allocations } clients={ clients } /> }
+        fixed
+        width={ 200 }
+      />
+    : null
+  )
 
 class AllocationList extends PureComponent {
 
@@ -40,6 +128,14 @@ class AllocationList extends PureComponent {
     const query = this.props.location.query || {}
     let allocations = this.props.allocations
 
+    if ('allocation_id' in query) {
+      allocations = allocations.filter(allocation => allocation.ID.indexOf(query.allocation_id) != -1)
+    }
+
+    if ('allocation_id' in this.state) {
+      allocations = allocations.filter(allocation => allocation.ID.indexOf(this.state.allocation_id) != -1)
+    }
+
     if ('status' in query) {
       allocations = allocations.filter(allocation => allocation.ClientStatus === query.status)
     }
@@ -65,26 +161,39 @@ class AllocationList extends PureComponent {
     }
 
     return (
-      <SelectField floatingLabelText={ title } maxHeight={ 200 }>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, status: undefined } }}>- Any -</Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, status: 'running' } }}>Running</Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, status: 'complete' } }}>Complete</Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, status: 'pending' } }}>Pending</Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, status: 'lost' } }}>Lost</Link>
-        </MenuItem>
-        <MenuItem>
-          <Link to={{ pathname: location.pathname, query: { ...query, status: 'failed' } }}>Failed</Link>
-        </MenuItem>
-      </SelectField>
+      <Col key='client-status-filter-pane' xs={ 2 } sm={ 2 } md={ 2 } lg={ 2 }>
+        <SelectField floatingLabelText={ title } maxHeight={ 200 }>
+          <MenuItem>
+            <Link to={{ pathname: location.pathname, query: { ...query, status: undefined } }}>- Any -</Link>
+          </MenuItem>
+          <MenuItem>
+            <Link to={{ pathname: location.pathname, query: { ...query, status: 'running' } }}>Running</Link>
+          </MenuItem>
+          <MenuItem>
+            <Link to={{ pathname: location.pathname, query: { ...query, status: 'complete' } }}>Complete</Link>
+          </MenuItem>
+          <MenuItem>
+            <Link to={{ pathname: location.pathname, query: { ...query, status: 'pending' } }}>Pending</Link>
+          </MenuItem>
+          <MenuItem>
+            <Link to={{ pathname: location.pathname, query: { ...query, status: 'lost' } }}>Lost</Link>
+          </MenuItem>
+          <MenuItem>
+            <Link to={{ pathname: location.pathname, query: { ...query, status: 'failed' } }}>Failed</Link>
+          </MenuItem>
+        </SelectField>
+      </Col>
+    )
+  }
+
+  allocationIdFilter () {
+    return (
+      <Col key='allocation-id-filter-pane' xs={ 2 } sm={ 2 } md={ 2 } lg={ 2 }>
+        <TextField
+          hintText='Allocation ID'
+          onChange={ (proxy, value) => { this.setState({ ...this.state, allocation_id: value }) } }
+        />
+      </Col>
     )
   }
 
@@ -119,7 +228,9 @@ class AllocationList extends PureComponent {
     )
 
     return (
-      <SelectField floatingLabelText={ title } maxHeight={ 200 }>{ jobs }</SelectField>
+      <Col key='job-filter-pane' xs={ 2 } sm={ 2 } md={ 2 } lg={ 2 }>
+        <SelectField floatingLabelText={ title } maxHeight={ 200 }>{ jobs }</SelectField>
+      </Col>
     )
   }
 
@@ -157,50 +268,106 @@ class AllocationList extends PureComponent {
     )
 
     return (
-      <SelectField floatingLabelText={ title } maxHeight={ 200 }>
-        { clients }
-      </SelectField>
+      <Col key='client-filter-pane' xs={ 2 } sm={ 2 } md={ 2 } lg={ 2 }>
+        <SelectField floatingLabelText={ title } maxHeight={ 200 }>
+          { clients }
+        </SelectField>
+      </Col>
     )
   }
 
+  updateDimensions() {
+    this.setState({
+      ...this.state,
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
+  }
+
+  componentWillMount() {
+    this.updateDimensions();
+  }
+
+  componentDidMount() {
+    window.addEventListener("resize", () => this.updateDimensions());
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", () => this.updateDimensions());
+  }
+
   render () {
-    const props = this.props
     const showJobColumn = this.props.showJobColumn
     const showClientColumn = this.props.showClientColumn
+    const allocations = this.filteredAllocations();
+
+    const width = this.state.width - 30
+    const height = this.state.height - 250
 
     return (
       <div>
-        <Card>
+        <Card id='derp'>
           <CardHeader title='Filter list' actAsExpander showExpandableButton />
           <CardText expandable>
-            { showClientColumn ? this.clientFilter() : null }
-                &nbsp;
-            { this.clientStatusFilter() }
-                &nbsp;
-            { showJobColumn ? this.jobIdFilter() : null }
+            <Grid fluid style={{ padding: 0 }}>
+              <Row>
+                { this.allocationIdFilter() }
+                { showClientColumn ? this.clientFilter() : null }
+                { this.clientStatusFilter() }
+                { showJobColumn ? this.jobIdFilter() : null }
+              </Row>
+            </Grid>
           </CardText>
         </Card>
 
         <Card style={{ marginTop: '1rem' }}>
           <CardText>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHeaderColumn style={{ width: 40 }} />
-                  <TableHeaderColumn style={{ width: 100 }}>ID</TableHeaderColumn>
-                  { jobHeaderColumn(showJobColumn) }
-                  <TableHeaderColumn>Task Group</TableHeaderColumn>
-                  <TableHeaderColumn style={{ width: 100 }}>Status</TableHeaderColumn>
-                  { clientHeaderColumn(showClientColumn) }
-                  <TableHeaderColumn style={{ width: 120 }}>Age</TableHeaderColumn>
-                  <TableHeaderColumn style={{ width: 50 }}>Actions</TableHeaderColumn>
-                </TableRow>
-              </TableHeader>
-              <TableBody preScanRows={ false } showRowHover>
-                {this.filteredAllocations().map((allocation) => {
-                  return <AllocationListRow key={ allocation.ID } { ...props } allocation={ allocation } />
-                })}
-              </TableBody>
+            <Table
+              rowHeight={ 35 }
+              headerHeight={ 35 }
+              rowsCount={ allocations.length }
+              height={ height }
+              width={ width }
+            >
+              <Column
+                header={ <Cell /> }
+                cell={ <AllocationStatusIconCell data={ allocations } /> }
+                fixed
+                width={ 40 }
+              />
+              <Column
+                header={ <Cell>ID</Cell> }
+                cell={ <AllocationLinkCell data={ allocations } /> }
+                fixed
+                width={ 100 }
+              />
+              { jobColumn(allocations, this.props.showJobColumn) }
+              <Column
+                header={ <Cell>Task Group</Cell> }
+                cell={ <JobTaskGroupLinkCell data={ allocations } /> }
+                fixed
+                flexGrow={ 2 }
+                width={ 200 }
+              />
+              <Column
+                header={ <Cell>Status</Cell> }
+                cell={ <StatusCell data={ allocations } /> }
+                fixed
+                width={ 200 }
+              />
+              { clientColumn(allocations, this.props.showClientColumn, this.props.nodes) }
+              <Column
+                header={ <Cell>Age</Cell> }
+                cell={ <AgeCell data={ allocations } /> }
+                fixed
+                width={ 100 }
+              />
+              <Column
+                header={ <Cell>Actions</Cell> }
+                cell={ <ActionsCell data={ allocations } /> }
+                fixed
+                width={ 100 }
+              />
             </Table>
           </CardText>
         </Card>
