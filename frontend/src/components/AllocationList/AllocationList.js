@@ -299,7 +299,11 @@ class AllocationList extends PureComponent {
     const allocations = this.filteredAllocations();
 
     const width = this.state.width - 30
-    const height = this.state.height - 240
+    let height = this.state.height - 240
+
+    if (!showJobColumn || !showClientColumn) {
+      height = height - 120
+    }
 
     return (
       <div>
