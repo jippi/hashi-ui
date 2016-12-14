@@ -300,7 +300,7 @@ class AllocationList extends PureComponent {
     const allocations = this.filteredAllocations();
 
     const width = this.state.width - 30
-    const height = this.state.height - 250
+    const height = this.state.height - 240
 
     return (
       <div>

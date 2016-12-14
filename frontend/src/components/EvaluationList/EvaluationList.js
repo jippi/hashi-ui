@@ -51,7 +51,7 @@ class EvaluationList extends PureComponent {
   render() {
     const evaluations = this.props.evaluations;
     const width = this.state.width - 30
-    const height = this.state.height - 250
+    const height = this.state.height - 170
 
     return (
       <Card>
