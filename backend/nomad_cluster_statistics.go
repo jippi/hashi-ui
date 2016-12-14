@@ -70,8 +70,73 @@ func worker(payload *ClusterStatisticsWorkerPayload) {
 }
 
 func (n *Nomad) collectAggregateClusterStatistics() {
+	nodes := n.nodes
+
+	quit := make(chan bool)
+	tasks := make(chan *ClusterStatisticsTask, len(nodes))
+	results := make(chan *ClusterStatisticsResult, len(nodes))
+
+	var wg sync.WaitGroup
+
+	payload := &ClusterStatisticsWorkerPayload{
+		tasks:   tasks,
+		quit:    quit,
+		results: results,
+		n:       n,
+		wg:      &wg,
+	}
+
+	// spawn 10 workers
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go worker(payload)
+	}
+
+	// put the workers to... work
+	for _, node := range nodes {
+		tasks <- &ClusterStatisticsTask{NodeID: node.ID, NodeName: node.Name}
+	}
+
+	// end of tasks. the workers should quit afterwards
+	// use "close(quit)", if you do not want to wait for the remaining tasks
+	close(tasks)
+
+	// wait for all workers to shut down properly
+	logger.Debugf("[ClusterStatistics] waiting for tasks to finish")
+	wg.Wait()
+
+	// Make sure the result channel range will finish at end
+	close(results)
+
+	aggResult := &ClusterStatisticsAggregatedResult{}
+
+	logger.Debugf("[ClusterStatistics] consuming results channel")
+	for elem := range results {
+		aggResult.Clients++
+
+		aggResult.CPUIdleTime += elem.CPUIdleTime
+		aggResult.CPUCores += elem.CPUCores
+		aggResult.MemoryUsed += elem.MemoryUsed
+		aggResult.MemoryTotal += elem.MemoryTotal
+	}
+
+	logger.Infof("[ClusterStatistics] Servers: %d, Total Cores: %d Total Idle CPU: %f Total Used RAM: %d Total RAM: %d",
+		aggResult.Clients,
+		aggResult.CPUCores,
+		aggResult.CPUIdleTime,
+		aggResult.MemoryUsed,
+		aggResult.MemoryTotal,
+	)
+
+	n.clusterStatistics = aggResult
+	n.BroadcastChannels.clusterStatistics.Update(&Action{Type: fetchedClusterStatistics, Payload: aggResult})
+}
+
+func (n *Nomad) watchAggregateClusterStatistics() {
 	ticker := time.NewTicker(5 * time.Second)
 	quit := make(chan struct{})
+
+	n.collectAggregateClusterStatistics()
 
 	go func() {
 		defer close(quit)
@@ -80,66 +145,7 @@ func (n *Nomad) collectAggregateClusterStatistics() {
 		for {
 			select {
 			case <-ticker.C:
-				nodes := n.nodes
-
-				quit := make(chan bool)
-				tasks := make(chan *ClusterStatisticsTask, len(nodes))
-				results := make(chan *ClusterStatisticsResult, len(nodes))
-
-				var wg sync.WaitGroup
-
-				payload := &ClusterStatisticsWorkerPayload{
-					tasks:   tasks,
-					quit:    quit,
-					results: results,
-					n:       n,
-					wg:      &wg,
-				}
-
-				// spawn 10 workers
-				for i := 0; i < 10; i++ {
-					wg.Add(1)
-					go worker(payload)
-				}
-
-				// put the workers to... work
-				for _, node := range nodes {
-					tasks <- &ClusterStatisticsTask{NodeID: node.ID, NodeName: node.Name}
-				}
-
-				// end of tasks. the workers should quit afterwards
-				// use "close(quit)", if you do not want to wait for the remaining tasks
-				close(tasks)
-
-				// wait for all workers to shut down properly
-				logger.Debugf("[ClusterStatistics] waiting for tasks to finish")
-				wg.Wait()
-
-				// Make sure the result channel range will finish at end
-				close(results)
-
-				aggResult := &ClusterStatisticsAggregatedResult{}
-
-				logger.Debugf("[ClusterStatistics] consuming results channel")
-				for elem := range results {
-					aggResult.Clients++
-
-					aggResult.CPUIdleTime += elem.CPUIdleTime
-					aggResult.CPUCores += elem.CPUCores
-					aggResult.MemoryUsed += elem.MemoryUsed
-					aggResult.MemoryTotal += elem.MemoryTotal
-				}
-
-				logger.Infof("[ClusterStatistics] Servers: %d, Total Cores: %d Total Idle CPU: %f Total Used RAM: %d Total RAM: %d",
-					aggResult.Clients,
-					aggResult.CPUCores,
-					aggResult.CPUIdleTime,
-					aggResult.MemoryUsed,
-					aggResult.MemoryTotal,
-				)
-
-				n.clusterStatistics = aggResult
-				n.BroadcastChannels.clusterStatistics.Update(&Action{Type: fetchedClusterStatistics, Payload: aggResult})
+				n.collectAggregateClusterStatistics()
 
 			case <-quit:
 				return

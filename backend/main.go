@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/imkira/go-observer"
+	"github.com/newrelic/go-agent"
 	"github.com/op/go-logging"
 )
 
@@ -38,9 +39,11 @@ func startLogging(logLevel string) {
 }
 
 type Config struct {
-	Address       string
-	ListenAddress string
-	LogLevel      string
+	Address         string
+	ListenAddress   string
+	LogLevel        string
+	NewRelicAppName string
+	NewRelicLicense string
 }
 
 type BroadcastChannels struct {
@@ -55,9 +58,11 @@ type BroadcastChannels struct {
 
 func DefaultConfig() *Config {
 	return &Config{
-		Address:       "http://127.0.0.1:4646",
-		ListenAddress: "0.0.0.0:3000",
-		LogLevel:      "info",
+		Address:         "http://127.0.0.1:4646",
+		ListenAddress:   "0.0.0.0:3000",
+		LogLevel:        "info",
+		NewRelicAppName: "hashi-ui",
+		NewRelicLicense: "",
 	}
 }
 
@@ -76,10 +81,18 @@ var (
 
 	flagLogLevel = flag.String("log.level", "",
 		"The log level for hashi-ui to run under. "+flagDefault(defaultConfig.LogLevel))
+
+	flagNewRelicAppName = flag.String("newrelic.app_name", "hashi-ui",
+		"The NewRelic app name. "+flagDefault(defaultConfig.NewRelicAppName))
+
+	flagNewRelicLicense = flag.String("newrelic.license", "",
+		"The NewRelic license key. "+flagDefault(defaultConfig.NewRelicLicense))
 )
 
 func (c *Config) Parse() {
 	flag.Parse()
+
+	// env
 
 	address, ok := syscall.Getenv("NOMAD_ADDR")
 	if ok {
@@ -96,6 +109,18 @@ func (c *Config) Parse() {
 		c.LogLevel = logLevel
 	}
 
+	newRelicAppName, ok := syscall.Getenv("NEWRELIC_APP_NAME")
+	if ok {
+		c.NewRelicAppName = newRelicAppName
+	}
+
+	newRelicLicense, ok := syscall.Getenv("NEWRELIC_LICENSE")
+	if ok {
+		c.NewRelicLicense = newRelicLicense
+	}
+
+	// flags
+
 	if *flagAddress != "" {
 		c.Address = *flagAddress
 	}
@@ -107,6 +132,14 @@ func (c *Config) Parse() {
 	if *flagLogLevel != "" {
 		c.LogLevel = *flagLogLevel
 	}
+
+	if *flagNewRelicAppName != "" {
+		c.NewRelicAppName = *flagNewRelicAppName
+	}
+
+	if *flagNewRelicLicense != "" {
+		c.NewRelicLicense = *flagNewRelicLicense
+	}
 }
 
 func main() {
@@ -115,13 +148,19 @@ func main() {
 
 	startLogging(cfg.LogLevel)
 
-	logger.Infof("---------------------------------------------------------------------------")
-	logger.Infof("|                            NOMAD UI                                     |")
-	logger.Infof("---------------------------------------------------------------------------")
-	logger.Infof("| nomad.address      : %-50s |", cfg.Address)
-	logger.Infof("| web.listen-address : http://%-43s |", cfg.ListenAddress)
-	logger.Infof("| log.level          : %-50s |", cfg.LogLevel)
-	logger.Infof("---------------------------------------------------------------------------")
+	logger.Infof("----------------------------------------------------------------------------")
+	logger.Infof("|                             NOMAD UI                                     |")
+	logger.Infof("----------------------------------------------------------------------------")
+	logger.Infof("| nomad.address       : %-50s |", cfg.Address)
+	logger.Infof("| web.listen-address  : http://%-43s |", cfg.ListenAddress)
+	logger.Infof("| log.level           : %-50s |", cfg.LogLevel)
+
+	if cfg.NewRelicAppName != "" && cfg.NewRelicLicense != "" {
+		logger.Infof("| newrelic.app_name   : %-50s |", cfg.NewRelicAppName)
+		logger.Infof("| newrelic.license    : %-50s |", strings.Repeat("*", len(cfg.NewRelicLicense)))
+	}
+
+	logger.Infof("----------------------------------------------------------------------------")
 	logger.Infof("")
 
 	broadcast := make(chan *Action)
@@ -147,15 +186,23 @@ func main() {
 	go nomad.watchJobs()
 	go nomad.watchNodes()
 	go nomad.watchMembers()
-	go nomad.collectAggregateClusterStatistics()
+	go nomad.watchAggregateClusterStatistics()
 
 	hub := NewHub(nomad, broadcast, channels)
 	go hub.Run()
 
-	router := mux.NewRouter()
+	if cfg.NewRelicAppName != "" && cfg.NewRelicLicense != "" {
+		config := newrelic.NewConfig(cfg.NewRelicAppName, cfg.NewRelicLicense)
+		_, err := newrelic.NewApplication(config)
+		if err != nil {
+			logger.Error(err)
+			os.Exit(1)
+		}
+	}
 
 	myAssetFS := assetFS()
 
+	router := mux.NewRouter()
 	router.HandleFunc("/ws", hub.Handler)
 	router.HandleFunc("/download/{path:.*}", nomad.downloadFile)
 	router.PathPrefix("/static").Handler(http.FileServer(myAssetFS))

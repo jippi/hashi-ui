@@ -48,6 +48,8 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | `NOMAD_ADDR`      	| `--nomad.address`      	| `http://127.0.0.1:4646` 	| Must point to the correct location of your Nomad server.                                             	|
 | `NOMAD_PORT_http` 	| `--web.listen-address` 	| `0.0.0.0:3000`          	| The IP + PORT to listen on                                                                           	|
 | `NOMAD_LOG_LEVEL` 	| `--log.level`          	| `info`                  	| Log level to use while running the hashi-ui server - (`critical`, `error`, `warning`, `notice`, `info`, `debug`) 	|
+| `NEWRELIC_APP_NAME` | `--newrelic.app_name`  	| `hashi-ui`               	| (optional) NewRelic application name |
+| `NEWRELIC_LICENSE`  | `--newrelic.license`  	| ``               	 				| (optional) NewRelic license key |
 
 # Try
 
