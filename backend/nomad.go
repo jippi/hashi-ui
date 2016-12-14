@@ -181,6 +181,7 @@ func (n *Nomad) watchAllocs() {
 		if q.WaitIndex > meta.LastIndex {
 			waitIndex = q.WaitIndex
 		}
+		time.Sleep(30 * time.Second)
 		q = &api.QueryOptions{WaitIndex: waitIndex}
 	}
 }
@@ -202,6 +203,7 @@ func (n *Nomad) watchEvals() {
 		if q.WaitIndex > meta.LastIndex {
 			waitIndex = q.WaitIndex
 		}
+		time.Sleep(10 * time.Second)
 		q = &api.QueryOptions{WaitIndex: waitIndex}
 	}
 }
@@ -223,6 +225,7 @@ func (n *Nomad) watchJobs() {
 		if q.WaitIndex > meta.LastIndex {
 			waitIndex = q.WaitIndex
 		}
+		time.Sleep(30 * time.Second)
 		q = &api.QueryOptions{WaitIndex: waitIndex}
 	}
 }
@@ -244,6 +247,7 @@ func (n *Nomad) watchNodes() {
 		if q.WaitIndex > meta.LastIndex {
 			waitIndex = q.WaitIndex
 		}
+		time.Sleep(30 * time.Second)
 		q = &api.QueryOptions{WaitIndex: waitIndex}
 	}
 }
@@ -260,7 +264,7 @@ func (n *Nomad) watchMembers() {
 		n.members = members
 		n.updateCh <- &Action{Type: fetchedMembers, Payload: members}
 
-		time.Sleep(10 * time.Second)
+		time.Sleep(60 * time.Second)
 	}
 }
 
