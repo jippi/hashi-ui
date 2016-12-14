@@ -146,6 +146,19 @@ func main() {
 	cfg := DefaultConfig()
 	cfg.Parse()
 
+	config := newrelic.NewConfig(cfg.NewRelicAppName, cfg.NewRelicLicense)
+	config.Logger = newrelic.NewLogger(os.Stdout)
+
+	if cfg.NewRelicAppName == "" || cfg.NewRelicLicense == "" {
+		config.Enabled = false
+	}
+
+	app, err := newrelic.NewApplication(config)
+	if err != nil {
+		logger.Error(err)
+		os.Exit(1)
+	}
+
 	startLogging(cfg.LogLevel)
 
 	logger.Infof("----------------------------------------------------------------------------")
@@ -190,18 +203,6 @@ func main() {
 
 	hub := NewHub(nomad, broadcast, channels)
 	go hub.Run()
-
-	config := newrelic.NewConfig(cfg.NewRelicAppName, cfg.NewRelicLicense)
-
-	if cfg.NewRelicAppName == "" || cfg.NewRelicLicense == "" {
-		config.Enabled = false
-	}
-
-	app, err := newrelic.NewApplication(config)
-	if err != nil {
-		logger.Error(err)
-		os.Exit(1)
-	}
 
 	myAssetFS := assetFS()
 
