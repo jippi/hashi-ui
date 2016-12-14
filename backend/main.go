@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -39,6 +40,7 @@ func startLogging(logLevel string) {
 }
 
 type Config struct {
+	ReadOnly        bool
 	Address         string
 	ListenAddress   string
 	LogLevel        string
@@ -58,6 +60,7 @@ type BroadcastChannels struct {
 
 func DefaultConfig() *Config {
 	return &Config{
+		ReadOnly:        false,
 		Address:         "http://127.0.0.1:4646",
 		ListenAddress:   "0.0.0.0:3000",
 		LogLevel:        "info",
@@ -72,6 +75,9 @@ func flagDefault(value string) string {
 
 var (
 	defaultConfig = DefaultConfig()
+
+	flagReadOnly = flag.Bool("nomad.read-only", false, "Whether Nomad should be allowed to modify state. "+
+		"Overrides the NOMAD_READ_ONLY environment variable if set. "+flagDefault(strconv.FormatBool(defaultConfig.ReadOnly)))
 
 	flagAddress = flag.String("nomad.address", "", "The address of the Nomad server. "+
 		"Overrides the NOMAD_ADDR environment variable if set. "+flagDefault(defaultConfig.Address))
@@ -93,6 +99,11 @@ func (c *Config) Parse() {
 	flag.Parse()
 
 	// env
+
+	readOnly, ok := syscall.Getenv("NOMAD_READ_ONLY")
+	if ok {
+		c.ReadOnly = readOnly != "0"
+	}
 
 	address, ok := syscall.Getenv("NOMAD_ADDR")
 	if ok {
@@ -120,6 +131,10 @@ func (c *Config) Parse() {
 	}
 
 	// flags
+
+	if *flagReadOnly == true {
+		c.ReadOnly = *flagReadOnly
+	}
 
 	if *flagAddress != "" {
 		c.Address = *flagAddress
@@ -164,6 +179,13 @@ func main() {
 	logger.Infof("----------------------------------------------------------------------------")
 	logger.Infof("|                             NOMAD UI                                     |")
 	logger.Infof("----------------------------------------------------------------------------")
+
+	if cfg.ReadOnly {
+		logger.Infof("| nomad.read-only     : %-50s |", "Yes")
+	} else {
+		logger.Infof("| nomad.read-only     : %-50s |", "No (hashi-ui can change nomad state)")
+	}
+
 	logger.Infof("| nomad.address       : %-50s |", cfg.Address)
 	logger.Infof("| web.listen-address  : http://%-43s |", cfg.ListenAddress)
 	logger.Infof("| log.level           : %-50s |", cfg.LogLevel)
@@ -210,6 +232,16 @@ func main() {
 	router.HandleFunc(newrelic.WrapHandleFunc(app, "/ws", hub.Handler))
 	router.HandleFunc(newrelic.WrapHandleFunc(app, "/download/{path:.*}", nomad.downloadFile))
 	router.PathPrefix("/static").Handler(http.FileServer(myAssetFS))
+	router.HandleFunc(newrelic.WrapHandleFunc(app, "/config.js", func(w http.ResponseWriter, r *http.Request) {
+		response := make([]string, 0)
+		response = append(response, fmt.Sprintf("window.NOMAD_READ_ONLY=%s", strconv.FormatBool(cfg.ReadOnly)))
+		response = append(response, fmt.Sprintf("window.NOMAD_ADDR=\"%s\"", cfg.Address))
+		response = append(response, fmt.Sprintf("window.NOMAD_LOG_LEVEL=\"%s\"", cfg.LogLevel))
+
+		w.Header().Set("Content-Type", "application/javascript")
+		w.Write([]byte(strings.Join(response, "\n")))
+	}))
+
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if bs, err := myAssetFS.Open("/index.html"); err != nil {
 			logger.Infof("%s", err)

@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react'
+import { withRouter } from 'react-router'
 import { Grid, Row, Col } from 'react-flexbox-grid'
 import ReactTooltip from 'react-tooltip'
 import { connect } from 'react-redux'
@@ -274,14 +275,7 @@ class AllocationFiles extends Component {
   }
 
   render () {
-    let hostname
     let fileName
-
-    if (process.env.NODE_ENV === 'production') {
-      hostname = location.host
-    } else {
-      hostname = `${location.hostname}:${process.env.GO_PORT}` || 3000
-    }
 
     if (this.state.fileWatching && this.props.file.File) {
       fileName = this.props.file.File
@@ -304,7 +298,7 @@ class AllocationFiles extends Component {
       </span>
     )
 
-    const baseUrl = `${location.protocol}//${hostname}`
+    const baseUrl = `${location.protocol}//${window.NOMAD_ENDPOINT}`
     const downloadPath = `download${this.props.file.File}`
 
     const downloadBtn = this.props.file.File.indexOf('<') >= 0
@@ -360,4 +354,4 @@ AllocationFiles.propTypes = {
   router: PropTypes.object.isRequired,
 }
 
-export default connect(mapStateToProps)(AllocationFiles)
+export default connect(mapStateToProps)(withRouter(AllocationFiles))

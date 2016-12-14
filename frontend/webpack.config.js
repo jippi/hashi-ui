@@ -24,7 +24,10 @@ webpackConfig = merge(webpackConfig, {
       inject: false,
       template: './index.html.ejs',
       favicon: './assets/img/favicon.png',
-      appMountId: 'app'
+      appMountId: 'app',
+      window: {
+        NOMAD_ENDPOINT_PORT: process.env.GO_PORT || 3000
+      }
     }),
     new webpack.DefinePlugin({ 'process.env.NODE_ENV': '"development"' }),
     new webpack.DefinePlugin({ 'process.env.GO_PORT': process.env.GO_PORT || 3000 }),

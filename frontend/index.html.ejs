@@ -28,9 +28,28 @@
   <meta name="format-detection" content="email=no" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, maximum-scale=1, minimum-scale=1" />
+
+  <% if (htmlWebpackPlugin.options.window) { %>
+  <script type="text/javascript">
+    <% for (key in htmlWebpackPlugin.options.window) { %>
+    window['<%= key %>'] = <%= JSON.stringify(htmlWebpackPlugin.options.window[key]) %>;
+    <% } %>
+  </script>
+  <% } %>
+
+  <script type="text/javascript">
+    <% if (htmlWebpackPlugin.options.production) { %>
+    window['NOMAD_ENDPOINT'] = window.location.host;
+    <% } else { %>
+    window['NOMAD_ENDPOINT'] = window.location.hostname + ':' + (NOMAD_ENDPOINT_PORT || 3000);
+    <% } %>
+
+    var configScript = document.createElement('script');
+    configScript.setAttribute('src', '//' + NOMAD_ENDPOINT + '/config.js');
+    document.head.appendChild(configScript);
+  </script>
 </head>
 <body>
-
     <div id="app"></div>
     <!-- This script adds the Roboto font to our project. For more detail go to this site:  http://www.google.com/fonts#UsePlace:use/Collection:Roboto:400,300,500 -->
     <script>

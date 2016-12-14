@@ -68,6 +68,7 @@ webpackConfig = merge(webpackConfig, {
       favicon: './assets/img/favicon.png',
       template: './index.html.ejs',
       appMountId: 'app',
+      production: true,
       minify: {
         removeComments: true,
         collapseWhitespace: true,

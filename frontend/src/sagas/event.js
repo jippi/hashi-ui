@@ -205,17 +205,7 @@ export default function eventSaga () {
   return new Promise((resolve, reject) => {
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
 
-    // If we build production page, assume /ws run inside the go-binary
-    // and such on same host+port otherwise assume development, where we
-    // re-use the hostname but use GO_PORT end with fallback to :3000.
-    let hostname
-    if (process.env.NODE_ENV === 'production') {
-      hostname = location.host
-    } else {
-      hostname = `${location.hostname}:${process.env.GO_PORT}` || 3000
-    }
-
-    const url = `${protocol}//${hostname}/ws`
+    const url = `${protocol}//${window.NOMAD_ENDPOINT}/ws`
     const p = connectTo(url)
 
     return p
