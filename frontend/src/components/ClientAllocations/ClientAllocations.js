@@ -17,7 +17,7 @@ class ClientAllocations extends Component {
     const nodeId = this.props.params.nodeId
     const allocs = this.props.allocations.filter(allocation => allocation.NodeID === nodeId)
 
-    return <AllocationList showClientColumn={ false } allocations={ allocs } location={ this.props.location } />
+    return <AllocationList showClientColumn={ false } allocations={ allocs } location={ this.props.location } nested />
   }
 }
 

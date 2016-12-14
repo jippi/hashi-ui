@@ -51,7 +51,15 @@ class EvaluationList extends PureComponent {
   render() {
     const evaluations = this.props.evaluations;
     const width = this.state.width - 30
-    const height = this.state.height - 170
+    let height = this.state.height - 170
+
+    if (this.props.nested) {
+      height = height - 120
+    }
+
+    if (height < 300) {
+      height = 300
+    }
 
     return (
       <Card>
@@ -115,11 +123,13 @@ class EvaluationList extends PureComponent {
 }
 
 EvaluationList.defaultProps = {
-  evaluations: []
+  evaluations: [],
+  nested: false,
 }
 
 EvaluationList.propTypes = {
-  evaluations: PropTypes.array.isRequired
+  evaluations: PropTypes.array.isRequired,
+  nested: PropTypes.bool.isRequired,
 }
 
 export default EvaluationList

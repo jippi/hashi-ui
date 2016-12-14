@@ -17,11 +17,7 @@ class JobEvaluations extends Component {
     const jobId = this.props.params.jobId
     const evals = this.props.evaluations.filter(evaluation => evaluation.JobID === jobId)
 
-    return (
-      <div className='tab-pane active'>
-        <EvaluationList evaluations={ evals } containerClassName='nested-content' />
-      </div>
-    )
+    return <EvaluationList evaluations={ evals } nested />
   }
 }
 

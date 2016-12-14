@@ -301,8 +301,12 @@ class AllocationList extends PureComponent {
     const width = this.state.width - 30
     let height = this.state.height - 240
 
-    if (!showJobColumn || !showClientColumn) {
+    if (!showJobColumn || !showClientColumn || this.props.nested) {
       height = height - 120
+    }
+
+    if (height < 300) {
+      height = 300
     }
 
     return (
@@ -378,13 +382,16 @@ AllocationList.defaultProps = {
   location: {},
 
   showJobColumn: true,
-  showClientColumn: true
+  showClientColumn: true,
+  nested: false
 }
 
 AllocationList.propTypes = {
   allocations: PropTypes.array.isRequired,
   nodes: PropTypes.array.isRequired,
   location: PropTypes.object.isRequired,
+
+  nested: PropTypes.bool.isRequired,
 
   showJobColumn: PropTypes.bool.isRequired,
   showClientColumn: PropTypes.bool.isRequired
