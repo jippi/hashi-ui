@@ -83,7 +83,6 @@ const jobColumn = (allocations, display) =>
       <Column
         header={ <Cell>Job</Cell> }
         cell={ <JobLinkCell data={ allocations } /> }
-        fixed
         flexGrow={ 2 }
         width={ 200 }
       />
@@ -96,7 +95,6 @@ const clientColumn = (allocations, display, clients) =>
       <Column
         header={ <Cell>Client</Cell> }
         cell={ <ClientLinkCell data={ allocations } clients={ clients } /> }
-        fixed
         width={ 200 }
       />
     : null
@@ -306,7 +304,7 @@ class AllocationList extends PureComponent {
 
     return (
       <div>
-        <Card id='derp'>
+        <Card>
           <CardHeader title='Filter list' actAsExpander showExpandableButton />
           <CardText expandable>
             <Grid fluid style={{ padding: 0 }}>
@@ -328,44 +326,39 @@ class AllocationList extends PureComponent {
               rowsCount={ allocations.length }
               height={ height }
               width={ width }
+              { ...this.props }
             >
               <Column
                 header={ <Cell /> }
                 cell={ <AllocationStatusIconCell data={ allocations } /> }
-                fixed
                 width={ 40 }
               />
               <Column
                 header={ <Cell>ID</Cell> }
                 cell={ <AllocationLinkCell data={ allocations } /> }
-                fixed
                 width={ 100 }
               />
               { jobColumn(allocations, this.props.showJobColumn) }
               <Column
                 header={ <Cell>Task Group</Cell> }
                 cell={ <JobTaskGroupLinkCell data={ allocations } /> }
-                fixed
                 flexGrow={ 2 }
                 width={ 200 }
               />
               <Column
                 header={ <Cell>Status</Cell> }
                 cell={ <StatusCell data={ allocations } /> }
-                fixed
                 width={ 200 }
               />
               { clientColumn(allocations, this.props.showClientColumn, this.props.nodes) }
               <Column
                 header={ <Cell>Age</Cell> }
                 cell={ <AgeCell data={ allocations } /> }
-                fixed
                 width={ 100 }
               />
               <Column
                 header={ <Cell>Actions</Cell> }
                 cell={ <ActionsCell data={ allocations } /> }
-                fixed
                 width={ 100 }
               />
             </Table>
