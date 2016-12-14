@@ -34,10 +34,10 @@ job "hashi-ui" {
       }
 
       artifact {
-        source = "https://github.com/jippi/hashi-ui/releases/download/v0.5.0/hashi-ui-linux-amd64"
+        source = "https://github.com/jippi/hashi-ui/releases/download/v0.6.0/hashi-ui-linux-amd64"
 
         options {
-          checksum = "sha256:4b6f0394698d45fcce05c536442b35b5ff83736cd6050d1c50c2a3959937dd14"
+          checksum = "sha256:5ed0ba233f33738f915b4f90ff7933da2b12111e620874fc99617c6b4215acb9"
         }
       }
 
