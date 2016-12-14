@@ -159,7 +159,7 @@ class AllocationList extends PureComponent {
     }
 
     return (
-      <Col key='client-status-filter-pane' xs={ 2 } sm={ 2 } md={ 2 } lg={ 2 }>
+      <Col key='client-status-filter-pane' xs={ 12 } sm={ 6 } md={ 6 } lg={ 3 }>
         <SelectField floatingLabelText={ title } maxHeight={ 200 }>
           <MenuItem>
             <Link to={{ pathname: location.pathname, query: { ...query, status: undefined } }}>- Any -</Link>
@@ -186,7 +186,7 @@ class AllocationList extends PureComponent {
 
   allocationIdFilter () {
     return (
-      <Col key='allocation-id-filter-pane' xs={ 2 } sm={ 2 } md={ 2 } lg={ 2 }>
+      <Col key='allocation-id-filter-pane' xs={ 12 } sm={ 6 } md={ 6 } lg={ 3 }>
         <TextField
           hintText='Allocation ID'
           onChange={ (proxy, value) => { this.setState({ ...this.state, allocation_id: value }) } }
@@ -226,7 +226,7 @@ class AllocationList extends PureComponent {
     )
 
     return (
-      <Col key='job-filter-pane' xs={ 2 } sm={ 2 } md={ 2 } lg={ 2 }>
+      <Col key='job-filter-pane' xs={ 12 } sm={ 6 } md={ 6 } lg={ 3 }>
         <SelectField floatingLabelText={ title } maxHeight={ 200 }>{ jobs }</SelectField>
       </Col>
     )
@@ -266,7 +266,7 @@ class AllocationList extends PureComponent {
     )
 
     return (
-      <Col key='client-filter-pane' xs={ 2 } sm={ 2 } md={ 2 } lg={ 2 }>
+      <Col key='client-filter-pane' xs={ 12 } sm={ 6 } md={ 6 } lg={ 3 }>
         <SelectField floatingLabelText={ title } maxHeight={ 200 }>
           { clients }
         </SelectField>
