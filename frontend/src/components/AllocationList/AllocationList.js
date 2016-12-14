@@ -6,8 +6,7 @@ import { Card, CardHeader, CardText } from 'material-ui/Card'
 import SelectField from '../SelectField/SelectField'
 import TextField from 'material-ui/TextField';
 import MenuItem from 'material-ui/MenuItem'
-import { Table, Column, Cell } from 'fixed-data-table';
-import 'fixed-data-table/dist/fixed-data-table.css'
+import { Table, Column, Cell } from 'fixed-data-table-2';
 import AllocationStatusIcon from '../AllocationStatusIcon/AllocationStatusIcon'
 import AllocationLink from '../AllocationLink/AllocationLink'
 import JobLink from '../JobLink/JobLink'
@@ -326,6 +325,7 @@ class AllocationList extends PureComponent {
               rowsCount={ allocations.length }
               height={ height }
               width={ width }
+              touchScrollEnabled
               { ...this.props }
             >
               <Column

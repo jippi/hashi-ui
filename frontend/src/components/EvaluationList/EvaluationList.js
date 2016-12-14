@@ -1,5 +1,5 @@
 import React, { PureComponent, PropTypes } from 'react'
-import { Table, Column, Cell } from 'fixed-data-table';
+import { Table, Column, Cell } from 'fixed-data-table-2';
 import { Card, CardText } from 'material-ui/Card'
 import EvaluationLink from '../EvaluationLink/EvaluationLink'
 import JobLink from '../JobLink/JobLink'
@@ -62,6 +62,7 @@ class EvaluationList extends PureComponent {
             rowsCount={ evaluations.length }
             height={ height }
             width={ width }
+            touchScrollEnabled
             { ...this.props }
           >
             <Column

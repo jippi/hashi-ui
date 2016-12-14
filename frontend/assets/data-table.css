@@ -1,15 +1,4 @@
 
-/**
- * FixedDataTable v0.6.3
- *
- * Copyright (c) 2015, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
-
 .fixedDataTableCellGroupLayout_cellGroup {
   -webkit-backface-visibility: hidden;
           backface-visibility: hidden;
@@ -37,8 +26,6 @@
   overflow: hidden;
   position: absolute;
   white-space: normal;
-
-
 }
 
 .fixedDataTableCellLayout_lastChild {
@@ -182,7 +169,12 @@ body[dir="rtl"] .fixedDataTableColumnResizerLineLayout_main {
 }
 
 .fixedDataTableRowLayout_columnsShadow {
+  position: absolute;
   width: 4px;
+}
+
+.fixedDataTableRowLayout_columnsRightShadow {
+  right: 1px;
 }
 
 .fixedDataTableRowLayout_rowWrapper {
@@ -240,6 +232,12 @@ body[dir="rtl"] .fixedDataTableColumnResizerLineLayout_main {
   z-index: 1;
 }
 
+/**
+ * This selector renders the "nub" of the scrollface. The nub must
+ * be rendered as pseudo-element so that it won't receive any UI events then
+ * we can get the correct `event.offsetX` and `event.offsetY` from the
+ * scrollface element while dragging it.
+ */
 .ScrollbarLayout_face:after {
   border-radius: 6px;
   content: '';
@@ -288,6 +286,11 @@ body[dir="rtl"] .fixedDataTableColumnResizerLineLayout_main {
 }
 
 .public_fixedDataTable_header .public_fixedDataTableCell_main {
+  font-weight: bold;
+}
+
+.public_fixedDataTable_header,
+.public_fixedDataTable_header .public_fixedDataTableCell_main {
   border-bottom: 1px solid rgb(224, 224, 224);
   height: 20px;
   white-space: nowrap;
@@ -300,21 +303,16 @@ body[dir="rtl"] .fixedDataTableColumnResizerLineLayout_main {
   background-color: inherit;
 }
 
-.public_fixedDataTable_header,
-.public_fixedDataTable_header .public_fixedDataTableCell_main {
-
-}
-
 .public_fixedDataTable_footer .public_fixedDataTableCell_main {
 
 }
 
 .public_fixedDataTable_topShadow {
-
+  background: 0 0 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAECAYAAABP2FU6AAAAF0lEQVR4AWPUkNeSBhHCjJoK2twgFisAFagCCp3pJlAAAAAASUVORK5CYII=) repeat-x;
 }
 
 .public_fixedDataTable_bottomShadow {
-
+  background: 0 0 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAECAYAAABP2FU6AAAAHElEQVQI12MwNjZmZdAT1+Nm0JDWEGZQk1GTBgAWkwIeAEp52AAAAABJRU5ErkJggg==) repeat-x;
 }
 
 .public_fixedDataTable_horizontalScrollbar .public_Scrollbar_mainHorizontal {
@@ -330,15 +328,38 @@ body[dir="rtl"] .fixedDataTableColumnResizerLineLayout_main {
 }
 
 .public_fixedDataTableCell_highlighted {
-  background-color: #f4f4f4;
+
 }
 
 .public_fixedDataTableCell_cellContent {
-  padding: 4px;
+  padding: 8px;
 }
 
 .public_fixedDataTableCell_columnResizerKnob {
   background-color: #0284ff;
+}
+.public_fixedDataTableCell_hasReorderHandle .public_fixedDataTableCell_cellContent {
+  margin-left: 12px;
+}
+
+/**
+ * Column reorder goodies.
+ */
+.fixedDataTableCellLayout_columnReorderContainer {
+  border-color: #0284ff;
+  background-color: rgba(0,0,0,0.1);
+  width: 12px;
+  margin-right: -12px;
+  float: left;
+  cursor: move;
+}
+.fixedDataTableCellLayout_columnReorderContainer:after {
+  content: '::';
+  position: absolute;
+  top: 50%;
+  left: 1px;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
 }
 
 /**
@@ -365,7 +386,12 @@ body[dir="rtl"] .fixedDataTableColumnResizerLineLayout_main {
 }
 
 .public_fixedDataTableRow_columnsShadow {
+  background: 0 0 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAABCAYAAAD5PA/NAAAAFklEQVQIHWPSkNeSBmJhTQVtbiDNCgASagIIuJX8OgAAAABJRU5ErkJggg==) repeat-y;
+}
 
+.public_fixedDataTableRow_columnsRightShadow {
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
 }
 
 /**
