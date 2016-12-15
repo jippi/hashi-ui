@@ -94,7 +94,7 @@ const ClientInfo = ({ node }) =>
         <Card>
           <CardTitle title='Nomad Properties' />
           <CardText>
-            <MetaPayload dtWithClass='wide' metaBag={ withPrefix(node.Attributes, 'Nomad.') } />
+            <MetaPayload dtWithClass='wide' metaBag={ withPrefix(node.Attributes, 'nomad.') } />
           </CardText>
         </Card>
       </Col>
