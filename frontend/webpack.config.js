@@ -26,6 +26,7 @@ webpackConfig = merge(webpackConfig, {
       favicon: './assets/img/favicon.png',
       appMountId: 'app',
       window: {
+        NOMAD_ENDPOINT: process.env.GO_HOST || '127.0.0.1',
         NOMAD_ENDPOINT_PORT: process.env.GO_PORT || 3000
       }
     }),
