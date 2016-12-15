@@ -32,8 +32,8 @@ class UtilizationPieChart extends Component {
     const cos = Math.cos(-RADIAN * midAngle);
     const sx = cx + (outerRadius + 5) * cos;
     const sy = cy + (outerRadius + 5) * sin;
-    const mx = cx + (outerRadius + 10) * cos;
-    const my = cy + (outerRadius + 10) * sin;
+    const mx = cx + (outerRadius + 8) * cos;
+    const my = cy + (outerRadius + 8) * sin;
     const ex = mx + (cos >= 0 ? 1 : -1) * 22;
     const ey = my;
     const textAnchor = cos >= 0 ? 'start' : 'end';
