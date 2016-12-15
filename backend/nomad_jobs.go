@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"github.com/hashicorp/nomad/api"
 	"time"
 )
@@ -28,4 +30,21 @@ func (n *Nomad) watchJobs() {
 		n.BroadcastChannels.jobs.Update(&Action{Type: fetchedJobs, Payload: jobs, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
+}
+
+func (n *Nomad) updateJob(job *api.Job) (*Action, error) {
+	if *flagReadOnly == true {
+		logger.Errorf("Unable to run jon: READONLY is set to true")
+		return &Action{Type: errorNotification, Payload: "The backend server is set to read-only"}, errors.New("Nomad is in read-only mode")
+	}
+
+	logger.Infof("Started run job with id: %s", job.ID)
+
+	_, _, err := n.Client.Jobs().Register(job, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to register job : %s", err)
+		return &Action{Type: errorNotification, Payload: fmt.Sprintf("Connection: unable to register job : %s", err)}, err
+	}
+
+	return &Action{Type: successNotification, Payload: "The job has been successfully updated."}, nil
 }

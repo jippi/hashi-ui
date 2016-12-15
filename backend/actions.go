@@ -61,6 +61,11 @@ const (
 	watchClusterStatistics   = "WATCH_CLUSTER_STATISTICS"
 	fetchedClusterStatistics = "FETCHED_CLUSTER_STATISTICS"
 	unwatchClusterStatistics = "UNWATCH_CLUSTER_STATISTICS"
+
+	changeTaskGroupCount = "CHANGE_TASK_GROUP_COUNT"
+
+	errorNotification   = "ERROR_NOTIFICATION"
+	successNotification = "SUCCESS_NOTIFICATION"
 )
 
 // Action represents a Redux action that is dispatched or received from the store

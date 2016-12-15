@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"math/rand"
 	"time"
 
 	"gopkg.in/fatih/set.v0"
@@ -235,6 +236,10 @@ func (c *Connection) process(action Action) {
 		go c.watchEval(action)
 	case unwatchEval:
 		c.watches.Remove(action.Payload.(string))
+
+	// Change task group count
+	case changeTaskGroupCount:
+		go c.changeTaskGroupCount(action)
 	}
 }
 
@@ -760,4 +765,74 @@ func (c *Connection) watchFile(action Action) {
 			}
 		}
 	}
+}
+
+func (c *Connection) changeTaskGroupCount(action Action) {
+	params, ok := action.Payload.(map[string]interface{})
+	if !ok {
+		c.Errorf("Could not decode payload")
+		return
+	}
+
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	jobID := params["job"].(string)
+	taskGroupID := params["taskGroup"].(string)
+	scaleAction := params["scaleAction"].(string)
+
+	job, _, err := c.hub.nomad.Client.Jobs().Info(jobID, &api.QueryOptions{})
+	if err != nil {
+		c.Errorf("connection: unable to fetch job info: %s", err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Could not find job: %s", jobID), Index: index}
+		return
+	}
+
+	var foundTaskGroup *api.TaskGroup
+	for _, taskGroup := range job.TaskGroups {
+		if taskGroup.Name == taskGroupID {
+			foundTaskGroup = taskGroup
+			break
+		}
+	}
+
+	if foundTaskGroup.Name == "" {
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Could not find Task Group: %s", taskGroupID), Index: index}
+		return
+	}
+
+	currentCount := foundTaskGroup.Count
+
+	switch scaleAction {
+	case "increase":
+		foundTaskGroup.Count++
+	case "decrease":
+		foundTaskGroup.Count--
+	case "stop":
+		foundTaskGroup.Count = 0
+	default:
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Invalid action: %s", scaleAction), Index: index}
+		return
+	}
+
+	updateAction, updateErr := c.hub.nomad.updateJob(job)
+	updateAction.Index = index
+
+	if updateErr != nil {
+		logger.Error(updateErr)
+		c.send <- updateAction
+		return
+	}
+
+	switch scaleAction {
+	case "increase":
+		updateAction.Payload = fmt.Sprintf("Successfully increased Task Group count for %s:%s from %d to %d", jobID, taskGroupID, currentCount, foundTaskGroup.Count)
+	case "decrease":
+		updateAction.Payload = fmt.Sprintf("Successfully decreased Task Group count for %s:%s from %d to %d", jobID, taskGroupID, currentCount, foundTaskGroup.Count)
+	case "stop":
+		updateAction.Payload = fmt.Sprintf("Successfully stop Task Group count %s:%s", jobID, taskGroupID)
+	}
+
+	logger.Info(updateAction.Payload)
+	c.send <- updateAction
 }

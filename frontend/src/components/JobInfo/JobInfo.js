@@ -6,6 +6,8 @@ import JobLink from '../JobLink/JobLink'
 import TableHelper from '../TableHelper/TableHelper'
 import MetaPayload from '../MetaPayload/MetaPayload'
 import ConstraintTable from '../ConstraintTable/ConstraintTable'
+import JobTaskGroupActionScale from '../JobTaskGroupActionScale/JobTaskGroupActionScale'
+import JobTaskGroupActionStop from '../JobTaskGroupActionStop/JobTaskGroupActionStop'
 import { TableRow, TableRowColumn } from '../Table'
 
 const jobProps = ['ID', 'Name', 'Region', 'Datacenters', 'Status', 'Priority']
@@ -57,6 +59,10 @@ class JobInfo extends Component {
           <TableRowColumn>{ taskGroup.RestartPolicy.Mode }</TableRowColumn>
           <TableRowColumn>
             <ConstraintTable idPrefix={ taskGroup.ID } asTooltip constraints={ taskGroup.Constraints } />
+          </TableRowColumn>
+          <TableRowColumn>
+            <JobTaskGroupActionScale job={ job } taskGroup={ taskGroup } />
+            <JobTaskGroupActionStop job={ job } taskGroup={ taskGroup } />
           </TableRowColumn>
         </TableRow>
       )
@@ -113,7 +119,7 @@ class JobInfo extends Component {
                 { (taskGroups.length > 0) ?
                   <TableHelper
                     classes='table table-hover table-striped'
-                    headers={ ['Name', 'Count', 'Tasks', 'Meta', 'Restart Policy', 'Constraints'] }
+                    headers={ ['Name', 'Count', 'Tasks', 'Meta', 'Restart Policy', 'Constraints', 'Actions'] }
                     body={ taskGroups }
                   />
                   : null
