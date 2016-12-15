@@ -692,276 +692,276 @@
 			"revisionTime": "2016-10-29T20:44:48Z"
 		},
 		{
-			"checksumSHA1": "UTmrIJo+oYiH7ngPJp802SpILqs=",
+			"checksumSHA1": "NaYj5UxkZv7vo/OGltxjZDE+jEI=",
 			"path": "github.com/hashicorp/nomad",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "MUbJZdL5xl9+yEoLTZet6diIuHA=",
 			"path": "github.com/hashicorp/nomad/api",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
-			"checksumSHA1": "dUsG5hOt7RpZ0r6LeH1pjX+mf64=",
+			"checksumSHA1": "Xsek8jJiHQuWFdWSaFyGUfBHgYA=",
 			"path": "github.com/hashicorp/nomad/client",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "RAWlBlCEnFbizIgw+L7SvNsdD+A=",
 			"path": "github.com/hashicorp/nomad/client/allocdir",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "zSd9PT/pxasb3cjqkDEttRW7YhU=",
 			"path": "github.com/hashicorp/nomad/client/config",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
-			"checksumSHA1": "Dnhpzet0qc8C4rgD1wTalfpzTLQ=",
+			"checksumSHA1": "cpdsvURvxfQpaSpfHauNyE8on2Q=",
 			"path": "github.com/hashicorp/nomad/client/driver",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
-			"checksumSHA1": "dbpFcSWqCsqnm6v+NYPAS0gv2zs=",
+			"checksumSHA1": "1EGayK3OQMo1PQcO38V2X73IPVs=",
 			"path": "github.com/hashicorp/nomad/client/driver/env",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "LA0kq3pJc/M9II/wvLnm+zHpau8=",
 			"path": "github.com/hashicorp/nomad/client/driver/executor",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "O58jntfB+ZvMvRH53kg4rofuE6U=",
 			"path": "github.com/hashicorp/nomad/client/driver/logging",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "MsY1mlkFTNs7gie70uIj+A8+Tsw=",
 			"path": "github.com/hashicorp/nomad/client/driver/structs",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "wJTbppft8A9US2YoDcmG305ALlU=",
 			"path": "github.com/hashicorp/nomad/client/fingerprint",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "5v7IJBf+lU5Rq3s29cZngGVwww4=",
 			"path": "github.com/hashicorp/nomad/client/getter",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
-			"checksumSHA1": "qbJWUr1kAqkNxGyWJwuEvcJZ2TQ=",
+			"checksumSHA1": "p+68FJ6hmeWUcLAF7erqZeVF0xU=",
 			"path": "github.com/hashicorp/nomad/client/stats",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "ZVIe+emCimm3c0FC3wYpWlBAX6w=",
 			"path": "github.com/hashicorp/nomad/client/structs",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "SnbFoVurriFYhmzxgSqKCctpkZQ=",
 			"path": "github.com/hashicorp/nomad/client/vaultclient",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
-			"checksumSHA1": "Gb2BI/vlv6Ec0gabRizb4UumbyA=",
+			"checksumSHA1": "QtYzADogVDGaTUxDjmB4O//VtZU=",
 			"path": "github.com/hashicorp/nomad/command",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
-			"checksumSHA1": "INJCjDmBH/dBijyek1MjgXLyJVE=",
+			"checksumSHA1": "Pn753NnkZhs0JIS1zMLq3P5uWt0=",
 			"path": "github.com/hashicorp/nomad/command/agent",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
-			"checksumSHA1": "YrrmXWZ5zzSAk5rxCaXcAAuXytY=",
+			"checksumSHA1": "Sbvb11taruhhJnVkjBKLyNDbonQ=",
 			"path": "github.com/hashicorp/nomad/command/agent/consul",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "UOuTIv1Ef6r3cN9fImCq1SNQnCs=",
 			"path": "github.com/hashicorp/nomad/helper/args",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "xHzxKelZY3IGFMQvuD4ATi7LgCM=",
 			"path": "github.com/hashicorp/nomad/helper/discover",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "Xl6MvUmcf7sYI+z+fo9dJh2ux5E=",
 			"path": "github.com/hashicorp/nomad/helper/fields",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "ZDU9ItfKpHl44d6nJCJUy3fjDMo=",
 			"path": "github.com/hashicorp/nomad/helper/flag-helpers",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "J7j/5Jtk8la/xEAtu4e/6KIiqzs=",
 			"path": "github.com/hashicorp/nomad/helper/flatmap",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "cAxtWjx5CslX4Nldqc7PRqC9Myk=",
 			"path": "github.com/hashicorp/nomad/helper/gated-writer",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "g8cxV0OVSzVCxKDreir54dDAulY=",
 			"path": "github.com/hashicorp/nomad/helper/stats",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "E1sw01137qbYi3zaY58hROYikkg=",
 			"path": "github.com/hashicorp/nomad/helper/tlsutil",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
-			"checksumSHA1": "l8ZbZPlWjmV9Yuu7ulejPhCkHzg=",
+			"checksumSHA1": "Or9BCBvmeRaEn80AN0ljvAv8E9w=",
 			"path": "github.com/hashicorp/nomad/jobspec",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "pmwjyXBE8BL1VanKPiZLCaOhnac=",
 			"path": "github.com/hashicorp/nomad/nomad",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "TbnX8UGtOQCNM0wWFTG97FZ+8ZE=",
 			"path": "github.com/hashicorp/nomad/nomad/state",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "62RJpGyZS9tVjx+bGDk4l6xTecA=",
 			"path": "github.com/hashicorp/nomad/nomad/structs",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "IyrQLFKqEBMFMMYCRvSeCZ+6WFI=",
 			"path": "github.com/hashicorp/nomad/nomad/structs/config",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "XihViBWoHbBMhHVdJCXJKli77Fo=",
 			"path": "github.com/hashicorp/nomad/nomad/types",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "a1crVPM9OVkDjYm0tqUyWgEB3YE=",
 			"path": "github.com/hashicorp/nomad/nomad/watch",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "r5c5lQf1TMT5GJV68uNMDXpRjOY=",
 			"path": "github.com/hashicorp/nomad/scheduler",
-			"revision": "655c0385e75db974384052717b61b81c68ec2308",
-			"revisionTime": "2016-11-16T23:08:03Z",
-			"version": "v0.5.0",
-			"versionExact": "v0.5.0"
+			"revision": "83ee9acedfde539baf447f82fab4e3a37b930ffb",
+			"revisionTime": "2016-12-13T23:03:54Z",
+			"version": "v0.5.2-rc1",
+			"versionExact": "v0.5.2-rc1"
 		},
 		{
 			"checksumSHA1": "lXd9Jdzl1JmphijD/sAaw169/0Q=",
