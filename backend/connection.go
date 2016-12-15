@@ -801,7 +801,7 @@ func (c *Connection) changeTaskGroupCount(action Action) {
 		return
 	}
 
-	currentCount := foundTaskGroup.Count
+	originalCount := foundTaskGroup.Count
 
 	switch scaleAction {
 	case "increase":
@@ -826,11 +826,11 @@ func (c *Connection) changeTaskGroupCount(action Action) {
 
 	switch scaleAction {
 	case "increase":
-		updateAction.Payload = fmt.Sprintf("Successfully increased Task Group count for %s:%s from %d to %d", jobID, taskGroupID, currentCount, foundTaskGroup.Count)
+		updateAction.Payload = fmt.Sprintf("Successfully increased task group count for %s:%s from %d to %d", jobID, taskGroupID, originalCount, foundTaskGroup.Count)
 	case "decrease":
-		updateAction.Payload = fmt.Sprintf("Successfully decreased Task Group count for %s:%s from %d to %d", jobID, taskGroupID, currentCount, foundTaskGroup.Count)
+		updateAction.Payload = fmt.Sprintf("Successfully decreased task group count for %s:%s from %d to %d", jobID, taskGroupID, originalCount, foundTaskGroup.Count)
 	case "stop":
-		updateAction.Payload = fmt.Sprintf("Successfully stop Task Group count %s:%s", jobID, taskGroupID)
+		updateAction.Payload = fmt.Sprintf("Successfully stopped task group %s:%s", jobID, taskGroupID)
 	}
 
 	logger.Info(updateAction.Payload)
