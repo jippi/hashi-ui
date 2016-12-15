@@ -90,14 +90,6 @@ const ClientInfo = ({ node }) =>
       </Col>
     </Row>
     <Row style={{ marginTop: '1rem' }}>
-      <Col key='kernel-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
-        <Card>
-          <CardTitle title='Kernel Properties' />
-          <CardText>
-            <MetaPayload dtWithClass='wide' metaBag={ withPrefix(node.Attributes, 'kernel.') } />
-          </CardText>
-        </Card>
-      </Col>
       <Col key='unique-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
         <Card>
           <CardTitle title='Nomad Properties' />
