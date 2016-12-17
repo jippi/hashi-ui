@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"math/rand"
@@ -240,6 +241,10 @@ func (c *Connection) process(action Action) {
 	// Change task group count
 	case changeTaskGroupCount:
 		go c.changeTaskGroupCount(action)
+
+	// Submit (create or update) a job
+	case submitJob:
+		go c.submitJob(action)
 	}
 }
 
@@ -835,4 +840,31 @@ func (c *Connection) changeTaskGroupCount(action Action) {
 
 	logger.Info(updateAction.Payload)
 	c.send <- updateAction
+}
+
+func (c *Connection) submitJob(action Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	if *flagReadOnly == true {
+		logger.Errorf("Unable to submit job: READONLY is set to true")
+		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		return
+	}
+
+	jobjson := action.Payload.(string)
+	runjob := api.Job{}
+	json.Unmarshal([]byte(jobjson), &runjob)
+
+	logger.Infof("Started submission of job with id: %s", runjob.ID)
+
+	_, _, err := c.hub.nomad.Client.Jobs().Register(&runjob, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to submit job '%s' : %s", runjob.ID, err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to submit job : %s", err), Index: index}
+		return
+	}
+
+	logger.Infof("connection: successfully submit job '%s'", runjob.ID)
+	c.send <- &Action{Type: successNotification, Payload: "The job has been successfully updated.", Index: index}
 }
