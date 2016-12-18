@@ -1,6 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { browserHistory } from 'react-router'
+import { createHistory, useBasename } from 'history';
+const browserHistory = useBasename(createHistory)({
+  basename: window['NOMAD_ENDPOINT'].replace(/^[.a-zA-Z0-9]+:?[0-9]*/, '')
+});
+
 import { Provider } from 'react-redux'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 

@@ -37,17 +37,11 @@
   </script>
   <% } %>
 
-  <script type="text/javascript">
-    <% if (htmlWebpackPlugin.options.production) { %>
-    window['NOMAD_ENDPOINT'] = window.location.host;
-    <% } else { %>
-    window['NOMAD_ENDPOINT'] = window.location.hostname + ':' + (NOMAD_ENDPOINT_PORT || 3000);
-    <% } %>
-
-    var configScript = document.createElement('script');
-    configScript.setAttribute('src', '//' + NOMAD_ENDPOINT + '/config.js');
-    document.head.appendChild(configScript);
-  </script>
+  <% if (htmlWebpackPlugin.options.window) { %>
+  <script src="http://<%= htmlWebpackPlugin.options.window['NOMAD_ENDPOINT']%>:<%= htmlWebpackPlugin.options.window['NOMAD_ENDPOINT_PORT']%>/config.js"></script>
+  <% } else { %>
+  <script type="text/javascript" src="config.js"></script>
+  <% } %>
 </head>
 <body>
     <div id="app"></div>

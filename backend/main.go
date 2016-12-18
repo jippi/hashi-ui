@@ -43,6 +43,7 @@ type Config struct {
 	ReadOnly        bool
 	Address         string
 	ListenAddress   string
+	ProxyAddress    string
 	LogLevel        string
 	NewRelicAppName string
 	NewRelicLicense string
@@ -85,6 +86,9 @@ var (
 	flagListenAddress = flag.String("web.listen-address", "",
 		"The address on which to expose the web interface. "+flagDefault(defaultConfig.ListenAddress))
 
+	flagProxyAddress = flag.String("web.proxy-address", "",
+		"The address used on an external proxy (exmaple: example.com/nomad) "+flagDefault(defaultConfig.ProxyAddress))
+
 	flagLogLevel = flag.String("log.level", "",
 		"The log level for hashi-ui to run under. "+flagDefault(defaultConfig.LogLevel))
 
@@ -115,6 +119,11 @@ func (c *Config) Parse() {
 		c.ListenAddress = fmt.Sprintf("0.0.0.0:%s", listenPort)
 	}
 
+	proxyAddress, ok := syscall.Getenv("NOMAD_PROXY_ADDRESS")
+	if ok {
+		c.ProxyAddress = proxyAddress
+	}
+
 	logLevel, ok := syscall.Getenv("NOMAD_LOG_LEVEL")
 	if ok {
 		c.LogLevel = logLevel
@@ -142,6 +151,10 @@ func (c *Config) Parse() {
 
 	if *flagListenAddress != "" {
 		c.ListenAddress = *flagListenAddress
+	}
+
+	if *flagProxyAddress != "" {
+		c.ProxyAddress = *flagProxyAddress
 	}
 
 	if *flagLogLevel != "" {
@@ -188,6 +201,7 @@ func main() {
 
 	logger.Infof("| nomad.address       : %-50s |", cfg.Address)
 	logger.Infof("| web.listen-address  : http://%-43s |", cfg.ListenAddress)
+	logger.Infof("| web.proxy-address   : %-50s |", cfg.ProxyAddress)
 	logger.Infof("| log.level           : %-50s |", cfg.LogLevel)
 
 	if cfg.NewRelicAppName != "" && cfg.NewRelicLicense != "" {
@@ -231,17 +245,24 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc(newrelic.WrapHandleFunc(app, "/ws", hub.Handler))
 	router.HandleFunc(newrelic.WrapHandleFunc(app, "/download/{path:.*}", nomad.downloadFile))
-	router.PathPrefix("/static").Handler(http.FileServer(myAssetFS))
 	router.HandleFunc(newrelic.WrapHandleFunc(app, "/config.js", func(w http.ResponseWriter, r *http.Request) {
 		response := make([]string, 0)
 		response = append(response, fmt.Sprintf("window.NOMAD_READ_ONLY=%s", strconv.FormatBool(cfg.ReadOnly)))
 		response = append(response, fmt.Sprintf("window.NOMAD_ADDR=\"%s\"", cfg.Address))
 		response = append(response, fmt.Sprintf("window.NOMAD_LOG_LEVEL=\"%s\"", cfg.LogLevel))
 
+		var endpointURL string
+		if cfg.ProxyAddress != "" {
+			endpointURL = cfg.ProxyAddress
+		} else {
+			endpointURL = cfg.ListenAddress
+		}
+		response = append(response, fmt.Sprintf("window.NOMAD_ENDPOINT=\"%s\"", strings.TrimSuffix(endpointURL, "/")))
+
 		w.Header().Set("Content-Type", "application/javascript")
 		w.Write([]byte(strings.Join(response, "\n")))
 	}))
-
+	router.PathPrefix("/static").Handler(http.FileServer(myAssetFS))
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if bs, err := myAssetFS.Open("/index.html"); err != nil {
 			logger.Infof("%s", err)
