@@ -4,6 +4,7 @@ import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
 import FontIcon from 'material-ui/FontIcon'
 import MenuItem from 'material-ui/MenuItem';
+import { green500 } from 'material-ui/styles/colors'
 import JobEditRawJSON from '../JobEditRawJSON/JobEditRawJSON'
 import JobActionStop from '../JobActionStop/JobActionStop'
 import { JOB_SHOW_DIALOG } from '../../sagas/event'
@@ -17,13 +18,16 @@ class JobActionMenu extends Component {
   }
 
   render() {
+    const icon = <IconButton><FontIcon className='material-icons' color='white'>more_vert</FontIcon></IconButton>
+
     return (
       <div>
         <JobEditRawJSON />
         <JobActionStop />
 
         <IconMenu
-          iconButtonElement={ <IconButton><FontIcon className='material-icons'>more_vert</FontIcon></IconButton> }
+          iconButtonElement={ icon }
+          style={{ background: green500, borderRadius: '50%' }}
           anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
           targetOrigin={{ horizontal: 'left', vertical: 'top' }}
         >
