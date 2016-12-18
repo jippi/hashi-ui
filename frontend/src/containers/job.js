@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import JobTopbar from '../components/JobTopbar/JobTopbar'
+import JobActionMenu from '../components/JobActionMenu/JobActionMenu'
 import { WATCH_JOB, UNWATCH_JOB } from '../sagas/event'
 
 class Job extends Component {
@@ -22,10 +23,16 @@ class Job extends Component {
       <div>
         <JobTopbar { ...this.props } />
 
-        <div style={{ padding: 10, paddingBottom: 0 }}>
-          <h2>Job: { this.props.job.Name }</h2>
+        <div style={{ padding: 10, paddingBottom: 0, paddingTop: 0 }}>
+          <div style={{ float: 'left', paddingTop: 11 }}>
+            <h2>Job: { this.props.job.Name }</h2>
+          </div>
 
-          <br />
+          <div style={{ float: 'right', width: 50 }}>
+            <JobActionMenu { ...this.props } />
+          </div>
+
+          <div style={{ clear: 'both', paddingTop: '1rem' }} />
 
           { this.props.children }
         </div>

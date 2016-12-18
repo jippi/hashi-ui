@@ -3,9 +3,15 @@ import { fork, take, call, put } from 'redux-saga/effects'
 
 export const APP_ERROR = 'APP_ERROR'
 export const CHANGE_TASK_GROUP_COUNT = 'CHANGE_TASK_GROUP_COUNT'
+export const CLEAR_ERROR_NOTIFICATION = 'CLEAR_ERROR_NOTIFICATION'
 export const CLEAR_FILE_PATH = 'CLEAR_FILE_PATH'
 export const CLEAR_RECEIVED_FILE_DATA = 'CLEAR_RECEIVED_FILE_DATA'
+export const CLEAR_SUCCESS_NOTIFICATION = 'CLEAR_SUCCESS_NOTIFICATION'
 export const ERROR_NOTIFICATION = 'ERROR_NOTIFICATION'
+export const FETCH_CLIENT_STATS = 'FETCH_CLIENT_STATS'
+export const FETCH_DIR = 'FETCH_DIR'
+export const FETCH_MEMBER = 'FETCH_MEMBER'
+export const FETCH_NODE = 'FETCH_NODE'
 export const FETCHED_ALLOC = 'FETCHED_ALLOC'
 export const FETCHED_ALLOCS = 'FETCHED_ALLOCS'
 export const FETCHED_CLIENT_STATS = 'FETCHED_CLIENT_STATS';
@@ -20,10 +26,10 @@ export const FETCHED_MEMBER = 'FETCHED_MEMBER'
 export const FETCHED_MEMBERS = 'FETCHED_MEMBERS'
 export const FETCHED_NODE = 'FETCHED_NODE'
 export const FETCHED_NODES = 'FETCHED_NODES'
-export const FETCH_CLIENT_STATS = 'FETCH_CLIENT_STATS'
-export const FETCH_DIR = 'FETCH_DIR'
-export const FETCH_MEMBER = 'FETCH_MEMBER'
-export const FETCH_NODE = 'FETCH_NODE'
+export const JOB_HIDE_DIALOG = 'JOB_HIDE_DIALOG'
+export const JOB_SHOW_DIALOG = 'JOB_SHOW_DIALOG'
+export const STOP_JOB = 'STOP_JOB'
+export const SUBMIT_JOB = 'SUBMIT_JOB'
 export const SUCCESS_NOTIFICATION = 'SUCCESS_NOTIFICATION'
 export const UNWATCH_ALLOC = 'UNWATCH_ALLOC'
 export const UNWATCH_ALLOCS = 'UNWATCH_ALLOCS'
@@ -89,7 +95,8 @@ function subscribe (socket) {
       const data = JSON.parse(event.data)
       emit({
         type: data.Type,
-        payload: data.Payload
+        payload: data.Payload,
+        index: data.Index,
       })
     }
 
@@ -114,6 +121,8 @@ function* write (socket) {
       FETCH_DIR,
       FETCH_MEMBER,
       FETCH_NODE,
+      STOP_JOB,
+      SUBMIT_JOB,
       UNWATCH_ALLOC,
       UNWATCH_ALLOCS,
       UNWATCH_ALLOCS_SHALLOW,

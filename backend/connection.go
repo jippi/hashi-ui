@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"math/rand"
@@ -240,6 +241,14 @@ func (c *Connection) process(action Action) {
 	// Change task group count
 	case changeTaskGroupCount:
 		go c.changeTaskGroupCount(action)
+
+	// Submit (create or update) a job
+	case submitJob:
+		go c.submitJob(action)
+
+	// Stop a job
+	case stopJob:
+		go c.stopJob(action)
 	}
 }
 
@@ -801,7 +810,7 @@ func (c *Connection) changeTaskGroupCount(action Action) {
 		return
 	}
 
-	currentCount := foundTaskGroup.Count
+	originalCount := foundTaskGroup.Count
 
 	switch scaleAction {
 	case "increase":
@@ -826,13 +835,65 @@ func (c *Connection) changeTaskGroupCount(action Action) {
 
 	switch scaleAction {
 	case "increase":
-		updateAction.Payload = fmt.Sprintf("Successfully increased Task Group count for %s:%s from %d to %d", jobID, taskGroupID, currentCount, foundTaskGroup.Count)
+		updateAction.Payload = fmt.Sprintf("Successfully increased task group count for %s:%s from %d to %d", jobID, taskGroupID, originalCount, foundTaskGroup.Count)
 	case "decrease":
-		updateAction.Payload = fmt.Sprintf("Successfully decreased Task Group count for %s:%s from %d to %d", jobID, taskGroupID, currentCount, foundTaskGroup.Count)
+		updateAction.Payload = fmt.Sprintf("Successfully decreased task group count for %s:%s from %d to %d", jobID, taskGroupID, originalCount, foundTaskGroup.Count)
 	case "stop":
-		updateAction.Payload = fmt.Sprintf("Successfully stop Task Group count %s:%s", jobID, taskGroupID)
+		updateAction.Payload = fmt.Sprintf("Successfully stopped task group %s:%s", jobID, taskGroupID)
 	}
 
 	logger.Info(updateAction.Payload)
 	c.send <- updateAction
+}
+
+func (c *Connection) submitJob(action Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	if *flagReadOnly == true {
+		logger.Errorf("Unable to submit job: READONLY is set to true")
+		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		return
+	}
+
+	jobjson := action.Payload.(string)
+	runjob := api.Job{}
+	json.Unmarshal([]byte(jobjson), &runjob)
+
+	logger.Infof("Started submission of job with id: %s", runjob.ID)
+
+	_, _, err := c.hub.nomad.Client.Jobs().Register(&runjob, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to submit job '%s' : %s", runjob.ID, err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to submit job : %s", err), Index: index}
+		return
+	}
+
+	logger.Infof("connection: successfully submit job '%s'", runjob.ID)
+	c.send <- &Action{Type: successNotification, Payload: "The job has been successfully updated.", Index: index}
+}
+
+func (c *Connection) stopJob(action Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	if *flagReadOnly == true {
+		logger.Errorf("Unable to stop job: READONLY is set to true")
+		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		return
+	}
+
+	jobID := action.Payload.(string)
+
+	logger.Infof("Begin stop of job with id: %s", jobID)
+
+	_, _, err := c.hub.nomad.Client.Jobs().Deregister(jobID, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to stop job '%s' : %s", jobID, err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to stop job : %s", err), Index: index}
+		return
+	}
+
+	logger.Infof("connection: successfully stopped job '%s'", jobID)
+	c.send <- &Action{Type: successNotification, Payload: "The job has been successfully stopped.", Index: index}
 }

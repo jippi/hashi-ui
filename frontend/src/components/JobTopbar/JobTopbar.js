@@ -26,15 +26,15 @@ class _JobTopbar extends PureComponent {
       return 0
     }
 
-    if (end.startsWith('allocations')) {
+    if (end.startsWith('taskGroups')) {
       return 1
     }
 
-    if (end.startsWith('evaluations')) {
+    if (end.startsWith('allocations')) {
       return 2
     }
 
-    if (end.startsWith('taskGroups')) {
+    if (end.startsWith('evaluations')) {
       return 3
     }
 
@@ -61,6 +61,11 @@ class _JobTopbar extends PureComponent {
           onTouchTap={ () => this.handleActive('info') }
         />
         <BottomNavigationItem
+          label='Groups'
+          icon={ taskGroupIcon }
+          onTouchTap={ () => this.handleActive('taskGroups') }
+        />
+        <BottomNavigationItem
           label='Allocations'
           icon={ allocationIcon }
           onTouchTap={ () => this.handleActive('allocations') }
@@ -69,11 +74,6 @@ class _JobTopbar extends PureComponent {
           label='Evaluations'
           icon={ evaluationIcon }
           onTouchTap={ () => this.handleActive('evaluations') }
-        />
-        <BottomNavigationItem
-          label='Task Groups'
-          icon={ taskGroupIcon }
-          onTouchTap={ () => this.handleActive('taskGroups') }
         />
         <BottomNavigationItem
           label='Raw'

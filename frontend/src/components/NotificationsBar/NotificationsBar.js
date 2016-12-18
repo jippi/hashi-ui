@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import Snackbar from 'material-ui/Snackbar'
 import { green500, red500 } from 'material-ui/styles/colors'
+import { CLEAR_ERROR_NOTIFICATION, CLEAR_SUCCESS_NOTIFICATION } from '../../sagas/event'
 
 class NotificationsBar extends Component {
 
@@ -36,6 +37,8 @@ class NotificationsBar extends Component {
   }
 
   resetSuccessMessage() {
+    this.props.dispatch({ type: CLEAR_SUCCESS_NOTIFICATION });
+
     this.setState({
       ...this.state,
       showSuccessMessage: false,
@@ -44,6 +47,8 @@ class NotificationsBar extends Component {
   }
 
   resetErrorMessage() {
+    this.props.dispatch({ type: CLEAR_ERROR_NOTIFICATION });
+
     this.setState({
       ...this.state,
       showErrorMessage: false,
@@ -57,16 +62,18 @@ class NotificationsBar extends Component {
         <Snackbar
           open={ this.state.showErrorMessage }
           message={ this.state.errorMessage }
-          autoHideDuration={ 3000 }
-          bodyStyle={{ backgroundColor: red500 }}
+          autoHideDuration={ 5000 }
+          style={{ width: '100%', textAlign: 'center' }}
+          bodyStyle={{ backgroundColor: red500, width: '100%', maxWidth: 'none' }}
           onRequestClose={ () => { this.resetErrorMessage() } }
         />
 
         <Snackbar
           open={ this.state.showSuccessMessage }
           message={ this.state.successMessage }
-          autoHideDuration={ 3000 }
-          bodyStyle={{ backgroundColor: green500 }}
+          autoHideDuration={ 5000 }
+          style={{ width: '100%', textAlign: 'center' }}
+          bodyStyle={{ backgroundColor: green500, width: '100%', maxWidth: 'none' }}
           onRequestClose={ () => { this.resetSuccessMessage() } }
         />
       </div>
