@@ -245,6 +245,10 @@ func (c *Connection) process(action Action) {
 	// Submit (create or update) a job
 	case submitJob:
 		go c.submitJob(action)
+
+	// Stop a job
+	case stopJob:
+		go c.stopJob(action)
 	}
 }
 
@@ -867,4 +871,29 @@ func (c *Connection) submitJob(action Action) {
 
 	logger.Infof("connection: successfully submit job '%s'", runjob.ID)
 	c.send <- &Action{Type: successNotification, Payload: "The job has been successfully updated.", Index: index}
+}
+
+func (c *Connection) stopJob(action Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	if *flagReadOnly == true {
+		logger.Errorf("Unable to stop job: READONLY is set to true")
+		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		return
+	}
+
+	jobID := action.Payload.(string)
+
+	logger.Infof("Begin stop of job with id: %s", jobID)
+
+	_, _, err := c.hub.nomad.Client.Jobs().Deregister(jobID, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to stop job '%s' : %s", jobID, err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to stop job : %s", err), Index: index}
+		return
+	}
+
+	logger.Infof("connection: successfully stopped job '%s'", jobID)
+	c.send <- &Action{Type: successNotification, Payload: "The job has been successfully stopped.", Index: index}
 }

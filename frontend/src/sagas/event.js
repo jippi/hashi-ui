@@ -26,6 +26,9 @@ export const FETCHED_MEMBER = 'FETCHED_MEMBER'
 export const FETCHED_MEMBERS = 'FETCHED_MEMBERS'
 export const FETCHED_NODE = 'FETCHED_NODE'
 export const FETCHED_NODES = 'FETCHED_NODES'
+export const JOB_HIDE_DIALOG = 'JOB_HIDE_DIALOG'
+export const JOB_SHOW_DIALOG = 'JOB_SHOW_DIALOG'
+export const STOP_JOB = 'STOP_JOB'
 export const SUBMIT_JOB = 'SUBMIT_JOB'
 export const SUCCESS_NOTIFICATION = 'SUCCESS_NOTIFICATION'
 export const UNWATCH_ALLOC = 'UNWATCH_ALLOC'
@@ -118,6 +121,7 @@ function* write (socket) {
       FETCH_DIR,
       FETCH_MEMBER,
       FETCH_NODE,
+      STOP_JOB,
       SUBMIT_JOB,
       UNWATCH_ALLOC,
       UNWATCH_ALLOCS,

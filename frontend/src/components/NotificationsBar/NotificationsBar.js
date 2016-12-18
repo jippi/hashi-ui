@@ -62,7 +62,7 @@ class NotificationsBar extends Component {
         <Snackbar
           open={ this.state.showErrorMessage }
           message={ this.state.errorMessage }
-          autoHideDuration={ 500000 }
+          autoHideDuration={ 5000 }
           style={{ width: '100%', textAlign: 'center' }}
           bodyStyle={{ backgroundColor: red500, width: '100%', maxWidth: 'none' }}
           onRequestClose={ () => { this.resetErrorMessage() } }
@@ -71,7 +71,7 @@ class NotificationsBar extends Component {
         <Snackbar
           open={ this.state.showSuccessMessage }
           message={ this.state.successMessage }
-          autoHideDuration={ 500000 }
+          autoHideDuration={ 5000 }
           style={{ width: '100%', textAlign: 'center' }}
           bodyStyle={{ backgroundColor: green500, width: '100%', maxWidth: 'none' }}
           onRequestClose={ () => { this.resetSuccessMessage() } }

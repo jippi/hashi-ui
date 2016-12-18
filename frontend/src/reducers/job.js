@@ -1,4 +1,4 @@
-import { FETCHED_JOB, FETCHED_JOBS } from '../sagas/event'
+import { FETCHED_JOB, FETCHED_JOBS, JOB_HIDE_DIALOG, JOB_SHOW_DIALOG } from '../sagas/event'
 
 export function JobInfoReducer (state = { TaskGroups: [] }, action) {
   switch (action.type) {
@@ -17,6 +17,17 @@ export function JobInfoReducer (state = { TaskGroups: [] }, action) {
   default:
   }
 
+  return state
+}
+
+export function JobDialogReducer (state = [], action) {
+  switch (action.type) {
+  case JOB_SHOW_DIALOG:
+    return action.payload
+  case JOB_HIDE_DIALOG:
+    return ''
+  default:
+  }
   return state
 }
 

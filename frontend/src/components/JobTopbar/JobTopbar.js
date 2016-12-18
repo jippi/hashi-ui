@@ -61,7 +61,7 @@ class _JobTopbar extends PureComponent {
           onTouchTap={ () => this.handleActive('info') }
         />
         <BottomNavigationItem
-          label='Task Groups'
+          label='Groups'
           icon={ taskGroupIcon }
           onTouchTap={ () => this.handleActive('taskGroups') }
         />

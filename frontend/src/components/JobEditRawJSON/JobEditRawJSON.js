@@ -1,13 +1,11 @@
 import React from 'react'
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon'
-import RaisedButton from 'material-ui/RaisedButton';
 import { connect } from 'react-redux'
+import { SUBMIT_JOB, JOB_HIDE_DIALOG } from '../../sagas/event'
 import AceEditor from 'react-ace';
 import 'brace/mode/json'
 import 'brace/theme/github'
-import { SUBMIT_JOB } from '../../sagas/event'
 
 class JobEditRawJSON extends React.Component {
 
@@ -16,19 +14,7 @@ class JobEditRawJSON extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { open: false }
-  }
-
-  handleOpen = () => {
-    this.modifiedJob = JSON.stringify(this.props.job, null, 2)
-
-    this.setState({
-      open: true,
-      job: this.props.job,
-      submittingJob: false,
-      jobOutOfSync: false,
-      readOnlyEditor: false,
-    });
+    this.state = {}
   }
 
   /**
@@ -49,10 +35,7 @@ class JobEditRawJSON extends React.Component {
    * @return {void}
    */
   handleCancel = () => {
-    this.setState({
-      ...this.state,
-      open: false
-    });
+    this.props.dispatch({ type: JOB_HIDE_DIALOG })
   };
 
   /**
@@ -79,11 +62,19 @@ class JobEditRawJSON extends React.Component {
       return;
     }
 
+    // if there is no dialog to be shown, reset
+    if (!nextProps.jobDialog) {
+      this.modifiedJob = '';
+      this.state = {}
+      this.forceUpdate();
+      return;
+    }
+
     // if we get props while submitting a job
     if (this.state.submittingJob) {
       // on success, close the dialog
       if (nextProps.successNotification.index) {
-        this.setState({ open: false })
+        this.props.dispatch({ type: JOB_HIDE_DIALOG })
         return;
       }
 
@@ -94,12 +85,23 @@ class JobEditRawJSON extends React.Component {
           submittingJob: false,
           readOnlyEditor: false,
         })
+
         return;
       }
     }
 
     // if we got no job state, don't bother with JobModifyIndex check
+    // just create a new pristine state
     if (!this.state.job) {
+      this.modifiedJob = JSON.stringify(nextProps.job, null, 2)
+
+      this.setState({
+        job: nextProps.job,
+        submittingJob: false,
+        jobOutOfSync: false,
+        readOnlyEditor: false,
+      });
+
       return;
     }
 
@@ -136,46 +138,40 @@ class JobEditRawJSON extends React.Component {
     }
 
     return (
-      <div>
-        <RaisedButton
-          label='Edit Job'
-          onTouchTap={ this.handleOpen }
-          icon={ <FontIcon className='material-icons'>edit</FontIcon> }
+      <Dialog
+        title={ title }
+        titleStyle={ titleStyle }
+        actions={ actions }
+        modal
+        open={ this.props.jobDialog === 'edit' }
+        bodyStyle={{ padding: 0 }}
+      >
+        <AceEditor
+          mode='json'
+          theme='github'
+          name='edit-job-json'
+          value={ this.modifiedJob }
+          readOnly={ this.state.readOnlyEditor }
+          width='100%'
+          height={ 380 }
+          tabSize={ 2 }
+          onChange={ this.onEditorChange }
+          wrapEnabled
+          focus
         />
-        <Dialog
-          title={ title }
-          titleStyle={ titleStyle }
-          actions={ actions }
-          modal
-          open={ this.state.open }
-          bodyStyle={{ padding: 0 }}
-        >
-          <AceEditor
-            mode='json'
-            theme='github'
-            name='edit-job-json'
-            value={ this.modifiedJob }
-            readOnly={ this.state.readOnlyEditor }
-            width='100%'
-            height={ 380 }
-            tabSize={ 2 }
-            onChange={ this.onEditorChange }
-            wrapEnabled
-            focus
-          />
-        </Dialog>
-      </div>
+      </Dialog>
     );
   }
 }
 
-function mapStateToProps ({ job, errorNotification, successNotification }) {
-  return { job, errorNotification, successNotification }
+function mapStateToProps ({ job, jobDialog, errorNotification, successNotification }) {
+  return { job, jobDialog, errorNotification, successNotification }
 }
 
 JobEditRawJSON.propTypes = {
   dispatch: React.PropTypes.func.isRequired,
   job: React.PropTypes.object.isRequired,
+  jobDialog: React.PropTypes.string,
 }
 
 export default connect(mapStateToProps)(JobEditRawJSON)
