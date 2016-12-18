@@ -37,7 +37,7 @@ const ClientInfo = ({ node }) =>
               { nodeProps.map(nodeProp =>
                 <div key={ nodeProp }>
                   <dt>{ nodeProp }</dt>
-                  <dd>{ node[nodeProp] }</dd>
+                  <dd>{ node[nodeProp] ? node[nodeProp] : '-' }</dd>
                 </div>
               )}
             </dl>
