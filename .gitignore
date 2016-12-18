@@ -1,5 +1,6 @@
 frontend/node_modules
 backend/vendor
+backend/backend
 
 .tern-port
 .sass-cache
