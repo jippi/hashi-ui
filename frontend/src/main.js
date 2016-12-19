@@ -5,7 +5,7 @@ import { createHistory } from 'history'
 import { useRouterHistory } from 'react-router'
 
 const browserHistory = useRouterHistory(createHistory)({
-  basename: window['NOMAD_ENDPOINT'].replace(/^[.a-zA-Z0-9]+:?[0-9]*/, '')
+  basename: window['NOMAD_ENDPOINT']
 })
 
 import { Provider } from 'react-redux'
