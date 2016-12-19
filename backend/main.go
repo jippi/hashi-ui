@@ -253,11 +253,11 @@ func main() {
 
 		var endpointURL string
 		if cfg.ProxyAddress != "" {
-			endpointURL = "\"cfg.ProxyAddress\""
+			endpointURL = fmt.Sprintf("\"%s\"", strings.TrimSuffix(cfg.ProxyAddress, "/"))
 		} else {
-			endpointURL = "document.location.hostname + ':' + document.location.port"
+			endpointURL = "document.location.hostname + ':' + window.NOMAD_ENDPOINT_PORT"
 		}
-		response = append(response, fmt.Sprintf("window.NOMAD_ENDPOINT=%s", strings.TrimSuffix(endpointURL, "/")))
+		response = append(response, fmt.Sprintf("window.NOMAD_ENDPOINT=%s", endpointURL))
 
 		w.Header().Set("Content-Type", "application/javascript")
 		w.Write([]byte(strings.Join(response, "\n")))
