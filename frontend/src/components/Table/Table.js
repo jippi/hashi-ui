@@ -16,8 +16,11 @@ class Table extends MaterialTable {
       overflow: 'display'
     },
 
-    bodyStyle: {
+    style: {
       tableLayout: 'auto',
+    },
+
+    bodyStyle: {
       overflowX: 'inherit',
       overflowY: 'inherit'
     }

@@ -38,7 +38,7 @@ class AllocationInfo extends Component {
                 <TableHeaderColumn style={{ width: 180 }}>Duration</TableHeaderColumn>
                 <TableHeaderColumn style={{ width: 180 }}>Type</TableHeaderColumn>
                 <TableHeaderColumn>Message / Reason</TableHeaderColumn>
-                <TableHeaderColumn style={{ width: 180 }}>Signal</TableHeaderColumn>
+                <TableHeaderColumn style={{ width: 75 }}>Signal</TableHeaderColumn>
                 <TableHeaderColumn style={{ width: 50 }}>Code</TableHeaderColumn>
               </TableRow>
             </TableHeader>
@@ -79,7 +79,7 @@ class AllocationInfo extends Component {
                         || element.TaskSignalReason
                       }
                     </TableRowColumn>
-                    <TableRowColumn style={{ width: 180 }}>
+                    <TableRowColumn style={{ width: 75 }}>
                       { element.Signal || element.TaskSignal }
                     </TableRowColumn>
                     <TableRowColumn style={{ width: 50 }}>
