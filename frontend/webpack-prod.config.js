@@ -10,7 +10,8 @@ var webpackConfig = require("./webpack-base.config.js");
 webpackConfig = merge(webpackConfig, {
   output: {
     filename: 'static/[name].[chunkhash].js',
-    chunkFilename: 'static/[name].[chunkhash].chunks.js'
+    chunkFilename: 'static/[name].[chunkhash].chunks.js',
+    publicPath: '',
   },
   bail: true,
   entry: [

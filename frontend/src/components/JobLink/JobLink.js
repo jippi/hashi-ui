@@ -5,14 +5,6 @@ const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId }) => {
 
   const JobIdUrl = encodeURIComponent(jobId)
 
-  if (taskId) {
-    if (!taskGroupId) {
-      throw new Error('Cant link to a job taskId without a taskGroupId')
-    }
-
-    linkAppend = linkAppend + '/tasks'
-  }
-
   if (taskGroupId) {
     linkAppend = linkAppend + '/taskGroups'
   }
@@ -21,8 +13,20 @@ const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId }) => {
     children = jobId
   }
 
+  const query = {
+    taskGroupId,
+    taskId
+  }
+
+  const to = {
+    pathname: '/jobs/' + JobIdUrl + linkAppend,
+    query
+  }
+
+  console.log(to)
+
   return (
-    <Link to={{ pathname: `/jobs/${JobIdUrl}${linkAppend}`, query: { taskGroupId, taskId } }}>
+    <Link to={ to }>
       { children }
     </Link>
   )

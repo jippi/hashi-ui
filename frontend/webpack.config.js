@@ -32,7 +32,7 @@ webpackConfig = merge(webpackConfig, {
     }),
     new webpack.DefinePlugin({ 'process.env.NODE_ENV': '"development"' }),
     new webpack.DefinePlugin({ 'process.env.GO_PORT': process.env.GO_PORT || 3000 }),
-    new ExtractTextPlugin('bundle.css', { allChunks: true }),
+    new ExtractTextPlugin('static/bundle.css', { allChunks: true }),
     new webpack.HotModuleReplacementPlugin()
   ],
 

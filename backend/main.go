@@ -245,29 +245,40 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc(newrelic.WrapHandleFunc(app, "/ws", hub.Handler))
 	router.HandleFunc(newrelic.WrapHandleFunc(app, "/download/{path:.*}", nomad.downloadFile))
-	router.HandleFunc(newrelic.WrapHandleFunc(app, "/config.js", func(w http.ResponseWriter, r *http.Request) {
-		response := make([]string, 0)
-		response = append(response, fmt.Sprintf("window.NOMAD_READ_ONLY=%s", strconv.FormatBool(cfg.ReadOnly)))
-		response = append(response, fmt.Sprintf("window.NOMAD_ADDR=\"%s\"", cfg.Address))
-		response = append(response, fmt.Sprintf("window.NOMAD_LOG_LEVEL=\"%s\"", cfg.LogLevel))
-
-		var endpointURL string
-		if cfg.ProxyAddress != "" {
-			endpointURL = fmt.Sprintf("\"%s\"", strings.TrimSuffix(cfg.ProxyAddress, "/"))
-		} else {
-			endpointURL = "document.location.hostname + ':' + window.NOMAD_ENDPOINT_PORT"
-		}
-		response = append(response, fmt.Sprintf("window.NOMAD_ENDPOINT=%s", endpointURL))
-
-		w.Header().Set("Content-Type", "application/javascript")
-		w.Write([]byte(strings.Join(response, "\n")))
-	}))
-	router.PathPrefix("/static").Handler(http.FileServer(myAssetFS))
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if bs, err := myAssetFS.Open("/index.html"); err != nil {
-			logger.Infof("%s", err)
+		responseFile := "/index.html"
+
+		if idx := strings.Index(r.URL.Path, "static/"); idx != -1 {
+			responseFile = r.URL.Path[idx:]
+		}
+
+		if idx := strings.Index(r.URL.Path, "favicon.png"); idx != -1 {
+			responseFile = "/favicon.png"
+		}
+
+		if idx := strings.Index(r.URL.Path, "config.js"); idx != -1 {
+			response := make([]string, 0)
+			response = append(response, fmt.Sprintf("window.NOMAD_READ_ONLY=%s", strconv.FormatBool(cfg.ReadOnly)))
+			response = append(response, fmt.Sprintf("window.NOMAD_ADDR=\"%s\"", cfg.Address))
+			response = append(response, fmt.Sprintf("window.NOMAD_LOG_LEVEL=\"%s\"", cfg.LogLevel))
+
+			var endpointURL string
+			if cfg.ProxyAddress != "" {
+				endpointURL = fmt.Sprintf("\"%s\"", strings.TrimSuffix(cfg.ProxyAddress, "/"))
+			} else {
+				endpointURL = fmt.Sprintf("\"%s\"", cfg.ListenAddress)
+			}
+			response = append(response, fmt.Sprintf("window.NOMAD_ENDPOINT=%s", endpointURL))
+
+			w.Header().Set("Content-Type", "application/javascript")
+			w.Write([]byte(strings.Join(response, "\n")))
+			return
+		}
+
+		if bs, err := myAssetFS.Open(responseFile); err != nil {
+			logger.Errorf("%s: %s", responseFile, err)
 		} else {
-			http.ServeContent(w, r, "index.html", time.Now(), bs)
+			http.ServeContent(w, r, responseFile[1:], time.Now(), bs)
 		}
 	})
 

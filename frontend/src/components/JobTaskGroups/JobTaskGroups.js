@@ -17,7 +17,7 @@ const JobTaskGroups = ({ job, location }) => {
     taskGroups.push(
       <TableRow key={ taskGroup.ID }>
         <TableRowColumn>
-          <JobLink taskGroupId={ taskGroup.ID } jobId={ job.ID }>{ taskGroup.Name }</JobLink>
+          <JobLink jobId={ job.ID } taskGroupId={ taskGroup.ID }>{ taskGroup.Name }</JobLink>
         </TableRowColumn>
         <TableRowColumn style={{ textAlign: 'right' }}>{ taskGroup.Count }</TableRowColumn>
         <TableRowColumn>
@@ -33,7 +33,7 @@ const JobTaskGroups = ({ job, location }) => {
         <TableRow key={ task.ID }>
           <TableRowColumn>
             <JobLink jobId={ job.ID } taskGroupId={ taskGroup.ID } taskId={ task.ID } >
-              { task.Name }
+              { task.Name } ??
             </JobLink>
           </TableRowColumn>
           <TableRowColumn>{ task.Driver }</TableRowColumn>
@@ -48,7 +48,8 @@ const JobTaskGroups = ({ job, location }) => {
     })
   })
 
-  let taskGroupId = location.query.taskGroupId
+  let query = location.query || {};
+  let taskGroupId = query.taskGroupId
 
   // Auto-select first task group if only one is available.
   if (!taskGroupId && job.TaskGroups.length > 0) {

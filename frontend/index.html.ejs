@@ -38,7 +38,7 @@
   <% } %>
 
   <% if (htmlWebpackPlugin.options.window) { %>
-  <script src="http://<%= htmlWebpackPlugin.options.window['NOMAD_ENDPOINT']%>:<%= htmlWebpackPlugin.options.window['NOMAD_ENDPOINT_PORT']%>/config.js"></script>
+  <script src="//<%= htmlWebpackPlugin.options.window['NOMAD_ENDPOINT']%>:<%= htmlWebpackPlugin.options.window['NOMAD_ENDPOINT_PORT']%>/config.js"></script>
   <% } else { %>
   <script type="text/javascript" src="config.js"></script>
   <% } %>
