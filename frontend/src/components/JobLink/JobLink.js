@@ -19,11 +19,9 @@ const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId }) => {
   }
 
   const to = {
-    pathname: '/jobs/' + JobIdUrl + linkAppend,
+    pathname: `/jobs/${JobIdUrl}${linkAppend}`,
     query
   }
-
-  console.log(to)
 
   return (
     <Link to={ to }>
