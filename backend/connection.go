@@ -36,7 +36,7 @@ const (
 // maintains a set to keep track of the running watches.
 type Connection struct {
 	ID        uuid.UUID
-	shortId   string
+	shortID   string
 	socket    *websocket.Conn
 	hub       *Hub
 	receive   chan *Action
@@ -47,11 +47,11 @@ type Connection struct {
 
 // NewConnection creates a new connection.
 func NewConnection(hub *Hub, socket *websocket.Conn) *Connection {
-	connectionId := uuid.NewV4()
+	connectionID := uuid.NewV4()
 
 	return &Connection{
-		ID:        connectionId,
-		shortId:   fmt.Sprintf("%s", connectionId)[0:8],
+		ID:        connectionID,
+		shortID:   fmt.Sprintf("%s", connectionID)[0:8],
 		watches:   set.New(),
 		hub:       hub,
 		socket:    socket,
@@ -62,22 +62,22 @@ func NewConnection(hub *Hub, socket *websocket.Conn) *Connection {
 }
 
 func (c *Connection) Warningf(format string, args ...interface{}) {
-	message := fmt.Sprintf("[%s] ", c.shortId) + format
+	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Warningf(message, args...)
 }
 
 func (c *Connection) Errorf(format string, args ...interface{}) {
-	message := fmt.Sprintf("[%s] ", c.shortId) + format
+	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Errorf(message, args...)
 }
 
 func (c *Connection) Infof(format string, args ...interface{}) {
-	message := fmt.Sprintf("[%s] ", c.shortId) + format
+	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Infof(message, args...)
 }
 
 func (c *Connection) Debugf(format string, args ...interface{}) {
-	message := fmt.Sprintf("[%s] ", c.shortId) + format
+	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Debugf(message, args...)
 }
 
@@ -626,11 +626,6 @@ func (c *Connection) fetchDir(action Action) {
 	c.send <- &Action{Type: fetchedDir, Payload: dir, Index: 0}
 }
 
-type Line struct {
-	Data string
-	File string
-}
-
 func (c *Connection) watchFile(action Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
@@ -664,8 +659,8 @@ func (c *Connection) watchFile(action Action) {
 		return
 	}
 
-	var origin string = api.OriginStart
-	var offset int64 = 0
+	var origin = api.OriginStart
+	var offset int64
 	var oversized bool
 
 	if file.Size > maxFileSize {
@@ -850,7 +845,7 @@ func (c *Connection) submitJob(action Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
-	if *flagReadOnly == true {
+	if *flagReadOnly {
 		logger.Errorf("Unable to submit job: READONLY is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
 		return
@@ -877,7 +872,7 @@ func (c *Connection) stopJob(action Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
-	if *flagReadOnly == true {
+	if *flagReadOnly {
 		logger.Errorf("Unable to stop job: READONLY is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
 		return

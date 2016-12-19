@@ -54,7 +54,6 @@ const (
 	fetchedDir       = "FETCHED_DIR"
 	watchFile        = "WATCH_FILE"
 	unwatchFile      = "UNWATCH_FILE"
-	unwatchedFile    = "UNWATCHED_FILE"
 	fetchedFile      = "FETCHED_FILE"
 	fileStreamFailed = "FILE_STREAM_FAILED"
 

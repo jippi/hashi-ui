@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/hashicorp/nomad/api"
 	"time"
+
+	"github.com/hashicorp/nomad/api"
 )
 
 func (n *Nomad) watchAllocs() {
@@ -55,7 +56,7 @@ func (n *Nomad) watchAllocsShallow() {
 
 		logger.Debugf("Allocations (shallow) index is changed (%d <> %d)", localWaitIndex, remoteWaitIndex)
 
-		for i, _ := range allocations {
+		for i := range allocations {
 			allocations[i].TaskStates = make(map[string]*api.TaskState)
 		}
 

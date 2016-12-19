@@ -141,7 +141,7 @@ func (c *Config) Parse() {
 
 	// flags
 
-	if *flagReadOnly == true {
+	if *flagReadOnly {
 		c.ReadOnly = *flagReadOnly
 	}
 
@@ -276,8 +276,8 @@ func main() {
 			return
 		}
 
-		if bs, err := myAssetFS.Open(responseFile); err != nil {
-			logger.Errorf("%s: %s", responseFile, err)
+		if bs, assetErr := myAssetFS.Open(responseFile); err != nil {
+			logger.Errorf("%s: %s", responseFile, assetErr)
 		} else {
 			http.ServeContent(w, r, responseFile[1:], time.Now(), bs)
 		}

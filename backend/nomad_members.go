@@ -4,15 +4,14 @@ import (
 	"crypto/md5"
 	"crypto/sha1"
 	"encoding/binary"
-	"errors"
 	"fmt"
-	"github.com/cnf/structhash"
-	"github.com/hashicorp/nomad/api"
 	"io"
 	"sort"
 	"strings"
 	"time"
 
+	"github.com/cnf/structhash"
+	"github.com/hashicorp/nomad/api"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -26,9 +25,9 @@ func (a MembersNameSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
 // Wrapper around AgentMember that provides ID field. This is made to keep everything
 // consistent i.e. other types have ID field.
 type AgentMemberWithID struct {
-	api.AgentMember
 	ID     string
 	Leader bool
+	api.AgentMember
 }
 
 func (n *Nomad) watchMembers() {
@@ -75,7 +74,7 @@ func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 	for _, m := range members.Members {
 		x, err := NewAgentMemberWithID(m)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("Failed to create AgentMemberWithID %s: %#v", err, m))
+			return nil, fmt.Errorf("Failed to create AgentMemberWithID %s: %#v", err, m)
 		}
 		ms = append(ms, x)
 	}
@@ -89,7 +88,7 @@ func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 	if leader != "" {
 		parts := strings.Split(leader, ":")
 		if len(parts) != 2 {
-			return nil, errors.New(fmt.Sprintf("Failed to parse leader: %s", leader))
+			return nil, fmt.Errorf("Failed to parse leader: %s", leader)
 		}
 		addr, port := parts[0], parts[1]
 
@@ -116,7 +115,7 @@ func (n *Nomad) MemberWithID(ID string) (*AgentMemberWithID, error) {
 		}
 	}
 
-	return nil, errors.New(fmt.Sprintf("Unable to find member with ID: %s", ID))
+	return nil, fmt.Errorf("Unable to find member with ID: %s", ID)
 }
 
 func NewAgentMemberWithID(member *api.AgentMember) (*AgentMemberWithID, error) {

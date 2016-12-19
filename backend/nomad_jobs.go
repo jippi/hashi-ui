@@ -3,8 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/hashicorp/nomad/api"
 	"time"
+
+	"github.com/hashicorp/nomad/api"
 )
 
 func (n *Nomad) watchJobs() {
@@ -33,7 +34,7 @@ func (n *Nomad) watchJobs() {
 }
 
 func (n *Nomad) updateJob(job *api.Job) (*Action, error) {
-	if *flagReadOnly == true {
+	if *flagReadOnly {
 		logger.Errorf("Unable to run jon: READONLY is set to true")
 		return &Action{Type: errorNotification, Payload: "The backend server is set to read-only"}, errors.New("Nomad is in read-only mode")
 	}
