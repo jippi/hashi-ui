@@ -53,13 +53,17 @@ func worker(payload *ClusterStatisticsWorkerPayload) {
 			taksResult := &ClusterStatisticsResult{}
 			taksResult.CPUCores = len(stats.CPU)
 			taksResult.CPUIdleTime = 0
+			taksResult.MemoryUsed = 0
+			taksResult.MemoryTotal = 0
 
 			for _, core := range stats.CPU {
 				taksResult.CPUIdleTime = taksResult.CPUIdleTime + core.Idle
 			}
 
-			taksResult.MemoryUsed = stats.Memory.Used
-			taksResult.MemoryTotal = stats.Memory.Total
+			if stats.Memory != nil {
+				taksResult.MemoryUsed = stats.Memory.Used
+				taksResult.MemoryTotal = stats.Memory.Total
+			}
 
 			payload.results <- taksResult
 
