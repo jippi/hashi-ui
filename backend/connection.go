@@ -61,21 +61,25 @@ func NewConnection(hub *Hub, socket *websocket.Conn) *Connection {
 	}
 }
 
+// Warningf is a stupid wrapper for logger.Warningf
 func (c *Connection) Warningf(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Warningf(message, args...)
 }
 
+// Errorf is a stupid wrapper for logger.Errorf
 func (c *Connection) Errorf(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Errorf(message, args...)
 }
 
+// Infof is a stupid wrapper for logger.Infof
 func (c *Connection) Infof(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Infof(message, args...)
 }
 
+// Debugf is a stupid wrapper for logger.Debugf
 func (c *Connection) Debugf(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Debugf(message, args...)

@@ -5,11 +5,13 @@ import (
 	"time"
 )
 
+// ClusterStatisticsTask is meta data about a client when passed into the cluster statistics worker
 type ClusterStatisticsTask struct {
 	NodeID   string
 	NodeName string
 }
 
+// ClusterStatisticsResult is struct for the result of a finished client statistics task
 type ClusterStatisticsResult struct {
 	CPUCores    int
 	CPUIdleTime float64
@@ -17,6 +19,7 @@ type ClusterStatisticsResult struct {
 	MemoryTotal uint64
 }
 
+// ClusterStatisticsWorkerPayload is the payload for processing a single collection of client statistics
 type ClusterStatisticsWorkerPayload struct {
 	quit    <-chan bool
 	tasks   <-chan *ClusterStatisticsTask
@@ -25,6 +28,7 @@ type ClusterStatisticsWorkerPayload struct {
 	wg      *sync.WaitGroup
 }
 
+// ClusterStatisticsAggregatedResult is the final aggregated result for all clients collected resources
 type ClusterStatisticsAggregatedResult struct {
 	Clients     int
 	CPUCores    int

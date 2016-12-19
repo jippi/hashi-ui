@@ -15,14 +15,14 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-// NameSorter sorts planets by name.
+// MembersNameSorter sorts planets by name
 type MembersNameSorter []*AgentMemberWithID
 
 func (a MembersNameSorter) Len() int           { return len(a) }
 func (a MembersNameSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a MembersNameSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
 
-// Wrapper around AgentMember that provides ID field. This is made to keep everything
+// AgentMemberWithID is a Wrapper around AgentMember that provides ID field. This is made to keep everything
 // consistent i.e. other types have ID field.
 type AgentMemberWithID struct {
 	ID     string
@@ -72,9 +72,9 @@ func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 
 	ms := make([]*AgentMemberWithID, 0, len(members.Members))
 	for _, m := range members.Members {
-		x, err := NewAgentMemberWithID(m)
-		if err != nil {
-			return nil, fmt.Errorf("Failed to create AgentMemberWithID %s: %#v", err, m)
+		x, memberErr := NewAgentMemberWithID(m)
+		if memberErr != nil {
+			return nil, fmt.Errorf("Failed to create AgentMemberWithID %s: %#v", memberErr, m)
 		}
 		ms = append(ms, x)
 	}
@@ -118,6 +118,7 @@ func (n *Nomad) MemberWithID(ID string) (*AgentMemberWithID, error) {
 	return nil, fmt.Errorf("Unable to find member with ID: %s", ID)
 }
 
+// NewAgentMemberWithID will create a new Agent with a pseudo ID
 func NewAgentMemberWithID(member *api.AgentMember) (*AgentMemberWithID, error) {
 	h := md5.New() // we use md5 as it also has 16 bytes and it maps nicely to uuid
 

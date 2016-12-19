@@ -39,6 +39,7 @@ func startLogging(logLevel string) {
 	logging.SetBackend(logBackendFormattedAndLeveled)
 }
 
+// Config for the hashi-ui server
 type Config struct {
 	ReadOnly        bool
 	Address         string
@@ -49,6 +50,7 @@ type Config struct {
 	NewRelicLicense string
 }
 
+// BroadcastChannels contains all the channels for resources hashi-ui automatically maintain active lists of
 type BroadcastChannels struct {
 	allocations        observer.Property
 	allocationsShallow observer.Property
@@ -59,6 +61,7 @@ type BroadcastChannels struct {
 	clusterStatistics  observer.Property
 }
 
+// DefaultConfig is the basic out-of-the-box configuration for hashi-ui
 func DefaultConfig() *Config {
 	return &Config{
 		ReadOnly:        false,
@@ -99,6 +102,7 @@ var (
 		"The NewRelic license key. "+flagDefault(defaultConfig.NewRelicLicense))
 )
 
+// Parse the env and cli flags and store the outcome in a Config struct
 func (c *Config) Parse() {
 	flag.Parse()
 
