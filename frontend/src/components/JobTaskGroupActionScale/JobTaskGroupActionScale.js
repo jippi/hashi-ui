@@ -34,6 +34,7 @@ const JobTaskGroupActionScale = ({ job, taskGroup, dispatch }) => {
         color={ green500 }
         onClick={ () => scaleUp({ job, taskGroup, dispatch }) }
         className='material-icons'
+        style={{ cursor: 'pointer' }}
       >
         arrow_upward
       </FontIcon>
@@ -43,6 +44,7 @@ const JobTaskGroupActionScale = ({ job, taskGroup, dispatch }) => {
         title='Decrease task group count by 1'
         onClick={ () => scaleDown({ job, taskGroup, dispatch }) }
         className='material-icons'
+        style={{ cursor: 'pointer' }}
       >
         arrow_downward
       </FontIcon>

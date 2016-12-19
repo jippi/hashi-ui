@@ -33,7 +33,7 @@ const JobTaskGroups = ({ job, location }) => {
         <TableRow key={ task.ID }>
           <TableRowColumn>
             <JobLink jobId={ job.ID } taskGroupId={ taskGroup.ID } taskId={ task.ID } >
-              { task.Name } ??
+              { task.Name }
             </JobLink>
           </TableRowColumn>
           <TableRowColumn>{ task.Driver }</TableRowColumn>

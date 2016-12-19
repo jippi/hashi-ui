@@ -22,6 +22,7 @@ const JobTaskGroupActionStop = ({ job, taskGroup, dispatch }) => {
       color={ red500 }
       onClick={ () => stop({ job, taskGroup, dispatch }) }
       className='material-icons'
+      style={{ cursor: 'pointer' }}
     >
       stop
     </FontIcon>
