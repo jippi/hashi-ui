@@ -32,6 +32,8 @@ class AllocationFiles extends Component {
       this.fetchDir(props, props.location.query.path || '/')
     }
 
+    this.resizeHandler = this.updateDimensions.bind(this)
+
     // push our initial state
     this.state = {
       contents: '',
@@ -103,13 +105,13 @@ class AllocationFiles extends Component {
   }
 
   componentDidMount () {
-    window.addEventListener('resize', () => this.updateDimensions())
+    window.addEventListener('resize', this.resizeHandler)
     this.props.dispatch({ type: WATCH_NODES })
     this.updateDimensions()
   }
 
   componentWillUnmount () {
-    window.removeEventListener('resize', () => this.updateDimensions())
+    window.removeEventListener('resize', this.resizeHandler)
 
     this.props.dispatch({ type: UNWATCH_NODES })
     this.props.dispatch({ type: CLEAR_FILE_PATH })
@@ -238,10 +240,6 @@ class AllocationFiles extends Component {
   }
 
   collectFiles () {
-    if (!this.props.directory || this.props.directory.length === 0) {
-      return [];
-    }
-
     const files = this.props.directory.map((file) => {
       const a = file.IsDir ? '/' : ''
       const b = file.Name + a

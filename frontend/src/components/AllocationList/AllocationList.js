@@ -1,4 +1,4 @@
-import React, { PureComponent, PropTypes } from 'react'
+import React, { Component, PropTypes } from 'react'
 import { Grid, Row, Col } from 'react-flexbox-grid'
 import FontIcon from 'material-ui/FontIcon'
 import { Link } from 'react-router'
@@ -99,7 +99,13 @@ const clientColumn = (allocations, display, clients) =>
     : null
   )
 
-class AllocationList extends PureComponent {
+class AllocationList extends Component {
+
+  constructor (props) {
+    super(props)
+
+    this.resizeHandler = this.updateDimensions.bind(this)
+  }
 
   findNodeNameById (nodeId) {
     if (this.props.nodes.length === 0) {
@@ -275,7 +281,6 @@ class AllocationList extends PureComponent {
 
   updateDimensions() {
     this.setState({
-      ...this.state,
       width: window.innerWidth,
       height: window.innerHeight
     });
@@ -286,11 +291,11 @@ class AllocationList extends PureComponent {
   }
 
   componentDidMount() {
-    window.addEventListener("resize", () => this.updateDimensions());
+    window.addEventListener("resize", this.resizeHandler);
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", () => this.updateDimensions());
+    window.removeEventListener("resize", this.resizeHandler);
   }
 
   render () {
