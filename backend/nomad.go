@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/hashicorp/nomad/api"
 	"io"
 	"net/http"
 	"path/filepath"
 	"time"
+
+	"github.com/gorilla/mux"
+	"github.com/hashicorp/nomad/api"
 )
 
 const (
@@ -31,11 +32,15 @@ type Nomad struct {
 }
 
 // NewNomad configures the Nomad API client and initializes the internal state.
-func NewNomad(url string, updateCh chan *Action, channels *BroadcastChannels) (*Nomad, error) {
+func NewNomad(c *Config, updateCh chan *Action, channels *BroadcastChannels) (*Nomad, error) {
 	config := api.DefaultConfig()
-	config.Address = url
+	config.Address = c.Address
 	config.WaitTime = waitTime
-
+	config.TLSConfig = &api.TLSConfig{
+		CACert:     c.CACert,
+		ClientCert: c.ClientCert,
+		ClientKey:  c.ClientKey,
+	}
 	client, err := api.NewClient(config)
 	if err != nil {
 		return nil, err
