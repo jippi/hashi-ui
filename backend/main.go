@@ -48,6 +48,9 @@ type Config struct {
 	LogLevel        string
 	NewRelicAppName string
 	NewRelicLicense string
+	CACert          string
+	ClientCert      string
+	ClientKey       string
 }
 
 // BroadcastChannels contains all the channels for resources hashi-ui automatically maintain active lists of
@@ -69,7 +72,6 @@ func DefaultConfig() *Config {
 		ListenAddress:   "0.0.0.0:3000",
 		LogLevel:        "info",
 		NewRelicAppName: "hashi-ui",
-		NewRelicLicense: "",
 	}
 }
 
@@ -85,6 +87,15 @@ var (
 
 	flagAddress = flag.String("nomad.address", "", "The address of the Nomad server. "+
 		"Overrides the NOMAD_ADDR environment variable if set. "+flagDefault(defaultConfig.Address))
+
+	flagNomadCACert = flag.String("nomad.ca_cert", "", "Path to the Nomad TLS CA Cert File. "+
+		"Overrides the NOMAD_CACERT environment variable if set. "+flagDefault(defaultConfig.CACert))
+
+	flagNomadClientCert = flag.String("nomad.client_cert", "", "Path to the Nomad Client Cert File. "+
+		"Overrides the NOMAD_CLIENT_CERT environment variable if set. "+flagDefault(defaultConfig.ClientCert))
+
+	flagNomadClientKey = flag.String("nomad.client_key", "", "Path to the Nomad Client Key File. "+
+		"Overrides the NOMAD_CLIENT_KEY environment variable if set. "+flagDefault(defaultConfig.ClientKey))
 
 	flagListenAddress = flag.String("web.listen-address", "",
 		"The address on which to expose the web interface. "+flagDefault(defaultConfig.ListenAddress))
@@ -143,6 +154,21 @@ func (c *Config) Parse() {
 		c.NewRelicLicense = newRelicLicense
 	}
 
+	nomadCACert, ok := syscall.Getenv("NOMAD_CACERT")
+	if ok {
+		c.CACert = nomadCACert
+	}
+
+	nomadClientCert, ok := syscall.Getenv("NOMAD_CLIENT_CERT")
+	if ok {
+		c.ClientCert = nomadClientCert
+	}
+
+	nomadClientKey, ok := syscall.Getenv("NOMAD_CLIENT_KEY")
+	if ok {
+		c.ClientKey = nomadClientKey
+	}
+
 	// flags
 
 	if *flagReadOnly {
@@ -171,6 +197,18 @@ func (c *Config) Parse() {
 
 	if *flagNewRelicLicense != "" {
 		c.NewRelicLicense = *flagNewRelicLicense
+	}
+
+	if *flagNomadCACert != "" {
+		c.CACert = *flagNomadCACert
+	}
+
+	if *flagNomadClientCert != "" {
+		c.ClientCert = *flagNomadClientCert
+	}
+
+	if *flagNomadClientKey != "" {
+		c.ClientKey = *flagNomadClientKey
 	}
 }
 
@@ -204,6 +242,9 @@ func main() {
 	}
 
 	logger.Infof("| nomad.address       : %-50s |", cfg.Address)
+	logger.Infof("| nomad.ca_cert       : %-50s |", cfg.CACert)
+	logger.Infof("| nomad.client_cert   : %-50s |", cfg.ClientCert)
+	logger.Infof("| nomad.client_key    : %-50s |", cfg.ClientKey)
 	logger.Infof("| web.listen-address  : http://%-43s |", cfg.ListenAddress)
 	logger.Infof("| web.proxy-address   : %-50s |", cfg.ProxyAddress)
 	logger.Infof("| log.level           : %-50s |", cfg.LogLevel)
@@ -228,7 +269,7 @@ func main() {
 	channels.clusterStatistics = observer.NewProperty(&Action{})
 
 	logger.Infof("Connecting to nomad ...")
-	nomad, err := NewNomad(cfg.Address, broadcast, channels)
+	nomad, err := NewNomad(cfg, broadcast, channels)
 	if err != nil {
 		logger.Fatalf("Could not create client: %s", err)
 	}
