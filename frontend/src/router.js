@@ -43,6 +43,19 @@ import SelectNomadRegion from './containers/select_nomad_region'
 const AppRouter = ({ history }) =>
   <Router history={ history }>
     <Route path='/' component={ App }>
+      // Legacy routes
+      <Redirect from='/cluster' to='/nomad' />
+      <Redirect from='/servers' to='/nomad' />
+      <Redirect from='/servers/**' to='/nomad' />
+      <Redirect from='/clients' to='/nomad' />
+      <Redirect from='/clients/**' to='/nomad' />
+      <Redirect from='/jobs' to='/nomad' />
+      <Redirect from='/jobs/**' to='/nomad' />
+      <Redirect from='/allocations' to='/nomad' />
+      <Redirect from='/allocations/**' to='/nomad' />
+      <Redirect from='/evaluations/' to='/nomad' />
+      <Redirect from='/evaluations/**' to='/nomad' />
+
       <IndexRedirect to='/nomad' />
       <Route path='/nomad' component={ SelectNomadRegion } />
       <Redirect from='/nomad/:region' to='/nomad/:region/cluster' />
