@@ -12,35 +12,35 @@ class AppTopbar extends PureComponent {
   }
 
   handleActive (index) {
-    let route = '/cluster'
+    let route = '/nomad/cluster'
 
     switch (index) {
     case 0:
-      route = '/cluster';
+      route = '/nomad/cluster';
       break;
 
     case 1:
-      route = '/jobs'
+      route = '/nomad/jobs'
       break;
 
     case 2:
-      route = '/allocations'
+      route = '/nomad/allocations'
       break;
 
     case 3:
-      route = '/evaluations'
+      route = '/nomad/evaluations'
       break;
 
     case 4:
-      route = '/clients'
+      route = '/nomad/clients'
       break;
 
     case 5:
-      route = '/servers'
+      route = '/nomad/servers'
       break;
 
     default:
-      route = '/cluster'
+      route = '/nomad/cluster'
     }
 
     this.props.router.push(route)
@@ -49,27 +49,27 @@ class AppTopbar extends PureComponent {
   getActiveTab () {
     const location = this.props.location
 
-    if (location.pathname.startsWith('/cluster')) {
+    if (location.pathname.startsWith('/nomad/cluster')) {
       return 0
     }
 
-    if (location.pathname.startsWith('/jobs')) {
+    if (location.pathname.startsWith('/nomad/jobs')) {
       return 1
     }
 
-    if (location.pathname.startsWith('/allocations')) {
+    if (location.pathname.startsWith('/nomad/allocations')) {
       return 2
     }
 
-    if (location.pathname.startsWith('/evaluations')) {
+    if (location.pathname.startsWith('/nomad/evaluations')) {
       return 3
     }
 
-    if (location.pathname.startsWith('/clients')) {
+    if (location.pathname.startsWith('/nomad/clients')) {
       return 4
     }
 
-    if (location.pathname.startsWith('/servers')) {
+    if (location.pathname.startsWith('/nomad/servers')) {
       return 5
     }
 

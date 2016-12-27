@@ -37,7 +37,7 @@ class ClientLink extends PureComponent {
       }
     }
 
-    return <Link to={{ pathname: `/clients/${clientId}${linkAppend}` }}>{ children }</Link>
+    return <Link to={{ pathname: `/nomad/clients/${clientId}${linkAppend}` }}>{ children }</Link>
   }
 }
 

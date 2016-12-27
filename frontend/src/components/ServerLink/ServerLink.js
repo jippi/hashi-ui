@@ -13,7 +13,7 @@ class ServerLink extends PureComponent {
       children = this.props.shortUUID ? shortUUID(serverId) : serverId
     }
 
-    return <Link to={{ pathname: `/servers/${serverId}${linkAppend}` }}>{ children }</Link>
+    return <Link to={{ pathname: `/nomad/servers/${serverId}${linkAppend}` }}>{ children }</Link>
   }
 }
 

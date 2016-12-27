@@ -10,7 +10,7 @@ const AllocationLink = ({ children, allocationId, linkAppend, shortUUID, linkQue
   }
 
   return (
-    <Link to={{ pathname: `/allocations/${allocationId}${linkAppend}`, query: linkQuery}}>
+    <Link to={{ pathname: `/nomad/allocations/${allocationId}${linkAppend}`, query: linkQuery}}>
       { innerChildren }
     </Link>
   )

@@ -13,7 +13,7 @@ class EvaluationLink extends PureComponent {
       children = this.props.shortUUID ? shortUUID(evaluationId) : evaluationId
     }
 
-    return <Link to={{ pathname: `/evaluations/${evaluationId}${linkAppend}` }}>{ children }</Link>
+    return <Link to={{ pathname: `/nomad/evaluations/${evaluationId}${linkAppend}` }}>{ children }</Link>
   }
 }
 
