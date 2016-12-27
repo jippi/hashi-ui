@@ -1,20 +1,21 @@
-import React, { PureComponent, PropTypes } from 'react'
-import { Link } from 'react-router'
-import shortUUID from '../../helpers/uuid'
+import React, { PropTypes } from 'react'
+import { Link, withRouter } from 'react-router'
+import { default as shortenUUID } from '../../helpers/uuid'
 
-class EvaluationLink extends PureComponent {
+const EvaluationLink = ({ children, evaluationId, linkAppend, shortUUID, router }) => {
+  let innerChildren = children;
 
-  render () {
-    const evaluationId = this.props.evaluationId
-    let linkAppend = this.props.linkAppend
-    let children = this.props.children
-
-    if (children === undefined) {
-      children = this.props.shortUUID ? shortUUID(evaluationId) : evaluationId
-    }
-
-    return <Link to={{ pathname: `/nomad/evaluations/${evaluationId}${linkAppend}` }}>{ children }</Link>
+  if (children === undefined) {
+    innerChildren = shortUUID ? shortenUUID(evaluationId) : evaluationId
   }
+
+  return (
+    <Link
+      to={{ pathname: `/nomad/${router.params.region}/evaluations/${evaluationId}${linkAppend}` }}
+    >
+      { innerChildren }
+    </Link>
+  )
 }
 
 EvaluationLink.defaultProps = {
@@ -26,7 +27,8 @@ EvaluationLink.propTypes = {
   children: PropTypes.array,
   evaluationId: PropTypes.string.isRequired,
   linkAppend: PropTypes.string,
-  shortUUID: PropTypes.boolean.isRequired
+  shortUUID: PropTypes.boolean.isRequired,
+  router: PropTypes.object.isRequired,
 }
 
-export default EvaluationLink
+export default withRouter(EvaluationLink)

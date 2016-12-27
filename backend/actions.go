@@ -41,6 +41,10 @@ const (
 	watchNode   = "WATCH_NODE"
 	unwatchNode = "UNWATCH_NODE"
 
+	fetchNomadRegions   = "FETCH_NOMAD_REGIONS"
+	fetchedNomadRegions = "FETCHED_NOMAD_REGIONS"
+	unknownNomadRegion  = "UNKNOWN_NOMAD_REGION"
+
 	watchMembers   = "WATCH_MEMBERS"
 	unwatchMembers = "UNWATCH_MEMBERS"
 	fetchedMembers = "FETCHED_MEMBERS"

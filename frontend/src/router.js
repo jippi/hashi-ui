@@ -38,59 +38,63 @@ import Server from './containers/server'
 import ServerInfo from './components/ServerInfo/ServerInfo'
 import ServerRaw from './components/ServerRaw/ServerRaw'
 
+import SelectNomadRegion from './containers/select_nomad_region'
+
 const AppRouter = ({ history }) =>
   <Router history={ history }>
     <Route path='/' component={ App }>
-      <IndexRedirect to='/nomad/cluster' />
-      <Route path='/nomad/cluster' component={ Cluster } />
+      <IndexRedirect to='/nomad' />
+      <Route path='/nomad' component={ SelectNomadRegion } />
+      <Redirect from='/nomad/:region' to='/nomad/:region/cluster' />
+      <Route path='/nomad/:region/cluster' component={ Cluster } />
 
-      <Route path='/nomad/servers' component={ Servers } />
-      <Route path='/nomad/servers/:memberId' component={ Server }>
-        <IndexRedirect to='/nomad/servers/:memberId/info' />
-        <Route path='/nomad/servers/:memberId/info' component={ ServerInfo } />
-        <Route path='/nomad/servers/:memberId/raw' component={ ServerRaw } />
+      <Route path='/nomad/:region/servers' component={ Servers } />
+      <Route path='/nomad/:region/servers/:memberId' component={ Server }>
+        <IndexRedirect to='/nomad/:region/servers/:memberId/info' />
+        <Route path='/nomad/:region/servers/:memberId/info' component={ ServerInfo } />
+        <Route path='/nomad/:region/servers/:memberId/raw' component={ ServerRaw } />
       </Route>
 
-      <Route path='/nomad/jobs' component={ Jobs } />
-      <Route path='/nomad/jobs/:jobId' component={ Job }>
-        <IndexRedirect to='/nomad/jobs/:jobId/info' />
-        <Route path='/nomad/jobs/:jobId/info' component={ JobInfo } />
-        <Route path='/nomad/jobs/:jobId/allocations' component={ JobAllocs } />
-        <Route path='/nomad/jobs/:jobId/evaluations' component={ JobEvals } />
-        <Route path='/nomad/jobs/:jobId/tasks' component={ JobTasks } />
-        <Route path='/nomad/jobs/:jobId/taskGroups' component={ JobTaskGroups } />
-        <Route path='/nomad/jobs/:jobId/raw' component={ JobRaw } />
+      <Route path='/nomad/:region/jobs' component={ Jobs } />
+      <Route path='/nomad/:region/jobs/:jobId' component={ Job }>
+        <IndexRedirect to='/nomad/:region/jobs/:jobId/info' />
+        <Route path='/nomad/:region/jobs/:jobId/info' component={ JobInfo } />
+        <Route path='/nomad/:region/jobs/:jobId/allocations' component={ JobAllocs } />
+        <Route path='/nomad/:region/jobs/:jobId/evaluations' component={ JobEvals } />
+        <Route path='/nomad/:region/jobs/:jobId/tasks' component={ JobTasks } />
+        <Route path='/nomad/:region/jobs/:jobId/taskGroups' component={ JobTaskGroups } />
+        <Route path='/nomad/:region/jobs/:jobId/raw' component={ JobRaw } />
       </Route>
 
-      <Route path='/nomad/clients' component={ Clients } />
-      <Route path='/nomad/clients/:nodeId' component={ Client }>
-        <IndexRedirect to='/nomad/clients/:nodeId/info' />
-        <Route path='/nomad/clients/:nodeId/info' component={ ClientInfo } />
-        <Route path='/nomad/clients/:nodeId/stats' component={ ClientStats } />
-        <Route path='/nomad/clients/:nodeId/allocations' component={ ClientAllocations } />
-        <Route path='/nomad/clients/:nodeId/evaluations' component={ ClientEvaluations } />
-        <Route path='/nomad/clients/:nodeId/raw' component={ ClientRaw } />
+      <Route path='/nomad/:region/clients' component={ Clients } />
+      <Route path='/nomad/:region/clients/:nodeId' component={ Client }>
+        <IndexRedirect to='/nomad/:region/clients/:nodeId/info' />
+        <Route path='/nomad/:region/clients/:nodeId/info' component={ ClientInfo } />
+        <Route path='/nomad/:region/clients/:nodeId/stats' component={ ClientStats } />
+        <Route path='/nomad/:region/clients/:nodeId/allocations' component={ ClientAllocations } />
+        <Route path='/nomad/:region/clients/:nodeId/evaluations' component={ ClientEvaluations } />
+        <Route path='/nomad/:region/clients/:nodeId/raw' component={ ClientRaw } />
       </Route>
 
-      <Route path='/nomad/allocations' component={ Allocations } />
-      <Route path='/nomad/allocations/:allocId' component={ Allocation }>
-        <IndexRedirect to='/nomad/allocations/:allocId/info' />
-        <Route path='/nomad/allocations/:allocId/info' component={ AllocInfo } />
+      <Route path='/nomad/:region/allocations' component={ Allocations } />
+      <Route path='/nomad/:region/allocations/:allocId' component={ Allocation }>
+        <IndexRedirect to='/nomad/:region/allocations/:allocId/info' />
+        <Route path='/nomad/:region/allocations/:allocId/info' component={ AllocInfo } />
         <Redirect
-          from='/nomad/allocations/:allocId/logs'
-          to='/nomad/allocations/:allocId/files'
+          from='/nomad/:region/allocations/:allocId/logs'
+          to='/nomad/:region/allocations/:allocId/files'
           query={{ path: '/alloc/logs/' }}
         />
-        <Route path='/nomad/allocations/:allocId/files' component={ AllocFiles } query={{ path: '' }} />
-        <Route path='/nomad/allocations/:allocId/raw' component={ AllocRaw } />
+        <Route path='/nomad/:region/allocations/:allocId/files' component={ AllocFiles } query={{ path: '' }} />
+        <Route path='/nomad/:region/allocations/:allocId/raw' component={ AllocRaw } />
       </Route>
 
-      <Route path='/nomad/evaluations' component={ Evaluations } />
-      <Route path='/nomad/evaluations/:evalId' component={ Evaluation }>
-        <IndexRedirect to='/nomad/evaluations/:evalId/info' />
-        <Route path='/nomad/evaluations/:evalId/info' component={ EvalInfo } />
-        <Route path='/nomad/evaluations/:evalId/allocations' component={ EvalAllocations } />
-        <Route path='/nomad/evaluations/:evalId/raw' component={ EvalRaw } />
+      <Route path='/nomad/:region/evaluations' component={ Evaluations } />
+      <Route path='/nomad/:region/evaluations/:evalId' component={ Evaluation }>
+        <IndexRedirect to='/nomad/:region/evaluations/:evalId/info' />
+        <Route path='/nomad/:region/evaluations/:evalId/info' component={ EvalInfo } />
+        <Route path='/nomad/:region/evaluations/:evalId/allocations' component={ EvalAllocations } />
+        <Route path='/nomad/:region/evaluations/:evalId/raw' component={ EvalRaw } />
       </Route>
     </Route>
   </Router>

@@ -59,6 +59,10 @@ export const WATCH_MEMBER = 'WATCH_MEMBER'
 export const WATCH_MEMBERS = 'WATCH_MEMBERS'
 export const WATCH_NODE = 'WATCH_NODE'
 export const WATCH_NODES = 'WATCH_NODES';
+export const SET_NOMAD_REGION = 'SET_NOMAD_REGION';
+export const FETCH_NOMAD_REGIONS = 'FETCH_NOMAD_REGIONS';
+export const FETCHED_NOMAD_REGIONS = 'FETCHED_NOMAD_REGIONS';
+export const UNKNOWN_NOMAD_REGION = 'UNKNOWN_NOMAD_REGION';
 
 function subscribe (socket) {
   return eventChannel((emit) => {
@@ -121,6 +125,7 @@ function* write (socket) {
       FETCH_DIR,
       FETCH_MEMBER,
       FETCH_NODE,
+      FETCH_NOMAD_REGIONS,
       STOP_JOB,
       SUBMIT_JOB,
       UNWATCH_ALLOC,
@@ -189,9 +194,19 @@ function* events (socket) {
 export default function eventSaga () {
   return new Promise((resolve, reject) => {
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
+    let wsURL = `${protocol}//${window.NOMAD_ENDPOINT}/ws`
+    let relPath = document.location.pathname.replace(window.NOMAD_ENDPOINT, '')
 
-    const url = `${protocol}//${window.NOMAD_ENDPOINT}/ws`
-    const p = connectTo(url)
+    // inside nomad scope
+    if (relPath.indexOf('/nomad') === 0) {
+      wsURL = wsURL + '/nomad'
+      relPath = relPath.replace('/nomad/', '').split('/')[0]
+      if (relPath) {
+        wsURL = wsURL + '/' + relPath
+      }
+    }
+
+    const p = connectTo(wsURL)
 
     return p
       .then((socket) => {

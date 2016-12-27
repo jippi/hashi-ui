@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"strings"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -14,21 +16,26 @@ var upgrader = websocket.Upgrader{
 // Hub keeps track of all the websocket connections and sends state updates
 // from Nomad to all connections.
 type Hub struct {
-	nomad       *Nomad
 	connections map[*Connection]bool
-	channels    *BroadcastChannels
+	channels    RegionChannels
+	clients     RegionClients
+	regions     []string
 	register    chan *Connection
 	unregister  chan *Connection
-
-	broadcast chan *Action
 }
 
 // NewHub initializes a new hub.
-func NewHub(nomad *Nomad, broadcast chan *Action, channels *BroadcastChannels) *Hub {
+func NewHub(clients RegionClients, channels RegionChannels) *Hub {
+	regions := make([]string, 0)
+
+	for region := range channels {
+		regions = append(regions, region)
+	}
+
 	return &Hub{
-		nomad:       nomad,
-		broadcast:   broadcast,
+		clients:     clients,
 		channels:    channels,
+		regions:     regions,
 		connections: make(map[*Connection]bool),
 		register:    make(chan *Connection),
 		unregister:  make(chan *Connection),
@@ -49,11 +56,6 @@ func (h *Hub) Run() {
 				delete(h.connections, c)
 				close(c.send)
 			}
-
-		case action := <-h.broadcast:
-			for c := range h.connections {
-				c.process(*action)
-			}
 		}
 	}
 }
@@ -65,6 +67,69 @@ func (h *Hub) Handler(w http.ResponseWriter, r *http.Request) {
 		logger.Errorf("transport: websocket upgrade failed: %s", err)
 		return
 	}
-	c := NewConnection(h, socket)
+
+	region := ""
+	if strings.HasPrefix(r.URL.Path, "/ws/nomad/") {
+		region = strings.Replace(r.URL.Path, "/ws/nomad/", "", 1)
+	}
+
+	if region == "" {
+		logger.Errorf("No region provided")
+		h.requireNomadRegion(socket)
+		return
+	}
+
+	if _, ok := h.channels[region]; !ok {
+		logger.Errorf("region was not found: %s", region)
+		h.sendAction(socket, &Action{Type: unknownNomadRegion, Payload: ""})
+		return
+	}
+
+	c := NewConnection(h, socket, h.clients[region], h.channels[region])
 	c.Handle()
+}
+
+func (h *Hub) requireNomadRegion(socket *websocket.Conn) {
+	regions := make([]string, 0)
+
+	for region := range h.channels {
+		regions = append(regions, region)
+	}
+
+	var action Action
+
+	if len(regions) == 1 {
+		action = Action{
+			Type:    "SET_NOMAD_REGION",
+			Payload: regions[0],
+		}
+	} else {
+		action = Action{
+			Type:    "FETCHED_NOMAD_REGIONS",
+			Payload: regions,
+		}
+	}
+
+	h.sendAction(socket, &action)
+
+	var readAction Action
+	for {
+		err := socket.ReadJSON(&readAction)
+		if err != nil {
+			break
+		}
+
+		logger.Warningf("Ignoring unhandled message: %s (missing region)", readAction.Type)
+
+		logger.Debugf("Sending request for user to select a region in the UI again")
+		if err = socket.WriteJSON(action); err != nil {
+			logger.Errorf(" %s", err)
+		}
+	}
+}
+
+func (h *Hub) sendAction(socket *websocket.Conn, action *Action) {
+	if err := socket.WriteJSON(action); err != nil {
+		logger.Errorf(" %s", err)
+	}
 }

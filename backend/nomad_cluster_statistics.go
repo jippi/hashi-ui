@@ -128,7 +128,7 @@ func (n *Nomad) collectAggregateClusterStatistics() {
 		aggResult.MemoryTotal += elem.MemoryTotal
 	}
 
-	logger.Infof("[ClusterStatistics] Servers: %d, Total Cores: %d Total Idle CPU: %f Total Used RAM: %d Total RAM: %d",
+	logger.Debugf("[ClusterStatistics] Servers: %d, Total Cores: %d Total Idle CPU: %f Total Used RAM: %d Total RAM: %d",
 		aggResult.Clients,
 		aggResult.CPUCores,
 		aggResult.CPUIdleTime,

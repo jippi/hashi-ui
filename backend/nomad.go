@@ -21,6 +21,7 @@ const (
 type Nomad struct {
 	Client             *api.Client
 	BroadcastChannels  *BroadcastChannels
+	regions            []string
 	allocations        []*api.AllocationListStub
 	allocationsShallow []*api.AllocationListStub // with TaskStates removed
 	clusterStatistics  *ClusterStatisticsAggregatedResult
@@ -28,28 +29,29 @@ type Nomad struct {
 	jobs               []*api.JobListStub
 	members            []*AgentMemberWithID
 	nodes              []*api.NodeListStub
-	updateCh           chan *Action
 }
 
-// NewNomad configures the Nomad API client and initializes the internal state.
-func NewNomad(c *Config, updateCh chan *Action, channels *BroadcastChannels) (*Nomad, error) {
+// CreateNomadClient derp
+func CreateNomadClient(c *Config, region string) (*api.Client, error) {
 	config := api.DefaultConfig()
 	config.Address = c.Address
 	config.WaitTime = waitTime
+	config.Region = region
 	config.TLSConfig = &api.TLSConfig{
 		CACert:     c.CACert,
 		ClientCert: c.ClientCert,
 		ClientKey:  c.ClientKey,
 	}
-	client, err := api.NewClient(config)
-	if err != nil {
-		return nil, err
-	}
 
+	return api.NewClient(config)
+}
+
+// NewNomad configures the Nomad API client and initializes the internal state.
+func NewNomad(c *Config, client *api.Client, channels *BroadcastChannels) (*Nomad, error) {
 	return &Nomad{
 		Client:             client,
-		updateCh:           updateCh,
 		BroadcastChannels:  channels,
+		regions:            make([]string, 0),
 		allocations:        make([]*api.AllocationListStub, 0),
 		allocationsShallow: make([]*api.AllocationListStub, 0),
 		clusterStatistics:  &ClusterStatisticsAggregatedResult{},
@@ -58,6 +60,17 @@ func NewNomad(c *Config, updateCh chan *Action, channels *BroadcastChannels) (*N
 		members:            make([]*AgentMemberWithID, 0),
 		nodes:              make([]*api.NodeListStub, 0),
 	}, nil
+}
+
+// StartWatchers derp
+func (n *Nomad) StartWatchers() {
+	go n.watchAllocs()
+	go n.watchAllocsShallow()
+	go n.watchEvals()
+	go n.watchJobs()
+	go n.watchNodes()
+	go n.watchMembers()
+	go n.watchAggregateClusterStatistics()
 }
 
 func (n *Nomad) downloadFile(w http.ResponseWriter, r *http.Request) {
