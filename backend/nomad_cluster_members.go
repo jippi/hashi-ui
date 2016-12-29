@@ -25,7 +25,7 @@ type AgentMemberWithID struct {
 	api.AgentMember
 }
 
-func (n *Nomad) watchMembers() {
+func (n *NomadRegion) watchMembers() {
 	currentChecksum := ""
 
 	for {
@@ -59,7 +59,7 @@ func (n *Nomad) watchMembers() {
 }
 
 // MembersWithID is used to query all of the known server members.
-func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
+func (n *NomadRegion) MembersWithID() ([]*AgentMemberWithID, error) {
 	members, err := n.Client.Agent().Members()
 	if err != nil {
 		return nil, err
@@ -98,7 +98,7 @@ func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 }
 
 // MemberWithID is used to query a server member by its ID.
-func (n *Nomad) MemberWithID(ID string) (*AgentMemberWithID, error) {
+func (n *NomadRegion) MemberWithID(ID string) (*AgentMemberWithID, error) {
 	members, err := n.MembersWithID()
 	if err != nil {
 		return nil, err

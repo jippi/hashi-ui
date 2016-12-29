@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/hashicorp/nomad/api"
 	"time"
+
+	"github.com/hashicorp/nomad/api"
 )
 
-func (n *Nomad) watchEvals() {
+func (n *NomadRegion) watchEvals() {
 	q := &api.QueryOptions{WaitIndex: 1}
 	for {
 		evaluations, meta, err := n.Client.Evaluations().List(q)

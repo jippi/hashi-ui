@@ -43,7 +43,7 @@ func startLogging(logLevel string) {
 type RegionChannels map[string]*BroadcastChannels
 
 // RegionClients ...
-type RegionClients map[string]*Nomad
+type RegionClients map[string]*NomadRegion
 
 // Config for the hashi-ui server
 type Config struct {
@@ -263,7 +263,7 @@ func main() {
 	logger.Infof("----------------------------------------------------------------------------")
 	logger.Infof("")
 
-	nomadClient, err := CreateNomadClient(cfg, "")
+	nomadClient, err := CreateNomadRegionClient(cfg, "")
 	if err != nil {
 		logger.Fatalf("Could not create Nomad API Client: %s", err)
 		return
@@ -292,7 +292,7 @@ func main() {
 
 		regionChannels[region] = channels
 
-		regionClient, clientErr := CreateNomadClient(cfg, region)
+		regionClient, clientErr := CreateNomadRegionClient(cfg, region)
 		if clientErr != nil {
 			logger.Fatalf("  -> Could not create client: %s", clientErr)
 			return

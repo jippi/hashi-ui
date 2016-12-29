@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/nomad/api"
 )
 
-func (n *Nomad) watchAllocs() {
+func (n *NomadRegion) watchAllocs() {
 	q := &api.QueryOptions{WaitIndex: 1}
 
 	for {
@@ -34,7 +34,7 @@ func (n *Nomad) watchAllocs() {
 	}
 }
 
-func (n *Nomad) watchAllocsShallow() {
+func (n *NomadRegion) watchAllocsShallow() {
 	q := &api.QueryOptions{WaitIndex: 1}
 
 	for {

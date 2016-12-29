@@ -42,13 +42,13 @@ type Connection struct {
 	send              chan *Action
 	destroyCh         chan struct{}
 	watches           *set.Set
-	hub               *Hub
-	nomad             *Nomad
+	hub               *NomadHub
+	nomad             *NomadRegion
 	broadcastChannels *BroadcastChannels
 }
 
 // NewConnection creates a new connection.
-func NewConnection(hub *Hub, socket *websocket.Conn, nomadClient *Nomad, channels *BroadcastChannels) *Connection {
+func NewConnection(hub *NomadHub, socket *websocket.Conn, nomadClient *NomadRegion, channels *BroadcastChannels) *Connection {
 	connectionID := uuid.NewV4()
 
 	return &Connection{

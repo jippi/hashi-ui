@@ -15,24 +15,24 @@ const (
 	waitTime = 1 * time.Minute
 )
 
-// Nomad keeps track of the Nomad state. It monitors changes to allocations,
+// NomadRegion keeps track of the NomadRegion state. It monitors changes to allocations,
 // evaluations, jobs and nodes and broadcasts them to all connected websockets.
-// It also exposes an API client for the Nomad server.
-type Nomad struct {
+// It also exposes an API client for the NomadRegion server.
+type NomadRegion struct {
 	Client             *api.Client
 	BroadcastChannels  *BroadcastChannels
 	regions            []string
 	allocations        []*api.AllocationListStub
 	allocationsShallow []*api.AllocationListStub // with TaskStates removed
-	clusterStatistics  *ClusterStatisticsAggregatedResult
+	clusterStatistics  *NomadRegionStatisticsAggregatedResult
 	evaluations        []*api.Evaluation
 	jobs               []*api.JobListStub
 	members            []*AgentMemberWithID
 	nodes              []*api.NodeListStub
 }
 
-// CreateNomadClient derp
-func CreateNomadClient(c *Config, region string) (*api.Client, error) {
+// CreateNomadRegionClient derp
+func CreateNomadRegionClient(c *Config, region string) (*api.Client, error) {
 	config := api.DefaultConfig()
 	config.Address = c.Address
 	config.WaitTime = waitTime
@@ -47,14 +47,14 @@ func CreateNomadClient(c *Config, region string) (*api.Client, error) {
 }
 
 // NewNomad configures the Nomad API client and initializes the internal state.
-func NewNomad(c *Config, client *api.Client, channels *BroadcastChannels) (*Nomad, error) {
-	return &Nomad{
+func NewNomad(c *Config, client *api.Client, channels *BroadcastChannels) (*NomadRegion, error) {
+	return &NomadRegion{
 		Client:             client,
 		BroadcastChannels:  channels,
 		regions:            make([]string, 0),
 		allocations:        make([]*api.AllocationListStub, 0),
 		allocationsShallow: make([]*api.AllocationListStub, 0),
-		clusterStatistics:  &ClusterStatisticsAggregatedResult{},
+		clusterStatistics:  &NomadRegionStatisticsAggregatedResult{},
 		evaluations:        make([]*api.Evaluation, 0),
 		jobs:               make([]*api.JobListStub, 0),
 		members:            make([]*AgentMemberWithID, 0),
@@ -63,7 +63,7 @@ func NewNomad(c *Config, client *api.Client, channels *BroadcastChannels) (*Noma
 }
 
 // StartWatchers derp
-func (n *Nomad) StartWatchers() {
+func (n *NomadRegion) StartWatchers() {
 	go n.watchAllocs()
 	go n.watchAllocsShallow()
 	go n.watchEvals()
@@ -73,7 +73,7 @@ func (n *Nomad) StartWatchers() {
 	go n.watchAggregateClusterStatistics()
 }
 
-func (n *Nomad) downloadFile(w http.ResponseWriter, r *http.Request) {
+func (n *NomadRegion) downloadFile(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	path := params["path"]
 

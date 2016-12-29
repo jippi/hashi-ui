@@ -13,9 +13,9 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
-// Hub keeps track of all the websocket connections and sends state updates
+// NomadHub keeps track of all the websocket connections and sends state updates
 // from Nomad to all connections.
-type Hub struct {
+type NomadHub struct {
 	connections map[*Connection]bool
 	channels    RegionChannels
 	clients     RegionClients
@@ -25,14 +25,14 @@ type Hub struct {
 }
 
 // NewHub initializes a new hub.
-func NewHub(clients RegionClients, channels RegionChannels) *Hub {
+func NewHub(clients RegionClients, channels RegionChannels) *NomadHub {
 	regions := make([]string, 0)
 
 	for region := range channels {
 		regions = append(regions, region)
 	}
 
-	return &Hub{
+	return &NomadHub{
 		clients:     clients,
 		channels:    channels,
 		regions:     regions,
@@ -44,7 +44,7 @@ func NewHub(clients RegionClients, channels RegionChannels) *Hub {
 
 // Run (un)registers websocket connections and broadcasts Nomad state updates
 // to all connections.
-func (h *Hub) Run() {
+func (h *NomadHub) Run() {
 	for {
 		select {
 
@@ -61,7 +61,7 @@ func (h *Hub) Run() {
 }
 
 // Handler establishes the websocket connection and calls the connection handler.
-func (h *Hub) Handler(w http.ResponseWriter, r *http.Request) {
+func (h *NomadHub) Handler(w http.ResponseWriter, r *http.Request) {
 	socket, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		logger.Errorf("transport: websocket upgrade failed: %s", err)
@@ -89,7 +89,7 @@ func (h *Hub) Handler(w http.ResponseWriter, r *http.Request) {
 	c.Handle()
 }
 
-func (h *Hub) requireNomadRegion(socket *websocket.Conn) {
+func (h *NomadHub) requireNomadRegion(socket *websocket.Conn) {
 	regions := make([]string, 0)
 
 	for region := range h.channels {
@@ -128,7 +128,7 @@ func (h *Hub) requireNomadRegion(socket *websocket.Conn) {
 	}
 }
 
-func (h *Hub) sendAction(socket *websocket.Conn, action *Action) {
+func (h *NomadHub) sendAction(socket *websocket.Conn, action *Action) {
 	if err := socket.WriteJSON(action); err != nil {
 		logger.Errorf(" %s", err)
 	}
