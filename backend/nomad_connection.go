@@ -260,6 +260,10 @@ func (c *Connection) process(action Action) {
 
 	case fetchNomadRegions:
 		go c.fetchRegions()
+
+	// Nice in debug
+	default:
+		logger.Errorf("Unknown action: %s", action.Type)
 	}
 }
 
