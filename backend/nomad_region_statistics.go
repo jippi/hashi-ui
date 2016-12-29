@@ -137,7 +137,7 @@ func (n *NomadRegion) collectAggregateClusterStatistics() {
 	)
 
 	n.clusterStatistics = aggResult
-	n.BroadcastChannels.clusterStatistics.Update(&Action{Type: fetchedClusterStatistics, Payload: aggResult})
+	n.broadcastChannels.clusterStatistics.Update(&Action{Type: fetchedClusterStatistics, Payload: aggResult})
 }
 
 func (n *NomadRegion) watchAggregateClusterStatistics() {

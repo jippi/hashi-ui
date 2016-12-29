@@ -28,7 +28,7 @@ func (n *NomadRegion) watchJobs() {
 		}
 
 		n.jobs = jobs
-		n.BroadcastChannels.jobs.Update(&Action{Type: fetchedJobs, Payload: jobs, Index: remoteWaitIndex})
+		n.broadcastChannels.jobs.Update(&Action{Type: fetchedJobs, Payload: jobs, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }

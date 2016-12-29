@@ -38,7 +38,7 @@ type NomadRegionBroadcastChannels struct {
 // It also exposes an API client for the NomadRegion server.
 type NomadRegion struct {
 	Client             *api.Client
-	BroadcastChannels  *NomadRegionBroadcastChannels
+	broadcastChannels  *NomadRegionBroadcastChannels
 	regions            []string
 	allocations        []*api.AllocationListStub
 	allocationsShallow []*api.AllocationListStub // with TaskStates removed
@@ -68,7 +68,7 @@ func CreateNomadRegionClient(c *Config, region string) (*api.Client, error) {
 func NewNomadRegion(c *Config, client *api.Client, channels *NomadRegionBroadcastChannels) (*NomadRegion, error) {
 	return &NomadRegion{
 		Client:             client,
-		BroadcastChannels:  channels,
+		broadcastChannels:  channels,
 		regions:            make([]string, 0),
 		allocations:        make([]*api.AllocationListStub, 0),
 		allocationsShallow: make([]*api.AllocationListStub, 0),

@@ -29,7 +29,7 @@ func (n *NomadRegion) watchAllocs() {
 		logger.Debugf("Allocations index is changed (%d <> %d)", localWaitIndex, remoteWaitIndex)
 
 		n.allocations = allocations
-		n.BroadcastChannels.allocations.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
+		n.broadcastChannels.allocations.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }
@@ -61,7 +61,7 @@ func (n *NomadRegion) watchAllocsShallow() {
 		}
 
 		n.allocationsShallow = allocations
-		n.BroadcastChannels.allocationsShallow.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
+		n.broadcastChannels.allocationsShallow.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
 
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
