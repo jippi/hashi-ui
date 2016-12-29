@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/nomad/api"
 )
 
-func (n *Nomad) watchAllocs() {
+func (n *NomadRegion) watchAllocs() {
 	q := &api.QueryOptions{WaitIndex: 1}
 
 	for {
@@ -29,12 +29,12 @@ func (n *Nomad) watchAllocs() {
 		logger.Debugf("Allocations index is changed (%d <> %d)", localWaitIndex, remoteWaitIndex)
 
 		n.allocations = allocations
-		n.BroadcastChannels.allocations.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
+		n.broadcastChannels.allocations.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }
 
-func (n *Nomad) watchAllocsShallow() {
+func (n *NomadRegion) watchAllocsShallow() {
 	q := &api.QueryOptions{WaitIndex: 1}
 
 	for {
@@ -61,7 +61,7 @@ func (n *Nomad) watchAllocsShallow() {
 		}
 
 		n.allocationsShallow = allocations
-		n.BroadcastChannels.allocationsShallow.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
+		n.broadcastChannels.allocationsShallow.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
 
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}

@@ -35,29 +35,33 @@ const (
 // received on the websocket and sends out actions on Nomad state changes. It
 // maintains a set to keep track of the running watches.
 type Connection struct {
-	ID        uuid.UUID
-	shortID   string
-	socket    *websocket.Conn
-	hub       *Hub
-	receive   chan *Action
-	send      chan *Action
-	destroyCh chan struct{}
-	watches   *set.Set
+	ID                uuid.UUID
+	shortID           string
+	socket            *websocket.Conn
+	receive           chan *Action
+	send              chan *Action
+	destroyCh         chan struct{}
+	watches           *set.Set
+	hub               *NomadHub
+	region            *NomadRegion
+	broadcastChannels *NomadRegionBroadcastChannels
 }
 
 // NewConnection creates a new connection.
-func NewConnection(hub *Hub, socket *websocket.Conn) *Connection {
+func NewConnection(hub *NomadHub, socket *websocket.Conn, nomadRegion *NomadRegion, channels *NomadRegionBroadcastChannels) *Connection {
 	connectionID := uuid.NewV4()
 
 	return &Connection{
-		ID:        connectionID,
-		shortID:   fmt.Sprintf("%s", connectionID)[0:8],
-		watches:   set.New(),
-		hub:       hub,
-		socket:    socket,
-		receive:   make(chan *Action),
-		send:      make(chan *Action),
-		destroyCh: make(chan struct{}),
+		ID:                connectionID,
+		shortID:           fmt.Sprintf("%s", connectionID)[0:8],
+		watches:           set.New(),
+		hub:               hub,
+		socket:            socket,
+		receive:           make(chan *Action),
+		send:              make(chan *Action),
+		destroyCh:         make(chan struct{}),
+		region:            nomadRegion,
+		broadcastChannels: channels,
 	}
 }
 
@@ -135,7 +139,7 @@ func (c *Connection) process(action Action) {
 	// Actions for a list of members (aka servers in the UI)
 	//
 	case watchMembers:
-		go c.watchGenericBroadcast("members", fetchedMembers, c.hub.nomad.BroadcastChannels.members, c.hub.nomad.members)
+		go c.watchGenericBroadcast("members", fetchedMembers, c.region.broadcastChannels.members, c.hub.cluster.members)
 	case unwatchMembers:
 		c.unwatchGenericBroadcast("members")
 
@@ -143,7 +147,7 @@ func (c *Connection) process(action Action) {
 	// Actions for a list of jobs
 	//
 	case watchJobs:
-		go c.watchGenericBroadcast("jobs", fetchedJobs, c.hub.nomad.BroadcastChannels.jobs, c.hub.nomad.jobs)
+		go c.watchGenericBroadcast("jobs", fetchedJobs, c.region.broadcastChannels.jobs, c.region.jobs)
 	case unwatchJobs:
 		c.unwatchGenericBroadcast("jobs")
 
@@ -151,9 +155,9 @@ func (c *Connection) process(action Action) {
 	// Actions for a list of allocations
 	//
 	case watchAllocs:
-		go c.watchGenericBroadcast("allocs", fetchedAllocs, c.hub.nomad.BroadcastChannels.allocations, c.hub.nomad.allocations)
+		go c.watchGenericBroadcast("allocs", fetchedAllocs, c.region.broadcastChannels.allocations, c.region.allocations)
 	case watchAllocsShallow:
-		go c.watchGenericBroadcast("allocsShallow", fetchedAllocs, c.hub.nomad.BroadcastChannels.allocationsShallow, c.hub.nomad.allocationsShallow)
+		go c.watchGenericBroadcast("allocsShallow", fetchedAllocs, c.region.broadcastChannels.allocationsShallow, c.region.allocationsShallow)
 	case unwatchAllocs:
 		c.unwatchGenericBroadcast("allocs")
 	case unwatchAllocsShallow:
@@ -163,7 +167,7 @@ func (c *Connection) process(action Action) {
 	// Actions for a list of nodes (aka clients in the UI)
 	//
 	case watchNodes:
-		go c.watchGenericBroadcast("nodes", fetchedNodes, c.hub.nomad.BroadcastChannels.nodes, c.hub.nomad.nodes)
+		go c.watchGenericBroadcast("nodes", fetchedNodes, c.region.broadcastChannels.nodes, c.region.nodes)
 	case unwatchNodes:
 		c.unwatchGenericBroadcast("nodes")
 
@@ -171,7 +175,7 @@ func (c *Connection) process(action Action) {
 	// Actions for a list of evaluations
 	//
 	case watchClusterStatistics:
-		go c.watchGenericBroadcast("ClusterStatistics", fetchedClusterStatistics, c.hub.nomad.BroadcastChannels.clusterStatistics, c.hub.nomad.clusterStatistics)
+		go c.watchGenericBroadcast("ClusterStatistics", fetchedClusterStatistics, c.region.broadcastChannels.clusterStatistics, c.region.clusterStatistics)
 	case unwatchClusterStatistics:
 		c.unwatchGenericBroadcast("ClusterStatistics")
 
@@ -179,7 +183,7 @@ func (c *Connection) process(action Action) {
 	// Actions for a list of evaluations
 	//
 	case watchEvals:
-		go c.watchGenericBroadcast("evaluations", fetchedEvals, c.hub.nomad.BroadcastChannels.evaluations, c.hub.nomad.evaluations)
+		go c.watchGenericBroadcast("evaluations", fetchedEvals, c.region.broadcastChannels.evaluations, c.region.evaluations)
 	case unwatchEvals:
 		c.unwatchGenericBroadcast("evaluations")
 
@@ -253,6 +257,13 @@ func (c *Connection) process(action Action) {
 	// Stop a job
 	case stopJob:
 		go c.stopJob(action)
+
+	case fetchNomadRegions:
+		go c.fetchRegions()
+
+	// Nice in debug
+	default:
+		logger.Errorf("Unknown action: %s", action.Type)
 	}
 }
 
@@ -289,7 +300,7 @@ func (c *Connection) watchAlloc(action Action) {
 			return
 
 		default:
-			alloc, meta, err := c.hub.nomad.Client.Allocations().Info(allocID, q)
+			alloc, meta, err := c.region.Client.Allocations().Info(allocID, q)
 			if err != nil {
 				c.Errorf("connection: unable to fetch alloc info: %s", err)
 				time.Sleep(10 * time.Second)
@@ -329,7 +340,7 @@ func (c *Connection) watchEval(action Action) {
 		case <-c.destroyCh:
 			return
 		default:
-			eval, meta, err := c.hub.nomad.Client.Evaluations().Info(evalID, q)
+			eval, meta, err := c.region.Client.Evaluations().Info(evalID, q)
 			if err != nil {
 				c.Errorf("connection: unable to fetch eval info: %s", err)
 				time.Sleep(10 * time.Second)
@@ -354,7 +365,7 @@ func (c *Connection) watchEval(action Action) {
 
 func (c *Connection) fetchMember(action Action) {
 	memberID := action.Payload.(string)
-	member, err := c.hub.nomad.MemberWithID(memberID)
+	member, err := c.hub.cluster.MemberWithID(memberID)
 	if err != nil {
 		c.Errorf("websocket: unable to fetch member %q: %s", memberID, err)
 		return
@@ -380,7 +391,7 @@ func (c *Connection) watchMember(action Action) {
 			return
 
 		default:
-			member, err := c.hub.nomad.MemberWithID(memberID)
+			member, err := c.hub.cluster.MemberWithID(memberID)
 			if err != nil {
 				c.Errorf("connection: unable to fetch member info: %s", err)
 				time.Sleep(10 * time.Second)
@@ -400,7 +411,7 @@ func (c *Connection) watchMember(action Action) {
 
 func (c *Connection) fetchNode(action Action) {
 	nodeID := action.Payload.(string)
-	node, _, err := c.hub.nomad.Client.Nodes().Info(nodeID, nil)
+	node, _, err := c.region.Client.Nodes().Info(nodeID, nil)
 	if err != nil {
 		c.Errorf("websocket: unable to fetch node %q: %s", nodeID, err)
 	}
@@ -426,7 +437,7 @@ func (c *Connection) watchNode(action Action) {
 			return
 
 		default:
-			node, meta, err := c.hub.nomad.Client.Nodes().Info(nodeID, q)
+			node, meta, err := c.region.Client.Nodes().Info(nodeID, q)
 			if err != nil {
 				c.Errorf("connection: unable to fetch node info: %s", err)
 				time.Sleep(10 * time.Second)
@@ -519,7 +530,7 @@ func (c *Connection) watchJob(action Action) {
 			return
 
 		default:
-			job, meta, err := c.hub.nomad.Client.Jobs().Info(jobID, q)
+			job, meta, err := c.region.Client.Jobs().Info(jobID, q)
 
 			if err != nil {
 				c.Errorf("connection: unable to fetch job info: %s", err)
@@ -550,7 +561,7 @@ func (c *Connection) fetchClientStats(action Action) {
 		return
 	}
 
-	stats, err := c.hub.nomad.Client.Nodes().Stats(nodeID, nil)
+	stats, err := c.region.Client.Nodes().Stats(nodeID, nil)
 	if err != nil {
 		c.Errorf("Unable to fetch node stats: %s", err)
 		return
@@ -578,7 +589,7 @@ func (c *Connection) watchClientStats(action Action) {
 			return
 
 		default:
-			stats, err := c.hub.nomad.Client.Nodes().Stats(nodeID, nil)
+			stats, err := c.region.Client.Nodes().Stats(nodeID, nil)
 			if err != nil {
 				logger.Errorf("watch: unable to fetch client stats: %s", err)
 				time.Sleep(3 * time.Second)
@@ -789,7 +800,7 @@ func (c *Connection) changeTaskGroupCount(action Action) {
 	taskGroupID := params["taskGroup"].(string)
 	scaleAction := params["scaleAction"].(string)
 
-	job, _, err := c.hub.nomad.Client.Jobs().Info(jobID, &api.QueryOptions{})
+	job, _, err := c.region.Client.Jobs().Info(jobID, &api.QueryOptions{})
 	if err != nil {
 		c.Errorf("connection: unable to fetch job info: %s", err)
 		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Could not find job: %s", jobID), Index: index}
@@ -823,7 +834,7 @@ func (c *Connection) changeTaskGroupCount(action Action) {
 		return
 	}
 
-	updateAction, updateErr := c.hub.nomad.updateJob(job)
+	updateAction, updateErr := c.region.updateJob(job)
 	updateAction.Index = index
 
 	if updateErr != nil {
@@ -861,7 +872,7 @@ func (c *Connection) submitJob(action Action) {
 
 	logger.Infof("Started submission of job with id: %s", runjob.ID)
 
-	_, _, err := c.hub.nomad.Client.Jobs().Register(&runjob, nil)
+	_, _, err := c.region.Client.Jobs().Register(&runjob, nil)
 	if err != nil {
 		logger.Errorf("connection: unable to submit job '%s' : %s", runjob.ID, err)
 		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to submit job : %s", err), Index: index}
@@ -886,7 +897,7 @@ func (c *Connection) stopJob(action Action) {
 
 	logger.Infof("Begin stop of job with id: %s", jobID)
 
-	_, _, err := c.hub.nomad.Client.Jobs().Deregister(jobID, nil)
+	_, _, err := c.region.Client.Jobs().Deregister(jobID, nil)
 	if err != nil {
 		logger.Errorf("connection: unable to stop job '%s' : %s", jobID, err)
 		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to stop job : %s", err), Index: index}
@@ -895,4 +906,8 @@ func (c *Connection) stopJob(action Action) {
 
 	logger.Infof("connection: successfully stopped job '%s'", jobID)
 	c.send <- &Action{Type: successNotification, Payload: "The job has been successfully stopped.", Index: index}
+}
+
+func (c *Connection) fetchRegions() {
+	c.send <- &Action{Type: fetchedNomadRegions, Payload: c.hub.regions}
 }

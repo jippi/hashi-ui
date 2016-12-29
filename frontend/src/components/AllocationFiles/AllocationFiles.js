@@ -297,7 +297,7 @@ class AllocationFiles extends Component {
     )
 
     const baseUrl = `${location.protocol}//${window.NOMAD_ENDPOINT}`
-    const downloadPath = `download${this.props.file.File}`
+    const downloadPath = `nomad/${this.props.router.params.region}/download${this.props.file.File}`
 
     const downloadBtn = this.props.file.File.indexOf('<') >= 0
       ? ''

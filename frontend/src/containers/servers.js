@@ -24,32 +24,30 @@ class Servers extends Component {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHeaderColumn>ID</TableHeaderColumn>
                   <TableHeaderColumn>Name</TableHeaderColumn>
                   <TableHeaderColumn>Address</TableHeaderColumn>
                   <TableHeaderColumn>Port</TableHeaderColumn>
+                  <TableHeaderColumn>Region</TableHeaderColumn>
+                  <TableHeaderColumn>Datacenter</TableHeaderColumn>
                   <TableHeaderColumn>Status</TableHeaderColumn>
                   <TableHeaderColumn>Leader</TableHeaderColumn>
                   <TableHeaderColumn>Protocol</TableHeaderColumn>
                   <TableHeaderColumn>Build</TableHeaderColumn>
-                  <TableHeaderColumn>Datacenter</TableHeaderColumn>
-                  <TableHeaderColumn>Region</TableHeaderColumn>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 { this.props.members.map((member) => {
                   return (
                     <TableRow key={ member.ID }>
-                      <TableRowColumn><ServerLink serverId={ member.ID } /></TableRowColumn>
-                      <TableRowColumn>{ member.Name }</TableRowColumn>
+                      <TableRowColumn><ServerLink serverId={ member.Name } /></TableRowColumn>
                       <TableRowColumn>{ member.Addr }</TableRowColumn>
                       <TableRowColumn>{ member.Port }</TableRowColumn>
+                      <TableRowColumn>{ member.Tags.region }</TableRowColumn>
+                      <TableRowColumn>{ member.Tags.dc }</TableRowColumn>
                       <TableRowColumn>{ member.Status }</TableRowColumn>
                       <TableRowColumn><FormatBoolean value={ member.Leader } /></TableRowColumn>
                       <TableRowColumn>{ member.ProtocolCur }</TableRowColumn>
                       <TableRowColumn>{ member.Tags.build }</TableRowColumn>
-                      <TableRowColumn>{ member.Tags.dc }</TableRowColumn>
-                      <TableRowColumn>{ member.Tags.region }</TableRowColumn>
                     </TableRow>
                   )
                 })

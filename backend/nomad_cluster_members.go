@@ -1,18 +1,14 @@
 package main
 
 import (
-	"crypto/md5"
 	"crypto/sha1"
-	"encoding/binary"
 	"fmt"
-	"io"
 	"sort"
 	"strings"
 	"time"
 
 	"github.com/cnf/structhash"
 	"github.com/hashicorp/nomad/api"
-	uuid "github.com/satori/go.uuid"
 )
 
 // MembersNameSorter sorts planets by name
@@ -25,16 +21,15 @@ func (a MembersNameSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
 // AgentMemberWithID is a Wrapper around AgentMember that provides ID field. This is made to keep everything
 // consistent i.e. other types have ID field.
 type AgentMemberWithID struct {
-	ID     string
 	Leader bool
 	api.AgentMember
 }
 
-func (n *Nomad) watchMembers() {
+func (c *NomadCluster) watchMembers() {
 	currentChecksum := ""
 
 	for {
-		members, err := n.MembersWithID()
+		members, err := c.MembersWithID()
 		if err != nil {
 			logger.Errorf("watch: unable to fetch members: %s", err)
 			time.Sleep(10 * time.Second)
@@ -56,16 +51,19 @@ func (n *Nomad) watchMembers() {
 		logger.Debugf("Members checksum is changed (%s != %s)", currentChecksum, newChecksum)
 		currentChecksum = newChecksum
 
-		n.members = members
-		n.BroadcastChannels.members.Update(&Action{Type: fetchedMembers, Payload: members, Index: 0})
+		c.members = members
+
+		for _, regionChannels := range *c.RegionChannels {
+			regionChannels.members.Update(&Action{Type: fetchedMembers, Payload: members, Index: 0})
+		}
 
 		time.Sleep(10 * time.Second)
 	}
 }
 
 // MembersWithID is used to query all of the known server members.
-func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
-	members, err := n.Client.Agent().Members()
+func (c *NomadCluster) MembersWithID() ([]*AgentMemberWithID, error) {
+	members, err := c.ClusterClient.Agent().Members()
 	if err != nil {
 		return nil, err
 	}
@@ -79,13 +77,15 @@ func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 		ms = append(ms, x)
 	}
 
-	leader, err := n.Client.Status().Leader()
-	if err != nil {
-		logger.Error("Failed to fetch leader.")
-		return nil, err
-	}
+	for region, regionClient := range *c.RegionClients {
+		logger.Debugf("Finding region leader for %s", region)
 
-	if leader != "" {
+		leader, err := regionClient.Client.Status().Leader()
+		if err != nil {
+			logger.Errorf("%s: %s", region, err)
+			continue
+		}
+
 		parts := strings.Split(leader, ":")
 		if len(parts) != 2 {
 			return nil, fmt.Errorf("Failed to parse leader: %s", leader)
@@ -95,22 +95,24 @@ func (n *Nomad) MembersWithID() ([]*AgentMemberWithID, error) {
 		for _, m := range ms {
 			mPort, ok := m.Tags["port"]
 			if ok && (mPort == port) && (m.Addr == addr) {
+				logger.Debugf("  Found leader: %s", leader)
 				m.Leader = true
 			}
 		}
 	}
+
 	return ms, nil
 }
 
 // MemberWithID is used to query a server member by its ID.
-func (n *Nomad) MemberWithID(ID string) (*AgentMemberWithID, error) {
-	members, err := n.MembersWithID()
+func (c *NomadCluster) MemberWithID(ID string) (*AgentMemberWithID, error) {
+	members, err := c.MembersWithID()
 	if err != nil {
 		return nil, err
 	}
 
 	for _, m := range members {
-		if m.ID == ID {
+		if m.Name == ID {
 			return m, nil
 		}
 	}
@@ -120,32 +122,8 @@ func (n *Nomad) MemberWithID(ID string) (*AgentMemberWithID, error) {
 
 // NewAgentMemberWithID will create a new Agent with a pseudo ID
 func NewAgentMemberWithID(member *api.AgentMember) (*AgentMemberWithID, error) {
-	h := md5.New() // we use md5 as it also has 16 bytes and it maps nicely to uuid
-
-	_, err := io.WriteString(h, member.Name)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = io.WriteString(h, member.Addr)
-	if err != nil {
-		return nil, err
-	}
-
-	err = binary.Write(h, binary.LittleEndian, member.Port)
-	if err != nil {
-		return nil, err
-	}
-
-	sum := h.Sum(nil)
-	ID, err := uuid.FromBytes(sum)
-	if err != nil {
-		return nil, err
-	}
-
 	return &AgentMemberWithID{
 		AgentMember: *member,
-		ID:          ID.String(),
 		Leader:      false,
 	}, nil
 }

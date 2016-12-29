@@ -1,5 +1,13 @@
 package main
 
+// Action represents a Redux action that is dispatched or received from the store
+// via a websocket connection.
+type Action struct {
+	Type    string
+	Index   uint64
+	Payload interface{}
+}
+
 const (
 	watchAllocs          = "WATCH_ALLOCS"
 	watchAllocsShallow   = "WATCH_ALLOCS_SHALLOW"
@@ -41,6 +49,10 @@ const (
 	watchNode   = "WATCH_NODE"
 	unwatchNode = "UNWATCH_NODE"
 
+	fetchNomadRegions   = "FETCH_NOMAD_REGIONS"
+	fetchedNomadRegions = "FETCHED_NOMAD_REGIONS"
+	unknownNomadRegion  = "UNKNOWN_NOMAD_REGION"
+
 	watchMembers   = "WATCH_MEMBERS"
 	unwatchMembers = "UNWATCH_MEMBERS"
 	fetchedMembers = "FETCHED_MEMBERS"
@@ -68,11 +80,3 @@ const (
 	errorNotification   = "ERROR_NOTIFICATION"
 	successNotification = "SUCCESS_NOTIFICATION"
 )
-
-// Action represents a Redux action that is dispatched or received from the store
-// via a websocket connection.
-type Action struct {
-	Type    string
-	Index   uint64
-	Payload interface{}
-}

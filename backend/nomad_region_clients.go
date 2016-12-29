@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/hashicorp/nomad/api"
 	"time"
+
+	"github.com/hashicorp/nomad/api"
 )
 
-func (n *Nomad) watchNodes() {
+func (n *NomadRegion) watchNodes() {
 	q := &api.QueryOptions{WaitIndex: 1}
 	for {
 		nodes, meta, err := n.Client.Nodes().List(q)
@@ -25,7 +26,7 @@ func (n *Nomad) watchNodes() {
 		}
 
 		n.nodes = nodes
-		n.BroadcastChannels.nodes.Update(&Action{Type: fetchedNodes, Payload: nodes, Index: remoteWaitIndex})
+		n.broadcastChannels.nodes.Update(&Action{Type: fetchedNodes, Payload: nodes, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }

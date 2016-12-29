@@ -53,17 +53,6 @@ type Config struct {
 	ClientKey       string
 }
 
-// BroadcastChannels contains all the channels for resources hashi-ui automatically maintain active lists of
-type BroadcastChannels struct {
-	allocations        observer.Property
-	allocationsShallow observer.Property
-	evaluations        observer.Property
-	jobs               observer.Property
-	members            observer.Property
-	nodes              observer.Property
-	clusterStatistics  observer.Property
-}
-
 // DefaultConfig is the basic out-of-the-box configuration for hashi-ui
 func DefaultConfig() *Config {
 	return &Config{
@@ -223,7 +212,7 @@ func main() {
 		config.Enabled = false
 	}
 
-	app, err := newrelic.NewApplication(config)
+	_, err := newrelic.NewApplication(config)
 	if err != nil {
 		logger.Error(err)
 		os.Exit(1)
@@ -257,39 +246,67 @@ func main() {
 	logger.Infof("----------------------------------------------------------------------------")
 	logger.Infof("")
 
-	broadcast := make(chan *Action)
-
-	channels := &BroadcastChannels{}
-	channels.allocations = observer.NewProperty(&Action{})
-	channels.allocationsShallow = observer.NewProperty(&Action{})
-	channels.evaluations = observer.NewProperty(&Action{})
-	channels.jobs = observer.NewProperty(&Action{})
-	channels.members = observer.NewProperty(&Action{})
-	channels.nodes = observer.NewProperty(&Action{})
-	channels.clusterStatistics = observer.NewProperty(&Action{})
-
-	logger.Infof("Connecting to nomad ...")
-	nomad, err := NewNomad(cfg, broadcast, channels)
+	nomadClient, err := CreateNomadRegionClient(cfg, "")
 	if err != nil {
-		logger.Fatalf("Could not create client: %s", err)
+		logger.Fatalf("Could not create Nomad API Client: %s", err)
+		return
 	}
 
-	go nomad.watchAllocs()
-	go nomad.watchAllocsShallow()
-	go nomad.watchEvals()
-	go nomad.watchJobs()
-	go nomad.watchNodes()
-	go nomad.watchMembers()
-	go nomad.watchAggregateClusterStatistics()
+	regions, err := nomadClient.Regions().List()
+	if err != nil {
+		logger.Fatalf("Could not fetch nomad regions from API: %s", err)
+		return
+	}
 
-	hub := NewHub(nomad, broadcast, channels)
+	regionChannels := NomadRegionChannels{}
+	regionClients := NomadRegionClients{}
+
+	for _, region := range regions {
+		logger.Infof("Starting handlers for region: %s", region)
+
+		channels := &NomadRegionBroadcastChannels{}
+		channels.allocations = observer.NewProperty(&Action{})
+		channels.allocationsShallow = observer.NewProperty(&Action{})
+		channels.evaluations = observer.NewProperty(&Action{})
+		channels.jobs = observer.NewProperty(&Action{})
+		channels.members = observer.NewProperty(&Action{})
+		channels.nodes = observer.NewProperty(&Action{})
+		channels.clusterStatistics = observer.NewProperty(&Action{})
+
+		regionChannels[region] = channels
+
+		regionClient, clientErr := CreateNomadRegionClient(cfg, region)
+		if clientErr != nil {
+			logger.Fatalf("  -> Could not create client: %s", clientErr)
+			return
+		}
+
+		logger.Infof("  -> Connecting to nomad")
+		nomad, nomadErr := NewNomadRegion(cfg, regionClient, channels)
+		if nomadErr != nil {
+			logger.Fatalf("    -> Could not create client: %s", nomadErr)
+			return
+		}
+
+		regionClients[region] = nomad
+
+		logger.Info("  -> Starting resource watchers")
+		nomad.StartWatchers()
+	}
+
+	cluster := NewNomadCluster(nomadClient, &regionClients, &regionChannels)
+	cluster.StartWatchers()
+
+	hub := NewNomadHub(cluster)
 	go hub.Run()
 
 	myAssetFS := assetFS()
 
 	router := mux.NewRouter()
-	router.HandleFunc(newrelic.WrapHandleFunc(app, "/ws", hub.Handler))
-	router.HandleFunc(newrelic.WrapHandleFunc(app, "/download/{path:.*}", nomad.downloadFile))
+	router.HandleFunc("/ws", hub.Handler)
+	router.HandleFunc("/ws/{service}", hub.Handler)
+	router.HandleFunc("/ws/{service}/{region}", hub.Handler)
+	router.HandleFunc("/nomad/{region}/download/{path:.*}", hub.downloadFile)
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		responseFile := "/index.html"
 

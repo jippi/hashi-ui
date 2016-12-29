@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
-import { Link } from 'react-router'
+import { Link, withRouter } from 'react-router'
 
-const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId }) => {
+const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId, router }) => {
 
   const JobIdUrl = encodeURIComponent(jobId)
 
@@ -19,7 +19,7 @@ const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId }) => {
   }
 
   const to = {
-    pathname: `/jobs/${JobIdUrl}${linkAppend}`,
+    pathname: `/nomad/${router.params.region}/jobs/${JobIdUrl}${linkAppend}`,
     query
   }
 
@@ -39,7 +39,8 @@ JobLink.propTypes = {
   jobId: PropTypes.string.isRequired,
   linkAppend: PropTypes.string,
   taskGroupId: PropTypes.string,
-  taskId: PropTypes.string.isRequired
+  taskId: PropTypes.string.isRequired,
+  router: PropTypes.object.isRequired,
 }
 
-export default JobLink
+export default withRouter(JobLink)

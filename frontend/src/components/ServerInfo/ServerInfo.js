@@ -6,7 +6,6 @@ import { TableRow, TableRowColumn } from '../Table'
 import TableHelper from '../TableHelper/TableHelper'
 
 const memberProps = [
-  'ID',
   'Name',
   'Addr',
   'Port',

@@ -5,31 +5,31 @@ import (
 	"time"
 )
 
-// ClusterStatisticsTask is meta data about a client when passed into the cluster statistics worker
-type ClusterStatisticsTask struct {
+// NomadRegionStatisticsTask is meta data about a client when passed into the cluster statistics worker
+type NomadRegionStatisticsTask struct {
 	NodeID   string
 	NodeName string
 }
 
-// ClusterStatisticsResult is struct for the result of a finished client statistics task
-type ClusterStatisticsResult struct {
+// NomadRegionStatisticsResult is struct for the result of a finished client statistics task
+type NomadRegionStatisticsResult struct {
 	CPUCores    int
 	CPUIdleTime float64
 	MemoryUsed  uint64
 	MemoryTotal uint64
 }
 
-// ClusterStatisticsWorkerPayload is the payload for processing a single collection of client statistics
-type ClusterStatisticsWorkerPayload struct {
+// NomadRegionStatisticsWorkerPayload is the payload for processing a single collection of client statistics
+type NomadRegionStatisticsWorkerPayload struct {
 	quit    <-chan bool
-	tasks   <-chan *ClusterStatisticsTask
-	results chan *ClusterStatisticsResult
-	n       *Nomad
+	tasks   <-chan *NomadRegionStatisticsTask
+	results chan *NomadRegionStatisticsResult
+	n       *NomadRegion
 	wg      *sync.WaitGroup
 }
 
-// ClusterStatisticsAggregatedResult is the final aggregated result for all clients collected resources
-type ClusterStatisticsAggregatedResult struct {
+// NomadRegionStatisticsAggregatedResult is the final aggregated result for all clients collected resources
+type NomadRegionStatisticsAggregatedResult struct {
 	Clients     int
 	CPUCores    int
 	CPUIdleTime float64
@@ -37,7 +37,7 @@ type ClusterStatisticsAggregatedResult struct {
 	MemoryTotal uint64
 }
 
-func worker(payload *ClusterStatisticsWorkerPayload) {
+func worker(payload *NomadRegionStatisticsWorkerPayload) {
 	defer payload.wg.Done()
 
 	for {
@@ -54,7 +54,7 @@ func worker(payload *ClusterStatisticsWorkerPayload) {
 				return
 			}
 
-			taksResult := &ClusterStatisticsResult{}
+			taksResult := &NomadRegionStatisticsResult{}
 			taksResult.CPUCores = len(stats.CPU)
 			taksResult.CPUIdleTime = 0
 			taksResult.MemoryUsed = 0
@@ -77,16 +77,16 @@ func worker(payload *ClusterStatisticsWorkerPayload) {
 	}
 }
 
-func (n *Nomad) collectAggregateClusterStatistics() {
+func (n *NomadRegion) collectAggregateClusterStatistics() {
 	nodes := n.nodes
 
 	quit := make(chan bool)
-	tasks := make(chan *ClusterStatisticsTask, len(nodes))
-	results := make(chan *ClusterStatisticsResult, len(nodes))
+	tasks := make(chan *NomadRegionStatisticsTask, len(nodes))
+	results := make(chan *NomadRegionStatisticsResult, len(nodes))
 
 	var wg sync.WaitGroup
 
-	payload := &ClusterStatisticsWorkerPayload{
+	payload := &NomadRegionStatisticsWorkerPayload{
 		tasks:   tasks,
 		quit:    quit,
 		results: results,
@@ -102,7 +102,7 @@ func (n *Nomad) collectAggregateClusterStatistics() {
 
 	// put the workers to... work
 	for _, node := range nodes {
-		tasks <- &ClusterStatisticsTask{NodeID: node.ID, NodeName: node.Name}
+		tasks <- &NomadRegionStatisticsTask{NodeID: node.ID, NodeName: node.Name}
 	}
 
 	// end of tasks. the workers should quit afterwards
@@ -116,7 +116,7 @@ func (n *Nomad) collectAggregateClusterStatistics() {
 	// Make sure the result channel range will finish at end
 	close(results)
 
-	aggResult := &ClusterStatisticsAggregatedResult{}
+	aggResult := &NomadRegionStatisticsAggregatedResult{}
 
 	logger.Debugf("[ClusterStatistics] consuming results channel")
 	for elem := range results {
@@ -128,7 +128,7 @@ func (n *Nomad) collectAggregateClusterStatistics() {
 		aggResult.MemoryTotal += elem.MemoryTotal
 	}
 
-	logger.Infof("[ClusterStatistics] Servers: %d, Total Cores: %d Total Idle CPU: %f Total Used RAM: %d Total RAM: %d",
+	logger.Debugf("[ClusterStatistics] Servers: %d, Total Cores: %d Total Idle CPU: %f Total Used RAM: %d Total RAM: %d",
 		aggResult.Clients,
 		aggResult.CPUCores,
 		aggResult.CPUIdleTime,
@@ -137,10 +137,10 @@ func (n *Nomad) collectAggregateClusterStatistics() {
 	)
 
 	n.clusterStatistics = aggResult
-	n.BroadcastChannels.clusterStatistics.Update(&Action{Type: fetchedClusterStatistics, Payload: aggResult})
+	n.broadcastChannels.clusterStatistics.Update(&Action{Type: fetchedClusterStatistics, Payload: aggResult})
 }
 
-func (n *Nomad) watchAggregateClusterStatistics() {
+func (n *NomadRegion) watchAggregateClusterStatistics() {
 	ticker := time.NewTicker(5 * time.Second)
 	quit := make(chan struct{})
 
