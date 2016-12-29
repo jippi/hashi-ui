@@ -1,0 +1,12 @@
+{
+    "version": "0.1.0",
+    "command": "hclfmt",
+    "isShellCommand": true,
+    "isBuildCommand": true,
+    "isWatching": true,
+    "showOutput": "silent",
+    "args": [
+        "-w",
+        "${file}"
+    ]
+}
