@@ -112,14 +112,14 @@ func (c *Config) Parse() {
 
 	// env
 
-	NomadReadOnly, ok := syscall.Getenv("NOMAD_READ_ONLY")
-	if ok {
-		c.NomadReadOnly = NomadReadOnly != "0"
-	}
-
 	consulAddress, ok := syscall.Getenv("CONSUL_ADDR")
 	if ok {
 		c.ConsulAddress = consulAddress
+	}
+
+	nomadReadOnly, ok := syscall.Getenv("NOMAD_READ_ONLY")
+	if ok {
+		c.NomadReadOnly = nomadReadOnly != "0"
 	}
 
 	nomadAddress, ok := syscall.Getenv("NOMAD_ADDR")

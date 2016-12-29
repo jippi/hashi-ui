@@ -102,11 +102,11 @@ class ConsulTopbar extends PureComponent {
 
   tabs() {
     return (
-      <Tabs index={ this.getActiveTab() } onChange={ this._onConsulClick } theme={ theme } fixed>
-        <Tab label='Services' value='services' data-route='/services' />
-        <Tab label='Nodes' value='nodes' data-route='/nodes' />
-        <Tab label='Key/Value' value='key-value' data-route='/kv' />
-        <Tab label='ACL' value='acl' data-route='/acl' />
+      <Tabs index={ this.getActiveTab() } onChange={ this._onClick } theme={ theme } fixed>
+        <Tab label='Services' value='services'  />
+        <Tab label='Nodes' value='nodes' />
+        <Tab label='Key/Value' value='key-value' />
+        <Tab label='ACL' value='acl' />
       </Tabs>
     )
   }

@@ -40,7 +40,8 @@ import ServerRaw from './components/ServerRaw/ServerRaw'
 
 import SelectNomadRegion from './containers/select_nomad_region'
 
-import ConsulKV from './containers/Consul_kv'
+import ConsulKV from './containers/consul_kv'
+import ConsulServices from './containers/consul_services'
 import SelectConsulRegion from './containers/select_consul_region'
 
 const AppRouter = ({ history }) =>
@@ -65,6 +66,7 @@ const AppRouter = ({ history }) =>
       <Route path='/consul' component={ SelectConsulRegion } />
       <Redirect from='/consul/:region' to='/consul/:region/kv' />
       <Route path='/consul/:region/kv' component={ ConsulKV } />
+      <Route path='/consul/:region/services' component={ ConsulServices } />
 
       // Nomad
       <Route path='/nomad' component={ SelectNomadRegion } />

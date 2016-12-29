@@ -1,5 +1,8 @@
 package main
 
+import observer "github.com/imkira/go-observer"
+
+// InitializeConsul ...
 func InitializeConsul(cfg *Config) (*ConsulHub, bool) {
 
 	consulClient, err := CreateConsulRegionClient(cfg, "")
@@ -21,6 +24,7 @@ func InitializeConsul(cfg *Config) (*ConsulHub, bool) {
 		logger.Infof("Starting handlers for region: %s", region)
 
 		channels := &ConsulRegionBroadcastChannels{}
+		channels.services = observer.NewProperty(&Action{})
 
 		regionChannels[region] = channels
 

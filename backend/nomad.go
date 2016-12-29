@@ -2,6 +2,7 @@ package main
 
 import observer "github.com/imkira/go-observer"
 
+// InitializeNomad ...
 func InitializeNomad(cfg *Config) (*NomadHub, bool) {
 
 	nomadClient, err := CreateNomadRegionClient(cfg, "")
