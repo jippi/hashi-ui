@@ -130,11 +130,25 @@ class AppTopbar extends PureComponent {
     )
   }
 
+  title() {
+    let title = 'Hashi UI'
+
+    if (this.props.router.location.pathname.startsWith('/nomad')) {
+      title = title + ' - Nomad'
+    }
+
+    if ('region' in this.props.router.params) {
+      title = title + ' @ ' + this.props.router.params['region']
+    }
+
+    return title
+  }
+
   render () {
     const tabs = 'region' in this.props.router.params ? this.tabs() : undefined
     return (
       <section style={{ backgroundColor: '#4b9a7d' }}>
-        <AppBar title='Hashi UI' showMenuIconButton={ false } iconElementRight={ this.nomadRegions() } />
+        <AppBar title={ this.title() } showMenuIconButton={ false } iconElementRight={ this.nomadRegions() } />
         { tabs }
       </section>
     )
