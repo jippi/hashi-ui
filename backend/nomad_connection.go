@@ -44,11 +44,11 @@ type Connection struct {
 	watches           *set.Set
 	hub               *NomadHub
 	nomad             *NomadRegion
-	broadcastChannels *BroadcastChannels
+	broadcastChannels *NomadRegionBroadcastChannels
 }
 
 // NewConnection creates a new connection.
-func NewConnection(hub *NomadHub, socket *websocket.Conn, nomadClient *NomadRegion, channels *BroadcastChannels) *Connection {
+func NewConnection(hub *NomadHub, socket *websocket.Conn, nomadClient *NomadRegion, channels *NomadRegionBroadcastChannels) *Connection {
 	connectionID := uuid.NewV4()
 
 	return &Connection{
@@ -139,7 +139,7 @@ func (c *Connection) process(action Action) {
 	// Actions for a list of members (aka servers in the UI)
 	//
 	case watchMembers:
-		go c.watchGenericBroadcast("members", fetchedMembers, c.nomad.BroadcastChannels.members, c.nomad.members)
+		go c.watchGenericBroadcast("members", fetchedMembers, c.nomad.BroadcastChannels.members, c.hub.cluster.members)
 	case unwatchMembers:
 		c.unwatchGenericBroadcast("members")
 
@@ -361,7 +361,7 @@ func (c *Connection) watchEval(action Action) {
 
 func (c *Connection) fetchMember(action Action) {
 	memberID := action.Payload.(string)
-	member, err := c.nomad.MemberWithID(memberID)
+	member, err := c.hub.cluster.MemberWithID(memberID)
 	if err != nil {
 		c.Errorf("websocket: unable to fetch member %q: %s", memberID, err)
 		return
@@ -387,7 +387,7 @@ func (c *Connection) watchMember(action Action) {
 			return
 
 		default:
-			member, err := c.nomad.MemberWithID(memberID)
+			member, err := c.hub.cluster.MemberWithID(memberID)
 			if err != nil {
 				c.Errorf("connection: unable to fetch member info: %s", err)
 				time.Sleep(10 * time.Second)

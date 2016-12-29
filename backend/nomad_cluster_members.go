@@ -25,11 +25,11 @@ type AgentMemberWithID struct {
 	api.AgentMember
 }
 
-func (n *NomadRegion) watchMembers() {
+func (c *NomadCluster) watchMembers() {
 	currentChecksum := ""
 
 	for {
-		members, err := n.MembersWithID()
+		members, err := c.MembersWithID()
 		if err != nil {
 			logger.Errorf("watch: unable to fetch members: %s", err)
 			time.Sleep(10 * time.Second)
@@ -51,16 +51,19 @@ func (n *NomadRegion) watchMembers() {
 		logger.Debugf("Members checksum is changed (%s != %s)", currentChecksum, newChecksum)
 		currentChecksum = newChecksum
 
-		n.members = members
-		n.BroadcastChannels.members.Update(&Action{Type: fetchedMembers, Payload: members, Index: 0})
+		c.members = members
+
+		for _, regionChannels := range *c.RegionChannels {
+			regionChannels.members.Update(&Action{Type: fetchedMembers, Payload: members, Index: 0})
+		}
 
 		time.Sleep(10 * time.Second)
 	}
 }
 
 // MembersWithID is used to query all of the known server members.
-func (n *NomadRegion) MembersWithID() ([]*AgentMemberWithID, error) {
-	members, err := n.Client.Agent().Members()
+func (c *NomadCluster) MembersWithID() ([]*AgentMemberWithID, error) {
+	members, err := c.ClusterClient.Agent().Members()
 	if err != nil {
 		return nil, err
 	}
@@ -74,13 +77,15 @@ func (n *NomadRegion) MembersWithID() ([]*AgentMemberWithID, error) {
 		ms = append(ms, x)
 	}
 
-	leader, err := n.Client.Status().Leader()
-	if err != nil {
-		logger.Error("Failed to fetch leader.")
-		return nil, err
-	}
+	for region, regionClient := range *c.RegionClients {
+		logger.Debugf("Finding region leader for %s", region)
 
-	if leader != "" {
+		leader, err := regionClient.Client.Status().Leader()
+		if err != nil {
+			logger.Errorf("%s: %s", region, err)
+			continue
+		}
+
 		parts := strings.Split(leader, ":")
 		if len(parts) != 2 {
 			return nil, fmt.Errorf("Failed to parse leader: %s", leader)
@@ -90,16 +95,18 @@ func (n *NomadRegion) MembersWithID() ([]*AgentMemberWithID, error) {
 		for _, m := range ms {
 			mPort, ok := m.Tags["port"]
 			if ok && (mPort == port) && (m.Addr == addr) {
+				logger.Debugf("  Found leader: %s", leader)
 				m.Leader = true
 			}
 		}
 	}
+
 	return ms, nil
 }
 
 // MemberWithID is used to query a server member by its ID.
-func (n *NomadRegion) MemberWithID(ID string) (*AgentMemberWithID, error) {
-	members, err := n.MembersWithID()
+func (c *NomadCluster) MemberWithID(ID string) (*AgentMemberWithID, error) {
+	members, err := c.MembersWithID()
 	if err != nil {
 		return nil, err
 	}

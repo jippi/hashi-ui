@@ -39,12 +39,6 @@ func startLogging(logLevel string) {
 	logging.SetBackend(logBackendFormattedAndLeveled)
 }
 
-// RegionChannels ...
-type RegionChannels map[string]*BroadcastChannels
-
-// RegionClients ...
-type RegionClients map[string]*NomadRegion
-
 // Config for the hashi-ui server
 type Config struct {
 	ReadOnly        bool
@@ -57,17 +51,6 @@ type Config struct {
 	CACert          string
 	ClientCert      string
 	ClientKey       string
-}
-
-// BroadcastChannels contains all the channels for resources hashi-ui automatically maintain active lists of
-type BroadcastChannels struct {
-	allocations        observer.Property
-	allocationsShallow observer.Property
-	evaluations        observer.Property
-	jobs               observer.Property
-	members            observer.Property
-	nodes              observer.Property
-	clusterStatistics  observer.Property
 }
 
 // DefaultConfig is the basic out-of-the-box configuration for hashi-ui
@@ -275,13 +258,13 @@ func main() {
 		return
 	}
 
-	regionChannels := RegionChannels{}
-	regionClients := RegionClients{}
+	regionChannels := NomadRegionChannels{}
+	regionClients := NomadRegionClients{}
 
 	for _, region := range regions {
 		logger.Infof("Starting handlers for region: %s", region)
 
-		channels := &BroadcastChannels{}
+		channels := &NomadRegionBroadcastChannels{}
 		channels.allocations = observer.NewProperty(&Action{})
 		channels.allocationsShallow = observer.NewProperty(&Action{})
 		channels.evaluations = observer.NewProperty(&Action{})
@@ -299,7 +282,7 @@ func main() {
 		}
 
 		logger.Infof("  -> Connecting to nomad")
-		nomad, nomadErr := NewNomad(cfg, regionClient, channels)
+		nomad, nomadErr := NewNomadRegion(cfg, regionClient, channels)
 		if nomadErr != nil {
 			logger.Fatalf("    -> Could not create client: %s", nomadErr)
 			return
@@ -311,10 +294,13 @@ func main() {
 		nomad.StartWatchers()
 	}
 
-	myAssetFS := assetFS()
+	cluster := NewNomadCluster(nomadClient, &regionClients, &regionChannels)
+	cluster.StartWatchers()
 
-	hub := NewHub(regionClients, regionChannels)
+	hub := NewNomadHub(cluster)
 	go hub.Run()
+
+	myAssetFS := assetFS()
 
 	router := mux.NewRouter()
 	router.HandleFunc("/ws", hub.Handler)

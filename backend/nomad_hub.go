@@ -17,24 +17,26 @@ var upgrader = websocket.Upgrader{
 // from Nomad to all connections.
 type NomadHub struct {
 	connections map[*Connection]bool
-	channels    RegionChannels
-	clients     RegionClients
+	cluster     *NomadCluster
+	channels    *NomadRegionChannels
+	clients     *NomadRegionClients
 	regions     []string
 	register    chan *Connection
 	unregister  chan *Connection
 }
 
-// NewHub initializes a new hub.
-func NewHub(clients RegionClients, channels RegionChannels) *NomadHub {
+// NewNomadHub initializes a new hub.
+func NewNomadHub(cluster *NomadCluster) *NomadHub {
 	regions := make([]string, 0)
 
-	for region := range channels {
+	for region := range *cluster.RegionChannels {
 		regions = append(regions, region)
 	}
 
 	return &NomadHub{
-		clients:     clients,
-		channels:    channels,
+		cluster:     cluster,
+		clients:     cluster.RegionClients,
+		channels:    cluster.RegionChannels,
 		regions:     regions,
 		connections: make(map[*Connection]bool),
 		register:    make(chan *Connection),
@@ -79,20 +81,20 @@ func (h *NomadHub) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, ok := h.channels[region]; !ok {
+	if _, ok := (*h.channels)[region]; !ok {
 		logger.Errorf("region was not found: %s", region)
 		h.sendAction(socket, &Action{Type: unknownNomadRegion, Payload: ""})
 		return
 	}
 
-	c := NewConnection(h, socket, h.clients[region], h.channels[region])
+	c := NewConnection(h, socket, (*h.clients)[region], (*h.channels)[region])
 	c.Handle()
 }
 
 func (h *NomadHub) requireNomadRegion(socket *websocket.Conn) {
 	regions := make([]string, 0)
 
-	for region := range h.channels {
+	for region := range *h.channels {
 		regions = append(regions, region)
 	}
 

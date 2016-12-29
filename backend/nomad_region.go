@@ -9,18 +9,36 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/hashicorp/nomad/api"
+	observer "github.com/imkira/go-observer"
 )
 
 const (
 	waitTime = 1 * time.Minute
 )
 
+// NomadRegionChannels ...
+type NomadRegionChannels map[string]*NomadRegionBroadcastChannels
+
+// NomadRegionClients ...
+type NomadRegionClients map[string]*NomadRegion
+
+// NomadRegionBroadcastChannels contains all the channels for resources hashi-ui automatically maintain active lists of
+type NomadRegionBroadcastChannels struct {
+	allocations        observer.Property
+	allocationsShallow observer.Property
+	evaluations        observer.Property
+	jobs               observer.Property
+	members            observer.Property
+	nodes              observer.Property
+	clusterStatistics  observer.Property
+}
+
 // NomadRegion keeps track of the NomadRegion state. It monitors changes to allocations,
 // evaluations, jobs and nodes and broadcasts them to all connected websockets.
 // It also exposes an API client for the NomadRegion server.
 type NomadRegion struct {
 	Client             *api.Client
-	BroadcastChannels  *BroadcastChannels
+	BroadcastChannels  *NomadRegionBroadcastChannels
 	regions            []string
 	allocations        []*api.AllocationListStub
 	allocationsShallow []*api.AllocationListStub // with TaskStates removed
@@ -46,8 +64,8 @@ func CreateNomadRegionClient(c *Config, region string) (*api.Client, error) {
 	return api.NewClient(config)
 }
 
-// NewNomad configures the Nomad API client and initializes the internal state.
-func NewNomad(c *Config, client *api.Client, channels *BroadcastChannels) (*NomadRegion, error) {
+// NewNomadRegion configures the Nomad API client and initializes the internal state.
+func NewNomadRegion(c *Config, client *api.Client, channels *NomadRegionBroadcastChannels) (*NomadRegion, error) {
 	return &NomadRegion{
 		Client:             client,
 		BroadcastChannels:  channels,
@@ -69,7 +87,6 @@ func (n *NomadRegion) StartWatchers() {
 	go n.watchEvals()
 	go n.watchJobs()
 	go n.watchNodes()
-	go n.watchMembers()
 	go n.watchAggregateClusterStatistics()
 }
 
