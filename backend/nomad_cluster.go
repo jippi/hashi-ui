@@ -13,9 +13,6 @@ type NomadCluster struct {
 	members        []*AgentMemberWithID
 }
 
-// NomadClusterChannels ...
-type NomadClusterChannels map[string]*NomadClusterBroadcastChannels
-
 // NomadClusterBroadcastChannels ...
 type NomadClusterBroadcastChannels struct {
 	members observer.Property
