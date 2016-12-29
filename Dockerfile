@@ -1,4 +1,4 @@
-FROM scratch
+FROM alpine:3.5
 
 EXPOSE 3000
 
