@@ -1,18 +1,14 @@
 package main
 
 import (
-	"crypto/md5"
 	"crypto/sha1"
-	"encoding/binary"
 	"fmt"
-	"io"
 	"sort"
 	"strings"
 	"time"
 
 	"github.com/cnf/structhash"
 	"github.com/hashicorp/nomad/api"
-	uuid "github.com/satori/go.uuid"
 )
 
 // MembersNameSorter sorts planets by name
@@ -25,7 +21,6 @@ func (a MembersNameSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
 // AgentMemberWithID is a Wrapper around AgentMember that provides ID field. This is made to keep everything
 // consistent i.e. other types have ID field.
 type AgentMemberWithID struct {
-	ID     string
 	Leader bool
 	api.AgentMember
 }
@@ -110,7 +105,7 @@ func (n *Nomad) MemberWithID(ID string) (*AgentMemberWithID, error) {
 	}
 
 	for _, m := range members {
-		if m.ID == ID {
+		if m.Name == ID {
 			return m, nil
 		}
 	}
@@ -120,32 +115,8 @@ func (n *Nomad) MemberWithID(ID string) (*AgentMemberWithID, error) {
 
 // NewAgentMemberWithID will create a new Agent with a pseudo ID
 func NewAgentMemberWithID(member *api.AgentMember) (*AgentMemberWithID, error) {
-	h := md5.New() // we use md5 as it also has 16 bytes and it maps nicely to uuid
-
-	_, err := io.WriteString(h, member.Name)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = io.WriteString(h, member.Addr)
-	if err != nil {
-		return nil, err
-	}
-
-	err = binary.Write(h, binary.LittleEndian, member.Port)
-	if err != nil {
-		return nil, err
-	}
-
-	sum := h.Sum(nil)
-	ID, err := uuid.FromBytes(sum)
-	if err != nil {
-		return nil, err
-	}
-
 	return &AgentMemberWithID{
 		AgentMember: *member,
-		ID:          ID.String(),
 		Leader:      false,
 	}, nil
 }

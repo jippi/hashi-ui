@@ -24,7 +24,6 @@ class Servers extends Component {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHeaderColumn>ID</TableHeaderColumn>
                   <TableHeaderColumn>Name</TableHeaderColumn>
                   <TableHeaderColumn>Address</TableHeaderColumn>
                   <TableHeaderColumn>Port</TableHeaderColumn>
@@ -40,8 +39,7 @@ class Servers extends Component {
                 { this.props.members.map((member) => {
                   return (
                     <TableRow key={ member.ID }>
-                      <TableRowColumn><ServerLink serverId={ member.ID } /></TableRowColumn>
-                      <TableRowColumn>{ member.Name }</TableRowColumn>
+                      <TableRowColumn><ServerLink serverId={ member.Name } /></TableRowColumn>
                       <TableRowColumn>{ member.Addr }</TableRowColumn>
                       <TableRowColumn>{ member.Port }</TableRowColumn>
                       <TableRowColumn>{ member.Status }</TableRowColumn>
