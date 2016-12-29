@@ -3,12 +3,13 @@ import { connect } from 'react-redux'
 import AppBar from 'material-ui/AppBar'
 import { withRouter } from 'react-router'
 import { Tab, Tabs } from 'react-toolbox/lib/tabs';
-import theme from './AppTopbar.scss';
+import theme from './NomadTopbar.scss';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import FontIcon from 'material-ui/FontIcon'
 import { FETCH_NOMAD_REGIONS, SET_NOMAD_REGION } from '../../sagas/event'
+import { NOMAD_COLOR } from '../../config.js'
 
 class AppTopbar extends PureComponent {
 
@@ -147,7 +148,7 @@ class AppTopbar extends PureComponent {
   render () {
     const tabs = 'region' in this.props.router.params ? this.tabs() : undefined
     return (
-      <section style={{ backgroundColor: '#4b9a7d' }}>
+      <section style={{ backgroundColor: NOMAD_COLOR }}>
         <AppBar title={ this.title() } showMenuIconButton={ false } iconElementRight={ this.nomadRegions() } />
         { tabs }
       </section>

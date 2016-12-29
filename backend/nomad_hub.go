@@ -17,13 +17,13 @@ var upgrader = websocket.Upgrader{
 // NomadHub keeps track of all the websocket connections and sends state updates
 // from Nomad to all connections.
 type NomadHub struct {
-	connections map[*Connection]bool
+	connections map[*NomadConnection]bool
 	cluster     *NomadCluster
 	channels    *NomadRegionChannels
 	clients     *NomadRegionClients
 	regions     []string
-	register    chan *Connection
-	unregister  chan *Connection
+	register    chan *NomadConnection
+	unregister  chan *NomadConnection
 }
 
 // NewNomadHub initializes a new hub.
@@ -39,9 +39,9 @@ func NewNomadHub(cluster *NomadCluster) *NomadHub {
 		clients:     cluster.RegionClients,
 		channels:    cluster.RegionChannels,
 		regions:     regions,
-		connections: make(map[*Connection]bool),
-		register:    make(chan *Connection),
-		unregister:  make(chan *Connection),
+		connections: make(map[*NomadConnection]bool),
+		register:    make(chan *NomadConnection),
+		unregister:  make(chan *NomadConnection),
 	}
 }
 
@@ -86,7 +86,7 @@ func (h *NomadHub) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := NewConnection(h, socket, (*h.clients)[region], (*h.channels)[region])
+	c := NewNomadConnection(h, socket, (*h.clients)[region], (*h.channels)[region])
 	c.Handle()
 }
 

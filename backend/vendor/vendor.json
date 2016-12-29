@@ -489,8 +489,8 @@
 			"checksumSHA1": "BMEJLBjl91k5k3vMMzzT7G2SO1U=",
 			"origin": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/consul/api",
 			"path": "github.com/hashicorp/consul/api",
-			"revision": "40d0a4e074b15ee056c5d5cc73d4a338cd19db72",
-			"revisionTime": "2016-10-29T20:44:48Z"
+			"revision": "ab79d6a0be842a33a9e768c7c2a7f8b88688ef9f",
+			"revisionTime": "2016-12-25T07:47:08Z"
 		},
 		{
 			"checksumSHA1": "0DPAA2cTBjrCGgXaxXil0vILcFs=",

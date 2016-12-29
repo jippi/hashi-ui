@@ -1,0 +1,150 @@
+import React, { PureComponent, PropTypes } from 'react'
+import { connect } from 'react-redux'
+import AppBar from 'material-ui/AppBar'
+import { withRouter } from 'react-router'
+import { Tab, Tabs } from 'react-toolbox/lib/tabs';
+import theme from './ConsulTopbar.scss';
+import IconButton from 'material-ui/IconButton';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import FontIcon from 'material-ui/FontIcon'
+import { FETCH_CONSUL_REGIONS, SET_CONSUL_REGION } from '../../sagas/event'
+import { CONSUL_COLOR } from '../../config.js'
+
+class ConsulTopbar extends PureComponent {
+
+  componentWillMount () {
+    this.props.dispatch({
+      type: FETCH_CONSUL_REGIONS,
+    })
+  }
+
+  constructor () {
+    super()
+    this._onClick = this.handleActive.bind(this)
+    this.onChangeRegion = this.handleChangeRegion.bind(this)
+  }
+
+  handleChangeRegion(region) {
+    this.props.dispatch({
+      type: SET_CONSUL_REGION,
+      payload: region
+    })
+  }
+
+  handleActive (index) {
+    const prefix = `/consul/${this.props.router.params.region}`
+    let route = prefix
+
+    switch (index) {
+    case 0:
+      route = `${prefix}/services`;
+      break;
+
+    case 1:
+      route = `${prefix}/nodes`;
+      break;
+
+    case 2:
+      route = `${prefix}/kv`;
+      break;
+
+    case 3:
+      route = `${prefix}/acl`;
+      break;
+
+    default:
+      route = `${prefix}/services`;
+    }
+
+    this.props.router.push(route)
+  }
+
+  getActiveTab () {
+    const location = this.props.location
+
+    const prefix = `/consul/${this.props.router.params.region}`
+
+    if (location.pathname.startsWith(prefix + '/services')) {
+      return 0
+    }
+
+    if (location.pathname.startsWith(prefix + '/nodes')) {
+      return 1
+    }
+
+    if (location.pathname.startsWith(prefix + '/kv')) {
+      return 2
+    }
+
+    if (location.pathname.startsWith(prefix + '/acl')) {
+      return 3
+    }
+  }
+
+  consulRegions() {
+    if (!Array.isArray(this.props.consulRegions)) {
+      return
+    }
+
+    return (
+      <IconMenu
+        iconButtonElement={ <IconButton><FontIcon className='material-icons'>public</FontIcon></IconButton> }
+        targetOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+      >
+        { this.props.consulRegions.map(region => {
+          return <MenuItem primaryText={ region } onTouchTap={ () => this.onChangeRegion(region) } />
+        })}
+      </IconMenu>
+    )
+  }
+
+  tabs() {
+    return (
+      <Tabs index={ this.getActiveTab() } onChange={ this._onConsulClick } theme={ theme } fixed>
+        <Tab label='Services' value='services' data-route='/services' />
+        <Tab label='Nodes' value='nodes' data-route='/nodes' />
+        <Tab label='Key/Value' value='key-value' data-route='/kv' />
+        <Tab label='ACL' value='acl' data-route='/acl' />
+      </Tabs>
+    )
+  }
+
+  title() {
+    let title = 'Hashi UI - Consul'
+
+    if ('region' in this.props.router.params) {
+      title = title + ' @ ' + this.props.router.params['region']
+    }
+
+    return title
+  }
+
+  render () {
+    const tabs = 'region' in this.props.router.params ? this.tabs() : undefined
+    return (
+      <section style={{ backgroundColor: CONSUL_COLOR }}>
+        <AppBar title={ this.title() } showMenuIconButton={ false } iconElementRight={ this.consulRegions() } />
+        { tabs }
+      </section>
+    )
+  }
+}
+
+ConsulTopbar.defaultProps = {
+  consulRegions: [],
+}
+
+ConsulTopbar.propTypes = {
+  router: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired,
+  consulRegions: PropTypes.array.isRequired,
+  dispatch: PropTypes.func.isRequired,
+}
+
+function mapStateToProps ({ consulRegions }) {
+  return { consulRegions }
+}
+
+export default connect(mapStateToProps)(withRouter(ConsulTopbar))

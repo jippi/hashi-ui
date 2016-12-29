@@ -59,10 +59,16 @@ export const WATCH_MEMBER = 'WATCH_MEMBER'
 export const WATCH_MEMBERS = 'WATCH_MEMBERS'
 export const WATCH_NODE = 'WATCH_NODE'
 export const WATCH_NODES = 'WATCH_NODES';
+
 export const SET_NOMAD_REGION = 'SET_NOMAD_REGION';
 export const FETCH_NOMAD_REGIONS = 'FETCH_NOMAD_REGIONS';
 export const FETCHED_NOMAD_REGIONS = 'FETCHED_NOMAD_REGIONS';
 export const UNKNOWN_NOMAD_REGION = 'UNKNOWN_NOMAD_REGION';
+
+export const SET_CONSUL_REGION = 'SET_CONSUL_REGION';
+export const FETCH_CONSUL_REGIONS = 'FETCH_CONSUL_REGIONS';
+export const FETCHED_CONSUL_REGIONS = 'FETCHED_CONSUL_REGIONS';
+export const UNKNOWN_CONSUL_REGION = 'UNKNOWN_CONSUL_REGION';
 
 function subscribe (socket) {
   return eventChannel((emit) => {
@@ -126,6 +132,7 @@ function* write (socket) {
       FETCH_MEMBER,
       FETCH_NODE,
       FETCH_NOMAD_REGIONS,
+      FETCH_CONSUL_REGIONS,
       STOP_JOB,
       SUBMIT_JOB,
       UNWATCH_ALLOC,
@@ -201,6 +208,15 @@ export default function eventSaga () {
     if (relPath.indexOf('/nomad') === 0) {
       wsURL = wsURL + '/nomad'
       relPath = relPath.replace('/nomad/', '').split('/')[0]
+      if (relPath) {
+        wsURL = wsURL + '/' + relPath
+      }
+    }
+
+    // inside consul scope
+    if (relPath.indexOf('/consul') === 0) {
+      wsURL = wsURL + '/consul'
+      relPath = relPath.replace('/consul/', '').split('/')[0]
       if (relPath) {
         wsURL = wsURL + '/' + relPath
       }

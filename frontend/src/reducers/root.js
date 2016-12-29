@@ -8,6 +8,7 @@ import { EvalInfoReducer, EvalListReducer } from './evaluation'
 import { NodeInfoReducer, NodeStatsReducer, NodeListReducer } from './node'
 import { DirectoryReducer, FileReducer } from './filesystem'
 import { ChangeNomadRegionReducer , NomadRegionsReducer } from './nomad'
+import { ChangeConsulRegionReducer , ConsulRegionsReducer } from './consul'
 
 const rootReducer = combineReducers({
   allocation: AllocInfoReducer,
@@ -30,6 +31,9 @@ const rootReducer = combineReducers({
   successNotification: SuccessNotificationReducer,
   changeNomadRegion: ChangeNomadRegionReducer,
   nomadRegions: NomadRegionsReducer,
+
+  changeConsulRegion: ChangeConsulRegionReducer,
+  consulRegions: ConsulRegionsReducer,
 })
 
 export default rootReducer

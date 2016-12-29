@@ -1,0 +1,17 @@
+$tab-text-inactive-color: rgba(255, 255, 255, 0.701961);
+
+.navigation {
+  height: 48px;
+
+  .label {
+    color: white;
+    line-height: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0.7rem 1.2rem;
+  }
+
+  .pointer {
+    background-color: rgb(255, 64, 129);
+  }
+}

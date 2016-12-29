@@ -1,22 +1,14 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import { red500, green800, green900 } from 'material-ui/styles/colors'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import AppBar from 'material-ui/AppBar';
-import AppTopbar from './AppTopbar/AppTopbar'
+import NomadTopbar from './NomadTopbar/NomadTopbar'
+import ConsulTopbar from './ConsulTopbar/ConsulTopbar'
 import NotificationsBar from './NotificationsBar/NotificationsBar'
-
-const muiTheme = getMuiTheme({
-  palette: {
-    primary1Color: '#4b9a7d',
-    primary2Color: green800,
-    primary3Color: green900
-  },
-  appBar: {
-    height: 50
-  }
-})
+import { NOMAD_COLOR, CONSUL_COLOR } from '../config.js'
 
 class App extends Component {
 
@@ -43,12 +35,35 @@ class App extends Component {
       />
     }
 
+    const muiTheme = {
+      palette: {
+        primary1Color: NOMAD_COLOR,
+        primary2Color: green800,
+        primary3Color: green900
+      },
+      appBar: {
+        height: 50
+      }
+    }
+
+    let topbar = undefined;
+
+    if (this.props.router.location.pathname.startsWith('/consul')) {
+      muiTheme.palette.primary1Color = CONSUL_COLOR
+      topbar = <ConsulTopbar { ...this.props } />
+    }
+
+    if (this.props.router.location.pathname.startsWith('/nomad')) {
+      muiTheme.palette.primary1Color = NOMAD_COLOR
+      topbar = <NomadTopbar { ...this.props } />
+    }
+
     return (
-      <MuiThemeProvider muiTheme={ muiTheme }>
+      <MuiThemeProvider muiTheme={ getMuiTheme(muiTheme) }>
         <div>
           <NotificationsBar />
           { uncaughtExceptionBar }
-          <AppTopbar { ...this.props } />
+          { topbar }
           { this.props.children }
         </div>
       </MuiThemeProvider>
@@ -72,6 +87,7 @@ App.propTypes = {
   errorNotification: PropTypes.string,
   appError: PropTypes.object,
   route: PropTypes.object.isRequired,
+  router: PropTypes.object.isRequired,
 }
 
-export default connect(mapStateToProps)(App)
+export default connect(mapStateToProps)(withRouter(App))

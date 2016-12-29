@@ -47,13 +47,13 @@ type NomadRegion struct {
 // CreateNomadRegionClient derp
 func CreateNomadRegionClient(c *Config, region string) (*api.Client, error) {
 	config := api.DefaultConfig()
-	config.Address = c.Address
+	config.Address = c.NomadAddress
 	config.WaitTime = waitTime
 	config.Region = region
 	config.TLSConfig = &api.TLSConfig{
-		CACert:     c.CACert,
-		ClientCert: c.ClientCert,
-		ClientKey:  c.ClientKey,
+		CACert:     c.NomadCACert,
+		ClientCert: c.NomadClientCert,
+		ClientKey:  c.NomadClientKey,
 	}
 
 	return api.NewClient(config)
