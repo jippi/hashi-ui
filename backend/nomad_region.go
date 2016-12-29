@@ -1,13 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"io"
-	"net/http"
-	"path/filepath"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/hashicorp/nomad/api"
 	observer "github.com/imkira/go-observer"
 )
@@ -88,48 +83,4 @@ func (n *NomadRegion) StartWatchers() {
 	go n.watchJobs()
 	go n.watchNodes()
 	go n.watchAggregateClusterStatistics()
-}
-
-func (n *NomadRegion) downloadFile(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	path := params["path"]
-
-	c := r.URL.Query().Get("client")
-	allocID := r.URL.Query().Get("allocID")
-	if c == "" || allocID == "" {
-		http.Error(w, "client or allocID should be passed.", http.StatusBadRequest)
-		return
-	}
-
-	config := api.DefaultConfig()
-	config.Address = fmt.Sprintf("http://%s", c)
-
-	client, err := api.NewClient(config)
-	if err != nil {
-		logger.Errorf("Could not create client: %s", err)
-		http.Error(w, "Could not connect to Nomad client.", http.StatusInternalServerError)
-		return
-	}
-
-	alloc, _, err := client.Allocations().Info(allocID, nil)
-	if err != nil {
-		logger.Errorf("Unable to fetch alloc: %s", err)
-		http.Error(w, "Could not fetch the allocation.", http.StatusInternalServerError)
-		return
-	}
-
-	file, err := client.AllocFS().Cat(alloc, path, nil)
-	if err != nil {
-		logger.Errorf("Unable to cat file: %s", err)
-		http.Error(w, "Could not fetch the file.", http.StatusInternalServerError)
-		return
-	}
-	defer file.Close()
-
-	w.Header().Set("Content-Disposition", "attachment; filename="+filepath.Base(path))
-	w.Header().Set("Content-Type", "application/octet-stream")
-
-	logger.Infof("download: streaming %q to client", path)
-
-	io.Copy(w, file)
 }

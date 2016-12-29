@@ -1,10 +1,11 @@
 package main
 
 import (
+	"io"
 	"net/http"
+	"path/filepath"
 
-	"strings"
-
+	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 )
 
@@ -70,12 +71,10 @@ func (h *NomadHub) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	region := ""
-	if strings.HasPrefix(r.URL.Path, "/ws/nomad/") {
-		region = strings.Replace(r.URL.Path, "/ws/nomad/", "", 1)
-	}
+	params := mux.Vars(r)
 
-	if region == "" {
+	region, ok := params["region"]
+	if !ok {
 		logger.Errorf("No region provided")
 		h.requireNomadRegion(socket)
 		return
@@ -92,23 +91,17 @@ func (h *NomadHub) Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *NomadHub) requireNomadRegion(socket *websocket.Conn) {
-	regions := make([]string, 0)
-
-	for region := range *h.channels {
-		regions = append(regions, region)
-	}
-
 	var action Action
 
-	if len(regions) == 1 {
+	if len(h.regions) == 1 {
 		action = Action{
 			Type:    "SET_NOMAD_REGION",
-			Payload: regions[0],
+			Payload: h.regions[0],
 		}
 	} else {
 		action = Action{
 			Type:    "FETCHED_NOMAD_REGIONS",
-			Payload: regions,
+			Payload: h.regions,
 		}
 	}
 
@@ -134,4 +127,44 @@ func (h *NomadHub) sendAction(socket *websocket.Conn, action *Action) {
 	if err := socket.WriteJSON(action); err != nil {
 		logger.Errorf(" %s", err)
 	}
+}
+
+func (h *NomadHub) downloadFile(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	region := params["region"]
+
+	regionClient, ok := (*h.clients)[region]
+	if !ok {
+		logger.Errorf("region was not found: %s", region)
+	}
+
+	c := r.URL.Query().Get("client")
+	allocID := r.URL.Query().Get("allocID")
+	if c == "" || allocID == "" {
+		http.Error(w, "client or allocID should be passed.", http.StatusBadRequest)
+		return
+	}
+
+	alloc, _, err := regionClient.Client.Allocations().Info(allocID, nil)
+	if err != nil {
+		logger.Errorf("Unable to fetch alloc: %s", err)
+		http.Error(w, "Could not fetch the allocation.", http.StatusInternalServerError)
+		return
+	}
+
+	path := params["path"]
+	file, err := regionClient.Client.AllocFS().Cat(alloc, path, nil)
+	if err != nil {
+		logger.Errorf("Unable to cat file: %s", err)
+		http.Error(w, "Could not fetch the file.", http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
+
+	w.Header().Set("Content-Disposition", "attachment; filename="+filepath.Base(path))
+	w.Header().Set("Content-Type", "application/octet-stream")
+
+	logger.Infof("download: streaming %q to client", path)
+
+	io.Copy(w, file)
 }

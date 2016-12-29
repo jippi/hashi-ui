@@ -306,7 +306,7 @@ func main() {
 	router.HandleFunc("/ws", hub.Handler)
 	router.HandleFunc("/ws/{service}", hub.Handler)
 	router.HandleFunc("/ws/{service}/{region}", hub.Handler)
-	// router.HandleFunc(newrelic.WrapHandleFunc(app, "/download/{path:.*}", nomad.downloadFile))
+	router.HandleFunc("/nomad/{region}/download/{path:.*}", hub.downloadFile)
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		responseFile := "/index.html"
 
