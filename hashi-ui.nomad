@@ -34,7 +34,7 @@ job "hashi-ui" {
       }
 
       artifact {
-        source = "https://github.com/jippi/hashi-ui/releases/download/v0.11.0/hashi-ui-linux-amd64"
+        source = "https://github.com/jippi/hashi-ui/releases/download/v0.12.1/hashi-ui-linux-amd64"
       }
 
       service {
@@ -65,6 +65,7 @@ job "hashi-ui" {
           }
 
           # use a dynamic port
+
           # port "http" {}
         }
       }
