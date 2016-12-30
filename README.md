@@ -43,16 +43,17 @@ both hostname and port.
 
 hashi-ui can be controlled by both ENV or CLI flags as described below
 
-| Environment        	    | CLI (`--flag`)    		  | Default                 	| Description                                                                                                      |
-|-------------------------|-------------------------|---------------------------|------------------------------------------------------------------------------------------------------------------|
-| `NOMAD_ADDR`      	    | `nomad.address`      	  | `http://127.0.0.1:4646` 	| Must point to the correct location of your Nomad server.                                                         |
+| Environment        	  | CLI (`--flag`)    		  | Default                 	| Description                                                                                                      |
+|-------------------------|---------------------------|-----------------------------|------------------------------------------------------------------------------------------------------------------|
+| `CONSUL_ADDR`           | `consul.address`      	  | `<empty>` 	                | Host + Port for your Consul server, e.g. `localhost:8500`                                                        |
+| `NOMAD_ADDR`            | `nomad.address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your .                                                         |
 | `NOMAD_CACERT`      	  | `nomad.ca_cert`      	  | `<empty>`   	            | (optional) path to a CA Cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)                 |
-| `NOMAD_CLIENT_CERT`  	  | `nomad.client_cert`     | `<empty>` 	              | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
-| `NOMAD_CLIENT_KEY`  	  | `nomad.client_key`      | `<empty>` 	              | (optional) path to a client key file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)          	   |
-| `NOMAD_READ_ONLY`  	    | `nomad.read-only`   	  | `false` 		        			| Should hash-ui allowed to modify nomad state (stop/start jobs and so forth)	                                     |
-| `NOMAD_PORT_http` 	    | `web.listen-address` 	  | `0.0.0.0:3000`          	| The IP + PORT to listen on                                                                                       |
+| `NOMAD_CLIENT_CERT`  	  | `nomad.client_cert`       | `<empty>` 	                | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
+| `NOMAD_CLIENT_KEY`  	  | `nomad.client_key`        | `<empty>` 	                | (optional) path to a client key file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)          	   |
+| `NOMAD_READ_ONLY`  	  | `nomad.read-only`   	  | `false` 		        	| Should hash-ui allowed to modify nomad state (stop/start jobs and so forth)	                                   |
+| `NOMAD_PORT_http` 	  | `web.listen-address` 	  | `0.0.0.0:3000`          	| The IP + PORT to listen on                                                                                       |
 | `NOMAD_PROXY_ADDRESS`   | `web.proxy-address` 	  | `<empty>`               	| (optional) The base URL of the UI when running behind a reverse proxy (ie: example.com/nomad/)                   |
-| `NOMAD_LOG_LEVEL` 	    | `log.level`          	  | `info`                  	| Log level to use while running the hashi-ui server - (`critical`, `error`, `warning`, `notice`, `info`, `debug`) |
+| `NOMAD_LOG_LEVEL` 	  | `log.level`          	  | `info`                  	| Log level to use while running the hashi-ui server - (`critical`, `error`, `warning`, `notice`, `info`, `debug`) |
 | `NEWRELIC_APP_NAME`     | `newrelic.app_name`  	  | `hashi-ui`               	| (optional) NewRelic application name                                                                             |
 | `NEWRELIC_LICENSE`      | `newrelic.license`  	  | `<empty>`          	  		| (optional) NewRelic license key                                                                                  |
 

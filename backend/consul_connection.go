@@ -137,6 +137,10 @@ func (c *ConsulConnection) process(action Action) {
 		go c.watchConsulService(action)
 	case unwatchConsulService:
 		c.watches.Remove(action.Payload.(string))
+	case dereigsterConsulService:
+		go c.dereigsterConsulService(action)
+	case dereigsterConsulServiceCheck:
+		go c.dereigsterConsulServiceCheck(action)
 
 	//
 	// Consul nodes
@@ -336,4 +340,65 @@ func (c *ConsulConnection) watchConsulNode(action Action) {
 			time.Sleep(5 * time.Second)
 		}
 	}
+}
+
+func (c *ConsulConnection) dereigsterConsulService(action Action) {
+	params, ok := action.Payload.(map[string]interface{})
+	if !ok {
+		c.Errorf("Could not decode payload")
+		return
+	}
+
+	nodeAddress := params["nodeAddress"].(string)
+	serviceID := params["serviceID"].(string)
+
+	config := api.DefaultConfig()
+	config.Address = nodeAddress + ":8500"
+
+	client, err := api.NewClient(config)
+	if err != nil {
+		logger.Errorf("connection: unable to create consul client : %s", err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to create Consul client : %s", err)}
+		return
+	}
+
+	err = client.Agent().ServiceDeregister(serviceID)
+	if err != nil {
+		logger.Errorf("connection: unable to deregister consul service '%s': %s", serviceID, err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to deregister service : %s", err)}
+		return
+	}
+
+	c.send <- &Action{Type: successNotification, Payload: "The service has been successfully deregistered."}
+}
+
+func (c *ConsulConnection) dereigsterConsulServiceCheck(action Action) {
+	params, ok := action.Payload.(map[string]interface{})
+	if !ok {
+		c.Errorf("Could not decode payload")
+		return
+	}
+
+	nodeAddress := params["nodeAddress"].(string)
+	checkID := params["checkID"].(string)
+
+	config := api.DefaultConfig()
+	config.Address = nodeAddress + ":8500"
+
+	client, err := api.NewClient(config)
+	if err != nil {
+		logger.Errorf("connection: unable to create consul client : %s", err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to create Consul client : %s", err)}
+		return
+	}
+
+	err = client.Agent().CheckDeregister(checkID)
+	if err != nil {
+		logger.Errorf("connection: unable to deregister consul check '%s': %s", checkID, err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to deregister check : %s", err)}
+		return
+	}
+
+	logger.Infof("dereigsterConsulServiceCheck: %s / %s", nodeAddress, checkID)
+	c.send <- &Action{Type: successNotification, Payload: "The check has been successfully deregistered."}
 }

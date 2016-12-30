@@ -33,6 +33,7 @@ type ConsulRegionBroadcastChannels struct {
 // evaluations, jobs and nodes and broadcasts them to all connected websockets.
 // It also exposes an API client for the ConsulRegion server.
 type ConsulRegion struct {
+	Config            *Config
 	Client            *api.Client
 	broadcastChannels *ConsulRegionBroadcastChannels
 	regions           []string
@@ -69,7 +70,7 @@ func CreateConsulRegionClient(c *Config, region string) (*api.Client, error) {
 	config := api.DefaultConfig()
 	config.Address = c.ConsulAddress
 	config.WaitTime = waitTime
-	// config.Datacenter = region
+	config.Datacenter = region
 	// config.TLSConfig = &api.TLSConfig{
 	// 	CACert:     c.CACert,
 	// 	ClientCert: c.ClientCert,
@@ -82,6 +83,7 @@ func CreateConsulRegionClient(c *Config, region string) (*api.Client, error) {
 // NewConsulRegion configures the Consul API client and initializes the internal state.
 func NewConsulRegion(c *Config, client *api.Client, channels *ConsulRegionBroadcastChannels) (*ConsulRegion, error) {
 	return &ConsulRegion{
+		Config:            c,
 		Client:            client,
 		broadcastChannels: channels,
 		regions:           make([]string, 0),

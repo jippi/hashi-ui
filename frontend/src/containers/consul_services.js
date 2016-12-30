@@ -7,10 +7,12 @@ import { Grid, Row, Col } from 'react-flexbox-grid'
 import FontIcon from 'material-ui/FontIcon'
 import Subheader from 'material-ui/Subheader'
 import Paper from 'material-ui/Paper'
-import { red800, green800, orange800 } from 'material-ui/styles/colors'
+import RaisedButton from 'material-ui/RaisedButton';
+import { red500, green500, orange500, grey200 } from 'material-ui/styles/colors'
 import {
   WATCH_CONSUL_SERVICES, UNWATCH_CONSUL_SERVICES,
   WATCH_CONSUL_SERVICE, UNWATCH_CONSUL_SERVICE,
+  DEREGISTER_CONSUL_SERVICE_CHECK, DEREGISTER_CONSUL_SERVICE,
 } from '../sagas/event'
 
 class ConsulServices extends Component {
@@ -56,7 +58,6 @@ class ConsulServices extends Component {
   }
 
   monitorService(name) {
-    // this.props.dispatch({ type: WATCH_CONSUL_SERVICE, payload: name })
     this.props.router.push({ pathname: `/consul/${this.props.router.params.region}/services/${name}` })
   }
 
@@ -64,11 +65,19 @@ class ConsulServices extends Component {
     return this.props.consulService
   }
 
+  deregisterServiceCheck(nodeAddress, checkID) {
+    this.props.dispatch({ type: DEREGISTER_CONSUL_SERVICE_CHECK, payload: {nodeAddress, checkID} })
+  }
+
+  deregisterService(nodeAddress, serviceID) {
+    this.props.dispatch({ type: DEREGISTER_CONSUL_SERVICE, payload: {nodeAddress, serviceID} })
+  }
+
   render() {
     return (
       <Grid fluid style={{ padding: 0 }}>
         <Row>
-          <Col key='navigation-pane' xs={ 6 } sm={ 6 } md={ 4 } lg={ 4 }>
+          <Col key='navigation-pane' xs={ 12 } sm={ 5 } md={ 4 } lg={ 4 }>
             <Subheader>Available Services</Subheader>
             <Paper>
               <List>
@@ -77,11 +86,11 @@ class ConsulServices extends Component {
                     let icon = undefined
 
                     if (service.ChecksCritical) {
-                      icon = <FontIcon color={ red800 } className='material-icons'>error</FontIcon>
+                      icon = <FontIcon color={ red500 } className='material-icons'>error</FontIcon>
                     } else if (service.ChecksWarning) {
-                      icon = <FontIcon color={ orange800 } className='material-icons'>warning</FontIcon>
+                      icon = <FontIcon color={ orange500 } className='material-icons'>warning</FontIcon>
                     } else {
-                      icon = <FontIcon color={ green800 } className='material-icons'>check</FontIcon>
+                      icon = <FontIcon color={ green500 } className='material-icons'>check</FontIcon>
                     }
 
                     let secondaryText = `Passing: ${service.ChecksPassing}`
@@ -89,12 +98,15 @@ class ConsulServices extends Component {
                     secondaryText += ` / Critical: ${service.ChecksCritical}`
                     secondaryText += ` @ ${new Set(service.Nodes).size} nodes`
 
+                    const style = this.props.routeParams.name == service.Name ? { backgroundColor: grey200 } : { }
+
                     return (
                       <ListItem
                         onTouchTap={ () => this._onClickService(service.Name) }
                         primaryText={ service.Name }
                         secondaryText={ secondaryText }
                         leftIcon={ icon  }
+                        style={ style }
                       />
                     )
                   })
@@ -102,7 +114,7 @@ class ConsulServices extends Component {
               </List>
             </Paper>
           </Col>
-          <Col key='value-pane' xs={ 6 } sm={ 6 } md={ 8 } lg={ 8 }>
+          <Col key='value-pane' xs={ 12 } sm={ 7 } md={ 8 } lg={ 8 }>
             <Subheader>
               { this.props.routeParams.name ? this.props.routeParams.name : 'Please select a service to the left' }
             </Subheader>
@@ -121,18 +133,17 @@ class ConsulServices extends Component {
                 let icon = undefined
 
                 if (check.Status === 'critical') {
-                  icon = <FontIcon color={ red800 } className='material-icons'>error</FontIcon>
+                  icon = <FontIcon color={ red500 } className='material-icons'>error</FontIcon>
                 } else if (check.Status === 'warning') {
-                  icon = <FontIcon color={ orange800 } className='material-icons'>warning</FontIcon>
+                  icon = <FontIcon color={ orange500 } className='material-icons'>warning</FontIcon>
                 } else {
-                  icon = <FontIcon color={ green800 } className='material-icons'>check</FontIcon>
+                  icon = <FontIcon color={ green500 } className='material-icons'>check</FontIcon>
                 }
 
                 return (
                   <Card>
                     <CardHeader
                       title={ `${check.Name} ${check.Notes ? (' | ' + check.Notes) : '' }` }
-//                    subtitle={ `Status: ${check.Status}` }
                       avatar={ icon }
                       actAsExpander
                       showExpandableButton
@@ -151,6 +162,17 @@ class ConsulServices extends Component {
                       <div className='content-file small'>
                         { check.Output ? check.Output.trim() : '- no output -' }
                       </div>
+
+                      <br />
+
+                      <RaisedButton
+                        label='Deregister'
+                        labelColor='white'
+                        backgroundColor={ red500 }
+                        style={{ marginRight: 12 }}
+                        onClick={ () => { this.deregisterServiceCheck(entry.Node.Address, check.CheckID) } }
+                      />
+
                     </CardText>
                   </Card>
                 )
@@ -167,6 +189,15 @@ class ConsulServices extends Component {
               return (
                 <Card style={{ marginTop: index > 0 ? '1em' : 0 }}>
                   <CardHeader title={ `${entry.Node.Node} - ${entry.Service.ID}` } subtitle={ secondaryText } />
+                  <div style={{ float: 'right', marginTop: -60 }}>
+                    <RaisedButton
+                      label='Deregister'
+                      labelColor='white'
+                      backgroundColor={ red500 }
+                      style={{ marginRight: 12 }}
+                      onClick={ () => { this.deregisterService(entry.Node.Address, entry.Service.ID) } }
+                      />
+                  </div>
                   <CardText>
                     { checks }
                   </CardText>

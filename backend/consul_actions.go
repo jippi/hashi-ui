@@ -17,4 +17,7 @@ const (
 	unwatchConsulNodes = "UNWATCH_CONSUL_NODES"
 	watchConsulNode    = "WATCH_CONSUL_NODE"
 	watchConsulNodes   = "WATCH_CONSUL_NODES"
+
+	dereigsterConsulService      = "DEREGISTER_CONSUL_SERVICE"
+	dereigsterConsulServiceCheck = "DEREGISTER_CONSUL_SERVICE_CHECK"
 )
