@@ -2,6 +2,8 @@ import { delay, eventChannel } from 'redux-saga'
 import { fork, take, call, put } from 'redux-saga/effects'
 
 export const APP_ERROR = 'APP_ERROR'
+export const APP_DRAWER_OPEN = 'APP_DRAWER_OPEN';
+export const APP_DRAWER_CLOSE = 'APP_DRAWER_CLOSE';
 export const CHANGE_TASK_GROUP_COUNT = 'CHANGE_TASK_GROUP_COUNT'
 export const CLEAR_ERROR_NOTIFICATION = 'CLEAR_ERROR_NOTIFICATION'
 export const CLEAR_FILE_PATH = 'CLEAR_FILE_PATH'

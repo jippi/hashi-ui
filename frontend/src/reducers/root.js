@@ -1,6 +1,12 @@
 import { combineReducers } from 'redux'
 
-import { AppErrorReducer, ClusterStatisticsReducer, ErrorNotificationReducer, SuccessNotificationReducer } from './app'
+import {
+  AppDrawer,
+  AppErrorReducer,
+  ClusterStatisticsReducer,
+  ErrorNotificationReducer,
+  SuccessNotificationReducer
+} from './app'
 import { MemberInfoReducer, MemberListReducer } from './member'
 import { JobInfoReducer, JobListReducer, JobDialogReducer } from './job'
 import { AllocInfoReducer, AllocListReducer } from './allocation'
@@ -11,6 +17,7 @@ import { ChangeNomadRegionReducer , NomadRegionsReducer } from './nomad'
 import { ChangeConsulRegionReducer , ConsulRegionsReducer, ConsulServiceList, ConsulService } from './consul'
 
 const rootReducer = combineReducers({
+  appDrawer: AppDrawer,
   allocation: AllocInfoReducer,
   allocations: AllocListReducer,
   appError: AppErrorReducer,

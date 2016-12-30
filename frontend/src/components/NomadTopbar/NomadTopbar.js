@@ -8,7 +8,7 @@ import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import FontIcon from 'material-ui/FontIcon'
-import { FETCH_NOMAD_REGIONS, SET_NOMAD_REGION } from '../../sagas/event'
+import { FETCH_NOMAD_REGIONS, SET_NOMAD_REGION, APP_DRAWER_OPEN } from '../../sagas/event'
 import { NOMAD_COLOR } from '../../config.js'
 
 class AppTopbar extends PureComponent {
@@ -145,11 +145,19 @@ class AppTopbar extends PureComponent {
     return title
   }
 
+  leftIconClick() {
+    this.props.dispatch({ type: APP_DRAWER_OPEN })
+  }
+
   render () {
     const tabs = 'region' in this.props.router.params ? this.tabs() : undefined
     return (
       <section style={{ backgroundColor: NOMAD_COLOR }}>
-        <AppBar title={ this.title() } showMenuIconButton={ false } iconElementRight={ this.nomadRegions() } />
+        <AppBar
+          title={ this.title() }
+          iconElementRight={ this.nomadRegions() }
+          onLeftIconButtonTouchTap={ () => this.leftIconClick() }
+        />
         { tabs }
       </section>
     )

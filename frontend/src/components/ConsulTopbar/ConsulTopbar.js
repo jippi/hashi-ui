@@ -8,7 +8,7 @@ import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import FontIcon from 'material-ui/FontIcon'
-import { FETCH_CONSUL_REGIONS, SET_CONSUL_REGION } from '../../sagas/event'
+import { FETCH_CONSUL_REGIONS, SET_CONSUL_REGION, APP_DRAWER_OPEN } from '../../sagas/event'
 import { CONSUL_COLOR } from '../../config.js'
 
 class ConsulTopbar extends PureComponent {
@@ -121,11 +121,20 @@ class ConsulTopbar extends PureComponent {
     return title
   }
 
+  leftIconClick() {
+    this.props.dispatch({ type: APP_DRAWER_OPEN })
+  }
+
   render () {
     const tabs = 'region' in this.props.router.params ? this.tabs() : undefined
     return (
       <section style={{ backgroundColor: CONSUL_COLOR }}>
-        <AppBar title={ this.title() } showMenuIconButton={ false } iconElementRight={ this.consulRegions() } />
+        <AppBar
+          title={ this.title() }
+          showMenuIconButton
+          iconElementRight={ this.consulRegions() }
+          onLeftIconButtonTouchTap={ () => this.leftIconClick() }
+        />
         { tabs }
       </section>
     )
