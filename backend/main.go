@@ -262,8 +262,8 @@ func main() {
 	myAssetFS := assetFS()
 	router := mux.NewRouter()
 
-	nomadHub, success := InitializeNomad(cfg)
-	if success {
+	nomadHub, nomadSuccess := InitializeNomad(cfg)
+	if nomadSuccess {
 		logger.Infof("Nomad client successfully initialized")
 
 		router.HandleFunc("/ws/nomad", nomadHub.Handler)
@@ -275,8 +275,8 @@ func main() {
 		logger.Errorf("")
 	}
 
-	consulHub, success := InitializeConsul(cfg)
-	if success {
+	consulHub, consulSuccess := InitializeConsul(cfg)
+	if consulSuccess {
 		logger.Infof("Consul client successfully initialized")
 
 		router.HandleFunc("/ws/consul", consulHub.Handler)
@@ -285,6 +285,20 @@ func main() {
 		logger.Errorf("")
 		logger.Errorf("Failed to start Consul hub, please check your configuration")
 		logger.Errorf("")
+	}
+
+	if nomadSuccess {
+		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			logger.Infof("Redirecting / to /nomad")
+			http.Redirect(w, r, "/nomad", 302)
+		})
+	} else if consulSuccess {
+		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			logger.Infof("Redirecting / to /consul")
+			http.Redirect(w, r, "/consul", 302)
+		})
+	} else {
+		logger.Fatalf("Both Nomad & Consul failed to start, please check your config")
 	}
 
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
