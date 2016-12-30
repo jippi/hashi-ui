@@ -12,7 +12,7 @@ export function ChangeConsulRegionReducer (state = {}, action) {
   switch (action.type) {
 
   case SET_CONSUL_REGION:
-    document.location.href = '//' + window.location.host + '/consul/' + action.payload + '/kv'
+    document.location.href = '//' + window.location.host + '/consul/' + action.payload + '/services'
     return {}
 
   case UNKNOWN_CONSUL_REGION:

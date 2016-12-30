@@ -112,7 +112,7 @@ class ConsulTopbar extends PureComponent {
   }
 
   title() {
-    let title = 'Hashi UI - Consul'
+    let title = 'Consul'
 
     if ('region' in this.props.router.params) {
       title = title + ' @ ' + this.props.router.params['region']

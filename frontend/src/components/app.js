@@ -11,13 +11,11 @@ import NomadTopbar from './NomadTopbar/NomadTopbar'
 import ConsulTopbar from './ConsulTopbar/ConsulTopbar'
 import NotificationsBar from './NotificationsBar/NotificationsBar'
 import { NOMAD_COLOR, CONSUL_COLOR } from '../config.js'
-import { APP_DRAWER_OPEN, APP_DRAWER_CLOSE } from '../sagas/event'
+import { APP_DRAWER_OPEN, APP_DRAWER_CLOSE, UNKNOWN_CONSUL_REGION, UNKNOWN_NOMAD_REGION } from '../sagas/event'
 
 class App extends Component {
 
   DrawerRequestedChange(open) {
-    console.log('DrawerRequestedChange', open)
-
     if (!open) {
       this.props.dispatch({ type: APP_DRAWER_CLOSE })
     } else {
@@ -30,11 +28,11 @@ class App extends Component {
 
     switch (app) {
     case 'consul':
-      this.props.router.push({ pathname: '/consul' })
-      return
+      this.props.dispatch({ type: UNKNOWN_CONSUL_REGION })
+      break
     case 'nomad':
-      this.props.router.push({ pathname: '/nomad' })
-      return
+      this.props.dispatch({ type: UNKNOWN_NOMAD_REGION })
+      break
     }
   }
 

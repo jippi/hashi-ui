@@ -132,11 +132,7 @@ class AppTopbar extends PureComponent {
   }
 
   title() {
-    let title = 'Hashi UI'
-
-    if (this.props.router.location.pathname.startsWith('/nomad')) {
-      title = title + ' - Nomad'
-    }
+    let title = 'Nomad'
 
     if ('region' in this.props.router.params) {
       title = title + ' @ ' + this.props.router.params['region']
