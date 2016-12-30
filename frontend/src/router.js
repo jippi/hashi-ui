@@ -67,6 +67,7 @@ const AppRouter = ({ history }) =>
       <Redirect from='/consul/:region' to='/consul/:region/kv' />
       <Route path='/consul/:region/kv' component={ ConsulKV } />
       <Route path='/consul/:region/services' component={ ConsulServices } />
+      <Route path='/consul/:region/services/:name' component={ ConsulServices } />
 
       // Nomad
       <Route path='/nomad' component={ SelectNomadRegion } />

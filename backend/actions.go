@@ -7,3 +7,8 @@ type Action struct {
 	Index   uint64
 	Payload interface{}
 }
+
+const (
+	errorNotification   = "ERROR_NOTIFICATION"
+	successNotification = "SUCCESS_NOTIFICATION"
+)

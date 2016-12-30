@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gorilla/websocket"
+	api "github.com/hashicorp/consul/api"
+	observer "github.com/imkira/go-observer"
 	uuid "github.com/satori/go.uuid"
 	"gopkg.in/fatih/set.v0"
 )
@@ -113,10 +116,31 @@ func (c *ConsulConnection) process(action Action) {
 
 	switch action.Type {
 
+	//
+	// Consul regions
+	//
 	case fetchConsulRegions:
 		go c.fetchRegions()
 
+	//
+	// Consul services
+	//
+	case watchConsulServices:
+		go c.watchGenericBroadcast("services", fetchedConsulServices, c.region.broadcastChannels.services, c.region.services)
+	case unwatchConsulServices:
+		c.unwatchGenericBroadcast("services")
+
+	//
+	// Consul service (single)
+	//
+	case watchConsulService:
+		go c.watchConsulService(action)
+	case unwatchConsulService:
+		c.watches.Remove(action.Payload.(string))
+
+	//
 	// Nice in debug
+	//
 	default:
 		logger.Warningf("Unknown action: %s", action.Type)
 	}
@@ -138,4 +162,110 @@ func (c *ConsulConnection) Handle() {
 
 func (c *ConsulConnection) fetchRegions() {
 	c.send <- &Action{Type: fetchedConsulRegions, Payload: c.hub.regions}
+}
+
+func (c *ConsulConnection) watchGenericBroadcast(watchKey string, actionEvent string, prop observer.Property, initialPayload interface{}) {
+	if c.watches.Has(watchKey) {
+		c.Warningf("Connection is already subscribed to %s", actionEvent)
+		return
+	}
+
+	defer func() {
+		c.watches.Remove(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
+
+		// recovering from panic caused by writing to a closed channel
+		if r := recover(); r != nil {
+			c.Warningf("Recover from panic: %s", r)
+		}
+	}()
+
+	c.watches.Add(watchKey)
+
+	c.Debugf("Sending our current %s list", watchKey)
+	c.send <- &Action{Type: actionEvent, Payload: initialPayload, Index: 0}
+
+	stream := prop.Observe()
+
+	c.Debugf("Started watching %s", watchKey)
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		case <-stream.Changes():
+			// advance to next value
+			stream.Next()
+
+			channelAction := stream.Value().(*Action)
+			c.Debugf("got new data for %s (WaitIndex: %d)", watchKey, channelAction.Index)
+
+			if !c.watches.Has(watchKey) {
+				c.Infof("Connection is no longer subscribed to %s", watchKey)
+				return
+			}
+
+			if channelAction.Type != actionEvent {
+				c.Debugf("Type mismatch: %s <> %s", channelAction.Type, actionEvent)
+				continue
+			}
+
+			c.Debugf("Publishing change %s %s", channelAction.Type, watchKey)
+			c.send <- channelAction
+		}
+	}
+}
+
+func (c *ConsulConnection) unwatchGenericBroadcast(watchKey string) {
+	c.Debugf("Removing subscription for %s", watchKey)
+	c.watches.Remove(watchKey)
+}
+
+func (c *ConsulConnection) watchConsulService(action Action) {
+	serviceID := action.Payload.(string)
+
+	if c.watches.Has(serviceID) {
+		c.Warningf("Connection is already subscribed to service %s", serviceID)
+		return
+	}
+
+	defer func() {
+		c.watches.Remove(serviceID)
+		c.Infof("Stopped watching service with id: %s", serviceID)
+	}()
+	c.watches.Add(serviceID)
+
+	c.Infof("Started watching service with id: %s", serviceID)
+
+	q := &api.QueryOptions{WaitIndex: 1}
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		default:
+			service, meta, err := c.region.Client.Health().Service(serviceID, "", false, q)
+			if err != nil {
+				c.Errorf("connection: unable to fetch consul service info: %s", err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			if !c.watches.Has(serviceID) {
+				return
+			}
+
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				c.send <- &Action{Type: fetchedConsulService, Payload: service, Index: remoteWaitIndex}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
+
+				// don't refresh data more frequent than every 5s, since busy clusters update every second or faster
+				time.Sleep(5 * time.Second)
+			}
+		}
+	}
 }

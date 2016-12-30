@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"github.com/hashicorp/consul/api"
+	api "github.com/hashicorp/consul/api"
 	observer "github.com/imkira/go-observer"
 )
 
@@ -35,17 +35,27 @@ type ConsulRegion struct {
 	Client            *api.Client
 	broadcastChannels *ConsulRegionBroadcastChannels
 	regions           []string
-	servicesRaw       map[string][]string
-	services          *ConsulServices
-	serviceChannels   map[string]chan string
+	services          *ConsulInternalServices
 }
+
+// ConsulInternalService ...
+type ConsulInternalService struct {
+	Name           string
+	Nodes          []string
+	ChecksPassing  int64
+	ChecksWarning  int64
+	ChecksCritical int64
+}
+
+// ConsulInternalServices ...
+type ConsulInternalServices []*ConsulInternalService
 
 // CreateConsulRegionClient ...
 func CreateConsulRegionClient(c *Config, region string) (*api.Client, error) {
 	config := api.DefaultConfig()
 	config.Address = c.ConsulAddress
 	config.WaitTime = waitTime
-	config.Datacenter = region
+	// config.Datacenter = region
 	// config.TLSConfig = &api.TLSConfig{
 	// 	CACert:     c.CACert,
 	// 	ClientCert: c.ClientCert,
@@ -61,9 +71,7 @@ func NewConsulRegion(c *Config, client *api.Client, channels *ConsulRegionBroadc
 		Client:            client,
 		broadcastChannels: channels,
 		regions:           make([]string, 0),
-		servicesRaw:       make(map[string][]string, 0),
-		services:          &ConsulServices{},
-		serviceChannels:   make(map[string]chan string, 0),
+		services:          &ConsulInternalServices{},
 	}, nil
 }
 
@@ -72,11 +80,15 @@ func (c *ConsulRegion) StartWatchers() {
 	go c.watchServices()
 }
 
+// watchServices ...
 func (c *ConsulRegion) watchServices() {
-	q := &api.QueryOptions{WaitIndex: 1}
+	q := &api.QueryOptions{WaitIndex: 0}
+	raw := c.Client.Raw()
 
 	for {
-		services, meta, err := c.Client.Catalog().Services(q)
+		var services ConsulInternalServices
+
+		meta, err := raw.Query("/v1/internal/ui/services", &services, q)
 		if err != nil {
 			logger.Errorf("watch: unable to fetch services: %s", err)
 			time.Sleep(10 * time.Second)
@@ -94,71 +106,12 @@ func (c *ConsulRegion) watchServices() {
 
 		logger.Debugf("Services index is changed (%d <> %d)", localWaitIndex, remoteWaitIndex)
 
-		for serviceName := range services {
-			if _, ok := c.serviceChannels[serviceName]; !ok {
-				logger.Infof("Starting detailed monitoring of service: %s", serviceName)
+		c.services = &services
 
-				quitChan := make(chan string, 0)
-				c.serviceChannels[serviceName] = quitChan
-
-				go c.watchService(serviceName, quitChan)
-			}
-		}
-
-		for monitoredServiceName, channel := range c.serviceChannels {
-			if _, ok := services[monitoredServiceName]; !ok {
-				logger.Infof("Stopping monitoring of service: %s", monitoredServiceName)
-				close(channel)
-			}
-		}
-
-		c.servicesRaw = services
 		c.broadcastChannels.services.Update(&Action{Type: fetchedConsulServices, Payload: services, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
-	}
-}
 
-func (c *ConsulRegion) watchService(name string, quit chan string) {
-	defer delete(c.serviceChannels, name)
-
-	var q *api.QueryOptions
-	var remoteWaitIndex uint64
-	var localWaitIndex uint64
-	WaitTime, _ := time.ParseDuration("60s")
-
-	q = &api.QueryOptions{WaitIndex: 1, WaitTime: WaitTime}
-
-	for {
-		select {
-
-		case <-quit:
-			return
-
-		default:
-			_, meta, err := c.Client.Catalog().Service(name, "", q)
-			if err != nil {
-				logger.Errorf("watch: unable to fetch services: %s", err)
-				time.Sleep(10 * time.Second)
-				continue
-			}
-
-			remoteWaitIndex = meta.LastIndex
-			localWaitIndex = q.WaitIndex
-
-			// only work if the WaitIndex have changed
-			if remoteWaitIndex == localWaitIndex {
-				logger.Debugf("Service %s index is unchanged (%d == %d)", name, localWaitIndex, remoteWaitIndex)
-				continue
-			}
-
-			logger.Debugf("Service %s index is changed (%d <> %d)", name, localWaitIndex, remoteWaitIndex)
-
-			// (*c.services)[name] = &ConsulService{
-			// 	Name: name,
-			// }
-
-			//c.broadcastChannels.services.Update(&Action{Type: fetchedConsulServices, Payload: services, Index: remoteWaitIndex})
-			q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: WaitTime}
-		}
+		// don't refresh data more frequent than every 5s, since busy clusters update every second or faster
+		time.Sleep(5 * time.Second)
 	}
 }

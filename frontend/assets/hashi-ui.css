@@ -71,6 +71,11 @@ dd {
   line-height: 1.5;
 }
 
+.content-file.small {
+  height: auto;
+  padding: 1em
+}
+
 code {
   color: #c7254e;
   background-color: #f9f2f4;
