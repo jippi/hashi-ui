@@ -134,18 +134,18 @@ class ConsulServices extends Component {
                       showExpandableButton
                     />
                     <CardText expandable>
-                      <strong>Output:</strong>
-                      <br />
-                      <div className='content-file small'>
-                        { check.Output ? check.Output.trim() : '- no output -' }
-                      </div>
-
-                      <br />
-
                       <strong>CheckID:</strong>
                       <br />
                       <div className='content-file small'>
                         { check.CheckID }
+                      </div>
+
+                      <br />
+
+                      <strong>Output:</strong>
+                      <br />
+                      <div className='content-file small'>
+                        { check.Output ? check.Output.trim() : '- no output -' }
                       </div>
                     </CardText>
                   </Card>
@@ -162,7 +162,7 @@ class ConsulServices extends Component {
 
               return (
                 <Card style={{ marginTop: index > 0 ? '1em' : 0 }}>
-                  <CardHeader title={ `${entry.Node.Node} (${entry.Node.Address})` } subtitle={ secondaryText } />
+                  <CardHeader title={ `${entry.Node.Node} - ${entry.Service.ID}` } subtitle={ secondaryText } />
                   <CardText>
                     { checks }
                   </CardText>
