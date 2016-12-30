@@ -49,10 +49,6 @@ class ConsulTopbar extends PureComponent {
       route = `${prefix}/kv`;
       break;
 
-    case 3:
-      route = `${prefix}/acl`;
-      break;
-
     default:
       route = `${prefix}/services`;
     }
@@ -77,9 +73,7 @@ class ConsulTopbar extends PureComponent {
       return 2
     }
 
-    if (location.pathname.startsWith(prefix + '/acl')) {
-      return 3
-    }
+    return 0
   }
 
   consulRegions() {
@@ -106,7 +100,6 @@ class ConsulTopbar extends PureComponent {
         <Tab label='Services' value='services'  />
         <Tab label='Nodes' value='nodes' />
         <Tab label='Key/Value' value='key-value' />
-        <Tab label='ACL' value='acl' />
       </Tabs>
     )
   }
