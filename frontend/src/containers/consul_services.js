@@ -74,13 +74,19 @@ class ConsulServices extends Component {
   }
 
   render() {
+    let listStyle = {}
+
+    if (window.innerWidth < 800) {
+      listStyle = { maxHeight: 200, overflow: 'scroll' }
+    }
+
     return (
       <Grid fluid style={{ padding: 0 }}>
         <Row>
           <Col key='navigation-pane' xs={ 12 } sm={ 5 } md={ 4 } lg={ 4 }>
             <Subheader>Available Services</Subheader>
             <Paper>
-              <List>
+              <List style={ listStyle }>
                 {
                   this.props.consulServices.map(service => {
                     let icon = undefined
