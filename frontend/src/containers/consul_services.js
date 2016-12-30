@@ -155,7 +155,10 @@ class ConsulServices extends Component {
               let secondaryText = `Passing: ${counters.passing}`
               secondaryText += ` / Warning: ${counters.warning}`
               secondaryText += ` / Critical: ${counters.critical}`
-              secondaryText += ` | Tags: ${(entry.Service.Tags ? entry.Service.Tags : []).join(", ")}`;
+
+              if (entry.Service.Tags.length > 0) {
+                secondaryText += ` | Tags: ${entry.Service.Tags.join(", ")}`
+              }
 
               return (
                 <Card style={{ marginTop: index > 0 ? '1em' : 0 }}>

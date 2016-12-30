@@ -139,6 +139,22 @@ func (c *ConsulConnection) process(action Action) {
 		c.watches.Remove(action.Payload.(string))
 
 	//
+	// Consul nodes
+	//
+	case watchConsulNodes:
+		go c.watchGenericBroadcast("nodes", fetchedConsulNodes, c.region.broadcastChannels.nodes, c.region.nodes)
+	case unwatchConsulNodes:
+		c.unwatchGenericBroadcast("nodes")
+
+	//
+	// Consul node (single)
+	//
+	case watchConsulNode:
+		go c.watchConsulNode(action)
+	case unwatchConsulNode:
+		c.watches.Remove(action.Payload.(string))
+
+	//
 	// Nice in debug
 	//
 	default:
@@ -266,6 +282,58 @@ func (c *ConsulConnection) watchConsulService(action Action) {
 				// don't refresh data more frequent than every 5s, since busy clusters update every second or faster
 				time.Sleep(5 * time.Second)
 			}
+		}
+	}
+}
+
+func (c *ConsulConnection) watchConsulNode(action Action) {
+	nodeID := action.Payload.(string)
+
+	if c.watches.Has(nodeID) {
+		c.Warningf("Connection is already subscribed to node %s", nodeID)
+		return
+	}
+
+	defer func() {
+		c.watches.Remove(nodeID)
+		c.Infof("Stopped watching node with id: %s", nodeID)
+	}()
+	c.watches.Add(nodeID)
+
+	c.Infof("Started watching node with id: %s", nodeID)
+
+	q := &api.QueryOptions{WaitIndex: 1}
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		default:
+			node, meta, err := c.region.Client.Health().Node(nodeID, q)
+			if err != nil {
+				c.Errorf("connection: unable to fetch consul node info: %s", err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			if !c.watches.Has(nodeID) {
+				return
+			}
+
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex == localWaitIndex {
+				time.Sleep(5 * time.Second)
+				continue
+			}
+
+			c.send <- &Action{Type: fetchedConsulNode, Payload: node, Index: remoteWaitIndex}
+			q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
+
+			// don't refresh data more frequent than every 5s, since busy clusters update every second or faster
+			time.Sleep(5 * time.Second)
 		}
 	}
 }

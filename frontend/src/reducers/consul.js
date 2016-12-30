@@ -1,11 +1,15 @@
 import {
-  SET_CONSUL_REGION,
+  FETCHED_CONSUL_NODE,
+  FETCHED_CONSUL_NODES,
   FETCHED_CONSUL_REGIONS,
-  FETCHED_CONSUL_SERVICES,
   FETCHED_CONSUL_SERVICE,
+  FETCHED_CONSUL_SERVICES,
+  SET_CONSUL_REGION,
   UNKNOWN_CONSUL_REGION,
+  UNWATCH_CONSUL_NODE,
+  UNWATCH_CONSUL_NODES,
   UNWATCH_CONSUL_SERVICE,
-  UNWATCH_CONSUL_SERVICES
+  UNWATCH_CONSUL_SERVICES,
 } from '../sagas/event'
 
 export function ChangeConsulRegionReducer (state = {}, action) {
@@ -51,6 +55,7 @@ export function ConsulServiceList (state = [], action) {
   return state
 
 }
+
 export function ConsulService (state = [], action) {
   switch (action.type) {
 
@@ -58,6 +63,39 @@ export function ConsulService (state = [], action) {
     return action.payload
 
   case UNWATCH_CONSUL_SERVICE:
+    return []
+
+  default:
+
+  }
+
+  return state
+}
+
+export function ConsulNodes (state = [], action) {
+  switch (action.type) {
+
+  case FETCHED_CONSUL_NODES:
+    return action.payload
+
+  case UNWATCH_CONSUL_NODES:
+    return []
+
+  default:
+
+  }
+
+  return state
+
+}
+
+export function ConsulNode (state = [], action) {
+  switch (action.type) {
+
+  case FETCHED_CONSUL_NODE:
+    return action.payload
+
+  case UNWATCH_CONSUL_NODE:
     return []
 
   default:

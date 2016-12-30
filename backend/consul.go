@@ -25,6 +25,7 @@ func InitializeConsul(cfg *Config) (*ConsulHub, bool) {
 
 		channels := &ConsulRegionBroadcastChannels{}
 		channels.services = observer.NewProperty(&Action{})
+		channels.nodes = observer.NewProperty(&Action{})
 
 		regionChannels[region] = channels
 

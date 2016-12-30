@@ -42,6 +42,7 @@ import SelectNomadRegion from './containers/select_nomad_region'
 
 import ConsulKV from './containers/consul_kv'
 import ConsulServices from './containers/consul_services'
+import ConsulNodes from './containers/consul_nodes'
 import SelectConsulRegion from './containers/select_consul_region'
 
 const AppRouter = ({ history }) =>
@@ -66,6 +67,10 @@ const AppRouter = ({ history }) =>
       <Route path='/consul' component={ SelectConsulRegion } />
       <Redirect from='/consul/:region' to='/consul/:region/services' />
       <Route path='/consul/:region/kv' component={ ConsulKV } />
+
+      <Route path='/consul/:region/nodes' component={ ConsulNodes } />
+      <Route path='/consul/:region/nodes/:name' component={ ConsulNodes } />
+
       <Route path='/consul/:region/services' component={ ConsulServices } />
       <Route path='/consul/:region/services/:name' component={ ConsulServices } />
 

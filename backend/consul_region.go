@@ -26,6 +26,7 @@ type ConsulServices map[string]*ConsulService
 // ConsulRegionBroadcastChannels contains all the channels for resources hashi-ui automatically maintain active lists of
 type ConsulRegionBroadcastChannels struct {
 	services observer.Property
+	nodes    observer.Property
 }
 
 // ConsulRegion keeps track of the ConsulRegion state. It monitors changes to allocations,
@@ -36,6 +37,7 @@ type ConsulRegion struct {
 	broadcastChannels *ConsulRegionBroadcastChannels
 	regions           []string
 	services          *ConsulInternalServices
+	nodes             *ConsulInternalNodes
 }
 
 // ConsulInternalService ...
@@ -49,6 +51,18 @@ type ConsulInternalService struct {
 
 // ConsulInternalServices ...
 type ConsulInternalServices []*ConsulInternalService
+
+// ConsulInternalNode ...
+type ConsulInternalNode struct {
+	Node            string
+	Address         string
+	TaggedAddresses map[string]string
+	Services        []*api.AgentService
+	Checks          []*api.AgentCheck
+}
+
+// ConsulInternalNodes ...
+type ConsulInternalNodes []*ConsulInternalNode
 
 // CreateConsulRegionClient ...
 func CreateConsulRegionClient(c *Config, region string) (*api.Client, error) {
@@ -72,12 +86,14 @@ func NewConsulRegion(c *Config, client *api.Client, channels *ConsulRegionBroadc
 		broadcastChannels: channels,
 		regions:           make([]string, 0),
 		services:          &ConsulInternalServices{},
+		nodes:             &ConsulInternalNodes{},
 	}, nil
 }
 
 // StartWatchers derp
 func (c *ConsulRegion) StartWatchers() {
 	go c.watchServices()
+	go c.watchNodes()
 }
 
 // watchServices ...
@@ -109,6 +125,42 @@ func (c *ConsulRegion) watchServices() {
 		c.services = &services
 
 		c.broadcastChannels.services.Update(&Action{Type: fetchedConsulServices, Payload: services, Index: remoteWaitIndex})
+		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
+
+		// don't refresh data more frequent than every 5s, since busy clusters update every second or faster
+		time.Sleep(5 * time.Second)
+	}
+}
+
+// watchNodes ...
+func (c *ConsulRegion) watchNodes() {
+	q := &api.QueryOptions{WaitIndex: 0}
+	raw := c.Client.Raw()
+
+	for {
+		var nodes ConsulInternalNodes
+
+		meta, err := raw.Query("/v1/internal/ui/nodes", &nodes, q)
+		if err != nil {
+			logger.Errorf("watch: unable to fetch nodes: %s", err)
+			time.Sleep(10 * time.Second)
+			continue
+		}
+
+		remoteWaitIndex := meta.LastIndex
+		localWaitIndex := q.WaitIndex
+
+		// only work if the WaitIndex have changed
+		if remoteWaitIndex == localWaitIndex {
+			logger.Debugf("Nodes index is unchanged (%d == %d)", localWaitIndex, remoteWaitIndex)
+			continue
+		}
+
+		logger.Debugf("Nodes index is changed (%d <> %d)", localWaitIndex, remoteWaitIndex)
+
+		c.nodes = &nodes
+
+		c.broadcastChannels.nodes.Update(&Action{Type: fetchedConsulNodes, Payload: nodes, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 
 		// don't refresh data more frequent than every 5s, since busy clusters update every second or faster

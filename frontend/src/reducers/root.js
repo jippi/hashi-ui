@@ -14,19 +14,28 @@ import { EvalInfoReducer, EvalListReducer } from './evaluation'
 import { NodeInfoReducer, NodeStatsReducer, NodeListReducer } from './node'
 import { DirectoryReducer, FileReducer } from './filesystem'
 import { ChangeNomadRegionReducer , NomadRegionsReducer } from './nomad'
-import { ChangeConsulRegionReducer , ConsulRegionsReducer, ConsulServiceList, ConsulService } from './consul'
+import {
+  ChangeConsulRegionReducer,
+  ConsulRegionsReducer,
+  ConsulServiceList,
+  ConsulService,
+  ConsulNode,
+  ConsulNodes,
+} from './consul'
 
 const rootReducer = combineReducers({
-  appDrawer: AppDrawer,
   allocation: AllocInfoReducer,
   allocations: AllocListReducer,
+  appDrawer: AppDrawer,
   appError: AppErrorReducer,
   changeConsulRegion: ChangeConsulRegionReducer,
   changeNomadRegion: ChangeNomadRegionReducer,
   clusterStatistics: ClusterStatisticsReducer,
+  consulNode: ConsulNode,
+  consulNodes: ConsulNodes,
   consulRegions: ConsulRegionsReducer,
-  consulServices: ConsulServiceList,
   consulService: ConsulService,
+  consulServices: ConsulServiceList,
   directory: DirectoryReducer,
   errorNotification: ErrorNotificationReducer,
   evaluation: EvalInfoReducer,
