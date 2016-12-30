@@ -9,37 +9,37 @@ import Subheader from 'material-ui/Subheader'
 import Paper from 'material-ui/Paper'
 import { red800, green800, orange800 } from 'material-ui/styles/colors'
 import {
-  WATCH_CONSUL_SERVICES, UNWATCH_CONSUL_SERVICES,
-  WATCH_CONSUL_SERVICE, UNWATCH_CONSUL_SERVICE,
+  WATCH_CONSUL_NODES, UNWATCH_CONSUL_NODES,
+  WATCH_CONSUL_NODE, UNWATCH_CONSUL_NODE,
 } from '../sagas/event'
 
-class ConsulServices extends Component {
+class ConsulNodes extends Component {
 
   constructor (props) {
     super(props)
-    this._onClickService = this.monitorService.bind(this)
+    this._onClickService = this.monitorNode.bind(this)
   }
 
   componentDidMount() {
-    this.props.dispatch({ type: WATCH_CONSUL_SERVICES })
+    this.props.dispatch({ type: WATCH_CONSUL_NODES })
 
     if (this.props.routeParams.name) {
-      this.props.dispatch({ type: WATCH_CONSUL_SERVICE, payload: this.props.routeParams.name })
+      this.props.dispatch({ type: WATCH_CONSUL_NODE, payload: this.props.routeParams.name })
     }
   }
 
   componentWillUnmount() {
-    this.props.dispatch({ type: UNWATCH_CONSUL_SERVICES })
+    this.props.dispatch({ type: UNWATCH_CONSUL_NODES })
 
     if (this.props.routeParams.name) {
-      this.props.dispatch({ type: UNWATCH_CONSUL_SERVICE, payload: this.props.routeParams.name })
+      this.props.dispatch({ type: UNWATCH_CONSUL_NODE, payload: this.props.routeParams.name })
     }
   }
 
   componentDidUpdate(prevProps) {
     if (!this.props.routeParams.name) {
       if (prevProps.routeParams.name) {
-        this.props.dispatch({ type: UNWATCH_CONSUL_SERVICE, payload: prevProps.routeParams.name })
+        this.props.dispatch({ type: UNWATCH_CONSUL_NODE, payload: prevProps.routeParams.name })
       }
       return;
     }
@@ -49,19 +49,14 @@ class ConsulServices extends Component {
     }
 
     if (prevProps.routeParams.name) {
-      this.props.dispatch({ type: UNWATCH_CONSUL_SERVICE, payload: prevProps.routeParams.name })
+      this.props.dispatch({ type: UNWATCH_CONSUL_NODE, payload: prevProps.routeParams.name })
     }
 
-    this.props.dispatch({ type: WATCH_CONSUL_SERVICE, payload: this.props.routeParams.name })
+    this.props.dispatch({ type: WATCH_CONSUL_NODE, payload: this.props.routeParams.name })
   }
 
-  monitorService(name) {
-    // this.props.dispatch({ type: WATCH_CONSUL_SERVICE, payload: name })
-    this.props.router.push({ pathname: `/consul/${this.props.router.params.region}/services/${name}` })
-  }
-
-  getConsulService() {
-    return this.props.consulService
+  monitorNode(name) {
+    this.props.router.push({ pathname: `/consul/${this.props.router.params.region}/nodes/${name}` })
   }
 
   render() {
@@ -69,30 +64,39 @@ class ConsulServices extends Component {
       <Grid fluid style={{ padding: 0 }}>
         <Row>
           <Col key='navigation-pane' xs={ 6 } sm={ 6 } md={ 4 } lg={ 4 }>
-            <Subheader>Available Services</Subheader>
+            <Subheader>Available Nodes</Subheader>
             <Paper>
               <List>
                 {
-                  this.props.consulServices.map(service => {
+                  this.props.consulNodes.map(node => {
                     let icon = undefined
 
-                    if (service.ChecksCritical) {
+                    const counters = {
+                      passing : 0,
+                      warning : 0,
+                      critical: 0,
+                    }
+
+                    node.Checks.map(check => {
+                      counters[check.Status]++
+                    })
+
+                    if (counters.critical) {
                       icon = <FontIcon color={ red800 } className='material-icons'>error</FontIcon>
-                    } else if (service.ChecksWarning) {
+                    } else if (counters.warning) {
                       icon = <FontIcon color={ orange800 } className='material-icons'>warning</FontIcon>
                     } else {
                       icon = <FontIcon color={ green800 } className='material-icons'>check</FontIcon>
                     }
 
-                    let secondaryText = `Passing: ${service.ChecksPassing}`
-                    secondaryText += ` / Warning: ${service.ChecksWarning}`
-                    secondaryText += ` / Critical: ${service.ChecksCritical}`
-                    secondaryText += ` @ ${new Set(service.Nodes).size} nodes`
+                    let secondaryText = `Passing: ${counters.passing}`
+                    secondaryText += ` / Warning: ${counters.warning}`
+                    secondaryText += ` / Critical: ${counters.critical}`
 
                     return (
                       <ListItem
-                        onTouchTap={ () => this._onClickService(service.Name) }
-                        primaryText={ service.Name }
+                        onTouchTap={ () => this._onClickService(node.Node) }
+                        primaryText={ node.Node }
                         secondaryText={ secondaryText }
                         leftIcon={ icon  }
                       />
@@ -104,10 +108,10 @@ class ConsulServices extends Component {
           </Col>
           <Col key='value-pane' xs={ 6 } sm={ 6 } md={ 8 } lg={ 8 }>
             <Subheader>
-              { this.props.routeParams.name ? this.props.routeParams.name : 'Please select a service to the left' }
+              { this.props.routeParams.name ? this.props.routeParams.name : 'Please select a node to the left' }
             </Subheader>
 
-            { this.getConsulService().map((entry, index) => {
+            { this.props.consulService.map((entry, index) => {
 
               const counters = {
                 passing : 0,
@@ -138,18 +142,18 @@ class ConsulServices extends Component {
                       showExpandableButton
                     />
                     <CardText expandable>
-                      <strong>CheckID:</strong>
-                      <br />
-                      <div className='content-file small'>
-                        { check.CheckID }
-                      </div>
-
-                      <br />
-
                       <strong>Output:</strong>
                       <br />
                       <div className='content-file small'>
                         { check.Output ? check.Output.trim() : '- no output -' }
+                      </div>
+
+                      <br />
+
+                      <strong>CheckID:</strong>
+                      <br />
+                      <div className='content-file small'>
+                        { check.CheckID }
                       </div>
                     </CardText>
                   </Card>
@@ -159,14 +163,11 @@ class ConsulServices extends Component {
               let secondaryText = `Passing: ${counters.passing}`
               secondaryText += ` / Warning: ${counters.warning}`
               secondaryText += ` / Critical: ${counters.critical}`
-
-              if (entry.Service.Tags.length > 0) {
-                secondaryText += ` | Tags: ${entry.Service.Tags.join(", ")}`
-              }
+              secondaryText += ` | Tags: ${(entry.Service.Tags ? entry.Service.Tags : []).join(", ")}`;
 
               return (
                 <Card style={{ marginTop: index > 0 ? '1em' : 0 }}>
-                  <CardHeader title={ `${entry.Node.Node} - ${entry.Service.ID}` } subtitle={ secondaryText } />
+                  <CardHeader title={ `${entry.Node.Node} (${entry.Node.Address})` } subtitle={ secondaryText } />
                   <CardText>
                     { checks }
                   </CardText>
@@ -180,21 +181,21 @@ class ConsulServices extends Component {
   }
 }
 
-function mapStateToProps ({ consulServices, consulService }) {
-  return { consulServices, consulService }
+function mapStateToProps ({ consulNodes, consulService }) {
+  return { consulNodes, consulService }
 }
 
-ConsulServices.defaultProps = {
-  consulServices: [],
+ConsulNodes.defaultProps = {
+  consulNodes: [],
   ConsulService: [],
 }
 
-ConsulServices.propTypes = {
+ConsulNodes.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  consulServices: PropTypes.array.isRequired,
+  consulNodes: PropTypes.array.isRequired,
   consulService: PropTypes.array.isRequired,
   router: PropTypes.object.isRequired,
   routeParams: PropTypes.object.isRequired,
 }
 
-export default connect(mapStateToProps)(withRouter(ConsulServices))
+export default connect(mapStateToProps)(withRouter(ConsulNodes))
