@@ -8,6 +8,7 @@ import FontIcon from 'material-ui/FontIcon'
 import Subheader from 'material-ui/Subheader'
 import Paper from 'material-ui/Paper'
 import RaisedButton from 'material-ui/RaisedButton';
+import TextField from 'material-ui/TextField';
 import { red500, green500, orange500, grey200 } from 'material-ui/styles/colors'
 import {
   WATCH_CONSUL_SERVICES, UNWATCH_CONSUL_SERVICES,
@@ -19,6 +20,7 @@ class ConsulServices extends Component {
 
   constructor (props) {
     super(props)
+    this.state = {}
     this._onClickService = this.monitorService.bind(this)
   }
 
@@ -73,6 +75,16 @@ class ConsulServices extends Component {
     this.props.dispatch({ type: DEREGISTER_CONSUL_SERVICE, payload: {nodeAddress, serviceID} })
   }
 
+  filteredServices() {
+    let services = this.props.consulServices
+
+    if ('service_name' in this.state) {
+      services = services.filter(service => service.Name.indexOf(this.state.service_name) != -1)
+    }
+
+    return services
+  }
+
   render() {
     let listStyle = {}
 
@@ -85,10 +97,20 @@ class ConsulServices extends Component {
         <Row>
           <Col key='navigation-pane' xs={ 12 } sm={ 5 } md={ 4 } lg={ 4 }>
             <Subheader>Available Services</Subheader>
+            <Card>
+              <CardHeader title='Filter list' actAsExpander showExpandableButton />
+              <CardText style={{ paddingTop: 0 }} expandable>
+                <TextField
+                  hintText='Service name'
+                  value={ this.state.service_name }
+                  onChange={ (proxy, value) => { this.setState({ ...this.state, service_name: value }) } }
+                />
+              </CardText>
+            </Card>
             <Paper>
               <List style={ listStyle }>
                 {
-                  this.props.consulServices.map(service => {
+                  this.filteredServices().map(service => {
                     let icon = undefined
 
                     if (service.ChecksCritical) {
