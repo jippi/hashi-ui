@@ -7,6 +7,8 @@ import { Grid, Row, Col } from 'react-flexbox-grid'
 import FontIcon from 'material-ui/FontIcon'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
+import Subheader from 'material-ui/Subheader'
 import { red500 } from 'material-ui/styles/colors'
 import {
   SET_CONSUL_KV_PAIR, GET_CONSUL_KV_PAIR,
@@ -27,16 +29,19 @@ class ConsulKV extends Component {
     }
 
     this._onClickPath = this.changePath.bind(this)
-    this._onClickFIle = this.editFile.bind(this)
+    this._onClickFIle = this.editKey.bind(this)
   }
 
   componentDidMount() {
+    // setup subscription for a URL "splat" (whatever is after /consul/dc1/kv/*)
+    // or the root path if no splat is provided
     if (this.props.routeParams.splat) {
       this.props.dispatch({ type: WATCH_CONSUL_KV_PATH, payload: this.getPath(this.props) })
     } else {
       this.props.dispatch({ type: WATCH_CONSUL_KV_PATH, payload: "/" })
     }
 
+    // if we got a file query argument, read that kv pair into props
     if ('file' in this.props.location.query) {
       this.props.dispatch({
         type: GET_CONSUL_KV_PAIR,
@@ -46,6 +51,7 @@ class ConsulKV extends Component {
   }
 
   componentWillUnmount() {
+    // cleanup watches when the component is removed
     if (this.props.routeParams.splat) {
       this.props.dispatch({
         type: UNWATCH_CONSUL_KV_PATH,
@@ -55,6 +61,7 @@ class ConsulKV extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    // if the consul key is different, reset internal state
     if (nextProps.consulKVPair.Key != this.props.consulKVPair.Key) {
       this.resetState();
     }
@@ -70,14 +77,21 @@ class ConsulKV extends Component {
   }
 
   componentDidUpdate(prevProps) {
+    // if path did not change, don't bother changing subscriptions
     if (prevProps.routeParams.splat == this.props.routeParams.splat) {
       return;
     }
 
+    // unwatch the old path
     this.props.dispatch({ type: UNWATCH_CONSUL_KV_PATH, payload: this.getPath(prevProps) })
+
+    // watch the new path
     this.props.dispatch({ type: WATCH_CONSUL_KV_PATH, payload: this.getPath(this.props) })
   }
 
+  /**
+   * Return a path with a trailing slash
+   */
   getPath(props) {
     if ('splat' in props.routeParams) {
       return props.routeParams.splat + "/"
@@ -86,6 +100,9 @@ class ConsulKV extends Component {
     return "/"
   }
 
+  /**
+   * Get the basename (filename) from a path
+   */
   baseName(str) {
     var base = new String(str).substring(str.lastIndexOf('/') + 1);
     if (base.lastIndexOf(".") != -1) {
@@ -94,6 +111,9 @@ class ConsulKV extends Component {
     return base;
   }
 
+  /**
+   * Change key path
+   */
   changePath(path) {
     if (path == '..') {
       path = this.props.routeParams.splat.split('/')
@@ -105,29 +125,46 @@ class ConsulKV extends Component {
     }
 
     this.props.router.push({ pathname: `/consul/${this.props.router.params.region}/kv/${path}` })
-    this.resetState();
+    this.resetState(false, true);
   }
 
-  editFile(file) {
+  /**
+   * Start flow for editing key
+   */
+  editKey(file) {
     this.props.dispatch({
       type: GET_CONSUL_KV_PAIR,
       payload: file,
     })
 
-    this.props.router.push({ pathname: this.props.location.pathname, query: { file: this.baseName(file) } })
+    this.props.router.push({
+      pathname: this.props.location.pathname,
+      query: { file: this.baseName(file) }
+    })
   }
 
+  /**
+   * Get visible path for display, chop off the base path and show
+   * only the key name
+   */
   getHumanPathName(path) {
     path = path.split('/')
     path.pop()
     return path.pop()
   }
 
+  /**
+   * Get visible file name for display, chop off the base path and
+   * show only the file name
+   */
   getHumanFileName(path) {
     path = path.split('/')
     return path.pop()
   }
 
+  /**
+   * Sort keys, directories first, and then files
+   */
   sortKeys(keys) {
     keys.sort((a, b) => {
       // comparing directories should compare string wise
@@ -158,6 +195,10 @@ class ConsulKV extends Component {
     return keys
   }
 
+  /**
+   * Update internal state for a key
+   * when editing the input fields
+   */
   handleChange(key, event) {
     const obj = {}
     obj[key] = event.target.value,
@@ -165,6 +206,9 @@ class ConsulKV extends Component {
     this.setState(obj)
   }
 
+  /**
+   * Ensure a path is relative, by removing a leading /
+   */
   relativePath(path) {
     if (path[0] === '/') {
       return path.slice(1)
@@ -173,7 +217,10 @@ class ConsulKV extends Component {
     return path
   }
 
-  handleSubmit() {
+  /**
+   * Save a key pair
+   */
+  handleSave() {
     const filePath = this.relativePath(this.getPath(this.props) + this.state.key);
     const isDirectory = filePath[filePath.length - 1] === '/'
 
@@ -186,16 +233,19 @@ class ConsulKV extends Component {
       }
     })
 
-    // this.resetState();
+    // reset state when creating directories
     if (isDirectory) {
       this.resetState();
+      return
     }
 
-    if (!isDirectory && !('file' in this.props.location.query)) {
-      this.editFile(filePath)
-    }
+    // open the new key up for editing
+    this.editKey(filePath)
   }
 
+  /**
+   * Reset internal state
+   */
   resetState(includeUrl = false, clear = false) {
     if (includeUrl) {
       this.props.router.push({ pathname: this.props.location.pathname })
@@ -212,6 +262,9 @@ class ConsulKV extends Component {
     })
   }
 
+  /**
+   * Delete a key-value pair
+   */
   deleteKey() {
     if (!this.props.consulKVPair.Key) {
       return;
@@ -226,7 +279,10 @@ class ConsulKV extends Component {
     })
   }
 
-  deleteCurrentFolder() {
+  /**
+   * Delete a key tree (a path and everything nested below)
+   */
+  deleteKeyTree() {
     this.props.dispatch({
       type: DELETE_CONSUL_KV_FOLDER,
       payload: this.props.routeParams.splat,
@@ -242,10 +298,30 @@ class ConsulKV extends Component {
     return (
       <Grid fluid style={{ padding: 0 }}>
         <Row>
+          <Col key='navigation-pane' xs={ 12 } sm={ 12 } md={ 12 } lg={ 12 }>
+            <Subheader>
+              <div style={{ float: 'left' }}>
+                { `Path: /${this.props.routeParams.splat ? '' + this.props.routeParams.splat : '' }` }
+              </div>
+              <div style={{ float: 'right' }}>
+                { this.props.routeParams.splat
+                    ? <FlatButton
+                      label='Delete folder'
+                      style={{ color: 'white' }}
+                      backgroundColor={ red500 }
+                      onClick={ () => { this.deleteKeyTree() } }
+                      />
+                    : null
+                  }
+              </div>
+            </Subheader>
+          </Col>
+        </Row>
+        <Row>
           <Col key='navigation-pane' xs={ 6 } sm={ 6 } md={ 4 } lg={ 3 }>
             <Card>
               <CardTitle
-                title={ `Browse ${this.props.routeParams.splat ? ': ' + this.props.routeParams.splat : '' }` }
+                title={ `keys & directories` }
               />
               <CardText>
                 <List>
@@ -276,16 +352,6 @@ class ConsulKV extends Component {
                     }
                   })}
                 </List>
-                { this.props.routeParams.splat
-                  ? <RaisedButton
-                    label='Delete folder'
-                    labelColor='white'
-                    backgroundColor={ red500 }
-                    style={{ marginRight: 12 }}
-                    onClick={ () => { this.deleteCurrentFolder() } }
-                    />
-                  : null
-                }
               </CardText>
             </Card>
           </Col>
@@ -317,7 +383,7 @@ class ConsulKV extends Component {
                     <br />
                     <br />
                     <RaisedButton
-                      onClick={ () => { this.handleSubmit() } }
+                      onClick={ () => { this.handleSave() } }
                       label='Save'
                       primary
                     />
@@ -339,7 +405,7 @@ class ConsulKV extends Component {
                     : null
                     }
                   </span>
-                  : <RaisedButton onClick={ () => { this.handleSubmit() } } label='Create folder' primary />
+                  : <RaisedButton onClick={ () => { this.handleSave() } } label='Create folder' primary />
                 }
               </CardText>
             </Card>
