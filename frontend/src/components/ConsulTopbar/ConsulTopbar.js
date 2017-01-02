@@ -42,11 +42,11 @@ class ConsulTopbar extends PureComponent {
       break;
 
     case 1:
-      route = `${prefix}/nodes`;
+      route = `${prefix}/kv`;
       break;
 
     case 2:
-      route = `${prefix}/kv`;
+      route = `${prefix}/nodes`;
       break;
 
     default:
@@ -65,11 +65,11 @@ class ConsulTopbar extends PureComponent {
       return 0
     }
 
-    if (location.pathname.startsWith(prefix + '/nodes')) {
+    if (location.pathname.startsWith(prefix + '/kv')) {
       return 1
     }
 
-    if (location.pathname.startsWith(prefix + '/kv')) {
+    if (location.pathname.startsWith(prefix + '/nodes')) {
       return 2
     }
 
@@ -98,8 +98,8 @@ class ConsulTopbar extends PureComponent {
     return (
       <Tabs index={ this.getActiveTab() } onChange={ this._onClick } theme={ theme } fixed>
         <Tab label='Services' value='services'  />
-        <Tab label='Nodes' value='nodes' />
         <Tab label='Key/Value' value='key-value' />
+        <Tab label='Nodes' value='nodes' />
       </Tabs>
     )
   }
