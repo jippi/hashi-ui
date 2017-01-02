@@ -434,8 +434,10 @@ func (c *ConsulConnection) writeConsulKV(action Action) {
 
 	c.send <- &Action{Type: successNotification, Payload: fmt.Sprintf("The key was successfully written: %s.", key)}
 
-	// refresh data post-save
-	c.getConsulKVPair(Action{Payload: key})
+	if key[len(key)-1:] != "/" {
+		// refresh data post-save
+		c.getConsulKVPair(Action{Payload: key})
+	}
 }
 
 func (c *ConsulConnection) deleteConsulKV(action Action) {

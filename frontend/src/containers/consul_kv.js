@@ -47,7 +47,10 @@ class ConsulKV extends Component {
 
   componentWillUnmount() {
     if (this.props.routeParams.splat) {
-      this.props.dispatch({ type: UNWATCH_CONSUL_KV_PATH, payload: this.getPath(this.props) })
+      this.props.dispatch({
+        type: UNWATCH_CONSUL_KV_PATH,
+        payload: this.getPath(this.props)
+      })
     }
   }
 
@@ -59,8 +62,8 @@ class ConsulKV extends Component {
     // Change internal state if we got a KV Pair in props
     if ('Key' in nextProps.consulKVPair) {
       this.setState({
-        key: nextProps.consulKVPair.Key,
-        value: atob(nextProps.consulKVPair.Value),
+        key: this.baseName(nextProps.consulKVPair.Key),
+        value: nextProps.consulKVPair.Value ? atob(nextProps.consulKVPair.Value) : '',
         index: nextProps.consulKVPair.ModifyIndex,
       })
     }
@@ -108,7 +111,7 @@ class ConsulKV extends Component {
   editFile(file) {
     this.props.dispatch({
       type: GET_CONSUL_KV_PAIR,
-      payload: this.getPath(this.props) + file,
+      payload: file,
     })
 
     this.props.router.push({ pathname: this.props.location.pathname, query: { file: this.baseName(file) } })
@@ -183,7 +186,10 @@ class ConsulKV extends Component {
       }
     })
 
-    this.resetState();
+    // this.resetState();
+    if (isDirectory) {
+      this.resetState();
+    }
 
     if (!isDirectory && !('file' in this.props.location.query)) {
       this.editFile(filePath)
@@ -214,7 +220,7 @@ class ConsulKV extends Component {
     this.props.dispatch({
       type: DELETE_CONSUL_KV_PAIR,
       payload: {
-        path: this.relativePath(this.getPath(this.props)) + this.props.consulKVPair.Key,
+        path: this.relativePath(this.getPath(this.props)) + this.state.key,
         index: this.props.consulKVPair.ModifyIndex,
       }
     })
@@ -226,6 +232,7 @@ class ConsulKV extends Component {
       payload: this.props.routeParams.splat,
     })
 
+    this.resetState()
     this.changePath('..')
   }
 
@@ -292,7 +299,7 @@ class ConsulKV extends Component {
                   fullWidth
                   value={ this.state.key }
                   onChange={ (event) => { this.handleChange('key', event)} }
-                  disabled={ this.state.index !== 0 }
+                  disabled={ this.props.consulKVPair.ModifyIndex }
                 />
                 <div>To create a folder, end the key with <code>/</code></div>
 
