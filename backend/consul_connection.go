@@ -159,6 +159,22 @@ func (c *ConsulConnection) process(action Action) {
 		c.watches.Remove(action.Payload.(string))
 
 	//
+	// Watch a KV path
+	//
+	case watchConsulKVPath:
+		go c.watchConsulKVPath(action)
+	case unwatchConsulKVPath:
+		c.watches.Remove("consul/kv/path?" + action.Payload.(string))
+	case setConsulKVPair:
+		go c.writeConsulKV(action)
+	case deleteConsulKvFolder:
+		go c.deleteConsulKV(action)
+	case getConsulKVPair:
+		go c.getConsulKVPair(action)
+	case deleteConsulKvPair:
+		go c.deleteConsulKvPair(action)
+
+	//
 	// Nice in debug
 	//
 	default:
@@ -281,7 +297,7 @@ func (c *ConsulConnection) watchConsulService(action Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &Action{Type: fetchedConsulService, Payload: service, Index: remoteWaitIndex}
-				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 120 * time.Second}
 
 				// don't refresh data more frequent than every 5s, since busy clusters update every second or faster
 				time.Sleep(5 * time.Second)
@@ -334,12 +350,155 @@ func (c *ConsulConnection) watchConsulNode(action Action) {
 			}
 
 			c.send <- &Action{Type: fetchedConsulNode, Payload: node, Index: remoteWaitIndex}
-			q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
+			q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 120 * time.Second}
 
 			// don't refresh data more frequent than every 5s, since busy clusters update every second or faster
 			time.Sleep(5 * time.Second)
 		}
 	}
+}
+
+func (c *ConsulConnection) watchConsulKVPath(action Action) {
+	path := action.Payload.(string)
+	key := "consul/kv/path?" + path
+
+	if c.watches.Has(key) {
+		c.Warningf("Connection is already subscribed to %s", key)
+		return
+	}
+
+	defer func() {
+		c.watches.Remove(key)
+		c.Infof("Stopped watching %s", key)
+	}()
+	c.watches.Add(key)
+
+	c.Infof("Started watching %s", key)
+
+	q := &api.QueryOptions{WaitIndex: 1}
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		default:
+			keys, meta, err := c.region.Client.KV().Keys(path, "/", q)
+			if err != nil {
+				c.Errorf("connection: unable to fetch consul node info: %s", err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			if !c.watches.Has(key) {
+				return
+			}
+
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex == localWaitIndex {
+				time.Sleep(5 * time.Second)
+				continue
+			}
+
+			c.send <- &Action{Type: fetchedConsulKVPath, Payload: keys, Index: remoteWaitIndex}
+			q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 120 * time.Second}
+		}
+	}
+}
+
+func (c *ConsulConnection) writeConsulKV(action Action) {
+	params, ok := action.Payload.(map[string]interface{})
+	if !ok {
+		c.Errorf("Could not decode payload")
+		return
+	}
+
+	key := params["path"].(string)
+	value := params["value"].(string)
+	index := uint64(0)
+
+	if val, ok := params["index"]; ok {
+		index = uint64(val.(float64))
+	}
+
+	keyPair := &api.KVPair{Key: key, Value: []byte(value), ModifyIndex: index}
+
+	_, _, err := c.region.Client.KV().CAS(keyPair, &api.WriteOptions{})
+	if err != nil {
+		logger.Errorf("connection: unable to write consul kv '%s': %s", key, err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to write key : %s", key)}
+		return
+	}
+
+	c.send <- &Action{Type: successNotification, Payload: fmt.Sprintf("The key was successfully written: %s.", key)}
+
+	// refresh data post-save
+	c.getConsulKVPair(Action{Payload: key})
+}
+
+func (c *ConsulConnection) deleteConsulKV(action Action) {
+	key := action.Payload.(string)
+
+	_, err := c.region.Client.KV().DeleteTree(key, &api.WriteOptions{})
+	if err != nil {
+		logger.Errorf("connection: unable to delete consul kv '%s': %s", key, err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to write key : %s", key)}
+		return
+	}
+
+	c.send <- &Action{Type: successNotification, Payload: fmt.Sprintf("The key was successfully deleted: %s.", key)}
+}
+
+func (c *ConsulConnection) getConsulKVPair(action Action) {
+	key := action.Payload.(string)
+
+	pair, _, err := c.region.Client.KV().Get(key, &api.QueryOptions{})
+	if err != nil {
+		logger.Errorf("connection: unable to get consul kv '%s': %s", key, err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to read key : %s", key)}
+		return
+	}
+
+	if pair == nil {
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to read key : %s", key)}
+		return
+	}
+
+	c.send <- &Action{Type: fetchedConsulKVPair, Payload: pair, Index: pair.ModifyIndex}
+}
+
+func (c *ConsulConnection) deleteConsulKvPair(action Action) {
+	params, ok := action.Payload.(map[string]interface{})
+	if !ok {
+		c.Errorf("Could not decode payload")
+		return
+	}
+
+	key := params["path"].(string)
+	index := uint64(0)
+
+	if val, ok := params["index"]; ok {
+		index = uint64(val.(float64))
+	}
+
+	keyPair := &api.KVPair{Key: key, ModifyIndex: index}
+
+	success, _, err := c.region.Client.KV().DeleteCAS(keyPair, &api.WriteOptions{})
+	if err != nil {
+		logger.Errorf("connection: unable to get consul kv '%s': %s", key, err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to delete key : %s", key)}
+		return
+	}
+
+	if !success {
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to delete key : %s", key)}
+		return
+	}
+
+	c.send <- &Action{Type: successNotification, Payload: fmt.Sprintf("Successfully deleted %s", key)}
+	c.send <- &Action{Type: clearConsulKvPair}
 }
 
 func (c *ConsulConnection) dereigsterConsulService(action Action) {

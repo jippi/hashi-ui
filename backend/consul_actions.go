@@ -20,4 +20,14 @@ const (
 
 	dereigsterConsulService      = "DEREGISTER_CONSUL_SERVICE"
 	dereigsterConsulServiceCheck = "DEREGISTER_CONSUL_SERVICE_CHECK"
+
+	deleteConsulKvFolder = "DELETE_CONSUL_KV_FOLDER"
+	fetchedConsulKVPath  = "FETCHED_CONSUL_KV_PATH"
+	fetchedConsulKVPair  = "FETCHED_CONSUL_KV_PAIR"
+	getConsulKVPair      = "GET_CONSUL_KV_PAIR"
+	setConsulKVPair      = "SET_CONSUL_KV_PAIR"
+	unwatchConsulKVPath  = "UNWATCH_CONSUL_KV_PATH"
+	watchConsulKVPath    = "WATCH_CONSUL_KV_PATH"
+	deleteConsulKvPair   = "DELETE_CONSUL_KV_PAIR"
+	clearConsulKvPair    = "CLEAR_CONSUL_KV_PAIR"
 )

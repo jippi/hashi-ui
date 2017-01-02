@@ -15,12 +15,14 @@ import { NodeInfoReducer, NodeStatsReducer, NodeListReducer } from './node'
 import { DirectoryReducer, FileReducer } from './filesystem'
 import { ChangeNomadRegionReducer , NomadRegionsReducer } from './nomad'
 import {
-  ChangeConsulRegionReducer,
-  ConsulRegionsReducer,
   ConsulServiceList,
   ConsulService,
-  ConsulNode,
+  ConsulRegionsReducer,
   ConsulNodes,
+  ConsulNode,
+  ConsulKVPath,
+  ConsulKVPair,
+  ChangeConsulRegionReducer,
 } from './consul'
 
 const rootReducer = combineReducers({
@@ -36,6 +38,8 @@ const rootReducer = combineReducers({
   consulRegions: ConsulRegionsReducer,
   consulService: ConsulService,
   consulServices: ConsulServiceList,
+  consulKVPaths: ConsulKVPath,
+  consulKVPair: ConsulKVPair,
   directory: DirectoryReducer,
   errorNotification: ErrorNotificationReducer,
   evaluation: EvalInfoReducer,
