@@ -396,11 +396,11 @@ class ConsulKV extends Component {
                     &nbsp;
                     &nbsp;
                     { this.props.consulKVPair.Key
-                    ? <RaisedButton
-                      style={{ float: 'right' }}
+                    ? <FlatButton
+                      style={{ float: 'right', color: 'white' }}
                       backgroundColor={ red500 }
                       onClick={ () => { this.deleteKey() } }
-                      label='Delete'
+                      label='Delete key'
                       />
                     : null
                     }
