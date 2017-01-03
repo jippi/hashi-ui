@@ -1,0 +1,15 @@
+{
+    "language": "en_US",
+    "ignoreWordsList": [
+        "hashi",
+        "jippi"
+    ],
+    "documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ],
+    "ignoreRegExp": [],
+    "ignoreFileExtensions": [],
+    "checkInterval": 5000
+}

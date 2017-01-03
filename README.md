@@ -29,13 +29,13 @@ An awesome user interface (even for mobile devices!) for HashiCorp Consul & Noma
 
 For Nomad, it was quite simple, no mobile-optimized, (somewhat) feature-complete and live-updating interface existed.
 
-For Consul, the built-in UI is decent, but lack a varify of essential features:
+For Consul, the built-in UI is decent, but lack a variety of essential features:
 
 - Live update of Services, Nodes and Key/Value lists (nobody likes to refresh)
 - More API complete (e.g. unregister services and services checks directly from UI)
 - CAS (Check-And-Set) support in both Write and Delete actions for KV, preventing accidental modification or deleting of keys that have changed since you loaded them.
 - KV breadcrumbs could not be used for navigation
-- Sorting KV folders and keys seperatly (always folders first)
+- Sorting KV folders and keys separately (always folders first)
 - More inter-linking between services/nodes
 
 Today the Consul and Nomad UI exist in the same binary, but do not "cross-talk" to each other, but long term goal is to integrate them even closer, so from Nomad Job UI you can see Consul health check status for the job tasks, and vice versa be able to cross-link between two otherwise distinct systems.
@@ -149,6 +149,8 @@ hashi-ui-<os>-<arch> --consul.enable --consul.address demo.consul.io
 
 Open browser and visit [http://127.0.0.1:3000](http://127.0.0.1:3000).
 
-# Development & Build
+# Contributing & Development
 
-If you would like to contribute please open a pull-request. See [DEVELOPMENT.md](https://github.com/jippi/hashi-ui/blob/master/DEVELOPMENT.md)
+If you would like to contribute (Thanks ! <3) please open a pull-request with your code change or a RFC issue.
+
+See [DEVELOPMENT.md](https://github.com/jippi/hashi-ui/blob/master/DEVELOPMENT.md) for information on how to get started with hacking on hashi-ui.
