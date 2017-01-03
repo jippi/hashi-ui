@@ -9,6 +9,7 @@ import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import Subheader from 'material-ui/Subheader'
+import Dialog from 'material-ui/Dialog';
 import { red500 } from 'material-ui/styles/colors'
 import {
   SET_CONSUL_KV_PAIR, GET_CONSUL_KV_PAIR,
@@ -26,6 +27,8 @@ class ConsulKV extends Component {
       key: '',
       value: '',
       index: 0,
+      deleteKeyTreeDialog: false,
+      deleteKeyDialog: false,
     }
 
     this._onClickPath = this.changePath.bind(this)
@@ -140,7 +143,7 @@ class ConsulKV extends Component {
     }
 
     // don't update the url if we already got a file
-    if ('file' in this.props.location.params) {
+    if ('file' in (this.props.location.params || {})) {
       return
     }
 
@@ -299,24 +302,115 @@ class ConsulKV extends Component {
     this.changePath('..')
   }
 
+  handleOpenDeleteDialog(key) {
+    const state = {}
+    state[key] = true
+
+    this.setState(state);
+  }
+
+  handleCloseDeleteDialog(key) {
+    const state = {}
+    state[key] = false
+
+    this.setState(state);
+  }
+
+  confirmDeleteAction(key, title, confirmText, okAction) {
+    const actions = [
+      <FlatButton
+        label='Cancel'
+        onTouchTap={ () => this.handleCloseDeleteDialog(key) }
+      />,
+      <FlatButton
+        label={ confirmText }
+        primary
+        onTouchTap={ () => { okAction.bind(this)(); this.handleCloseDeleteDialog(key) } }
+      />,
+    ];
+
+    return (
+      <Dialog
+        actions={ actions }
+        modal={ false }
+        open={ this.state[key] }
+        onRequestClose={ () => this.handleCloseDeleteDialog(key) }
+      >
+        { title }
+      </Dialog>
+    )
+  }
+
+  breadcrumb() {
+    const chunks = this.getPath(this.props).split("/")
+    const crumbs = []
+
+    while (true) {
+      var chunk = chunks.pop()
+      if (chunk == undefined) {
+        break;
+      }
+
+      if (chunk == "") {
+        continue;
+      }
+
+      const to = `${chunks.join("/")}/${chunk}`
+      crumbs.push(<a onClick={ () => this.changePath(to) } className='breadcrumb' to={ to }>{ chunk }</a>)
+    }
+
+    crumbs.push(<a onClick={ () => this.changePath('/') } className='breadcrumb no-icon'>Root</a>)
+
+    return <div>Path: { crumbs.reverse() }</div>
+  }
+
+  valuePaneTitle() {
+    if (this.props.consulKVPair.Key) {
+      return 'Edit key';
+    }
+
+    if (this.state.key.slice(-1) == '/') {
+      return 'Create new folder';
+    }
+
+    if (this.state.key) {
+      return 'Create new key';
+    }
+
+    return 'Create new key or folder';
+  }
+
   render() {
     const paths = this.sortKeys(this.props.consulKVPaths ? this.props.consulKVPaths : [])
+
+    let listStyle = {}
+    if (window.innerWidth < 800) {
+      listStyle = { maxHeight: 200, overflow: 'scroll' }
+    }
 
     return (
       <Grid fluid style={{ padding: 0 }}>
         <Row>
-          <Col key='navigation-pane' xs={ 12 } sm={ 12 } md={ 12 } lg={ 12 }>
+          <Col key='breadcrumb-pane' xs={ 12 } sm={ 12 } md={ 12 } lg={ 12 }>
             <Subheader>
               <div style={{ float: 'left' }}>
-                { `Path: /${this.props.routeParams.splat ? '' + this.props.routeParams.splat : '' }` }
+                { this.breadcrumb() }
               </div>
               <div style={{ float: 'right' }}>
+                {
+                  this.confirmDeleteAction(
+                    'deleteKeyTreeDialog',
+                    `Do you really want to delete '/${this.props.routeParams.splat}/' and all keys below it?`,
+                    'Yes, delete the folder',
+                    this.deleteKeyTree
+                  )
+                }
                 { this.props.routeParams.splat
                     ? <FlatButton
                       label='Delete folder'
                       style={{ color: 'white' }}
                       backgroundColor={ red500 }
-                      onClick={ () => { this.deleteKeyTree() } }
+                      onClick={ () => { this.handleOpenDeleteDialog('deleteKeyTreeDialog') } }
                       />
                     : null
                   }
@@ -325,12 +419,10 @@ class ConsulKV extends Component {
           </Col>
         </Row>
         <Row>
-          <Col key='navigation-pane' xs={ 6 } sm={ 6 } md={ 4 } lg={ 3 }>
+          <Col key='navigation-pane' xs={ 12 } sm={ 12 } md={ 4 } lg={ 3 }>
             <Card>
-              <CardTitle
-                title={ `keys & directories` }
-              />
-              <CardText>
+              <CardTitle title='Navigation' />
+              <CardText style={ listStyle }>
                 <List>
                   { this.props.routeParams.splat
                     ? <ListItem
@@ -362,9 +454,9 @@ class ConsulKV extends Component {
               </CardText>
             </Card>
           </Col>
-          <Col key='value-pane' xs={ 6 } sm={ 6 } md={ 8 } lg={ 9 }>
+          <Col key='value-pane' xs={ 12 } sm={ 12 } md={ 8 } lg={ 9 }>
             <Card>
-              <CardTitle title='Manage' />
+              <CardTitle title={ this.valuePaneTitle() } />
               <CardText>
                 <TextField
                   id='kv-key'
@@ -406,12 +498,21 @@ class ConsulKV extends Component {
                     &nbsp;
                     &nbsp;
                     { this.props.consulKVPair.Key
-                    ? <FlatButton
-                      style={{ float: 'right', color: 'white' }}
-                      backgroundColor={ red500 }
-                      onClick={ () => { this.deleteKey() } }
-                      label='Delete key'
-                      />
+                    ? <span>
+                      {
+                      this.confirmDeleteAction(
+                        'deleteKeyDialog',
+                        `Do you really want to delete key '${this.getPath(this.props) + this.state.key}'?`,
+                        'Yes, delete the key',
+                        this.deleteKey
+                      )}
+                      <FlatButton
+                        style={{ float: 'right', color: 'white' }}
+                        backgroundColor={ red500 }
+                        onClick={ () => { this.handleOpenDeleteDialog('deleteKeyDialog') } }
+                        label='Delete key'
+                        />
+                    </span>
                     : null
                     }
                   </span>
