@@ -88,14 +88,14 @@ class ConsulServices extends Component {
   render() {
     let listStyle = {}
 
-    if (window.innerWidth < 800) {
+    if (window.innerWidth < 1024) {
       listStyle = { maxHeight: 200, overflow: 'scroll' }
     }
 
     return (
       <Grid fluid style={{ padding: 0 }}>
         <Row>
-          <Col key='navigation-pane' xs={ 12 } sm={ 5 } md={ 4 } lg={ 4 }>
+          <Col key='navigation-pane' xs={ 12 } sm={ 12 } md={ 4 } lg={ 4 }>
             <Subheader>Available Services</Subheader>
             <Card>
               <CardHeader title='Filter list' actAsExpander showExpandableButton />
@@ -142,9 +142,12 @@ class ConsulServices extends Component {
               </List>
             </Paper>
           </Col>
-          <Col key='value-pane' xs={ 12 } sm={ 7 } md={ 8 } lg={ 8 }>
+          <Col key='value-pane' xs={ 12 } sm={ 12 } md={ 8 } lg={ 8 }>
             <Subheader>
-              { this.props.routeParams.name ? `Service: ${this.props.routeParams.name}` : 'Please select a service to the left' }
+              { this.props.routeParams.name
+                ? `Service: ${this.props.routeParams.name}`
+                : 'Please select a service'
+              }
             </Subheader>
 
             { this.getConsulService().map((entry, index) => {

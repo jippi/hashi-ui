@@ -363,7 +363,7 @@ class ConsulKV extends Component {
 
     crumbs.push(<a onClick={ () => this.changePath('/') } className='breadcrumb no-icon'>Root</a>)
 
-    return <div>Path: { crumbs.reverse() }</div>
+    return <div>{ crumbs.reverse() }</div>
   }
 
   valuePaneTitle() {
@@ -386,8 +386,10 @@ class ConsulKV extends Component {
     const paths = this.sortKeys(this.props.consulKVPaths ? this.props.consulKVPaths : [])
 
     let listStyle = {}
-    if (window.innerWidth < 800) {
+    let valueStyle = {}
+    if (window.innerWidth < 1024) {
       listStyle = { maxHeight: 200, overflow: 'scroll' }
+      valueStyle = { marginTop: '1em' }
     }
 
     return (
@@ -423,7 +425,6 @@ class ConsulKV extends Component {
         <Row>
           <Col key='navigation-pane' xs={ 12 } sm={ 12 } md={ 4 } lg={ 3 }>
             <Card>
-              <CardTitle title='Navigation' />
               <CardText style={ listStyle }>
                 <List>
                   { this.props.routeParams.splat
@@ -456,7 +457,7 @@ class ConsulKV extends Component {
               </CardText>
             </Card>
           </Col>
-          <Col id='value-pane' key='value-pane' xs={ 12 } sm={ 12 } md={ 8 } lg={ 9 }>
+          <Col id='value-pane' key='value-pane' xs={ 12 } sm={ 12 } md={ 8 } lg={ 9 } style={ valueStyle }>
             <Card>
               <CardTitle title={ this.valuePaneTitle() } />
               <CardText>

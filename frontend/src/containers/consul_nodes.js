@@ -59,6 +59,7 @@ class ConsulNodes extends Component {
 
   monitorNode(name) {
     this.props.router.push({ pathname: `/consul/${this.props.router.params.region}/nodes/${name}` })
+    window.scrollTo(0, document.getElementById('value-pane').offsetTop);
   }
 
   deregisterServiceCheck(nodeAddress, checkID) {
@@ -85,7 +86,7 @@ class ConsulNodes extends Component {
     return this.props.consulNode.Checks.filter(check => serviceId == check.ServiceID)
   }
 
-  getOrphanedChecks() {
+  getStandaloneChecks() {
     if (this.props.consulNode.Node === undefined) {
       return []
     }
@@ -97,8 +98,10 @@ class ConsulNodes extends Component {
   render() {
     let listStyle = {}
     let services = this.getServices()
+    let buttonOffset = 10
 
-    if (window.innerWidth < 800) {
+    if (window.innerWidth < 1024) {
+      buttonOffset = 5
       listStyle = { maxHeight: 200, overflow: 'scroll' }
     }
 
@@ -148,11 +151,11 @@ class ConsulNodes extends Component {
               </List>
             </Paper>
           </Col>
-          <Col key='value-pane' xs={ 12 } sm={ 12 } md={ 8 } lg={ 8 }>
+          <Col id='value-pane' key='value-pane' xs={ 12 } sm={ 12 } md={ 8 } lg={ 8 }>
             <Subheader>
               { this.props.consulNode.Node
                 ? `Node: ${this.props.consulNode.Node} | IP: ${this.props.consulNode.Address}`
-                : 'Please select a node to the left'
+                : 'Please select a node'
               }
             </Subheader>
 
@@ -225,8 +228,7 @@ class ConsulNodes extends Component {
 
               return (
                 <Card style={{ marginTop: index > 0 ? '1em' : 0 }}>
-                  <CardHeader title={ `Service: ${entry.Service}` } subtitle={ secondaryText } />
-                  <div style={{ float: 'right', marginTop: -60 }}>
+                  <div style={{ float: 'right', marginTop: buttonOffset, clear: 'both' }}>
                     <RaisedButton
                       label='Deregister'
                       labelColor='white'
@@ -235,6 +237,7 @@ class ConsulNodes extends Component {
                       onClick={ () => { this.deregisterService(this.props.consulNode.Address, entry.ID) } }
                       />
                   </div>
+                  <CardHeader title={ `Service: ${entry.Service}` } subtitle={ secondaryText } />
                   <CardText>
                     { checks }
                   </CardText>
@@ -244,7 +247,7 @@ class ConsulNodes extends Component {
 
             { services.length > 0 ? <div style={{ marginTop: '1em' }} /> : null }
 
-            { this.getOrphanedChecks().map(check => {
+            { this.getStandaloneChecks().map(check => {
               let icon
 
               if (check.Status === 'critical') {
