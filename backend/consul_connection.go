@@ -425,10 +425,16 @@ func (c *ConsulConnection) writeConsulKV(action Action) {
 
 	keyPair := &api.KVPair{Key: key, Value: []byte(value), ModifyIndex: index}
 
-	_, _, err := c.region.Client.KV().CAS(keyPair, &api.WriteOptions{})
+	res, _, err := c.region.Client.KV().CAS(keyPair, &api.WriteOptions{})
 	if err != nil {
 		logger.Errorf("connection: unable to write consul kv '%s': %s", key, err)
-		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to write key : %s", key)}
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to write key %s: %s", key, err)}
+		return
+	}
+
+	if !res {
+		logger.Errorf("connection: unable to write consul kv '%s': %s", key, err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to write key %s: maybe the key was modified since you loaded it?", key)}
 		return
 	}
 
@@ -490,12 +496,12 @@ func (c *ConsulConnection) deleteConsulKvPair(action Action) {
 	success, _, err := c.region.Client.KV().DeleteCAS(keyPair, &api.WriteOptions{})
 	if err != nil {
 		logger.Errorf("connection: unable to get consul kv '%s': %s", key, err)
-		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to delete key : %s", key)}
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to delete key %s: %s", key, err)}
 		return
 	}
 
 	if !success {
-		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to delete key : %s", key)}
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to delete key %s", key)}
 		return
 	}
 

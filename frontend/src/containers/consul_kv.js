@@ -131,11 +131,18 @@ class ConsulKV extends Component {
   /**
    * Start flow for editing key
    */
-  editKey(file) {
-    this.props.dispatch({
-      type: GET_CONSUL_KV_PAIR,
-      payload: file,
-    })
+  editKey(file, fetch = true) {
+    if (fetch) {
+      this.props.dispatch({
+        type: GET_CONSUL_KV_PAIR,
+        payload: file,
+      })
+    }
+
+    // don't update the url if we already got a file
+    if ('file' in this.props.location.params) {
+      return
+    }
 
     this.props.router.push({
       pathname: this.props.location.pathname,
@@ -240,7 +247,7 @@ class ConsulKV extends Component {
     }
 
     // open the new key up for editing
-    this.editKey(filePath)
+    this.editKey(filePath, false)
   }
 
   /**
@@ -365,7 +372,7 @@ class ConsulKV extends Component {
                   fullWidth
                   value={ this.state.key }
                   onChange={ (event) => { this.handleChange('key', event)} }
-                  disabled={ this.props.consulKVPair.ModifyIndex }
+                  disabled={ this.props.consulKVPair.ModifyIndex && this.props.consulKVPair.ModifyIndex != 0 }
                 />
                 <div>To create a folder, end the key with <code>/</code></div>
 
@@ -389,10 +396,13 @@ class ConsulKV extends Component {
                     />
                     &nbsp;
                     &nbsp;
-                    <RaisedButton
-                      onClick={ () => { this.resetState(true, true) } }
-                      label='Cancel'
-                    />
+                    { this.state.key || this.state.value
+                      ? <RaisedButton
+                        onClick={ () => { this.resetState(true, true) } }
+                        label='Cancel'
+                      />
+                      : null
+                    }
                     &nbsp;
                     &nbsp;
                     { this.props.consulKVPair.Key
