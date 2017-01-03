@@ -409,6 +409,12 @@ func (c *ConsulConnection) watchConsulKVPath(action Action) {
 }
 
 func (c *ConsulConnection) writeConsulKV(action Action) {
+	if *flagConsulReadOnly {
+		logger.Warningf("Unable to write Consul KV: ConsulReadOnly is set to true")
+		c.send <- &Action{Type: errorNotification, Payload: "Unable to write Consul KV - the Consul backend is set to read-only"}
+		return
+	}
+
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -447,6 +453,12 @@ func (c *ConsulConnection) writeConsulKV(action Action) {
 }
 
 func (c *ConsulConnection) deleteConsulKV(action Action) {
+	if *flagConsulReadOnly {
+		logger.Warningf("Unable to delete Consul KV: ConsulReadOnly is set to true")
+		c.send <- &Action{Type: errorNotification, Payload: "Unable to delete Consul KV - the Consul backend is set to read-only"}
+		return
+	}
+
 	key := action.Payload.(string)
 
 	_, err := c.region.Client.KV().DeleteTree(key, &api.WriteOptions{})
@@ -478,6 +490,12 @@ func (c *ConsulConnection) getConsulKVPair(action Action) {
 }
 
 func (c *ConsulConnection) deleteConsulKvPair(action Action) {
+	if *flagConsulReadOnly {
+		logger.Warningf("Unable to delete Consul KV: ConsulReadOnly is set to true")
+		c.send <- &Action{Type: errorNotification, Payload: "Unable to delete Consul KV - the Consul backend is set to read-only"}
+		return
+	}
+
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -510,6 +528,12 @@ func (c *ConsulConnection) deleteConsulKvPair(action Action) {
 }
 
 func (c *ConsulConnection) dereigsterConsulService(action Action) {
+	if *flagConsulReadOnly {
+		logger.Warningf("Unable to deregister Consul Service: ConsulReadOnly is set to true")
+		c.send <- &Action{Type: errorNotification, Payload: "Unable to deresiger Consul Service - the Consul backend is set to read-only"}
+		return
+	}
+
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -540,6 +564,12 @@ func (c *ConsulConnection) dereigsterConsulService(action Action) {
 }
 
 func (c *ConsulConnection) dereigsterConsulServiceCheck(action Action) {
+	if *flagConsulReadOnly {
+		logger.Warningf("Unable to deregister Consul Service Check: ConsulReadOnly is set to true")
+		c.send <- &Action{Type: errorNotification, Payload: "Unable to deresiger Consul Service Check - the Consul backend is set to read-only"}
+		return
+	}
+
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
