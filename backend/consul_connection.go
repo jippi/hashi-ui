@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -543,8 +544,13 @@ func (c *ConsulConnection) dereigsterConsulService(action Action) {
 	nodeAddress := params["nodeAddress"].(string)
 	serviceID := params["serviceID"].(string)
 
+	_, port, _ := net.SplitHostPort(c.region.Config.ConsulAddress)
+	if port == "" {
+		port = "80"
+	}
+
 	config := api.DefaultConfig()
-	config.Address = nodeAddress + ":8500"
+	config.Address = nodeAddress + ":" + port
 
 	client, err := api.NewClient(config)
 	if err != nil {
@@ -579,8 +585,13 @@ func (c *ConsulConnection) dereigsterConsulServiceCheck(action Action) {
 	nodeAddress := params["nodeAddress"].(string)
 	checkID := params["checkID"].(string)
 
+	_, port, _ := net.SplitHostPort(c.region.Config.ConsulAddress)
+	if port == "" {
+		port = "80"
+	}
+
 	config := api.DefaultConfig()
-	config.Address = nodeAddress + ":8500"
+	config.Address = nodeAddress + ":" + port
 
 	client, err := api.NewClient(config)
 	if err != nil {
