@@ -1,3 +1,11 @@
+# Development flow and help
+
+- [Assumptions](#assumptions)
+  * [Go configuration](#go-configuration)
+- [Workflow](#workflow)
+- [Development](#development)
+- [Building](#building)
+
 # Assumptions
 
 The following assumptions are made for local development:

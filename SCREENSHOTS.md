@@ -1,3 +1,25 @@
+- [Consul](#consul)
+  * [Services](#services)
+  * [Key/Value](#key-value)
+- [Nomad](#nomad)
+  * [Cluster](#cluster)
+  * [Jobs](#jobs)
+    + [List](#list)
+    + [Details](#details)
+  * [Allocations](#allocations)
+    + [List](#list-1)
+    + [Details](#details-1)
+  * [Client](#client)
+    + [List](#list-2)
+    + [Details](#details-2)
+  * [Evaluation](#evaluation)
+    + [List](#list-3)
+    + [Details](#details-3)
+  * [Server](#server)
+    + [List](#list-4)
+    + [Details](#details-4)
+
+
 # Consul
 
 ![Nomad UI](https://dl.dropboxusercontent.com/u/27514/nomad-screenshots/0.13/consul_dc_selector.jpg)

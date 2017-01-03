@@ -13,6 +13,20 @@ This project was previously known as `iverberk/nomad-ui`
 
 [More screenshots](https://github.com/jippi/hashi-ui/blob/master/SCREENSHOTS.md)
 
+# TOC
+
+- [Usage](#usage)
+- [Configuration](#configuration)
+  * [General Configuration](#general-configuration)
+  * [Nomad Configuration](#nomad-configuration)
+  * [Consul Configuration](#consul-configuration)
+  * [Instrumentation Configuration](#instrumentation-configuration)
+- [Try](#try)
+  * [Nomad](#nomad)
+  * [Consul](#consul)
+- [Development & Build](#development---build)
+
+
 # Usage
 
 Download the latest release from the Github repository and start it with:
