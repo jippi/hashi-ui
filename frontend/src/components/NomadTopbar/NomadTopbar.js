@@ -151,6 +151,7 @@ class AppTopbar extends PureComponent {
       <section style={{ backgroundColor: NOMAD_COLOR }}>
         <AppBar
           title={ this.title() }
+          showMenuIconButton={ window.ENABLED_SERVICES.length > 1 }
           iconElementRight={ this.nomadRegions() }
           onLeftIconButtonTouchTap={ () => this.leftIconClick() }
         />

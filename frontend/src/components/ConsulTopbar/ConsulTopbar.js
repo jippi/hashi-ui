@@ -124,7 +124,7 @@ class ConsulTopbar extends PureComponent {
       <section style={{ backgroundColor: CONSUL_COLOR }}>
         <AppBar
           title={ this.title() }
-          showMenuIconButton
+          showMenuIconButton={ window.ENABLED_SERVICES.length > 1 }
           iconElementRight={ this.consulRegions() }
           onLeftIconButtonTouchTap={ () => this.leftIconClick() }
         />

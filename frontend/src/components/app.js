@@ -36,6 +36,33 @@ class App extends Component {
     }
   }
 
+  capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  appDrawer() {
+    if (window.ENABLED_SERVICES.length < 2) {
+      return null
+    }
+
+    return (
+      <Drawer
+        docked={ false }
+        open={ this.props.appDrawer }
+        onRequestChange={ open => { this.DrawerRequestedChange(open) } }
+      >
+        { window.ENABLED_SERVICES.map(service => {
+          return (
+            <MenuItem onTouchTap={ () => { this.changeToApp(service) } }>
+              { this.capitalizeFirstLetter(service) }
+            </MenuItem>
+          )
+        })}
+      </Drawer>
+    )
+
+  }
+
   render () {
     let uncaughtExceptionBar = undefined;
 
@@ -85,15 +112,7 @@ class App extends Component {
     return (
       <MuiThemeProvider muiTheme={ getMuiTheme(muiTheme) }>
         <div>
-          <Drawer
-            docked={ false }
-            open={ this.props.appDrawer }
-            onRequestChange={ open => { this.DrawerRequestedChange(open) } }
-          >
-            <MenuItem onTouchTap={ () => { this.changeToApp('consul') } }>Consul</MenuItem>
-            <MenuItem onTouchTap={ () => { this.changeToApp('nomad') } }>Nomad</MenuItem>
-          </Drawer>
-
+          { this.appDrawer() }
           <NotificationsBar />
           { uncaughtExceptionBar }
           { topbar }

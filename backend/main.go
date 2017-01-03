@@ -38,47 +38,6 @@ func startLogging(logLevel string) {
 	logging.SetBackend(logBackendFormattedAndLeveled)
 }
 
-// Config for the hashi-ui server
-type Config struct {
-	LogLevel      string
-	ProxyAddress  string
-	ListenAddress string
-
-	NewRelicAppName string
-	NewRelicLicense string
-
-	NomadEnable     bool
-	NomadAddress    string
-	NomadCACert     string
-	NomadClientCert string
-	NomadClientKey  string
-	NomadReadOnly   bool
-
-	ConsulEnable   bool
-	ConsulReadOnly bool
-	ConsulAddress  string
-}
-
-// DefaultConfig is the basic out-of-the-box configuration for hashi-ui
-func DefaultConfig() *Config {
-	return &Config{
-		LogLevel:      "info",
-		ListenAddress: "0.0.0.0:3000",
-
-		NewRelicAppName: "hashi-ui",
-
-		NomadReadOnly: false,
-		NomadAddress:  "http://127.0.0.1:4646",
-
-		ConsulReadOnly: false,
-		ConsulAddress:  "127.0.0.1:8500",
-	}
-}
-
-func flagDefault(value string) string {
-	return fmt.Sprintf("(default: \"%s\")", value)
-}
-
 // Parse the env and cli flags and store the outcome in a Config struct
 func (c *Config) Parse() {
 	flag.Parse()
@@ -129,14 +88,14 @@ func main() {
 	// Nomad
 	logger.Infof("| nomad.enable     	: %-50t |", cfg.NomadEnable)
 	if cfg.NomadReadOnly {
-		logger.Infof("| nomad.read-only      : %-50s |", "Yes")
+		logger.Infof("| nomad.read-only       : %-50s |", "Yes")
 	} else {
-		logger.Infof("| nomad.read-only      : %-50s |", "No (Hashi-UI can change Nomad state)")
+		logger.Infof("| nomad.read-only       : %-50s |", "No (Hashi-UI can change Nomad state)")
 	}
-	logger.Infof("| nomad.address        : %-50s |", cfg.NomadAddress)
-	logger.Infof("| nomad.ca_cert        : %-50s |", cfg.NomadCACert)
-	logger.Infof("| nomad.client_cert    : %-50s |", cfg.NomadClientCert)
-	logger.Infof("| nomad.client_key     : %-50s |", cfg.NomadClientKey)
+	logger.Infof("| nomad.address         : %-50s |", cfg.NomadAddress)
+	logger.Infof("| nomad.ca_cert         : %-50s |", cfg.NomadCACert)
+	logger.Infof("| nomad.client_cert     : %-50s |", cfg.NomadClientCert)
+	logger.Infof("| nomad.client_key      : %-50s |", cfg.NomadClientKey)
 
 	// Consul
 	logger.Infof("| consul.enable     	: %-50t |", cfg.ConsulEnable)
@@ -205,11 +164,21 @@ func main() {
 
 		if idx := strings.Index(r.URL.Path, "config.js"); idx != -1 {
 			response := make([]string, 0)
-			response = append(response, fmt.Sprintf("window.CONSUL_ENABLE=%s", strconv.FormatBool(cfg.ConsulEnable)))
+			response = append(response, fmt.Sprintf("window.CONSUL_ENABLED=%s", strconv.FormatBool(cfg.ConsulEnable)))
 			response = append(response, fmt.Sprintf("window.CONSUL_READ_ONLY=%s", strconv.FormatBool(cfg.ConsulReadOnly)))
 
-			response = append(response, fmt.Sprintf("window.NOMAD_ENABLE=%s", strconv.FormatBool(cfg.NomadEnable)))
+			response = append(response, fmt.Sprintf("window.NOMAD_ENABLED=%s", strconv.FormatBool(cfg.NomadEnable)))
 			response = append(response, fmt.Sprintf("window.NOMAD_READ_ONLY=%s", strconv.FormatBool(cfg.NomadReadOnly)))
+
+			enabledServices := make([]string, 0)
+			if cfg.ConsulEnable {
+				enabledServices = append(enabledServices, "'consul'")
+			}
+			if cfg.NomadEnable {
+				enabledServices = append(enabledServices, "'nomad'")
+			}
+
+			response = append(response, fmt.Sprintf("window.ENABLED_SERVICES=[%s]", strings.Join(enabledServices, ",")))
 			response = append(response, fmt.Sprintf("window.NOMAD_ADDR=\"%s\"", cfg.NomadAddress))
 
 			var endpointURL string

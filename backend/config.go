@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"syscall"
 )
 
@@ -21,6 +22,47 @@ var (
 	flagNewRelicLicense = flag.String("newrelic.license", "",
 		"The NewRelic license key. "+flagDefault(defaultConfig.NewRelicLicense))
 )
+
+// Config for the hashi-ui server
+type Config struct {
+	LogLevel      string
+	ProxyAddress  string
+	ListenAddress string
+
+	NewRelicAppName string
+	NewRelicLicense string
+
+	NomadEnable     bool
+	NomadAddress    string
+	NomadCACert     string
+	NomadClientCert string
+	NomadClientKey  string
+	NomadReadOnly   bool
+
+	ConsulEnable   bool
+	ConsulReadOnly bool
+	ConsulAddress  string
+}
+
+// DefaultConfig is the basic out-of-the-box configuration for hashi-ui
+func DefaultConfig() *Config {
+	return &Config{
+		LogLevel:      "info",
+		ListenAddress: "0.0.0.0:3000",
+
+		NewRelicAppName: "hashi-ui",
+
+		NomadReadOnly: false,
+		NomadAddress:  "http://127.0.0.1:4646",
+
+		ConsulReadOnly: false,
+		ConsulAddress:  "127.0.0.1:8500",
+	}
+}
+
+func flagDefault(value string) string {
+	return fmt.Sprintf("(default: \"%s\")", value)
+}
 
 // ParseAppEnvConfig ...
 func ParseAppEnvConfig(c *Config) {
