@@ -7,17 +7,19 @@ import { Grid, Row, Col } from 'react-flexbox-grid'
 import FontIcon from 'material-ui/FontIcon'
 import Subheader from 'material-ui/Subheader'
 import Paper from 'material-ui/Paper'
-import { red800, green800, orange800 } from 'material-ui/styles/colors'
+import { red500, green500, orange500 } from 'material-ui/styles/colors'
+import RaisedButton from 'material-ui/RaisedButton';
 import {
   WATCH_CONSUL_NODES, UNWATCH_CONSUL_NODES,
   WATCH_CONSUL_NODE, UNWATCH_CONSUL_NODE,
+  DEREGISTER_CONSUL_SERVICE_CHECK, DEREGISTER_CONSUL_SERVICE,
 } from '../sagas/event'
 
 class ConsulNodes extends Component {
 
   constructor (props) {
     super(props)
-    this._onClickService = this.monitorNode.bind(this)
+    this._onClickNode = this.monitorNode.bind(this)
   }
 
   componentDidMount() {
@@ -59,14 +61,54 @@ class ConsulNodes extends Component {
     this.props.router.push({ pathname: `/consul/${this.props.router.params.region}/nodes/${name}` })
   }
 
+  deregisterServiceCheck(nodeAddress, checkID) {
+    this.props.dispatch({ type: DEREGISTER_CONSUL_SERVICE_CHECK, payload: {nodeAddress, checkID} })
+  }
+
+  deregisterService(nodeAddress, serviceID) {
+    this.props.dispatch({ type: DEREGISTER_CONSUL_SERVICE, payload: {nodeAddress, serviceID} })
+  }
+
+  getServices() {
+    if (this.props.consulNode.Node === undefined) {
+      return []
+    }
+
+    return this.props.consulNode.Services
+  }
+
+  getServiceChecks(serviceId) {
+    if (this.props.consulNode.Node === undefined) {
+      return []
+    }
+
+    return this.props.consulNode.Checks.filter(check => serviceId == check.ServiceID)
+  }
+
+  getOrphanedChecks() {
+    if (this.props.consulNode.Node === undefined) {
+      return []
+    }
+
+    const services = this.props.consulNode.Services.map(service => service.Service)
+    return this.props.consulNode.Checks.filter(check => services.indexOf(check.ServiceName) === -1)
+  }
+
   render() {
+    let listStyle = {}
+    let services = this.getServices()
+
+    if (window.innerWidth < 800) {
+      listStyle = { maxHeight: 200, overflow: 'scroll' }
+    }
+
     return (
       <Grid fluid style={{ padding: 0 }}>
         <Row>
-          <Col key='navigation-pane' xs={ 6 } sm={ 6 } md={ 4 } lg={ 4 }>
+          <Col key='navigation-pane' xs={ 12 } sm={ 12 } md={ 4 } lg={ 4 }>
             <Subheader>Available Nodes</Subheader>
             <Paper>
-              <List>
+              <List style={ listStyle }>
                 {
                   this.props.consulNodes.map(node => {
                     let icon = undefined
@@ -82,11 +124,11 @@ class ConsulNodes extends Component {
                     })
 
                     if (counters.critical) {
-                      icon = <FontIcon color={ red800 } className='material-icons'>error</FontIcon>
+                      icon = <FontIcon color={ red500 } className='material-icons'>error</FontIcon>
                     } else if (counters.warning) {
-                      icon = <FontIcon color={ orange800 } className='material-icons'>warning</FontIcon>
+                      icon = <FontIcon color={ orange500 } className='material-icons'>warning</FontIcon>
                     } else {
-                      icon = <FontIcon color={ green800 } className='material-icons'>check</FontIcon>
+                      icon = <FontIcon color={ green500 } className='material-icons'>check</FontIcon>
                     }
 
                     let secondaryText = `Passing: ${counters.passing}`
@@ -95,7 +137,7 @@ class ConsulNodes extends Component {
 
                     return (
                       <ListItem
-                        onTouchTap={ () => this._onClickService(node.Node) }
+                        onTouchTap={ () => this._onClickNode(node.Node) }
                         primaryText={ node.Node }
                         secondaryText={ secondaryText }
                         leftIcon={ icon  }
@@ -106,42 +148,51 @@ class ConsulNodes extends Component {
               </List>
             </Paper>
           </Col>
-          <Col key='value-pane' xs={ 6 } sm={ 6 } md={ 8 } lg={ 8 }>
+          <Col key='value-pane' xs={ 12 } sm={ 12 } md={ 8 } lg={ 8 }>
             <Subheader>
-              { this.props.routeParams.name ? this.props.routeParams.name : 'Please select a node to the left' }
+              { this.props.consulNode.Node
+                ? `Node: ${this.props.consulNode.Node} | IP: ${this.props.consulNode.Address}`
+                : 'Please select a node to the left'
+              }
             </Subheader>
 
-            { this.props.consulService.map((entry, index) => {
-
+            { services.map((entry, index) => {
               const counters = {
                 passing : 0,
                 warning : 0,
                 critical: 0,
               }
 
-              const checks = entry.Checks.map(check => {
+              const checks = this.getServiceChecks(entry.ID).map(check => {
                 counters[check.Status]++
 
                 let icon = undefined
 
                 if (check.Status === 'critical') {
-                  icon = <FontIcon color={ red800 } className='material-icons'>error</FontIcon>
+                  icon = <FontIcon color={ red500 } className='material-icons'>error</FontIcon>
                 } else if (check.Status === 'warning') {
-                  icon = <FontIcon color={ orange800 } className='material-icons'>warning</FontIcon>
+                  icon = <FontIcon color={ orange500 } className='material-icons'>warning</FontIcon>
                 } else {
-                  icon = <FontIcon color={ green800 } className='material-icons'>check</FontIcon>
+                  icon = <FontIcon color={ green500 } className='material-icons'>check</FontIcon>
                 }
 
                 return (
                   <Card>
                     <CardHeader
                       title={ `${check.Name} ${check.Notes ? (' | ' + check.Notes) : '' }` }
-//                    subtitle={ `Status: ${check.Status}` }
                       avatar={ icon }
                       actAsExpander
                       showExpandableButton
                     />
                     <CardText expandable>
+                      <strong>CheckID:</strong>
+                      <br />
+                      <div className='content-file small'>
+                        { check.CheckID }
+                      </div>
+
+                      <br />
+
                       <strong>Output:</strong>
                       <br />
                       <div className='content-file small'>
@@ -150,11 +201,14 @@ class ConsulNodes extends Component {
 
                       <br />
 
-                      <strong>CheckID:</strong>
-                      <br />
-                      <div className='content-file small'>
-                        { check.CheckID }
-                      </div>
+                      <RaisedButton
+                        label='Deregister'
+                        labelColor='white'
+                        backgroundColor={ red500 }
+                        style={{ marginRight: 12 }}
+                        onClick={ () => { this.deregisterServiceCheck(this.props.consulNode.Address, check.CheckID) } }
+                      />
+
                     </CardText>
                   </Card>
                 )
@@ -163,17 +217,81 @@ class ConsulNodes extends Component {
               let secondaryText = `Passing: ${counters.passing}`
               secondaryText += ` / Warning: ${counters.warning}`
               secondaryText += ` / Critical: ${counters.critical}`
-              secondaryText += ` | Tags: ${(entry.Service.Tags ? entry.Service.Tags : []).join(", ")}`;
+              secondaryText += ` / ID: ${entry.ID}`
+
+              if (entry.Tags && entry.Tags.length > 0) {
+                secondaryText += ` | Tags: ${entry.Tags.join(", ")}`
+              }
 
               return (
                 <Card style={{ marginTop: index > 0 ? '1em' : 0 }}>
-                  <CardHeader title={ `${entry.Node.Node} (${entry.Node.Address})` } subtitle={ secondaryText } />
+                  <CardHeader title={ `Service: ${entry.Service}` } subtitle={ secondaryText } />
+                  <div style={{ float: 'right', marginTop: -60 }}>
+                    <RaisedButton
+                      label='Deregister'
+                      labelColor='white'
+                      backgroundColor={ red500 }
+                      style={{ marginRight: 12 }}
+                      onClick={ () => { this.deregisterService(this.props.consulNode.Address, entry.ID) } }
+                      />
+                  </div>
                   <CardText>
                     { checks }
                   </CardText>
                 </Card>
               )
             }) }
+
+            { services.length > 0 ? <div style={{ marginTop: '1em' }} /> : null }
+
+            { this.getOrphanedChecks().map(check => {
+              let icon
+
+              if (check.Status === 'critical') {
+                icon = <FontIcon color={ red500 } className='material-icons'>error</FontIcon>
+              } else if (check.Status === 'warning') {
+                icon = <FontIcon color={ orange500 } className='material-icons'>warning</FontIcon>
+              } else {
+                icon = <FontIcon color={ green500 } className='material-icons'>check</FontIcon>
+              }
+
+              return (
+                <Card>
+                  <CardHeader
+                    title={ `Check: ${check.Name} ${check.Notes ? (' | ' + check.Notes) : '' }` }
+                    avatar={ icon }
+                    actAsExpander
+                    showExpandableButton
+                  />
+                  <CardText expandable>
+                    <strong>CheckID:</strong>
+                    <br />
+                    <div className='content-file small'>
+                      { check.CheckID }
+                    </div>
+
+                    <br />
+
+                    <strong>Output:</strong>
+                    <br />
+                    <div className='content-file small'>
+                      { check.Output ? check.Output.trim() : '- no output -' }
+                    </div>
+
+                    <br />
+
+                    <RaisedButton
+                      label='Deregister'
+                      labelColor='white'
+                      backgroundColor={ red500 }
+                      style={{ marginRight: 12 }}
+                      onClick={ () => { this.deregisterServiceCheck(this.props.consulNode.Address, check.CheckID) } }
+                    />
+
+                  </CardText>
+                </Card>
+              )
+            })}
           </Col>
         </Row>
       </Grid>
@@ -181,19 +299,19 @@ class ConsulNodes extends Component {
   }
 }
 
-function mapStateToProps ({ consulNodes, consulService }) {
-  return { consulNodes, consulService }
+function mapStateToProps ({ consulNodes, consulNode }) {
+  return { consulNodes, consulNode }
 }
 
 ConsulNodes.defaultProps = {
   consulNodes: [],
-  ConsulService: [],
+  consulNode: {},
 }
 
 ConsulNodes.propTypes = {
   dispatch: PropTypes.func.isRequired,
   consulNodes: PropTypes.array.isRequired,
-  consulService: PropTypes.array.isRequired,
+  consulNode: PropTypes.object.isRequired,
   router: PropTypes.object.isRequired,
   routeParams: PropTypes.object.isRequired,
 }

@@ -128,9 +128,6 @@ func (c *ConsulRegion) watchServices() {
 
 		c.broadcastChannels.services.Update(&Action{Type: fetchedConsulServices, Payload: services, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
-
-		// don't refresh data more frequent than every 5s, since busy clusters update every second or faster
-		//time.Sleep(5 * time.Second)
 	}
 }
 
@@ -164,8 +161,5 @@ func (c *ConsulRegion) watchNodes() {
 
 		c.broadcastChannels.nodes.Update(&Action{Type: fetchedConsulNodes, Payload: nodes, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
-
-		// don't refresh data more frequent than every 5s, since busy clusters update every second or faster
-		//time.Sleep(5 * time.Second)
 	}
 }

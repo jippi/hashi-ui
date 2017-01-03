@@ -157,7 +157,7 @@ func (c *ConsulConnection) process(action Action) {
 	case watchConsulNode:
 		go c.watchConsulNode(action)
 	case unwatchConsulNode:
-		c.watches.Remove(action.Payload.(string))
+		c.watches.Remove("consul/node/" + action.Payload.(string))
 
 	//
 	// Watch a KV path
@@ -309,53 +309,52 @@ func (c *ConsulConnection) watchConsulService(action Action) {
 
 func (c *ConsulConnection) watchConsulNode(action Action) {
 	nodeID := action.Payload.(string)
+	key := "consul/node/" + nodeID
 
-	if c.watches.Has(nodeID) {
-		c.Warningf("Connection is already subscribed to node %s", nodeID)
+	if c.watches.Has(key) {
+		c.Warningf("Connection is already subscribed to %s", key)
 		return
 	}
 
 	defer func() {
-		c.watches.Remove(nodeID)
-		c.Infof("Stopped watching node with id: %s", nodeID)
+		c.watches.Remove(key)
+		c.Infof("Stopped watching %s", key)
 	}()
-	c.watches.Add(nodeID)
+	c.watches.Add(key)
 
-	c.Infof("Started watching node with id: %s", nodeID)
+	c.Infof("Started watching %s", key)
 
-	q := &api.QueryOptions{WaitIndex: 1}
+	raw := c.region.Client.Raw()
+	q := &api.QueryOptions{WaitIndex: 0}
+
 	for {
-		select {
-		case <-c.destroyCh:
-			return
+		var node ConsulInternalNode
 
-		default:
-			node, meta, err := c.region.Client.Health().Node(nodeID, q)
-			if err != nil {
-				c.Errorf("connection: unable to fetch consul node info: %s", err)
-				time.Sleep(10 * time.Second)
-				continue
-			}
-
-			if !c.watches.Has(nodeID) {
-				return
-			}
-
-			remoteWaitIndex := meta.LastIndex
-			localWaitIndex := q.WaitIndex
-
-			// only broadcast if the LastIndex has changed
-			if remoteWaitIndex == localWaitIndex {
-				time.Sleep(5 * time.Second)
-				continue
-			}
-
-			c.send <- &Action{Type: fetchedConsulNode, Payload: node, Index: remoteWaitIndex}
-			q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 120 * time.Second}
-
-			// don't refresh data more frequent than every 5s, since busy clusters update every second or faster
-			time.Sleep(5 * time.Second)
+		meta, err := raw.Query(fmt.Sprintf("/v1/internal/ui/node/%s", nodeID), &node, q)
+		if err != nil {
+			logger.Errorf("watch: unable to fetch node/%s: %s", nodeID, err)
+			time.Sleep(10 * time.Second)
+			continue
 		}
+
+		remoteWaitIndex := meta.LastIndex
+		localWaitIndex := q.WaitIndex
+
+		// only work if the WaitIndex have changed
+		if remoteWaitIndex == localWaitIndex {
+			logger.Debugf("Node/%s index is unchanged (%d == %d)", nodeID, localWaitIndex, remoteWaitIndex)
+			continue
+		}
+
+		logger.Debugf("Node/%s index is changed (%d <> %d)", nodeID, localWaitIndex, remoteWaitIndex)
+
+		if !c.watches.Has(key) {
+			c.Warningf("Connection is not subscribed to %s", key)
+			return
+		}
+
+		c.send <- &Action{Type: fetchedConsulNode, Payload: node, Index: remoteWaitIndex}
+		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }
 

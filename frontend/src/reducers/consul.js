@@ -93,14 +93,14 @@ export function ConsulNodes (state = [], action) {
 
 }
 
-export function ConsulNode (state = [], action) {
+export function ConsulNode (state = {}, action) {
   switch (action.type) {
 
   case FETCHED_CONSUL_NODE:
     return action.payload
 
   case UNWATCH_CONSUL_NODE:
-    return []
+    return {}
 
   default:
 
