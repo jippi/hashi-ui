@@ -7,16 +7,15 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/imkira/go-observer"
 	"github.com/newrelic/go-agent"
 	"github.com/op/go-logging"
 )
 
 var logger = logging.MustGetLogger("hashi-ui")
+var defaultConfig = DefaultConfig()
 
 func startLogging(logLevel string) {
 	logBackend := logging.NewLogBackend(os.Stderr, "", 0)
@@ -39,166 +38,20 @@ func startLogging(logLevel string) {
 	logging.SetBackend(logBackendFormattedAndLeveled)
 }
 
-// Config for the hashi-ui server
-type Config struct {
-	ReadOnly        bool
-	Address         string
-	ListenAddress   string
-	ProxyAddress    string
-	LogLevel        string
-	NewRelicAppName string
-	NewRelicLicense string
-	CACert          string
-	ClientCert      string
-	ClientKey       string
-}
-
-// DefaultConfig is the basic out-of-the-box configuration for hashi-ui
-func DefaultConfig() *Config {
-	return &Config{
-		ReadOnly:        false,
-		Address:         "http://127.0.0.1:4646",
-		ListenAddress:   "0.0.0.0:3000",
-		LogLevel:        "info",
-		NewRelicAppName: "hashi-ui",
-	}
-}
-
-func flagDefault(value string) string {
-	return fmt.Sprintf("(default: \"%s\")", value)
-}
-
-var (
-	defaultConfig = DefaultConfig()
-
-	flagReadOnly = flag.Bool("nomad.read-only", false, "Whether Nomad should be allowed to modify state. "+
-		"Overrides the NOMAD_READ_ONLY environment variable if set. "+flagDefault(strconv.FormatBool(defaultConfig.ReadOnly)))
-
-	flagAddress = flag.String("nomad.address", "", "The address of the Nomad server. "+
-		"Overrides the NOMAD_ADDR environment variable if set. "+flagDefault(defaultConfig.Address))
-
-	flagNomadCACert = flag.String("nomad.ca_cert", "", "Path to the Nomad TLS CA Cert File. "+
-		"Overrides the NOMAD_CACERT environment variable if set. "+flagDefault(defaultConfig.CACert))
-
-	flagNomadClientCert = flag.String("nomad.client_cert", "", "Path to the Nomad Client Cert File. "+
-		"Overrides the NOMAD_CLIENT_CERT environment variable if set. "+flagDefault(defaultConfig.ClientCert))
-
-	flagNomadClientKey = flag.String("nomad.client_key", "", "Path to the Nomad Client Key File. "+
-		"Overrides the NOMAD_CLIENT_KEY environment variable if set. "+flagDefault(defaultConfig.ClientKey))
-
-	flagListenAddress = flag.String("web.listen-address", "",
-		"The address on which to expose the web interface. "+flagDefault(defaultConfig.ListenAddress))
-
-	flagProxyAddress = flag.String("web.proxy-address", "",
-		"The address used on an external proxy (exmaple: example.com/nomad) "+flagDefault(defaultConfig.ProxyAddress))
-
-	flagLogLevel = flag.String("log.level", "",
-		"The log level for hashi-ui to run under. "+flagDefault(defaultConfig.LogLevel))
-
-	flagNewRelicAppName = flag.String("newrelic.app_name", "hashi-ui",
-		"The NewRelic app name. "+flagDefault(defaultConfig.NewRelicAppName))
-
-	flagNewRelicLicense = flag.String("newrelic.license", "",
-		"The NewRelic license key. "+flagDefault(defaultConfig.NewRelicLicense))
-)
-
 // Parse the env and cli flags and store the outcome in a Config struct
 func (c *Config) Parse() {
 	flag.Parse()
 
-	// env
+	ParseAppEnvConfig(c)
+	ParseAppFlagConfig(c)
 
-	readOnly, ok := syscall.Getenv("NOMAD_READ_ONLY")
-	if ok {
-		c.ReadOnly = readOnly != "0"
-	}
+	ParseNomadEnvConfig(c)
+	ParseNomadFlagConfig(c)
 
-	address, ok := syscall.Getenv("NOMAD_ADDR")
-	if ok {
-		c.Address = address
-	}
+	ParseConsulEnvConfig(c)
+	ParseConsulFlagConfig(c)
 
-	listenPort, ok := syscall.Getenv("NOMAD_PORT_http")
-	if ok {
-		c.ListenAddress = fmt.Sprintf("0.0.0.0:%s", listenPort)
-	}
-
-	proxyAddress, ok := syscall.Getenv("NOMAD_PROXY_ADDRESS")
-	if ok {
-		c.ProxyAddress = proxyAddress
-	}
-
-	logLevel, ok := syscall.Getenv("NOMAD_LOG_LEVEL")
-	if ok {
-		c.LogLevel = logLevel
-	}
-
-	newRelicAppName, ok := syscall.Getenv("NEWRELIC_APP_NAME")
-	if ok {
-		c.NewRelicAppName = newRelicAppName
-	}
-
-	newRelicLicense, ok := syscall.Getenv("NEWRELIC_LICENSE")
-	if ok {
-		c.NewRelicLicense = newRelicLicense
-	}
-
-	nomadCACert, ok := syscall.Getenv("NOMAD_CACERT")
-	if ok {
-		c.CACert = nomadCACert
-	}
-
-	nomadClientCert, ok := syscall.Getenv("NOMAD_CLIENT_CERT")
-	if ok {
-		c.ClientCert = nomadClientCert
-	}
-
-	nomadClientKey, ok := syscall.Getenv("NOMAD_CLIENT_KEY")
-	if ok {
-		c.ClientKey = nomadClientKey
-	}
-
-	// flags
-
-	if *flagReadOnly {
-		c.ReadOnly = *flagReadOnly
-	}
-
-	if *flagAddress != "" {
-		c.Address = *flagAddress
-	}
-
-	if *flagListenAddress != "" {
-		c.ListenAddress = *flagListenAddress
-	}
-
-	if *flagProxyAddress != "" {
-		c.ProxyAddress = *flagProxyAddress
-	}
-
-	if *flagLogLevel != "" {
-		c.LogLevel = *flagLogLevel
-	}
-
-	if *flagNewRelicAppName != "" {
-		c.NewRelicAppName = *flagNewRelicAppName
-	}
-
-	if *flagNewRelicLicense != "" {
-		c.NewRelicLicense = *flagNewRelicLicense
-	}
-
-	if *flagNomadCACert != "" {
-		c.CACert = *flagNomadCACert
-	}
-
-	if *flagNomadClientCert != "" {
-		c.ClientCert = *flagNomadClientCert
-	}
-
-	if *flagNomadClientKey != "" {
-		c.ClientKey = *flagNomadClientKey
-	}
+	ParseNewRelicConfig(c)
 }
 
 func main() {
@@ -220,93 +73,84 @@ func main() {
 
 	startLogging(cfg.LogLevel)
 
-	logger.Infof("----------------------------------------------------------------------------")
-	logger.Infof("|                             NOMAD UI                                     |")
-	logger.Infof("----------------------------------------------------------------------------")
-
-	if cfg.ReadOnly {
-		logger.Infof("| nomad.read-only     : %-50s |", "Yes")
-	} else {
-		logger.Infof("| nomad.read-only     : %-50s |", "No (hashi-ui can change nomad state)")
-	}
-
-	logger.Infof("| nomad.address       : %-50s |", cfg.Address)
-	logger.Infof("| nomad.ca_cert       : %-50s |", cfg.CACert)
-	logger.Infof("| nomad.client_cert   : %-50s |", cfg.ClientCert)
-	logger.Infof("| nomad.client_key    : %-50s |", cfg.ClientKey)
-	logger.Infof("| web.listen-address  : http://%-43s |", cfg.ListenAddress)
-	logger.Infof("| web.proxy-address   : %-50s |", cfg.ProxyAddress)
-	logger.Infof("| log.level           : %-50s |", cfg.LogLevel)
+	logger.Infof("-----------------------------------------------------------------------------")
+	logger.Infof("|                             NOMAD UI                                      |")
+	logger.Infof("-----------------------------------------------------------------------------")
+	logger.Infof("| listen-address  	: http://%-43s |", cfg.ListenAddress)
+	logger.Infof("| proxy-address   	: %-50s |", cfg.ProxyAddress)
+	logger.Infof("| log-level       	: %-50s |", cfg.LogLevel)
 
 	if cfg.NewRelicAppName != "" && cfg.NewRelicLicense != "" {
 		logger.Infof("| newrelic.app_name   : %-50s |", cfg.NewRelicAppName)
 		logger.Infof("| newrelic.license    : %-50s |", strings.Repeat("*", len(cfg.NewRelicLicense)))
 	}
 
-	logger.Infof("----------------------------------------------------------------------------")
+	// Nomad
+	logger.Infof("| nomad.enable     	: %-50t |", cfg.NomadEnable)
+	if cfg.NomadReadOnly {
+		logger.Infof("| nomad.read-only       : %-50s |", "Yes")
+	} else {
+		logger.Infof("| nomad.read-only       : %-50s |", "No (Hashi-UI can change Nomad state)")
+	}
+	logger.Infof("| nomad.address         : %-50s |", cfg.NomadAddress)
+	logger.Infof("| nomad.ca_cert         : %-50s |", cfg.NomadCACert)
+	logger.Infof("| nomad.client_cert     : %-50s |", cfg.NomadClientCert)
+	logger.Infof("| nomad.client_key      : %-50s |", cfg.NomadClientKey)
+
+	// Consul
+	logger.Infof("| consul.enable     	: %-50t |", cfg.ConsulEnable)
+	if cfg.ConsulReadOnly {
+		logger.Infof("| consul.read-only     : %-50s |", "Yes")
+	} else {
+		logger.Infof("| consul.read-only     : %-50s |", "No (Hashi-UI can change Consul state)")
+	}
+	logger.Infof("| consul.address       : %-50s |", cfg.ConsulAddress)
+
+	logger.Infof("-----------------------------------------------------------------------------")
 	logger.Infof("")
 
-	nomadClient, err := CreateNomadRegionClient(cfg, "")
-	if err != nil {
-		logger.Fatalf("Could not create Nomad API Client: %s", err)
-		return
+	if !cfg.NomadEnable && !cfg.ConsulEnable {
+		logger.Fatal("Please enable at least Consul (--consul.enable) or Nomad (--consul.enable)")
 	}
-
-	regions, err := nomadClient.Regions().List()
-	if err != nil {
-		logger.Fatalf("Could not fetch nomad regions from API: %s", err)
-		return
-	}
-
-	regionChannels := NomadRegionChannels{}
-	regionClients := NomadRegionClients{}
-
-	for _, region := range regions {
-		logger.Infof("Starting handlers for region: %s", region)
-
-		channels := &NomadRegionBroadcastChannels{}
-		channels.allocations = observer.NewProperty(&Action{})
-		channels.allocationsShallow = observer.NewProperty(&Action{})
-		channels.evaluations = observer.NewProperty(&Action{})
-		channels.jobs = observer.NewProperty(&Action{})
-		channels.members = observer.NewProperty(&Action{})
-		channels.nodes = observer.NewProperty(&Action{})
-		channels.clusterStatistics = observer.NewProperty(&Action{})
-
-		regionChannels[region] = channels
-
-		regionClient, clientErr := CreateNomadRegionClient(cfg, region)
-		if clientErr != nil {
-			logger.Fatalf("  -> Could not create client: %s", clientErr)
-			return
-		}
-
-		logger.Infof("  -> Connecting to nomad")
-		nomad, nomadErr := NewNomadRegion(cfg, regionClient, channels)
-		if nomadErr != nil {
-			logger.Fatalf("    -> Could not create client: %s", nomadErr)
-			return
-		}
-
-		regionClients[region] = nomad
-
-		logger.Info("  -> Starting resource watchers")
-		nomad.StartWatchers()
-	}
-
-	cluster := NewNomadCluster(nomadClient, &regionClients, &regionChannels)
-	cluster.StartWatchers()
-
-	hub := NewNomadHub(cluster)
-	go hub.Run()
 
 	myAssetFS := assetFS()
-
 	router := mux.NewRouter()
-	router.HandleFunc("/ws", hub.Handler)
-	router.HandleFunc("/ws/{service}", hub.Handler)
-	router.HandleFunc("/ws/{service}/{region}", hub.Handler)
-	router.HandleFunc("/nomad/{region}/download/{path:.*}", hub.downloadFile)
+
+	if cfg.NomadEnable {
+		nomadHub, nomadSuccess := InitializeNomad(cfg)
+		if !nomadSuccess {
+			logger.Fatalf("Failed to start Nomad hub, please check your configuration")
+		}
+		logger.Infof("Nomad client successfully initialized")
+
+		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			logger.Infof("Redirecting / to /nomad")
+			http.Redirect(w, r, "/nomad", 302)
+		})
+
+		router.HandleFunc("/ws/nomad", nomadHub.Handler)
+		router.HandleFunc("/ws/nomad/{region}", nomadHub.Handler)
+		router.HandleFunc("/nomad/{region}/download/{path:.*}", nomadHub.downloadFile)
+	}
+
+	if cfg.ConsulEnable {
+		consulHub, consulSuccess := InitializeConsul(cfg)
+		if !consulSuccess {
+			logger.Fatalf("Failed to start Consul hub, please check your configuration")
+		}
+
+		if !cfg.NomadEnable {
+			router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+				logger.Infof("Redirecting / to /consul")
+				http.Redirect(w, r, "/consul", 302)
+			})
+		}
+
+		logger.Infof("Consul client successfully initialized")
+		router.HandleFunc("/ws/consul", consulHub.Handler)
+		router.HandleFunc("/ws/consul/{region}", consulHub.Handler)
+	}
+
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		responseFile := "/index.html"
 
@@ -320,9 +164,22 @@ func main() {
 
 		if idx := strings.Index(r.URL.Path, "config.js"); idx != -1 {
 			response := make([]string, 0)
-			response = append(response, fmt.Sprintf("window.NOMAD_READ_ONLY=%s", strconv.FormatBool(cfg.ReadOnly)))
-			response = append(response, fmt.Sprintf("window.NOMAD_ADDR=\"%s\"", cfg.Address))
-			response = append(response, fmt.Sprintf("window.NOMAD_LOG_LEVEL=\"%s\"", cfg.LogLevel))
+			response = append(response, fmt.Sprintf("window.CONSUL_ENABLED=%s", strconv.FormatBool(cfg.ConsulEnable)))
+			response = append(response, fmt.Sprintf("window.CONSUL_READ_ONLY=%s", strconv.FormatBool(cfg.ConsulReadOnly)))
+
+			response = append(response, fmt.Sprintf("window.NOMAD_ENABLED=%s", strconv.FormatBool(cfg.NomadEnable)))
+			response = append(response, fmt.Sprintf("window.NOMAD_READ_ONLY=%s", strconv.FormatBool(cfg.NomadReadOnly)))
+
+			enabledServices := make([]string, 0)
+			if cfg.ConsulEnable {
+				enabledServices = append(enabledServices, "'consul'")
+			}
+			if cfg.NomadEnable {
+				enabledServices = append(enabledServices, "'nomad'")
+			}
+
+			response = append(response, fmt.Sprintf("window.ENABLED_SERVICES=[%s]", strings.Join(enabledServices, ",")))
+			response = append(response, fmt.Sprintf("window.NOMAD_ADDR=\"%s\"", cfg.NomadAddress))
 
 			var endpointURL string
 			if cfg.ProxyAddress != "" {

@@ -40,6 +40,11 @@ import ServerRaw from './components/ServerRaw/ServerRaw'
 
 import SelectNomadRegion from './containers/select_nomad_region'
 
+import ConsulKV from './containers/consul_kv'
+import ConsulServices from './containers/consul_services'
+import ConsulNodes from './containers/consul_nodes'
+import SelectConsulRegion from './containers/select_consul_region'
+
 const AppRouter = ({ history }) =>
   <Router history={ history }>
     <Route path='/' component={ App }>
@@ -57,6 +62,20 @@ const AppRouter = ({ history }) =>
       <Redirect from='/evaluations/**' to='/nomad' />
 
       <IndexRedirect to='/nomad' />
+
+      // Consul
+      <Route path='/consul' component={ SelectConsulRegion } />
+      <Redirect from='/consul/:region' to='/consul/:region/services' />
+      <Route path='/consul/:region/kv' component={ ConsulKV } />
+      <Route path='/consul/:region/kv/*' component={ ConsulKV } />
+
+      <Route path='/consul/:region/nodes' component={ ConsulNodes } />
+      <Route path='/consul/:region/nodes/:name' component={ ConsulNodes } />
+
+      <Route path='/consul/:region/services' component={ ConsulServices } />
+      <Route path='/consul/:region/services/:name' component={ ConsulServices } />
+
+      // Nomad
       <Route path='/nomad' component={ SelectNomadRegion } />
       <Redirect from='/nomad/:region' to='/nomad/:region/cluster' />
       <Route path='/nomad/:region/cluster' component={ Cluster } />

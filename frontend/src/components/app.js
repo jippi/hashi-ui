@@ -1,24 +1,67 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import { red500, green800, green900 } from 'material-ui/styles/colors'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import AppBar from 'material-ui/AppBar';
-import AppTopbar from './AppTopbar/AppTopbar'
+import AppBar from 'material-ui/AppBar'
+import Drawer from 'material-ui/Drawer'
+import MenuItem from 'material-ui/MenuItem'
+import NomadTopbar from './NomadTopbar/NomadTopbar'
+import ConsulTopbar from './ConsulTopbar/ConsulTopbar'
 import NotificationsBar from './NotificationsBar/NotificationsBar'
-
-const muiTheme = getMuiTheme({
-  palette: {
-    primary1Color: '#4b9a7d',
-    primary2Color: green800,
-    primary3Color: green900
-  },
-  appBar: {
-    height: 50
-  }
-})
+import { NOMAD_COLOR, CONSUL_COLOR } from '../config.js'
+import { APP_DRAWER_OPEN, APP_DRAWER_CLOSE, UNKNOWN_CONSUL_REGION, UNKNOWN_NOMAD_REGION } from '../sagas/event'
 
 class App extends Component {
+
+  DrawerRequestedChange(open) {
+    if (!open) {
+      this.props.dispatch({ type: APP_DRAWER_CLOSE })
+    } else {
+      this.props.dispatch({ type: APP_DRAWER_OPEN })
+    }
+  }
+
+  changeToApp(app) {
+    this.props.dispatch({ type: APP_DRAWER_CLOSE })
+
+    switch (app) {
+    case 'consul':
+      this.props.dispatch({ type: UNKNOWN_CONSUL_REGION })
+      break
+    case 'nomad':
+      this.props.dispatch({ type: UNKNOWN_NOMAD_REGION })
+      break
+    }
+  }
+
+  capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  appDrawer() {
+    if (window.ENABLED_SERVICES.length < 2) {
+      return null
+    }
+
+    return (
+      <Drawer
+        docked={ false }
+        open={ this.props.appDrawer }
+        onRequestChange={ open => { this.DrawerRequestedChange(open) } }
+      >
+        { window.ENABLED_SERVICES.map(service => {
+          return (
+            <MenuItem onTouchTap={ () => { this.changeToApp(service) } }>
+              { this.capitalizeFirstLetter(service) }
+            </MenuItem>
+          )
+        })}
+      </Drawer>
+    )
+
+  }
 
   render () {
     let uncaughtExceptionBar = undefined;
@@ -43,12 +86,36 @@ class App extends Component {
       />
     }
 
+    const muiTheme = {
+      palette: {
+        primary1Color: NOMAD_COLOR,
+        primary2Color: green800,
+        primary3Color: green900
+      },
+      appBar: {
+        height: 50
+      }
+    }
+
+    let topbar = undefined;
+
+    if (this.props.router.location.pathname.startsWith('/consul')) {
+      muiTheme.palette.primary1Color = CONSUL_COLOR
+      topbar = <ConsulTopbar { ...this.props } />
+    }
+
+    if (this.props.router.location.pathname.startsWith('/nomad')) {
+      muiTheme.palette.primary1Color = NOMAD_COLOR
+      topbar = <NomadTopbar { ...this.props } />
+    }
+
     return (
-      <MuiThemeProvider muiTheme={ muiTheme }>
+      <MuiThemeProvider muiTheme={ getMuiTheme(muiTheme) }>
         <div>
+          { this.appDrawer() }
           <NotificationsBar />
           { uncaughtExceptionBar }
-          <AppTopbar { ...this.props } />
+          { topbar }
           { this.props.children }
         </div>
       </MuiThemeProvider>
@@ -56,22 +123,26 @@ class App extends Component {
   }
 }
 
-function mapStateToProps ({ appError, errorNotification, successNotification }) {
-  return { appError, errorNotification, successNotification }
+function mapStateToProps ({ appError, errorNotification, successNotification, appDrawer }) {
+  return { appError, errorNotification, successNotification, appDrawer }
 }
 
 App.defaultProps = {
   successNotification: undefined,
   errorNotification: undefined,
+  appDrawer: false,
 }
 
 App.propTypes = {
   children: PropTypes.object.isRequired,
+  appDrawer: PropTypes.bool.isRequired,
   uncaughtException: PropTypes.object,
   successNotification: PropTypes.string,
   errorNotification: PropTypes.string,
   appError: PropTypes.object,
   route: PropTypes.object.isRequired,
+  router: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
 }
 
-export default connect(mapStateToProps)(App)
+export default connect(mapStateToProps)(withRouter(App))

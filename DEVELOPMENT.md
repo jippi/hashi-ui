@@ -1,3 +1,11 @@
+# Development flow and help
+
+- [Assumptions](#assumptions)
+  * [Go configuration](#go-configuration)
+- [Workflow](#workflow)
+- [Development](#development)
+- [Building](#building)
+
 # Assumptions
 
 The following assumptions are made for local development:
@@ -6,6 +14,20 @@ The following assumptions are made for local development:
 - `go` in a recent version (I use `1.7.3` but older 7.x might also work)
 - `node` in a recent version (I use `7.2.1` but older versions should work too)
 - `yarn` is installed (`brew install yarn` on OS X)
+
+## Go configuration
+
+I use environment like this for Go development
+
+```
+export GOPATH=$HOME/src/go-lang
+export PATH=$PATH:$GOPATH/bin
+
+mkdir -p ~/src/go-lang/src/github.com/jippi
+cd ~/src/go-lang/src/github.com/jippi
+git clone git@github.com:jippi/hashi-ui.git
+cd hashi-ui
+```
 
 # Workflow
 
@@ -41,3 +63,29 @@ update your browser with any JS changes you do in your editor on file save.
 
 If your code involve Go changes as well, a workflow like the following is fairly efficient (from the `backend/`) directory
 `KEEP_BINDATA_ASSETFS=1 make -j rebuild && NOMAD_LOG_LEVEL=debug NOMAD_ADDR=http://localhost:4646 ./build/hashi-ui-darwin-amd64`
+
+
+# Building
+
+Project is built using make:
+
+```
+make
+```
+
+The resulting files will be stored in `build/` folder:
+
+```
+build/webpack              - frontend webapp that can be served by any webserver
+build/hashi-ui-<os>-<arch> - hashi-ui binary containing both the backend server and frontend webapp
+```
+
+By default it builds binary for host system. You can cross-compile and
+build binaries for different systems and architectures as well:
+
+```
+GOBUILD='linux-amd64 windows-386 <GOOS>-<GOARCH>' make
+```
+
+See [docs](https://golang.org/doc/install/source) for the whole list of available `GOOS` and `GOARCH`
+values.

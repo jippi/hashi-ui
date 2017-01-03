@@ -31,10 +31,10 @@ const (
 	maxFileSize int64 = defaultTailLines * bytesToLines
 )
 
-// Connection monitors the websocket connection. It processes any action
+// NomadConnection monitors the websocket connection. It processes any action
 // received on the websocket and sends out actions on Nomad state changes. It
 // maintains a set to keep track of the running watches.
-type Connection struct {
+type NomadConnection struct {
 	ID                uuid.UUID
 	shortID           string
 	socket            *websocket.Conn
@@ -47,11 +47,11 @@ type Connection struct {
 	broadcastChannels *NomadRegionBroadcastChannels
 }
 
-// NewConnection creates a new connection.
-func NewConnection(hub *NomadHub, socket *websocket.Conn, nomadRegion *NomadRegion, channels *NomadRegionBroadcastChannels) *Connection {
+// NewNomadConnection creates a new connection.
+func NewNomadConnection(hub *NomadHub, socket *websocket.Conn, nomadRegion *NomadRegion, channels *NomadRegionBroadcastChannels) *NomadConnection {
 	connectionID := uuid.NewV4()
 
-	return &Connection{
+	return &NomadConnection{
 		ID:                connectionID,
 		shortID:           fmt.Sprintf("%s", connectionID)[0:8],
 		watches:           set.New(),
@@ -66,30 +66,30 @@ func NewConnection(hub *NomadHub, socket *websocket.Conn, nomadRegion *NomadRegi
 }
 
 // Warningf is a stupid wrapper for logger.Warningf
-func (c *Connection) Warningf(format string, args ...interface{}) {
+func (c *NomadConnection) Warningf(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Warningf(message, args...)
 }
 
 // Errorf is a stupid wrapper for logger.Errorf
-func (c *Connection) Errorf(format string, args ...interface{}) {
+func (c *NomadConnection) Errorf(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Errorf(message, args...)
 }
 
 // Infof is a stupid wrapper for logger.Infof
-func (c *Connection) Infof(format string, args ...interface{}) {
+func (c *NomadConnection) Infof(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Infof(message, args...)
 }
 
 // Debugf is a stupid wrapper for logger.Debugf
-func (c *Connection) Debugf(format string, args ...interface{}) {
+func (c *NomadConnection) Debugf(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Debugf(message, args...)
 }
 
-func (c *Connection) writePump() {
+func (c *NomadConnection) writePump() {
 	defer func() {
 		c.socket.Close()
 	}()
@@ -110,7 +110,7 @@ func (c *Connection) writePump() {
 	}
 }
 
-func (c *Connection) readPump() {
+func (c *NomadConnection) readPump() {
 	defer func() {
 		c.watches.Clear()
 		c.hub.unregister <- c
@@ -131,7 +131,7 @@ func (c *Connection) readPump() {
 	}
 }
 
-func (c *Connection) process(action Action) {
+func (c *NomadConnection) process(action Action) {
 	c.Debugf("Processing event %s (index %d)", action.Type, action.Index)
 
 	switch action.Type {
@@ -269,7 +269,7 @@ func (c *Connection) process(action Action) {
 
 // Handle monitors the websocket connection for incoming actions. It sends
 // out actions on state changes.
-func (c *Connection) Handle() {
+func (c *NomadConnection) Handle() {
 	go c.writePump()
 	c.readPump()
 
@@ -281,7 +281,7 @@ func (c *Connection) Handle() {
 	close(c.destroyCh)
 }
 
-func (c *Connection) watchAlloc(action Action) {
+func (c *NomadConnection) watchAlloc(action Action) {
 	allocID := action.Payload.(string)
 
 	defer func() {
@@ -323,7 +323,7 @@ func (c *Connection) watchAlloc(action Action) {
 	}
 }
 
-func (c *Connection) watchEval(action Action) {
+func (c *NomadConnection) watchEval(action Action) {
 	evalID := action.Payload.(string)
 
 	defer func() {
@@ -363,7 +363,7 @@ func (c *Connection) watchEval(action Action) {
 	}
 }
 
-func (c *Connection) fetchMember(action Action) {
+func (c *NomadConnection) fetchMember(action Action) {
 	memberID := action.Payload.(string)
 	member, err := c.hub.cluster.MemberWithID(memberID)
 	if err != nil {
@@ -374,7 +374,7 @@ func (c *Connection) fetchMember(action Action) {
 	c.send <- &Action{Type: fetchedMember, Payload: member}
 }
 
-func (c *Connection) watchMember(action Action) {
+func (c *NomadConnection) watchMember(action Action) {
 	memberID := action.Payload.(string)
 
 	defer func() {
@@ -409,7 +409,7 @@ func (c *Connection) watchMember(action Action) {
 	}
 }
 
-func (c *Connection) fetchNode(action Action) {
+func (c *NomadConnection) fetchNode(action Action) {
 	nodeID := action.Payload.(string)
 	node, _, err := c.region.Client.Nodes().Info(nodeID, nil)
 	if err != nil {
@@ -419,7 +419,7 @@ func (c *Connection) fetchNode(action Action) {
 	c.send <- &Action{Type: fetchedNode, Payload: node}
 }
 
-func (c *Connection) watchNode(action Action) {
+func (c *NomadConnection) watchNode(action Action) {
 	nodeID := action.Payload.(string)
 
 	defer func() {
@@ -460,7 +460,7 @@ func (c *Connection) watchNode(action Action) {
 	}
 }
 
-func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, prop observer.Property, initialPayload interface{}) {
+func (c *NomadConnection) watchGenericBroadcast(watchKey string, actionEvent string, prop observer.Property, initialPayload interface{}) {
 	defer func() {
 		c.watches.Remove(watchKey)
 		c.Infof("Stopped watching %s", watchKey)
@@ -507,12 +507,12 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 	}
 }
 
-func (c *Connection) unwatchGenericBroadcast(watchKey string) {
+func (c *NomadConnection) unwatchGenericBroadcast(watchKey string) {
 	c.Debugf("Removing subscription for %s", watchKey)
 	c.watches.Remove(watchKey)
 }
 
-func (c *Connection) watchJob(action Action) {
+func (c *NomadConnection) watchJob(action Action) {
 	jobID := action.Payload.(string)
 
 	defer func() {
@@ -554,7 +554,7 @@ func (c *Connection) watchJob(action Action) {
 	}
 }
 
-func (c *Connection) fetchClientStats(action Action) {
+func (c *NomadConnection) fetchClientStats(action Action) {
 	nodeID, ok := action.Payload.(string)
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -570,7 +570,7 @@ func (c *Connection) fetchClientStats(action Action) {
 	c.send <- &Action{Type: fetchedClientStats, Payload: stats, Index: 0}
 }
 
-func (c *Connection) watchClientStats(action Action) {
+func (c *NomadConnection) watchClientStats(action Action) {
 	nodeID, ok := action.Payload.(string)
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -608,7 +608,7 @@ func (c *Connection) watchClientStats(action Action) {
 	}
 }
 
-func (c *Connection) fetchDir(action Action) {
+func (c *NomadConnection) fetchDir(action Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -641,7 +641,7 @@ func (c *Connection) fetchDir(action Action) {
 	c.send <- &Action{Type: fetchedDir, Payload: dir, Index: 0}
 }
 
-func (c *Connection) watchFile(action Action) {
+func (c *NomadConnection) watchFile(action Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		logger.Error("Could not decode payload")
@@ -786,7 +786,7 @@ func (c *Connection) watchFile(action Action) {
 	}
 }
 
-func (c *Connection) changeTaskGroupCount(action Action) {
+func (c *NomadConnection) changeTaskGroupCount(action Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -856,12 +856,12 @@ func (c *Connection) changeTaskGroupCount(action Action) {
 	c.send <- updateAction
 }
 
-func (c *Connection) submitJob(action Action) {
+func (c *NomadConnection) submitJob(action Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
-	if *flagReadOnly {
-		logger.Errorf("Unable to submit job: READONLY is set to true")
+	if *flagNomadReadOnly {
+		logger.Errorf("Unable to submit job: NomadReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
 		return
 	}
@@ -883,12 +883,12 @@ func (c *Connection) submitJob(action Action) {
 	c.send <- &Action{Type: successNotification, Payload: "The job has been successfully updated.", Index: index}
 }
 
-func (c *Connection) stopJob(action Action) {
+func (c *NomadConnection) stopJob(action Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
-	if *flagReadOnly {
-		logger.Errorf("Unable to stop job: READONLY is set to true")
+	if *flagNomadReadOnly {
+		logger.Errorf("Unable to stop job: NomadReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
 		return
 	}
@@ -908,6 +908,6 @@ func (c *Connection) stopJob(action Action) {
 	c.send <- &Action{Type: successNotification, Payload: "The job has been successfully stopped.", Index: index}
 }
 
-func (c *Connection) fetchRegions() {
+func (c *NomadConnection) fetchRegions() {
 	c.send <- &Action{Type: fetchedNomadRegions, Payload: c.hub.regions}
 }

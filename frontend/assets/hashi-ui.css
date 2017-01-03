@@ -71,6 +71,11 @@ dd {
   line-height: 1.5;
 }
 
+.content-file.small {
+  height: auto;
+  padding: 1em
+}
+
 code {
   color: #c7254e;
   background-color: #f9f2f4;
@@ -91,4 +96,23 @@ th {
   overflow-y: hidden;
   -ms-overflow-style: -ms-autohiding-scrollbar;
   -webkit-overflow-scrolling: touch;
+}
+
+.breadcrumb:before {
+    content: "\e7c3";
+    font-family: "Material-Design-Icons";
+}
+.breadcrumb:before {
+    content: '\E5CC';
+    vertical-align: top;
+    display: inline-block;
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    margin: 0 5px 0 5px;
+    -webkit-font-smoothing: antialiased;
+}
+.breadcrumb.no-icon:before {
+  content: ''
 }

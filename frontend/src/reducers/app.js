@@ -2,7 +2,8 @@ import {
   APP_ERROR,
   ERROR_NOTIFICATION, CLEAR_ERROR_NOTIFICATION,
   SUCCESS_NOTIFICATION, CLEAR_SUCCESS_NOTIFICATION,
-  FETCHED_CLUSTER_STATISTICS
+  FETCHED_CLUSTER_STATISTICS,
+  APP_DRAWER_OPEN, APP_DRAWER_CLOSE,
 } from '../sagas/event'
 
 export function ClusterStatisticsReducer (state = {}, action) {
@@ -51,4 +52,15 @@ export function AppErrorReducer (state = {}, action) {
   default:
   }
   return state
+}
+
+export function AppDrawer (state = false, action) {
+  switch (action.type) {
+  case APP_DRAWER_OPEN:
+    return true
+  case APP_DRAWER_CLOSE:
+    return false
+  default:
+    return state
+  }
 }

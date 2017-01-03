@@ -3,12 +3,13 @@ import { connect } from 'react-redux'
 import AppBar from 'material-ui/AppBar'
 import { withRouter } from 'react-router'
 import { Tab, Tabs } from 'react-toolbox/lib/tabs';
-import theme from './AppTopbar.scss';
+import theme from './NomadTopbar.scss';
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import FontIcon from 'material-ui/FontIcon'
-import { FETCH_NOMAD_REGIONS, SET_NOMAD_REGION } from '../../sagas/event'
+import { FETCH_NOMAD_REGIONS, SET_NOMAD_REGION, APP_DRAWER_OPEN } from '../../sagas/event'
+import { NOMAD_COLOR } from '../../config.js'
 
 class AppTopbar extends PureComponent {
 
@@ -131,11 +132,7 @@ class AppTopbar extends PureComponent {
   }
 
   title() {
-    let title = 'Hashi UI'
-
-    if (this.props.router.location.pathname.startsWith('/nomad')) {
-      title = title + ' - Nomad'
-    }
+    let title = 'Nomad'
 
     if ('region' in this.props.router.params) {
       title = title + ' @ ' + this.props.router.params['region']
@@ -144,11 +141,20 @@ class AppTopbar extends PureComponent {
     return title
   }
 
+  leftIconClick() {
+    this.props.dispatch({ type: APP_DRAWER_OPEN })
+  }
+
   render () {
     const tabs = 'region' in this.props.router.params ? this.tabs() : undefined
     return (
-      <section style={{ backgroundColor: '#4b9a7d' }}>
-        <AppBar title={ this.title() } showMenuIconButton={ false } iconElementRight={ this.nomadRegions() } />
+      <section style={{ backgroundColor: NOMAD_COLOR }}>
+        <AppBar
+          title={ this.title() }
+          showMenuIconButton={ window.ENABLED_SERVICES.length > 1 }
+          iconElementRight={ this.nomadRegions() }
+          onLeftIconButtonTouchTap={ () => this.leftIconClick() }
+        />
         { tabs }
       </section>
     )
