@@ -18,12 +18,25 @@ This project was previously known as `iverberk/nomad-ui`
 Download the latest release from the Github repository and start it with:
 
 ```
-./hashi-ui-<os>-<arch>
+# if you got Nomad running on localhost
+./hashi-ui-<os>-<arch> --nomad.enable
+
+# if you got Nomad running on a specific Protocol/IP/Port
+./hashi-ui-<os>-<arch> --nomad.enable --nomad.address http://IP:Port
+
+# if you got Consul running on localhost
+./hashi-ui-<os>-<arch> --consul.enable
+
+# if you got Consul running on a specific IP/Port
+./hashi-ui-<os>-<arch> --consul.enable  --consul.address IP:Port
+
+# if you got nomad and Consul running on localhost
+./hashi-ui-<os>-<arch> --nomad.enable --consul.enable
 ```
 
 This will start the hashi-ui server that will try to connect to local
 nomad server. The frontend can be accessed on port `3000` by default.
-You can override this with the `-web.listen-address`.
+You can override this with the `-listen-address`.
 
 Another way to run hashi-ui is through Docker. Run the following command to
 start a webserver that will serve the application.
@@ -36,7 +49,7 @@ Check the releases page on GitHub to see which version is current.
 
 The user interface will be accessible on localhost, port `8000`. Adjust the Docker
 run parameters as needed. If you need to change the port that Nomad is listening
-on, you should do it with ```-e NOMAD_ADDR``` environment variable that contains
+on, you should do it with `-e NOMAD_ADDR` environment variable that contains
 both hostname and port.
 
 # Configuration
@@ -81,6 +94,8 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 
 # Try
 
+## Nomad
+
 You need a running nomad server to try Hashi UI:
 
 ```
@@ -90,36 +105,21 @@ nomad agent -server -client -bootstrap-expect 1 -data-dir /tmp/nomad
 Now you can run Hashi UI in other terminal (we assume you have it in PATH):
 
 ```
-hashi-ui-<os>-<arch>
+hashi-ui-<os>-<arch> --nomad.enable
 ```
 
 Open browser and visit [http://127.0.0.1:3000](http://127.0.0.1:3000).
 
-## Build
+## Consul
 
-Project is built using make:
-
-```
-make
-```
-
-The resulting files will be stored in `build/` folder:
+You can run the Consul UI against the official HashiCorp Consul demo like this:
 
 ```
-build/webpack              - frontend webapp that can be served by any webserver
-build/hashi-ui-<os>-<arch> - hashi-ui binary containing both the backend server and frontend webapp
+hashi-ui-<os>-<arch> --consul.enable --consul.address demo.consul.io
 ```
 
-By default it builds binary for host system. You can cross-compile and
-build binaries for different systems and architectures as well:
+Open browser and visit [http://127.0.0.1:3000](http://127.0.0.1:3000).
 
-```
-GOBUILD='linux-amd64 windows-386 <GOOS>-<GOARCH>' make
-```
-
-See [docs](https://golang.org/doc/install/source) for the whole list of available `GOOS` and `GOARCH`
-values.
-
-# Development
+# Development & Build
 
 If you would like to contribute please open a pull-request. See [DEVELOPMENT.md](https://github.com/jippi/hashi-ui/blob/master/DEVELOPMENT.md)
