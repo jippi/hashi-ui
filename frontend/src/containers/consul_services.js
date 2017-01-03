@@ -144,7 +144,7 @@ class ConsulServices extends Component {
           </Col>
           <Col key='value-pane' xs={ 12 } sm={ 7 } md={ 8 } lg={ 8 }>
             <Subheader>
-              { this.props.routeParams.name ? this.props.routeParams.name : 'Please select a service to the left' }
+              { this.props.routeParams.name ? `Service: ${this.props.routeParams.name}` : 'Please select a service to the left' }
             </Subheader>
 
             { this.getConsulService().map((entry, index) => {
