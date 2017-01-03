@@ -40,7 +40,7 @@ For Consul, the built-in UI is decent, but lack a varify of essential features:
 
 Today the Consul and Nomad UI exist in the same binary, but do not "cross-talk" to each other, but long term goal is to integrate them even closer, so from Nomad Job UI you can see Consul health check status for the job tasks, and vice versa be able to cross-link between two otherwise distinct systems.
 
-Long term Vault support **love** would be awesome to add to the UI, contributions are more than welcome on this!
+Long term, **Vault** support would be an amazing addition to the UI, contributions are more than welcome on this!
 
 # Usage
 
