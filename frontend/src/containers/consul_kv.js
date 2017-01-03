@@ -151,6 +151,8 @@ class ConsulKV extends Component {
       pathname: this.props.location.pathname,
       query: { file: this.baseName(file) }
     })
+
+    window.scrollTo(0, document.getElementById('value-pane').offsetTop);
   }
 
   /**
@@ -454,7 +456,7 @@ class ConsulKV extends Component {
               </CardText>
             </Card>
           </Col>
-          <Col key='value-pane' xs={ 12 } sm={ 12 } md={ 8 } lg={ 9 }>
+          <Col id='value-pane' key='value-pane' xs={ 12 } sm={ 12 } md={ 8 } lg={ 9 }>
             <Card>
               <CardTitle title={ this.valuePaneTitle() } />
               <CardText>
