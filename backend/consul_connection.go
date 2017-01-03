@@ -577,12 +577,24 @@ func (c *ConsulConnection) dereigsterConsulServiceCheck(action Action) {
 
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
+		c.send <- &Action{Type: errorNotification, Payload: "Unable to deresiger Consul Service Check - missing node address"}
 		c.Errorf("Could not decode payload")
 		return
 	}
 
-	nodeAddress := params["nodeAddress"].(string)
-	checkID := params["checkID"].(string)
+	nodeAddress, ok := params["nodeAddress"].(string)
+	if !ok {
+		c.send <- &Action{Type: errorNotification, Payload: "Unable to deresiger Consul Service Check - missing node address"}
+		c.Errorf("Missing node address")
+		return
+	}
+
+	checkID, ok := params["checkID"].(string)
+	if !ok {
+		c.send <- &Action{Type: errorNotification, Payload: "Unable to deresiger Consul Service Check - missing check id"}
+		c.Errorf("Missing check id")
+		return
+	}
 
 	_, port, _ := net.SplitHostPort(c.region.Config.ConsulAddress)
 	if port == "" {
