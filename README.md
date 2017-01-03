@@ -5,16 +5,15 @@ Hashi UI [![Build Status](https://travis-ci.org/jippi/hashi-ui.svg?branch=master
 [![Docker Stars](https://img.shields.io/docker/stars/jippi/hashi-ui.svg)](https://hub.docker.com/r/jippi/hashi-ui/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/jippi/hashi-ui.svg)](https://hub.docker.com/r/jippi/hashi-ui/)
 
-An awesome user interface (even for mobile devices!) for an awesome scheduler, plain and simple :-)
-
-This project was previously known as `iverberk/nomad-ui`
+An awesome user interface (even for mobile devices!) for HashiCorp Consul & Nomad, plain and simple :-)
 
 ![Hashi UI](https://dl.dropboxusercontent.com/u/27514/nomad-screenshots/0.5/cluster-overview-small.jpg)
 
-[More screenshots](https://github.com/jippi/hashi-ui/blob/master/SCREENSHOTS.md)
+[View more screenshots of Nomad & Consul interface](https://github.com/jippi/hashi-ui/blob/master/SCREENSHOTS.md)
 
 # TOC
 
+- [Why](#why)
 - [Usage](#usage)
 - [Configuration](#configuration)
   * [General Configuration](#general-configuration)
@@ -26,6 +25,22 @@ This project was previously known as `iverberk/nomad-ui`
   * [Consul](#consul)
 - [Development & Build](#development---build)
 
+# Why
+
+For Nomad, it was quite simple, no mobile-optimized, (somewhat) feature-complete and live-updating interface existed.
+
+For Consul, the built-in UI is decent, but lack a varify of essential features:
+
+- Live update of Services, Nodes and Key/Value lists (nobody likes to refresh)
+- More API complete (e.g. unregister services and services checks directly from UI)
+- CAS (Check-And-Set) support in both Write and Delete actions for KV, preventing accidental modification or deleting of keys that have changed since you loaded them.
+- KV breadcrumbs could not be used for navigation
+- Sorting KV folders and keys seperatly (always folders first)
+- More inter-linking between services/nodes
+
+Today the Consul and Nomad UI exist in the same binary, but do not "cross-talk" to each other, but long term goal is to integrate them even closer, so from Nomad Job UI you can see Consul health check status for the job tasks, and vice versa be able to cross-link between two otherwise distinct systems.
+
+Long term Vault support **love** would be awesome to add to the UI, contributions are more than welcome on this!
 
 # Usage
 
