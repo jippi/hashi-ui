@@ -15,6 +15,9 @@ var (
 
 	flagConsulAddress = flag.String("consul.address", "", "The address of the Consul server. "+
 		"Overrides the CONSUL_ADDR environment variable if set. "+flagDefault(defaultConfig.ConsulAddress))
+
+	flagConsulACLToken = flag.String("consul.acl-token", "", "A ACL token to use when talking to Consul. "+
+		"Overrides the CONSUL_ACL_TOKEN environment variable if set. "+flagDefault(defaultConfig.ConsulACLToken))
 )
 
 // ParseConsulEnvConfig ...
@@ -33,6 +36,11 @@ func ParseConsulEnvConfig(c *Config) {
 	if ok {
 		c.ConsulAddress = consulAddress
 	}
+
+	aclToken, ok := syscall.Getenv("CONSUL_ACL_TOKEN")
+	if ok {
+		c.ConsulACLToken = aclToken
+	}
 }
 
 // ParseConsulFlagConfig ...
@@ -47,5 +55,9 @@ func ParseConsulFlagConfig(c *Config) {
 
 	if *flagConsulAddress != "" {
 		c.ConsulAddress = *flagConsulAddress
+	}
+
+	if *flagConsulACLToken != "" {
+		c.ConsulACLToken = *flagConsulACLToken
 	}
 }

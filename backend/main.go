@@ -105,6 +105,7 @@ func main() {
 		logger.Infof("| consul.read-only     : %-50s |", "No (Hashi-UI can change Consul state)")
 	}
 	logger.Infof("| consul.address       : %-50s |", cfg.ConsulAddress)
+	logger.Infof("| consul.acl-token     : %-50s |", cfg.ConsulACLToken)
 
 	logger.Infof("-----------------------------------------------------------------------------")
 	logger.Infof("")

@@ -71,11 +71,7 @@ func CreateConsulRegionClient(c *Config, region string) (*api.Client, error) {
 	config.Address = c.ConsulAddress
 	config.WaitTime = waitTime
 	config.Datacenter = region
-	// config.TLSConfig = &api.TLSConfig{
-	// 	CACert:     c.CACert,
-	// 	ClientCert: c.ClientCert,
-	// 	ClientKey:  c.ClientKey,
-	// }
+	config.Token = c.ConsulACLToken
 
 	return api.NewClient(config)
 }
