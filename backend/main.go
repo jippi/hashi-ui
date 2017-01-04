@@ -111,7 +111,7 @@ func main() {
 	logger.Infof("")
 
 	if !cfg.NomadEnable && !cfg.ConsulEnable {
-		logger.Fatal("Please enable at least Consul (--consul.enable) or Nomad (--consul.enable)")
+		logger.Fatal("Please enable at least Consul (--consul.enable) or Nomad (--nomad.enable)")
 	}
 
 	myAssetFS := assetFS()
