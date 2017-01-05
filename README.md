@@ -44,6 +44,8 @@ Long term, **Vault** support would be an amazing addition to the UI, contributio
 
 # Usage
 
+> Until Hash-UI reaches 1.x, development efforts will focus on the latest versions of HashiCorp products
+
 Download the latest release from the Github repository and start it with:
 
 ```
