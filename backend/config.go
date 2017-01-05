@@ -19,7 +19,7 @@ var (
 	flagNewRelicAppName = flag.String("newrelic-app-name", "hashi-ui",
 		"The NewRelic app name. "+flagDefault(defaultConfig.NewRelicAppName))
 
-	flagNewRelicLicense = flag.String("newreliclicense", "",
+	flagNewRelicLicense = flag.String("newrelic-license", "",
 		"The NewRelic license key. "+flagDefault(defaultConfig.NewRelicLicense))
 )
 

@@ -81,7 +81,7 @@ func main() {
 	logger.Infof("| log-level       	: %-50s |", cfg.LogLevel)
 
 	if cfg.NewRelicAppName != "" && cfg.NewRelicLicense != "" {
-		logger.Infof("| newrelic-app_name   : %-50s |", cfg.NewRelicAppName)
+		logger.Infof("| newrelic-app-name   : %-50s |", cfg.NewRelicAppName)
 		logger.Infof("| newrelic-license    : %-50s |", strings.Repeat("*", len(cfg.NewRelicLicense)))
 	}
 
@@ -93,9 +93,9 @@ func main() {
 		logger.Infof("| nomad-read-only       : %-50s |", "No (Hashi-UI can change Nomad state)")
 	}
 	logger.Infof("| nomad-address         : %-50s |", cfg.NomadAddress)
-	logger.Infof("| nomad-ca_cert         : %-50s |", cfg.NomadCACert)
-	logger.Infof("| nomad-client_cert     : %-50s |", cfg.NomadClientCert)
-	logger.Infof("| nomad-client_key      : %-50s |", cfg.NomadClientKey)
+	logger.Infof("| nomad-ca-cert         : %-50s |", cfg.NomadCACert)
+	logger.Infof("| nomad-client-cert     : %-50s |", cfg.NomadClientCert)
+	logger.Infof("| nomad-client-key      : %-50s |", cfg.NomadClientKey)
 
 	// Consul
 	logger.Infof("| consul-enable     	: %-50t |", cfg.ConsulEnable)
