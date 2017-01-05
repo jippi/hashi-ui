@@ -102,9 +102,9 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | `NOMAD_ENABLE`          | `nomad-enable`      	  | `false` 	                | Use `--nomad-enable` or env `NOMAD_ENABLE=1` to enable Nomad backend                                             |
 | `NOMAD_ADDR`            | `nomad-address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your .                                                                                |
 | `NOMAD_READ_ONLY`  	  | `nomad-read-only`   	  | `false` 		        	| Should hash-ui allowed to modify Nomad state (stop/start jobs and so forth)	                                   |
-| `NOMAD_CACERT`      	  | `nomad-ca_cert`      	  | `<empty>`   	            | (optional) path to a CA Cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)                 |
-| `NOMAD_CLIENT_CERT`  	  | `nomad-client_cert`       | `<empty>` 	                | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
-| `NOMAD_CLIENT_KEY`  	  | `nomad-client_key`        | `<empty>` 	                | (optional) path to a client key file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)          	   |
+| `NOMAD_CACERT`      	  | `nomad-ca-cert`      	  | `<empty>`   	            | (optional) path to a CA Cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)                 |
+| `NOMAD_CLIENT_CERT`  	  | `nomad-client-cert`       | `<empty>` 	                | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
+| `NOMAD_CLIENT_KEY`  	  | `nomad-client-key`        | `<empty>` 	                | (optional) path to a client key file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)          	   |
 | `NOMAD_PORT_http` 	  | `<none>` 	              | `0.0.0.0:3000`          	| The IP + PORT to listen on (will overwrite `LISTEN_ADDRESS`)                                                     |
 
 ## Consul Configuration
