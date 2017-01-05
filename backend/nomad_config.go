@@ -8,22 +8,22 @@ import (
 )
 
 var (
-	flagNomadEnable = flag.Bool("nomad.enable", false, "Whether Nomad engine should be started. "+
+	flagNomadEnable = flag.Bool("nomad-enable", false, "Whether Nomad engine should be started. "+
 		"Overrides the NOMAD_ENABLE environment variable if set. "+flagDefault(strconv.FormatBool(defaultConfig.NomadEnable)))
 
-	flagNomadReadOnly = flag.Bool("nomad.read-only", false, "Whether Hashi-UI should be allowed to modify Nomad state. "+
+	flagNomadReadOnly = flag.Bool("nomad-read-only", false, "Whether Hashi-UI should be allowed to modify Nomad state. "+
 		"Overrides the NOMAD_READ_ONLY environment variable if set. "+flagDefault(strconv.FormatBool(defaultConfig.NomadReadOnly)))
 
-	flagNomadAddress = flag.String("nomad.address", "", "The address of the Nomad server. "+
+	flagNomadAddress = flag.String("nomad-address", "", "The address of the Nomad server. "+
 		"Overrides the NOMAD_ADDR environment variable if set. "+flagDefault(defaultConfig.NomadAddress))
 
-	flagNomadCACert = flag.String("nomad.ca_cert", "", "Path to the Nomad TLS CA Cert File. "+
+	flagNomadCACert = flag.String("nomad-ca-cert", "", "Path to the Nomad TLS CA Cert File. "+
 		"Overrides the NOMAD_CACERT environment variable if set. "+flagDefault(defaultConfig.NomadCACert))
 
-	flagNomadClientCert = flag.String("nomad.client_cert", "", "Path to the Nomad Client Cert File. "+
+	flagNomadClientCert = flag.String("nomad-client-cert", "", "Path to the Nomad Client Cert File. "+
 		"Overrides the NOMAD_CLIENT_CERT environment variable if set. "+flagDefault(defaultConfig.NomadClientCert))
 
-	flagNomadClientKey = flag.String("nomad.client_key", "", "Path to the Nomad Client Key File. "+
+	flagNomadClientKey = flag.String("nomad-client-key", "", "Path to the Nomad Client Key File. "+
 		"Overrides the NOMAD_CLIENT_KEY environment variable if set. "+flagDefault(defaultConfig.NomadClientKey))
 )
 

@@ -50,19 +50,19 @@ Download the latest release from the Github repository and start it with:
 
 ```
 # if you got Nomad running on localhost
-./hashi-ui-<os>-<arch> --nomad.enable
+./hashi-ui-<os>-<arch> --nomad-enable
 
 # if you got Nomad running on a specific Protocol/IP/Port
-./hashi-ui-<os>-<arch> --nomad.enable --nomad.address http://IP:Port
+./hashi-ui-<os>-<arch> --nomad-enable --nomad-address http://IP:Port
 
 # if you got Consul running on localhost
-./hashi-ui-<os>-<arch> --consul.enable
+./hashi-ui-<os>-<arch> --consul-enable
 
 # if you got Consul running on a specific IP/Port
-./hashi-ui-<os>-<arch> --consul.enable  --consul.address IP:Port
+./hashi-ui-<os>-<arch> --consul-enable  --consul-address IP:Port
 
 # if you got nomad and Consul running on localhost
-./hashi-ui-<os>-<arch> --nomad.enable --consul.enable
+./hashi-ui-<os>-<arch> --nomad-enable --consul-enable
 ```
 
 This will start the hashi-ui server that will try to connect to local
@@ -99,27 +99,27 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 
 | Environment        	  | CLI (`--flag`)    		  | Default                 	| Description                                                                                                      |
 |-------------------------|---------------------------|-----------------------------|------------------------------------------------------------------------------------------------------------------|
-| `NOMAD_ENABLE`          | `nomad.enable`      	  | `false` 	                | Use `--nomad.enable` or env `NOMAD_ENABLE=1` to enable Nomad backend                                             |
-| `NOMAD_ADDR`            | `nomad.address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your .                                                                                |
-| `NOMAD_READ_ONLY`  	  | `nomad.read-only`   	  | `false` 		        	| Should hash-ui allowed to modify Nomad state (stop/start jobs and so forth)	                                   |
-| `NOMAD_CACERT`      	  | `nomad.ca_cert`      	  | `<empty>`   	            | (optional) path to a CA Cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)                 |
-| `NOMAD_CLIENT_CERT`  	  | `nomad.client_cert`       | `<empty>` 	                | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
-| `NOMAD_CLIENT_KEY`  	  | `nomad.client_key`        | `<empty>` 	                | (optional) path to a client key file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)          	   |
+| `NOMAD_ENABLE`          | `nomad-enable`      	  | `false` 	                | Use `--nomad-enable` or env `NOMAD_ENABLE=1` to enable Nomad backend                                             |
+| `NOMAD_ADDR`            | `nomad-address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your .                                                                                |
+| `NOMAD_READ_ONLY`  	  | `nomad-read-only`   	  | `false` 		        	| Should hash-ui allowed to modify Nomad state (stop/start jobs and so forth)	                                   |
+| `NOMAD_CACERT`      	  | `nomad-ca-cert`      	  | `<empty>`   	            | (optional) path to a CA Cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)                 |
+| `NOMAD_CLIENT_CERT`  	  | `nomad-client-cert`       | `<empty>` 	                | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
+| `NOMAD_CLIENT_KEY`  	  | `nomad-client-key`        | `<empty>` 	                | (optional) path to a client key file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)          	   |
 | `NOMAD_PORT_http` 	  | `<none>` 	              | `0.0.0.0:3000`          	| The IP + PORT to listen on (will overwrite `LISTEN_ADDRESS`)                                                     |
 
 ## Consul Configuration
 
 | Environment        	  | CLI (`--flag`)    		  | Default                 	| Description                                                                                                      |
 |-------------------------|---------------------------|-----------------------------|------------------------------------------------------------------------------------------------------------------|
-| `CONSUL_ENABLE`         | `consul.enable`      	  | `false` 	                | Use `--consul.enable` or env `CONSUL_ENABLE=1` to enable Consul backend                                          |
-| `CONSUL_ADDR`           | `consul.address`      	  | `127.0.0.1:8500`            | Host + Port for your Consul server, e.g. `localhost:8500` (Do not include protocol)                              |
-| `CONSUL_READ_ONLY`  	  | `consul.read-only`   	  | `false` 		        	| Should hash-ui allowed to modify Consul state (modify KV, Services and so forth)                                 |
+| `CONSUL_ENABLE`         | `consul-enable`      	  | `false` 	                | Use `--consul-enable` or env `CONSUL_ENABLE=1` to enable Consul backend                                          |
+| `CONSUL_ADDR`           | `consul-address`      	  | `127.0.0.1:8500`            | Host + Port for your Consul server, e.g. `localhost:8500` (Do not include protocol)                              |
+| `CONSUL_READ_ONLY`  	  | `consul-read-only`   	  | `false` 		        	| Should hash-ui allowed to modify Consul state (modify KV, Services and so forth)                                 |
 
 ## Instrumentation Configuration
 
 | Environment        	  | CLI (`--flag`)    		  | Default                 	| Description                                                                                                      |
 |-------------------------|---------------------------|-----------------------------|------------------------------------------------------------------------------------------------------------------|
-| `NEWRELIC_APP_NAME`     | `newrelic.app_name`  	  | `hashi-ui`               	| (optional) NewRelic application name                                                                             |
+| `NEWRELIC_APP_NAME`     | `newrelic.app-name`  	  | `hashi-ui`               	| (optional) NewRelic application name                                                                             |
 | `NEWRELIC_LICENSE`      | `newrelic.license`  	  | `<empty>`          	  		| (optional) NewRelic license key                                                                                  |
 
 
@@ -136,7 +136,7 @@ nomad agent -server -client -bootstrap-expect 1 -data-dir /tmp/nomad
 Now you can run Hashi UI in other terminal (we assume you have it in PATH):
 
 ```
-hashi-ui-<os>-<arch> --nomad.enable
+hashi-ui-<os>-<arch> --nomad-enable
 ```
 
 Open browser and visit [http://127.0.0.1:3000](http://127.0.0.1:3000).
@@ -146,7 +146,7 @@ Open browser and visit [http://127.0.0.1:3000](http://127.0.0.1:3000).
 You can run the Consul UI against the official HashiCorp Consul demo like this:
 
 ```
-hashi-ui-<os>-<arch> --consul.enable --consul.address demo.consul.io
+hashi-ui-<os>-<arch> --consul-enable --consul-address demo.consul.io
 ```
 
 Open browser and visit [http://127.0.0.1:3000](http://127.0.0.1:3000).
