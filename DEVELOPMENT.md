@@ -28,6 +28,13 @@ cd ~/src/go-lang/src/github.com/jippi
 git clone git@github.com:jippi/hashi-ui.git
 cd hashi-ui
 ```
+## Vagrant
+
+The option to use Vagrant is also an available. Vagrant must be previously installed. See the Vagrant [docs](https://www.vagrantup.com/docs/getting-started/) for how to get started.
+
+From the root folder, run ``` vagrant up ``` to create the guest machine with go and the go environment pre-configured.
+
+Once Vagrant has provisioned the virtual machine, run ``` vagrant ssh ``` to access the ssh session.
 
 # Workflow
 
