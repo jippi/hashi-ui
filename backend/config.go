@@ -16,10 +16,10 @@ var (
 	flagListenAddress = flag.String("listen-address", "",
 		"The address on which to expose the web interface. "+flagDefault(defaultConfig.ListenAddress))
 
-	flagNewRelicAppName = flag.String("newrelic.app_name", "hashi-ui",
+	flagNewRelicAppName = flag.String("newrelic-app-name", "hashi-ui",
 		"The NewRelic app name. "+flagDefault(defaultConfig.NewRelicAppName))
 
-	flagNewRelicLicense = flag.String("newrelic.license", "",
+	flagNewRelicLicense = flag.String("newrelic-license", "",
 		"The NewRelic license key. "+flagDefault(defaultConfig.NewRelicLicense))
 )
 
