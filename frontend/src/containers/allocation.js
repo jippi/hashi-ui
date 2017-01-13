@@ -1,8 +1,14 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { orange500 } from 'material-ui/styles/colors'
+import FontIcon from 'material-ui/FontIcon'
 import AllocationTopbar from '../components/AllocationTopbar/AllocationTopbar'
 import JobLink from '../components/JobLink/JobLink'
-import { WATCH_ALLOC, UNWATCH_ALLOC } from '../sagas/event'
+import AllocationLink from '../components/AllocationLink/AllocationLink'
+import {
+  WATCH_ALLOC, UNWATCH_ALLOC,
+  WATCH_ALLOCS, UNWATCH_ALLOCS
+} from '../sagas/event'
 
 class Allocation extends Component {
 
@@ -18,6 +24,28 @@ class Allocation extends Component {
       type: UNWATCH_ALLOC,
       payload: this.props.params.allocId
     })
+
+    this.props.dispatch({ type: UNWATCH_ALLOCS })
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.allocation.DesiredStatus && this.props.allocation.DesiredStatus != 'run') {
+      if (this.props.allocations.length === 0) {
+        this.props.dispatch({ type: WATCH_ALLOCS })
+      } else {
+        this.props.dispatch({ type: UNWATCH_ALLOCS })
+      }
+    }
+
+    if (prevProps.params.allocId == this.props.params.allocId) {
+      return;
+    }
+
+    if (prevProps.params.allocId) {
+      this.props.dispatch({ type: UNWATCH_ALLOC, payload: prevProps.params.allocId })
+    }
+
+    this.props.dispatch({ type: WATCH_ALLOC, payload: this.props.params.allocId })
   }
 
   getName() {
@@ -29,6 +57,36 @@ class Allocation extends Component {
     )
   }
 
+  derp() {
+    if (this.props.allocation.DesiredStatus == 'run') {
+      return;
+    }
+
+    if (this.props.allocations.length == 0) {
+      return
+    }
+
+    let alt = this.props.allocations.filter(a =>
+      a.Name == this.props.allocation.Name
+      && a.ID != this.props.allocation.ID
+      && a.DesiredStatus == 'run'
+    )
+
+    if (alt.length == 0) {
+      return
+    }
+
+    alt = alt[0]
+    return (
+      <div className='warning-bar' style={{ backgroundColor: orange500 }}>
+        <FontIcon className='material-icons' color='white'>info</FontIcon>
+        <div>
+          <AllocationLink allocationId={ alt.ID }>View replacement allocation</AllocationLink>
+        </div>
+      </div>
+    )
+  }
+
   render () {
     if (this.props.allocation.Name == null) {
       return null
@@ -37,9 +95,8 @@ class Allocation extends Component {
     return (
       <div>
         <AllocationTopbar { ...this.props } />
-
         <div style={{ padding: 10, paddingBottom: 0 }}>
-          <h2>
+          <h3>
             Allocation:
 
             &nbsp;
@@ -52,10 +109,12 @@ class Allocation extends Component {
               { this.props.allocation.TaskGroup }
             </JobLink>
 
-            &nbsp; >
+            &nbsp;
 
             #{ this.getName() }
-          </h2>
+          </h3>
+
+          { this.derp() }
 
           <br />
 
@@ -66,14 +125,15 @@ class Allocation extends Component {
   }
 }
 
-function mapStateToProps ({ allocation }) {
-  return { allocation }
+function mapStateToProps ({ allocation, allocations }) {
+  return { allocation, allocations }
 }
 
 Allocation.propTypes = {
   dispatch: PropTypes.func.isRequired,
   params: PropTypes.object.isRequired,
   allocation: PropTypes.object.isRequired,
+  allocations: PropTypes.array.isRequired,
   location: PropTypes.object.isRequired, // eslint-disable-line no-unused-vars
   children: PropTypes.object.isRequired
 }
