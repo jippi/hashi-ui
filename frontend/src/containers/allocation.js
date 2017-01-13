@@ -30,7 +30,7 @@ class Allocation extends Component {
   }
 
   render () {
-    if (this.props.allocation == null) {
+    if (this.props.allocation.Name == null) {
       return null
     }
 
