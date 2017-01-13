@@ -261,6 +261,9 @@ func (c *NomadConnection) process(action Action) {
 	case fetchNomadRegions:
 		go c.fetchRegions()
 
+	case evaluateJob:
+		go c.evaluateJob(action)
+
 	// Nice in debug
 	default:
 		logger.Errorf("Unknown action: %s", action.Type)
@@ -906,6 +909,31 @@ func (c *NomadConnection) stopJob(action Action) {
 
 	logger.Infof("connection: successfully stopped job '%s'", jobID)
 	c.send <- &Action{Type: successNotification, Payload: "The job has been successfully stopped.", Index: index}
+}
+
+func (c *NomadConnection) evaluateJob(action Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	if *flagNomadReadOnly {
+		logger.Errorf("Unable to evaluate job: NomadReadOnly is set to true")
+		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		return
+	}
+
+	jobID := action.Payload.(string)
+
+	logger.Infof("Begin evaluate of job with id: %s", jobID)
+
+	_, _, err := c.region.Client.Jobs().ForceEvaluate(jobID, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to evaluate job '%s' : %s", jobID, err)
+		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to evaluate job : %s", err), Index: index}
+		return
+	}
+
+	logger.Infof("connection: successfully re-evaluated job '%s'", jobID)
+	c.send <- &Action{Type: successNotification, Payload: "The job has been successfully re-evaluated.", Index: index}
 }
 
 func (c *NomadConnection) fetchRegions() {

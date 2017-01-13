@@ -7,6 +7,7 @@ import MenuItem from 'material-ui/MenuItem';
 import { green500 } from 'material-ui/styles/colors'
 import JobEditRawJSON from '../JobEditRawJSON/JobEditRawJSON'
 import JobActionStop from '../JobActionStop/JobActionStop'
+import JobActionEvaluate from '../JobActionEvaluate/JobActionEvaluate'
 import { JOB_SHOW_DIALOG } from '../../sagas/event'
 
 class JobActionMenu extends Component {
@@ -24,6 +25,7 @@ class JobActionMenu extends Component {
       <div>
         <JobEditRawJSON />
         <JobActionStop />
+        <JobActionEvaluate />
 
         <IconMenu
           iconButtonElement={ icon }
@@ -35,6 +37,11 @@ class JobActionMenu extends Component {
             primaryText='Edit job'
             rightIcon={ <FontIcon className='material-icons'>edit</FontIcon> }
             onTouchTap={ this.handleClick('edit') }
+          />
+          <MenuItem
+            primaryText='Re-evaluate job'
+            rightIcon={ <FontIcon className='material-icons'>refresh</FontIcon> }
+            onTouchTap={ this.handleClick('evaluate') }
           />
           <MenuItem
             primaryText='Stop job'

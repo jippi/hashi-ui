@@ -68,4 +68,6 @@ const (
 	changeTaskGroupCount = "CHANGE_TASK_GROUP_COUNT"
 	submitJob            = "SUBMIT_JOB"
 	stopJob              = "STOP_JOB"
+
+	evaluateJob = "EVALUATE_JOB"
 )
