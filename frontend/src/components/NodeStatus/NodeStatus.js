@@ -1,16 +1,16 @@
 import React, { PropTypes } from 'react'
-import FormatBoolean from '../FormatBoolean/FormatBoolean'
+import { blue500, green500, red500 } from 'material-ui/styles/colors'
 
 const NodeStatus = ({ value }) => {
   switch (value) {
   case 'initializing':
-    return (<span>initializing</span>)
+    return <span style={{ color: blue500 }}>initializing</span>
 
   case 'ready':
-    return (<FormatBoolean value title={ value } />)
+    return <span style={{ color: green500 }}>ready</span>
 
   case 'down':
-    return (<FormatBoolean value={ false } title={ value } />)
+    return <span style={{ color: red500 }}>down</span>
 
   default:
     return (<span>{value}</span>)

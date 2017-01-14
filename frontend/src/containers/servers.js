@@ -1,10 +1,11 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { Card, CardText } from 'material-ui/Card'
+import { green500 } from 'material-ui/styles/colors'
+import FontIcon from 'material-ui/FontIcon'
 import { WATCH_MEMBERS, UNWATCH_MEMBERS } from '../sagas/event'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from '../components/Table'
 import ServerLink from '../components/ServerLink/ServerLink'
-import FormatBoolean from '../components/FormatBoolean/FormatBoolean'
 
 class Servers extends Component {
 
@@ -14,6 +15,14 @@ class Servers extends Component {
 
   componentWillUnmount() {
     this.props.dispatch({ type: UNWATCH_MEMBERS })
+  }
+
+  showLeaderIcon(member) {
+    if (!member.Leader) {
+      return null
+    }
+
+    return <FontIcon className='material-icons' style={{ color: green500 }}>check</FontIcon>
   }
 
   render() {
@@ -45,7 +54,7 @@ class Servers extends Component {
                       <TableRowColumn>{ member.Tags.region }</TableRowColumn>
                       <TableRowColumn>{ member.Tags.dc }</TableRowColumn>
                       <TableRowColumn>{ member.Status }</TableRowColumn>
-                      <TableRowColumn><FormatBoolean value={ member.Leader } /></TableRowColumn>
+                      <TableRowColumn>{ this.showLeaderIcon(member) }</TableRowColumn>
                       <TableRowColumn>{ member.ProtocolCur }</TableRowColumn>
                       <TableRowColumn>{ member.Tags.build }</TableRowColumn>
                     </TableRow>
