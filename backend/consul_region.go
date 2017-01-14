@@ -97,6 +97,8 @@ func (c *ConsulRegion) StartWatchers() {
 // watchServices ...
 func (c *ConsulRegion) watchServices() {
 	q := &api.QueryOptions{WaitIndex: 0}
+	q.Token = c.Config.ConsulACLToken
+
 	raw := c.Client.Raw()
 
 	for {
@@ -130,6 +132,8 @@ func (c *ConsulRegion) watchServices() {
 // watchNodes ...
 func (c *ConsulRegion) watchNodes() {
 	q := &api.QueryOptions{WaitIndex: 0}
+	q.Token = c.Config.ConsulACLToken
+
 	raw := c.Client.Raw()
 
 	for {

@@ -42,14 +42,14 @@ func startLogging(logLevel string) {
 func (c *Config) Parse() {
 	flag.Parse()
 
-	ParseAppEnvConfig(c)
 	ParseAppFlagConfig(c)
+	ParseAppEnvConfig(c)
 
-	ParseNomadEnvConfig(c)
 	ParseNomadFlagConfig(c)
+	ParseNomadEnvConfig(c)
 
-	ParseConsulEnvConfig(c)
 	ParseConsulFlagConfig(c)
+	ParseConsulEnvConfig(c)
 
 	ParseNewRelicConfig(c)
 }

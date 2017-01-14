@@ -376,6 +376,7 @@ func (c *ConsulConnection) watchConsulKVPath(action Action) {
 	c.Infof("Started watching %s", key)
 
 	q := &api.QueryOptions{WaitIndex: 1}
+
 	for {
 		select {
 		case <-c.destroyCh:
