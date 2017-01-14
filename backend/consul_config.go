@@ -7,13 +7,13 @@ import (
 )
 
 var (
-	flagConsulEnable = flag.Bool("consul.enable", false, "Whether Consul engine should be started. "+
+	flagConsulEnable = flag.Bool("consul-enable", false, "Whether Consul engine should be started. "+
 		"Overrides the CONSUL_ENABLE environment variable if set. "+flagDefault(strconv.FormatBool(defaultConfig.ConsulEnable)))
 
-	flagConsulReadOnly = flag.Bool("consul.read-only", false, "Whether Hashi-UI should be allowed to modify Consul state. "+
+	flagConsulReadOnly = flag.Bool("consul-read-only", false, "Whether Hashi-UI should be allowed to modify Consul state. "+
 		"Overrides the CONSUL_READ_ONLY environment variable if set. "+flagDefault(strconv.FormatBool(defaultConfig.ConsulEnable)))
 
-	flagConsulAddress = flag.String("consul.address", "", "The address of the Consul server. "+
+	flagConsulAddress = flag.String("consul-address", "", "The address of the Consul server. "+
 		"Overrides the CONSUL_ADDR environment variable if set. "+flagDefault(defaultConfig.ConsulAddress))
 
 	flagConsulACLToken = flag.String("consul.acl-token", "", "A ACL token to use when talking to Consul. "+

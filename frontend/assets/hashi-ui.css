@@ -102,6 +102,7 @@ th {
     content: "\e7c3";
     font-family: "Material-Design-Icons";
 }
+
 .breadcrumb:before {
     content: '\E5CC';
     vertical-align: top;
@@ -113,6 +114,27 @@ th {
     margin: 0 5px 0 5px;
     -webkit-font-smoothing: antialiased;
 }
+
 .breadcrumb.no-icon:before {
   content: ''
+}
+
+.warning-bar {
+  margin-top: 1em;
+  padding: 1em;
+  border-radius: 4px;
+}
+.warning-bar .material-icons {
+  float: left;
+  font-size: 12px;
+}
+.warning-bar div {
+  display: inline;
+  padding-left: 0.5em;
+  color: white;
+  clear: both;
+}
+.warning-bar a {
+  color:white;
+  text-decoration: underline
 }

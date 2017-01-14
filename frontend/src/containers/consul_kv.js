@@ -107,11 +107,7 @@ class ConsulKV extends Component {
    * Get the basename (filename) from a path
    */
   baseName(str) {
-    var base = new String(str).substring(str.lastIndexOf('/') + 1);
-    if (base.lastIndexOf(".") != -1) {
-      base = base.substring(0, base.lastIndexOf("."));
-    }
-    return base;
+    return new String(str).substring(str.lastIndexOf('/') + 1);
   }
 
   /**

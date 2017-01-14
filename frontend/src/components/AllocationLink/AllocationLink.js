@@ -9,6 +9,10 @@ const AllocationLink = ({ children, allocationId, linkAppend, shortUUID, linkQue
     innerChildren = shortUUID ? shortenUUID(allocationId) : allocationId
   }
 
+  if (!linkAppend) {
+    linkAppend = '/info';
+  }
+
   return (
     <Link to={{ pathname: `/nomad/${router.params.region}/allocations/${allocationId}${linkAppend}`, query: linkQuery}}>
       { innerChildren }

@@ -6,6 +6,7 @@ import JobLink from '../JobLink/JobLink'
 import ClientLink from '../ClientLink/ClientLink'
 import MetaPayload from '../MetaPayload/MetaPayload'
 import FormatTime from '../FormatTime/FormatTime'
+import { WATCH_NODES, UNWATCH_NODES } from '../../sagas/event'
 
 const allocProps = [
   'ID',
@@ -17,6 +18,14 @@ const allocProps = [
 ]
 
 class AllocationInfo extends Component {
+
+  componentWillMount () {
+    this.props.dispatch({ type: WATCH_NODES })
+  }
+
+  componentWillUnmount () {
+    this.props.dispatch({ type: UNWATCH_NODES })
+  }
 
   static taskState (allocation, name, states) {
     const title = (
@@ -151,6 +160,7 @@ function mapStateToProps ({ allocation, nodes }) {
 }
 
 AllocationInfo.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   allocation: PropTypes.object.isRequired,
   nodes: PropTypes.array.isRequired
 }

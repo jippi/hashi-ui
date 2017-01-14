@@ -50,19 +50,19 @@ Download the latest release from the Github repository and start it with:
 
 ```
 # if you got Nomad running on localhost
-./hashi-ui-<os>-<arch> --nomad.enable
+./hashi-ui-<os>-<arch> --nomad-enable
 
 # if you got Nomad running on a specific Protocol/IP/Port
-./hashi-ui-<os>-<arch> --nomad.enable --nomad.address http://IP:Port
+./hashi-ui-<os>-<arch> --nomad-enable --nomad-address http://IP:Port
 
 # if you got Consul running on localhost
-./hashi-ui-<os>-<arch> --consul.enable
+./hashi-ui-<os>-<arch> --consul-enable
 
 # if you got Consul running on a specific IP/Port
-./hashi-ui-<os>-<arch> --consul.enable  --consul.address IP:Port
+./hashi-ui-<os>-<arch> --consul-enable  --consul-address IP:Port
 
 # if you got nomad and Consul running on localhost
-./hashi-ui-<os>-<arch> --nomad.enable --consul.enable
+./hashi-ui-<os>-<arch> --nomad-enable --consul-enable
 ```
 
 This will start the hashi-ui server that will try to connect to local
@@ -137,7 +137,7 @@ nomad agent -server -client -bootstrap-expect 1 -data-dir /tmp/nomad
 Now you can run Hashi UI in other terminal (we assume you have it in PATH):
 
 ```
-hashi-ui-<os>-<arch> --nomad.enable
+hashi-ui-<os>-<arch> --nomad-enable
 ```
 
 Open browser and visit [http://127.0.0.1:3000](http://127.0.0.1:3000).
@@ -147,7 +147,7 @@ Open browser and visit [http://127.0.0.1:3000](http://127.0.0.1:3000).
 You can run the Consul UI against the official HashiCorp Consul demo like this:
 
 ```
-hashi-ui-<os>-<arch> --consul.enable --consul.address demo.consul.io
+hashi-ui-<os>-<arch> --consul-enable --consul-address demo.consul.io
 ```
 
 Open browser and visit [http://127.0.0.1:3000](http://127.0.0.1:3000).

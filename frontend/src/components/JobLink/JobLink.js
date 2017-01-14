@@ -13,6 +13,10 @@ const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId, router }) =
     children = jobId
   }
 
+  if (!linkAppend) {
+    linkAppend = '/info'
+  }
+
   const query = {
     taskGroupId,
     taskId

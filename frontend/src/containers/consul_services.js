@@ -60,6 +60,7 @@ class ConsulServices extends Component {
   }
 
   monitorService(name) {
+    window.scrollTo(0, document.getElementById('value-pane').offsetTop);
     this.props.router.push({ pathname: `/consul/${this.props.router.params.region}/services/${name}` })
   }
 
@@ -142,7 +143,7 @@ class ConsulServices extends Component {
               </List>
             </Paper>
           </Col>
-          <Col key='value-pane' xs={ 12 } sm={ 12 } md={ 8 } lg={ 8 }>
+          <Col id='value-pane' key='value-pane' xs={ 12 } sm={ 12 } md={ 8 } lg={ 8 }>
             <Subheader>
               { this.props.routeParams.name
                 ? `Service: ${this.props.routeParams.name}`
