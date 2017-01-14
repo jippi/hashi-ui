@@ -6,7 +6,7 @@ const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId, router }) =
   const JobIdUrl = encodeURIComponent(jobId)
 
   if (taskGroupId) {
-    linkAppend = linkAppend + '/taskGroups'
+    linkAppend = linkAppend + '/groups'
   }
 
   if (children === undefined) {
