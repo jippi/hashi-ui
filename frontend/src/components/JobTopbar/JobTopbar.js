@@ -26,7 +26,7 @@ class _JobTopbar extends PureComponent {
       return 0
     }
 
-    if (end.startsWith('taskGroups')) {
+    if (end.startsWith('groups')) {
       return 1
     }
 
@@ -63,7 +63,7 @@ class _JobTopbar extends PureComponent {
         <BottomNavigationItem
           label='Groups'
           icon={ taskGroupIcon }
-          onTouchTap={ () => this.handleActive('taskGroups') }
+          onTouchTap={ () => this.handleActive('groups') }
         />
         <BottomNavigationItem
           label='Allocations'
