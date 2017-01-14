@@ -5,6 +5,7 @@ import FontIcon from 'material-ui/FontIcon'
 import AllocationTopbar from '../components/AllocationTopbar/AllocationTopbar'
 import JobLink from '../components/JobLink/JobLink'
 import AllocationLink from '../components/AllocationLink/AllocationLink'
+import ClientLink from '../components/ClientLink/ClientLink'
 import {
   WATCH_ALLOC, UNWATCH_ALLOC,
   WATCH_ALLOCS, UNWATCH_ALLOCS
@@ -109,9 +110,9 @@ class Allocation extends Component {
               { this.props.allocation.TaskGroup }
             </JobLink>
 
-            &nbsp;
+            &nbsp; #{ this.getName() }
 
-            #{ this.getName() }
+            &nbsp; @ <ClientLink clientId={ this.props.allocation.NodeID } clients={ this.props.nodes } />
           </h3>
 
           { this.derp() }
@@ -125,8 +126,8 @@ class Allocation extends Component {
   }
 }
 
-function mapStateToProps ({ allocation, allocations }) {
-  return { allocation, allocations }
+function mapStateToProps ({ allocation, allocations, nodes }) {
+  return { allocation, allocations, nodes }
 }
 
 Allocation.propTypes = {
@@ -134,6 +135,7 @@ Allocation.propTypes = {
   params: PropTypes.object.isRequired,
   allocation: PropTypes.object.isRequired,
   allocations: PropTypes.array.isRequired,
+  nodes: PropTypes.array.isRequired,
   location: PropTypes.object.isRequired, // eslint-disable-line no-unused-vars
   children: PropTypes.object.isRequired
 }

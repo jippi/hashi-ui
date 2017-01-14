@@ -23,8 +23,8 @@ const findClientNameById = (clientId, clients) => {
 class ClientLink extends PureComponent {
 
   render () {
-    const linkAppend = this.props.linkAppend
     const clientId = this.props.clientId
+    let linkAppend = this.props.linkAppend
     let children = this.props.children
 
     if (children === undefined) {
@@ -35,6 +35,10 @@ class ClientLink extends PureComponent {
       if (!children) {
         children = this.props.shortUUID ? shortUUID(clientId) : clientId
       }
+    }
+
+    if (!linkAppend) {
+      linkAppend = '/info'
     }
 
     return (
