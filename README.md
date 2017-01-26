@@ -29,7 +29,7 @@ An awesome user interface (even for mobile devices!) for HashiCorp Consul & Noma
 
 For Nomad, it was quite simple, no mobile-optimized, (somewhat) feature-complete and live-updating interface existed.
 
-For Consul, the built-in UI is decent, but lack a variety of essential features:
+For Consul, the built-in UI is decent, but lacks a variety of essential features:
 
 - Live update of Services, Nodes and Key/Value lists (nobody likes to refresh)
 - More API complete (e.g. unregister services and services checks directly from UI)
