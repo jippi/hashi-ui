@@ -11,6 +11,9 @@ var (
 	flagNomadEnable = flag.Bool("nomad-enable", false, "Whether Nomad engine should be started. "+
 		"Overrides the NOMAD_ENABLE environment variable if set. "+flagDefault(strconv.FormatBool(defaultConfig.NomadEnable)))
 
+	flagNomadSkipVerify = flag.Bool("nomad-skip-verify", false, "Whether Hashi-UI should skip TLS verification, not recommended. "+
+		"Overrides the NOMAD_SKIP_VERIFY environment variable if set. "+flagDefault(strconv.FormatBool(defaultConfig.NomadSkipVerify)))
+
 	flagNomadReadOnly = flag.Bool("nomad-read-only", false, "Whether Hashi-UI should be allowed to modify Nomad state. "+
 		"Overrides the NOMAD_READ_ONLY environment variable if set. "+flagDefault(strconv.FormatBool(defaultConfig.NomadReadOnly)))
 
@@ -25,8 +28,7 @@ var (
 
 	flagNomadClientKey = flag.String("nomad-client-key", "", "Path to the Nomad Client Key File. "+
 		"Overrides the NOMAD_CLIENT_KEY environment variable if set. "+flagDefault(defaultConfig.NomadClientKey))
-)
-
+ )
 // ParseNomadEnvConfig ...
 func ParseNomadEnvConfig(c *Config) {
 	nomadEnable, ok := syscall.Getenv("NOMAD_ENABLE")
@@ -67,6 +69,10 @@ func ParseNomadEnvConfig(c *Config) {
 	nomadClientKey, ok := syscall.Getenv("NOMAD_CLIENT_KEY")
 	if ok {
 		c.NomadClientKey = nomadClientKey
+	}
+	nomadSkipVerify, ok := syscall.Getenv("NOMAD_SKIP_VERIFY")
+	if ok {
+		c.NomadSkipVerify = nomadSkipVerify != "false"
 	}
 }
 
