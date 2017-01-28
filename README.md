@@ -105,6 +105,7 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | `NOMAD_CACERT`      	  | `nomad-ca-cert`      	  | `<empty>`   	            | (optional) path to a CA Cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)                 |
 | `NOMAD_CLIENT_CERT`  	  | `nomad-client-cert`       | `<empty>` 	                | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
 | `NOMAD_CLIENT_KEY`  	  | `nomad-client-key`        | `<empty>` 	                | (optional) path to a client key file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)          	   |
+| `NOMAD_SKIP_VERIFY`  	  | `nomad-skip-verify`        | `false` 	                | (optional) skip TLS verification, not recommended (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)          	   |
 | `NOMAD_PORT_http` 	  | `<none>` 	              | `0.0.0.0:3000`          	| The IP + PORT to listen on (will overwrite `LISTEN_ADDRESS`)                                                     |
 
 ## Consul Configuration
