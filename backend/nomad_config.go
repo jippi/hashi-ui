@@ -28,7 +28,8 @@ var (
 
 	flagNomadClientKey = flag.String("nomad-client-key", "", "Path to the Nomad Client Key File. "+
 		"Overrides the NOMAD_CLIENT_KEY environment variable if set. "+flagDefault(defaultConfig.NomadClientKey))
- )
+)
+
 // ParseNomadEnvConfig ...
 func ParseNomadEnvConfig(c *Config) {
 	nomadEnable, ok := syscall.Getenv("NOMAD_ENABLE")
