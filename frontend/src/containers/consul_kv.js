@@ -73,10 +73,18 @@ class ConsulKV extends Component {
     if ('Key' in nextProps.consulKVPair) {
       this.setState({
         key: this.baseName(nextProps.consulKVPair.Key),
-        value: nextProps.consulKVPair.Value ? atob(nextProps.consulKVPair.Value) : '',
+        value: nextProps.consulKVPair.Value ? this.b64DecodeUnicode(nextProps.consulKVPair.Value) : '',
         index: nextProps.consulKVPair.ModifyIndex,
       })
     }
+  }
+
+  // utf-8 strings and base64decode need some tender-love-care that atob() won't handle alone
+  // see http://stackoverflow.com/a/30106551
+  b64DecodeUnicode(str) {
+    return decodeURIComponent(Array.prototype.map.call(atob(str), function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
   }
 
   componentDidUpdate(prevProps) {
