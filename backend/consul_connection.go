@@ -409,7 +409,7 @@ func (c *ConsulConnection) watchConsulKVPath(action Action) {
 }
 
 func (c *ConsulConnection) writeConsulKV(action Action) {
-	if *flagConsulReadOnly {
+	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to write Consul KV: ConsulReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "Unable to write Consul KV - the Consul backend is set to read-only"}
 		return
@@ -453,7 +453,7 @@ func (c *ConsulConnection) writeConsulKV(action Action) {
 }
 
 func (c *ConsulConnection) deleteConsulKV(action Action) {
-	if *flagConsulReadOnly {
+	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to delete Consul KV: ConsulReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "Unable to delete Consul KV - the Consul backend is set to read-only"}
 		return
@@ -490,7 +490,7 @@ func (c *ConsulConnection) getConsulKVPair(action Action) {
 }
 
 func (c *ConsulConnection) deleteConsulKvPair(action Action) {
-	if *flagConsulReadOnly {
+	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to delete Consul KV: ConsulReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "Unable to delete Consul KV - the Consul backend is set to read-only"}
 		return
@@ -528,7 +528,7 @@ func (c *ConsulConnection) deleteConsulKvPair(action Action) {
 }
 
 func (c *ConsulConnection) dereigsterConsulService(action Action) {
-	if *flagConsulReadOnly {
+	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to deregister Consul Service: ConsulReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "Unable to deresiger Consul Service - the Consul backend is set to read-only"}
 		return
@@ -569,7 +569,7 @@ func (c *ConsulConnection) dereigsterConsulService(action Action) {
 }
 
 func (c *ConsulConnection) dereigsterConsulServiceCheck(action Action) {
-	if *flagConsulReadOnly {
+	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to deregister Consul Service Check: ConsulReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "Unable to deresiger Consul Service Check - the Consul backend is set to read-only"}
 		return
