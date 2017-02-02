@@ -50,7 +50,6 @@ func NewNomadHub(cluster *NomadCluster) *NomadHub {
 func (h *NomadHub) Run() {
 	for {
 		select {
-
 		case c := <-h.register:
 			h.connections[c] = true
 

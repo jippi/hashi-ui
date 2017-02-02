@@ -95,17 +95,21 @@ func (c *NomadConnection) writePump() {
 	}()
 
 	for {
-		action, ok := <-c.send
-
-		if !ok {
-			if err := c.socket.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
-				c.Errorf("Could not write close message to websocket: %s", err)
-			}
+		select {
+		case <-c.destroyCh:
+			c.Warningf("Stopping writePump")
 			return
-		}
+		case action, ok := <-c.send:
+			if !ok {
+				if err := c.socket.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
+					c.Errorf("Could not write close message to websocket: %s", err)
+				}
+				return
+			}
 
-		if err := c.socket.WriteJSON(action); err != nil {
-			c.Errorf("Could not write action to websocket: %s", err)
+			if err := c.socket.WriteJSON(action); err != nil {
+				c.Errorf("Could not write action to websocket: %s", err)
+			}
 		}
 	}
 }
@@ -273,6 +277,7 @@ func (c *NomadConnection) process(action Action) {
 // Handle monitors the websocket connection for incoming actions. It sends
 // out actions on state changes.
 func (c *NomadConnection) Handle() {
+	go c.keepAlive()
 	go c.writePump()
 	c.readPump()
 
@@ -282,6 +287,21 @@ func (c *NomadConnection) Handle() {
 
 	// Kill any remaining watcher routines
 	close(c.destroyCh)
+}
+
+func (c *NomadConnection) keepAlive() {
+	logger.Debugf("Starting keep-alive packer sender")
+	ticker := time.NewTicker(10 * time.Second)
+
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+		case <-ticker.C:
+			logger.Debugf("Sending keep-alive packet")
+			c.socket.WriteMessage(websocket.PingMessage, []byte("keepalive"))
+		}
+	}
 }
 
 func (c *NomadConnection) watchAlloc(action Action) {
