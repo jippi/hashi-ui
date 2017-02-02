@@ -863,7 +863,7 @@ func (c *NomadConnection) submitJob(action Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
-	if *flagNomadReadOnly {
+	if c.region.Config.NomadReadOnly {
 		logger.Errorf("Unable to submit job: NomadReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
 		return
@@ -890,7 +890,7 @@ func (c *NomadConnection) stopJob(action Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
-	if *flagNomadReadOnly {
+	if c.region.Config.NomadReadOnly {
 		logger.Errorf("Unable to stop job: NomadReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
 		return
@@ -915,7 +915,7 @@ func (c *NomadConnection) evaluateJob(action Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
-	if *flagNomadReadOnly {
+	if c.region.Config.NomadReadOnly {
 		logger.Errorf("Unable to evaluate job: NomadReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
 		return

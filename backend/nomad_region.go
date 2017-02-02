@@ -37,6 +37,7 @@ type NomadRegionBroadcastChannels struct {
 // It also exposes an API client for the NomadRegion server.
 type NomadRegion struct {
 	Client             *api.Client
+	Config             *Config
 	broadcastChannels  *NomadRegionBroadcastChannels
 	regions            []string
 	allocations        []*api.AllocationListStub
@@ -68,6 +69,7 @@ func CreateNomadRegionClient(c *Config, region string) (*api.Client, error) {
 func NewNomadRegion(c *Config, client *api.Client, channels *NomadRegionBroadcastChannels) (*NomadRegion, error) {
 	return &NomadRegion{
 		Client:             client,
+		Config:             c,
 		broadcastChannels:  channels,
 		regions:            make([]string, 0),
 		allocations:        make([]*api.AllocationListStub, 0),
@@ -237,7 +239,7 @@ func (n *NomadRegion) watchJobs() {
 }
 
 func (n *NomadRegion) updateJob(job *api.Job) (*Action, error) {
-	if *flagNomadReadOnly {
+	if n.Config.NomadReadOnly {
 		logger.Errorf("Unable to run jon: NomadReadOnly is set to true")
 		return &Action{Type: errorNotification, Payload: "The backend server is set to read-only"}, errors.New("Nomad is in read-only mode")
 	}
