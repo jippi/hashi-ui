@@ -38,6 +38,7 @@ type Config struct {
 	NomadClientCert string
 	NomadClientKey  string
 	NomadReadOnly   bool
+	NomadSkipVerify bool
 
 	ConsulEnable   bool
 	ConsulReadOnly bool

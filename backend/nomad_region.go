@@ -58,6 +58,7 @@ func CreateNomadRegionClient(c *Config, region string) (*api.Client, error) {
 		CACert:     c.NomadCACert,
 		ClientCert: c.NomadClientCert,
 		ClientKey:  c.NomadClientKey,
+		Insecure:   c.NomadSkipVerify,
 	}
 
 	return api.NewClient(config)
