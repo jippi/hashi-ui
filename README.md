@@ -154,7 +154,7 @@ Open browser and visit [http://127.0.0.1:3000](http://127.0.0.1:3000).
 
 ## Troubleshooting
 
-- Log lines like "19:25:54.105 nomad_hub.go:69 ▶ ERROR  transport: websocket upgrade failed: websocket: could not find connection header with token 'upgrade'" and the web interface is not working.
+- Log lines like `19:25:54.105 nomad_hub.go:69 ▶ ERROR  transport: websocket upgrade failed: websocket: could not find connection header with token 'upgrade'` and the web interface is not working.
   - Ensure your load balancer is treating the services as TCP on port 80 (and SSL on 443). Websockets can't use HTTP/HTTPS mode.
 
 # Contributing & Development
