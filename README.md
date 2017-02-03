@@ -73,7 +73,7 @@ Another way to run hashi-ui is through Docker. Run the following command to
 start a webserver that will serve the application.
 
 ```
-docker run -e NOMAD_ADDR=... -p 8000:3000 jippi/hashi-ui
+docker run --net=host -e NOMAD_ADDR=... -p 8000:3000 jippi/hashi-ui
 ```
 
 Check the releases page on GitHub to see which version is current.
@@ -151,6 +151,11 @@ hashi-ui-<os>-<arch> --consul-enable --consul-address demo.consul.io
 ```
 
 Open browser and visit [http://127.0.0.1:3000](http://127.0.0.1:3000).
+
+## Troubleshooting
+
+- Log lines like "19:25:54.105 nomad_hub.go:69 ▶ ERROR  transport: websocket upgrade failed: websocket: could not find connection header with token 'upgrade'" and the web interface is not working.
+  - Ensure your load balancer is treating the services as TCP on port 80 (and SSL on 443). Websockets can't use HTTP/HTTPS mode.
 
 # Contributing & Development
 
