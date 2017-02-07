@@ -83,6 +83,10 @@ func ParseNomadFlagConfig(c *Config) {
 		c.NomadEnable = *flagNomadEnable
 	}
 
+	if *flagNomadSkipVerify {
+		c.NomadSkipVerify = *flagNomadSkipVerify
+	}
+
 	if *flagNomadReadOnly {
 		c.NomadReadOnly = *flagNomadReadOnly
 	}
