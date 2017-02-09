@@ -14,10 +14,11 @@ import ClientLink from '../ClientLink/ClientLink'
 import FormatTime from '../FormatTime/FormatTime'
 
 const nodeIdToNameCache = {}
+const allocIdRegexp = /\[(\d+)\]/
 
 const getAllocationNumberFromName = (allocationName) => {
-  const match = /[\d+]/.exec(allocationName)
-  return match[0]
+  const match = allocIdRegexp.exec(allocationName)
+  return match[1]
 }
 
 /* eslint-disable react/prop-types */
