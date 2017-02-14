@@ -1,0 +1,11 @@
+{
+    "acl_agent_master_token": "demo-demo",
+    "acl_datacenter": "acl",
+    "acl_default_policy": "deny",
+    "acl_down_policy": "deny",
+    "acl_master_token": "398073a8-5091-4d9c-871a-bbbeb030d1f6",
+    "datacenter": "acl",
+    "log_level": "INFO",
+    "node_name": "acl",
+    "server": true
+}

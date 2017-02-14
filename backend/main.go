@@ -42,14 +42,14 @@ func startLogging(logLevel string) {
 func (c *Config) Parse() {
 	flag.Parse()
 
-	ParseAppEnvConfig(c)
 	ParseAppFlagConfig(c)
+	ParseAppEnvConfig(c)
 
-	ParseNomadEnvConfig(c)
 	ParseNomadFlagConfig(c)
+	ParseNomadEnvConfig(c)
 
-	ParseConsulEnvConfig(c)
 	ParseConsulFlagConfig(c)
+	ParseConsulEnvConfig(c)
 
 	ParseNewRelicConfig(c)
 }
@@ -110,7 +110,8 @@ func main() {
 	} else {
 		logger.Infof("| consul-read-only     : %-50s |", "No (Hashi-UI can change Consul state)")
 	}
-	logger.Infof("| consul-address       : %-50s |", cfg.ConsulAddress)
+	logger.Infof("| consul.address       : %-50s |", cfg.ConsulAddress)
+	logger.Infof("| consul.acl-token     : %-50s |", cfg.ConsulACLToken)
 
 	logger.Infof("-----------------------------------------------------------------------------")
 	logger.Infof("")

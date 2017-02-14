@@ -43,6 +43,7 @@ type Config struct {
 	ConsulEnable   bool
 	ConsulReadOnly bool
 	ConsulAddress  string
+	ConsulACLToken string
 }
 
 // DefaultConfig is the basic out-of-the-box configuration for hashi-ui

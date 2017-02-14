@@ -71,11 +71,7 @@ func CreateConsulRegionClient(c *Config, region string) (*api.Client, error) {
 	config.Address = c.ConsulAddress
 	config.WaitTime = waitTime
 	config.Datacenter = region
-	// config.TLSConfig = &api.TLSConfig{
-	// 	CACert:     c.CACert,
-	// 	ClientCert: c.ClientCert,
-	// 	ClientKey:  c.ClientKey,
-	// }
+	config.Token = c.ConsulACLToken
 
 	return api.NewClient(config)
 }
@@ -101,6 +97,8 @@ func (c *ConsulRegion) StartWatchers() {
 // watchServices ...
 func (c *ConsulRegion) watchServices() {
 	q := &api.QueryOptions{WaitIndex: 0}
+	q.Token = c.Config.ConsulACLToken
+
 	raw := c.Client.Raw()
 
 	for {
@@ -134,6 +132,8 @@ func (c *ConsulRegion) watchServices() {
 // watchNodes ...
 func (c *ConsulRegion) watchNodes() {
 	q := &api.QueryOptions{WaitIndex: 0}
+	q.Token = c.Config.ConsulACLToken
+
 	raw := c.Client.Raw()
 
 	for {

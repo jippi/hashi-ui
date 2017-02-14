@@ -397,6 +397,7 @@ func (c *ConsulConnection) watchConsulKVPath(action Action) {
 	c.Infof("Started watching %s", key)
 
 	q := &api.QueryOptions{WaitIndex: 1}
+
 	for {
 		select {
 		case <-c.destroyCh:
@@ -571,6 +572,7 @@ func (c *ConsulConnection) dereigsterConsulService(action Action) {
 
 	config := api.DefaultConfig()
 	config.Address = nodeAddress + ":" + port
+	config.Token = c.region.Config.ConsulACLToken
 
 	client, err := api.NewClient(config)
 	if err != nil {
@@ -624,6 +626,7 @@ func (c *ConsulConnection) dereigsterConsulServiceCheck(action Action) {
 
 	config := api.DefaultConfig()
 	config.Address = nodeAddress + ":" + port
+	config.Token = c.region.Config.ConsulACLToken
 
 	client, err := api.NewClient(config)
 	if err != nil {
