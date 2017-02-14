@@ -7,6 +7,7 @@ import JobLink from '../JobLink/JobLink'
 import RawJson from '../RawJson/RawJson'
 import JobTaskGroupActionScale from '../JobTaskGroupActionScale/JobTaskGroupActionScale'
 import JobTaskGroupActionStop from '../JobTaskGroupActionStop/JobTaskGroupActionStop'
+import JobTaskGroupActionRestart from '../JobTaskGroupActionRestart/JobTaskGroupActionRestart'
 import ConstraintTable from '../ConstraintTable/ConstraintTable'
 
 const JobTaskGroups = ({ job, location }) => {
@@ -22,6 +23,7 @@ const JobTaskGroups = ({ job, location }) => {
         <TableRowColumn style={{ textAlign: 'right' }}>{ taskGroup.Count }</TableRowColumn>
         <TableRowColumn>
           <JobTaskGroupActionScale job={ job } taskGroup={ taskGroup } />
+          <JobTaskGroupActionRestart job={ job } taskGroup={ taskGroup } />
           <JobTaskGroupActionStop job={ job } taskGroup={ taskGroup } />
         </TableRowColumn>
       </TableRow>

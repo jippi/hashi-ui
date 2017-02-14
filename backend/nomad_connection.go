@@ -846,12 +846,31 @@ func (c *NomadConnection) changeTaskGroupCount(action Action) {
 	originalCount := foundTaskGroup.Count
 
 	switch scaleAction {
+	case "set":
+		foundTaskGroup.Count = params["count"].(int)
 	case "increase":
 		foundTaskGroup.Count++
 	case "decrease":
 		foundTaskGroup.Count--
 	case "stop":
 		foundTaskGroup.Count = 0
+	case "restart":
+		stopPayload := make(map[string]interface{})
+		for k, v := range params {
+			stopPayload[k] = v
+		}
+		stopPayload["scaleAction"] = "stop"
+
+		restartPayload := make(map[string]interface{})
+		for k, v := range params {
+			restartPayload[k] = v
+		}
+		restartPayload["scaleAction"] = "set"
+		restartPayload["count"] = foundTaskGroup.Count
+
+		c.changeTaskGroupCount(Action{Payload: stopPayload})
+		c.changeTaskGroupCount(Action{Payload: restartPayload})
+		return
 	default:
 		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Invalid action: %s", scaleAction), Index: index}
 		return
