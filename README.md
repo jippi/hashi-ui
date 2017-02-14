@@ -72,8 +72,13 @@ You can override this with the `-listen-address`.
 Another way to run hashi-ui is through Docker. Run the following command to
 start a webserver that will serve the application.
 
-```
-docker run --net=host -e NOMAD_ADDR=... -p 8000:3000 jippi/hashi-ui
+```sh
+# nomad only
+docker run --net=host -e NOMAD_ENABLE=1 -e NOMAD_ADDR=... -p 8000:3000 jippi/hashi-ui
+# consul only
+docker run --net=host -e CONSUL_ENABLE=1 -e CONSUL_ADDR=... -p 8000:3000 jippi/hashi-ui
+# nomad + consul
+docker run --net=host -e NOMAD_ENABLE=1 -e NOMAD_ADDR=... -e CONSUL_ENABLE=1 -e CONSUL_ADDR=... -p 8000:3000 jippi/hashi-ui
 ```
 
 Check the releases page on GitHub to see which version is current.
