@@ -76,17 +76,22 @@ func (c *ConsulConnection) writePump() {
 	}()
 
 	for {
-		action, ok := <-c.send
-
-		if !ok {
-			if err := c.socket.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
-				c.Errorf("Could not write close message to websocket: %s", err)
-			}
+		select {
+		case <-c.destroyCh:
+			c.Warningf("Stopping writePump")
 			return
-		}
 
-		if err := c.socket.WriteJSON(action); err != nil {
-			c.Errorf("Could not write action to websocket: %s", err)
+		case action, ok := <-c.send:
+			if !ok {
+				if err := c.socket.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
+					c.Errorf("Could not write close message to websocket: %s", err)
+				}
+				return
+			}
+
+			if err := c.socket.WriteJSON(action); err != nil {
+				c.Errorf("Could not write action to websocket: %s", err)
+			}
 		}
 	}
 }
@@ -186,6 +191,7 @@ func (c *ConsulConnection) process(action Action) {
 // Handle monitors the websocket connection for incoming actions. It sends
 // out actions on state changes.
 func (c *ConsulConnection) Handle() {
+	go c.keepAlive()
 	go c.writePump()
 	c.readPump()
 
@@ -195,6 +201,21 @@ func (c *ConsulConnection) Handle() {
 
 	// Kill any remaining watcher routines
 	close(c.destroyCh)
+}
+
+func (c *ConsulConnection) keepAlive() {
+	logger.Debugf("Starting keep-alive packer sender")
+	ticker := time.NewTicker(10 * time.Second)
+
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+		case <-ticker.C:
+			logger.Debugf("Sending keep-alive packet")
+			c.socket.WriteMessage(websocket.PingMessage, []byte("keepalive"))
+		}
+	}
 }
 
 func (c *ConsulConnection) fetchRegions() {
@@ -410,7 +431,7 @@ func (c *ConsulConnection) watchConsulKVPath(action Action) {
 }
 
 func (c *ConsulConnection) writeConsulKV(action Action) {
-	if *flagConsulReadOnly {
+	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to write Consul KV: ConsulReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "Unable to write Consul KV - the Consul backend is set to read-only"}
 		return
@@ -454,7 +475,7 @@ func (c *ConsulConnection) writeConsulKV(action Action) {
 }
 
 func (c *ConsulConnection) deleteConsulKV(action Action) {
-	if *flagConsulReadOnly {
+	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to delete Consul KV: ConsulReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "Unable to delete Consul KV - the Consul backend is set to read-only"}
 		return
@@ -491,7 +512,7 @@ func (c *ConsulConnection) getConsulKVPair(action Action) {
 }
 
 func (c *ConsulConnection) deleteConsulKvPair(action Action) {
-	if *flagConsulReadOnly {
+	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to delete Consul KV: ConsulReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "Unable to delete Consul KV - the Consul backend is set to read-only"}
 		return
@@ -529,7 +550,7 @@ func (c *ConsulConnection) deleteConsulKvPair(action Action) {
 }
 
 func (c *ConsulConnection) dereigsterConsulService(action Action) {
-	if *flagConsulReadOnly {
+	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to deregister Consul Service: ConsulReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "Unable to deresiger Consul Service - the Consul backend is set to read-only"}
 		return
@@ -571,7 +592,7 @@ func (c *ConsulConnection) dereigsterConsulService(action Action) {
 }
 
 func (c *ConsulConnection) dereigsterConsulServiceCheck(action Action) {
-	if *flagConsulReadOnly {
+	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to deregister Consul Service Check: ConsulReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "Unable to deresiger Consul Service Check - the Consul backend is set to read-only"}
 		return

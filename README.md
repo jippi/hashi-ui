@@ -29,7 +29,7 @@ An awesome user interface (even for mobile devices!) for HashiCorp Consul & Noma
 
 For Nomad, it was quite simple, no mobile-optimized, (somewhat) feature-complete and live-updating interface existed.
 
-For Consul, the built-in UI is decent, but lack a variety of essential features:
+For Consul, the built-in UI is decent, but lacks a variety of essential features:
 
 - Live update of Services, Nodes and Key/Value lists (nobody likes to refresh)
 - More API complete (e.g. unregister services and services checks directly from UI)
@@ -72,8 +72,13 @@ You can override this with the `-listen-address`.
 Another way to run hashi-ui is through Docker. Run the following command to
 start a webserver that will serve the application.
 
-```
-docker run -e NOMAD_ADDR=... -p 8000:3000 jippi/hashi-ui
+```sh
+# nomad only
+docker run --net=host -e NOMAD_ENABLE=1 -e NOMAD_ADDR=... -p 8000:3000 jippi/hashi-ui
+# consul only
+docker run --net=host -e CONSUL_ENABLE=1 -e CONSUL_ADDR=... -p 8000:3000 jippi/hashi-ui
+# nomad + consul
+docker run --net=host -e NOMAD_ENABLE=1 -e NOMAD_ADDR=... -e CONSUL_ENABLE=1 -e CONSUL_ADDR=... -p 8000:3000 jippi/hashi-ui
 ```
 
 Check the releases page on GitHub to see which version is current.
@@ -99,12 +104,12 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 
 | Environment        	    | CLI (`--flag`)    		  | Default                 	| Description                                                                                                      |
 |-------------------------|-------------------------|---------------------------|------------------------------------------------------------------------------------------------------------------|
-| `NOMAD_ENABLE`          | `nomad.enable`      	  | `false` 	                | Use `--nomad.enable` or env `NOMAD_ENABLE=1` to enable Nomad backend                                             |
-| `NOMAD_ADDR`            | `nomad.address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your .                                                                                |
-| `NOMAD_READ_ONLY`    	  | `nomad.read-only`   	  | `false` 		        	    | Should hash-ui allowed to modify Nomad state (stop/start jobs and so forth)	                                     |
-| `NOMAD_CACERT`      	  | `nomad.ca_cert`      	  | `<empty>`   	            | (optional) path to a CA Cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)                 |
-| `NOMAD_CLIENT_CERT`  	  | `nomad.client_cert`     | `<empty>` 	              | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
-| `NOMAD_CLIENT_KEY`  	  | `nomad.client_key`      | `<empty>` 	              | (optional) path to a client key file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)          	   |
+| `NOMAD_ENABLE`          | `nomad-enable`      	  | `false` 	                | Use `--nomad.enable` or env `NOMAD_ENABLE=1` to enable Nomad backend                                             |
+| `NOMAD_ADDR`            | `nomad-address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your .                                                                                |
+| `NOMAD_READ_ONLY`    	  | `nomad-read-only`   	  | `false` 		        	    | Should hash-ui allowed to modify Nomad state (stop/start jobs and so forth)	                                     |
+| `NOMAD_CACERT`      	  | `nomad-ca-cert`      	  | `<empty>`   	            | (optional) path to a CA Cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)                 |
+| `NOMAD_CLIENT_CERT`  	  | `nomad-client-cert`     | `<empty>` 	              | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
+| `NOMAD_CLIENT_KEY`  	  | `nomad-client-key`      | `<empty>` 	              | (optional) path to a client key file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)          	   |
 | `NOMAD_PORT_http` 	    | `<none>` 	              | `0.0.0.0:3000`          	| The IP + PORT to listen on (will overwrite `LISTEN_ADDRESS`)                                                     |
 
 ## Consul Configuration
@@ -151,6 +156,11 @@ hashi-ui-<os>-<arch> --consul-enable --consul-address demo.consul.io
 ```
 
 Open browser and visit [http://127.0.0.1:3000](http://127.0.0.1:3000).
+
+## Troubleshooting
+
+- Log lines like `19:25:54.105 nomad_hub.go:69 ▶ ERROR  transport: websocket upgrade failed: websocket: could not find connection header with token 'upgrade'` and the web interface is not working.
+  - Ensure your load balancer is treating the services as TCP on port 80 (and SSL on 443). Websockets can't use HTTP/HTTPS mode.
 
 # Contributing & Development
 

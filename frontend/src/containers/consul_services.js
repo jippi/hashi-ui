@@ -9,6 +9,7 @@ import Subheader from 'material-ui/Subheader'
 import Paper from 'material-ui/Paper'
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import Checkbox from 'material-ui/Checkbox';
 import { red500, green500, orange500, grey200 } from 'material-ui/styles/colors'
 import {
   WATCH_CONSUL_SERVICES, UNWATCH_CONSUL_SERVICES,
@@ -83,6 +84,18 @@ class ConsulServices extends Component {
       services = services.filter(service => service.Name.indexOf(this.state.service_name) != -1)
     }
 
+    if ('passing' in this.state && this.state.passing) {
+      services = services.filter(service => service.ChecksPassing > 0)
+    }
+
+    if ('warning' in this.state && this.state.warning) {
+      services = services.filter(service => service.ChecksWarning > 0)
+    }
+
+    if ('critical' in this.state && this.state.critical) {
+      services = services.filter(service => service.ChecksCritical > 0)
+    }
+
     return services
   }
 
@@ -104,7 +117,19 @@ class ConsulServices extends Component {
                 <TextField
                   hintText='Service name'
                   value={ this.state.service_name }
-                  onChange={ (proxy, value) => { this.setState({ ...this.state, service_name: value }) } }
+                  onChange={ (proxy, value) => { this.setState({ service_name: value }) } }
+                />
+                <Checkbox
+                  label='Checks passing'
+                  onCheck={ (proxy, checked) => { this.setState({ passing: checked }) } }
+                />
+                <Checkbox
+                  label='Checks warning'
+                  onCheck={ (proxy, checked) => { this.setState({ warning: checked }) } }
+                />
+                <Checkbox
+                  label='Checks critical'
+                  onCheck={ (proxy, checked) => { this.setState({ critical: checked }) } }
                 />
               </CardText>
             </Card>

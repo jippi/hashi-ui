@@ -9,7 +9,6 @@ import Job from './containers/job'
 import JobInfo from './components/JobInfo/JobInfo'
 import JobAllocs from './components/JobAllocations/JobAllocations'
 import JobEvals from './components/JobEvaluations/JobEvaluations'
-import JobTasks from './components/JobTasks/JobTasks'
 import JobTaskGroups from './components/JobTaskGroups/JobTaskGroups'
 import JobRaw from './components/JobRaw/JobRaw'
 
@@ -93,8 +92,7 @@ const AppRouter = ({ history }) =>
         <Route path='/nomad/:region/jobs/:jobId/info' component={ JobInfo } />
         <Route path='/nomad/:region/jobs/:jobId/allocations' component={ JobAllocs } />
         <Route path='/nomad/:region/jobs/:jobId/evaluations' component={ JobEvals } />
-        <Route path='/nomad/:region/jobs/:jobId/tasks' component={ JobTasks } />
-        <Route path='/nomad/:region/jobs/:jobId/taskGroups' component={ JobTaskGroups } />
+        <Route path='/nomad/:region/jobs/:jobId/groups' component={ JobTaskGroups } />
         <Route path='/nomad/:region/jobs/:jobId/raw' component={ JobRaw } />
       </Route>
 

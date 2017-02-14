@@ -96,6 +96,12 @@ func main() {
 	logger.Infof("| nomad-ca-cert         : %-50s |", cfg.NomadCACert)
 	logger.Infof("| nomad-client-cert     : %-50s |", cfg.NomadClientCert)
 	logger.Infof("| nomad-client-key      : %-50s |", cfg.NomadClientKey)
+	logger.Infof("| nomad-skip-verify   	: %-50t |", cfg.NomadSkipVerify)
+	if cfg.NomadSkipVerify {
+		logger.Infof("| nomad-skip-verify     : %-50s |", "Yes")
+	} else {
+		logger.Infof("| nomad-skip-verify     : %-50s |", "No")
+	}
 
 	// Consul
 	logger.Infof("| consul-enable     	: %-50t |", cfg.ConsulEnable)
