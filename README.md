@@ -20,6 +20,7 @@ An awesome user interface (even for mobile devices!) for HashiCorp Consul & Noma
   * [Nomad Configuration](#nomad-configuration)
   * [Consul Configuration](#consul-configuration)
   * [Instrumentation Configuration](#instrumentation-configuration)
+  * [Running in AWS](#running-in-aws)
 - [Try](#try)
   * [Nomad](#nomad)
   * [Consul](#consul)
@@ -126,8 +127,12 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | Environment        	    | CLI (`--flag`)    		  | Default                 	| Description                                                                                                      |
 |-------------------------|-------------------------|---------------------------|------------------------------------------------------------------------------------------------------------------|
 | `NEWRELIC_APP_NAME`     | `newrelic.app_name`  	  | `hashi-ui`               	| (optional) NewRelic application name                                                                             |
-| `NEWRELIC_LICENSE`      | `newrelic.license`  	  | `<empty>`          	  		| (optional) NewRelic license key                                                                                  |
+| `NEWRELIC_LICENSE`      | `newrelic.license`  	  | `<empty>`          	  		| (optional) NewRelic license key               
 
+
+## Running in AWS
+
+When Running Hashi UI behind AWS ELB (even with Nginx/Traefik in between), ELB should be configured with TCP not HTTP Listeners (HTTP Listener doesn't support websockets)
 
 # Try
 
