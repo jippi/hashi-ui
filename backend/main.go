@@ -132,7 +132,7 @@ func main() {
 
 		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			logger.Infof("Redirecting / to /nomad")
-			http.Redirect(w, r, "/nomad", 302)
+			http.Redirect(w, r, cfg.ProxyAddress+"/nomad", 302)
 		})
 
 		router.HandleFunc("/ws/nomad", nomadHub.Handler)
@@ -149,7 +149,7 @@ func main() {
 		if !cfg.NomadEnable {
 			router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 				logger.Infof("Redirecting / to /consul")
-				http.Redirect(w, r, "/consul", 302)
+				http.Redirect(w, r, cfg.ProxyAddress+"/consul", 302)
 			})
 		}
 
@@ -186,13 +186,12 @@ func main() {
 			}
 
 			response = append(response, fmt.Sprintf("window.ENABLED_SERVICES=[%s]", strings.Join(enabledServices, ",")))
-			response = append(response, fmt.Sprintf("window.NOMAD_ADDR=\"%s\"", cfg.NomadAddress))
 
 			var endpointURL string
 			if cfg.ProxyAddress != "" {
 				endpointURL = fmt.Sprintf("\"%s\"", strings.TrimSuffix(cfg.ProxyAddress, "/"))
 			} else {
-				endpointURL = "document.location.hostname + ':' + (window.NOMAD_ENDPOINT_PORT || document.location.port)"
+				endpointURL = "document.location.protocol + '//' + document.location.hostname + ':' + (window.NOMAD_ENDPOINT_PORT || document.location.port)"
 			}
 
 			response = append(response, fmt.Sprintf("window.NOMAD_ENDPOINT=%s", endpointURL))
