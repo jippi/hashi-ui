@@ -1,33 +1,18 @@
-# Example Nomad jobspec for hashi-ui
-
 job "hashi-ui" {
-  # Job should run in the US region
-  region = "global"
-
-  # Spread tasks between us-west-1 and us-east-1
+  region      = "global"
   datacenters = ["dc1"]
+  type        = "service"
 
-  # run this job globally
-  type = "service"
-
-  # Rolling updates should be sequential
-  update {
-    stagger      = "30s"
-    max_parallel = 1
-  }
-
-  group "servers" {
-    # we want one hashi-ui server
+  group "server" {
     count = 1
 
-    # create a web front end using a docker image
     task "hashi-ui" {
+      driver = "exec"
+
       constraint {
         attribute = "${attr.kernel.name}"
         value     = "linux"
       }
-
-      driver = "exec"
 
       config {
         command = "hashi-ui-linux-amd64"
@@ -51,6 +36,11 @@ job "hashi-ui" {
       env {
         NOMAD_ENABLE = 1
         NOMAD_ADDR   = "http://nomad.service.consul:4646"
+
+        /**
+        CONSUL_ENABLE = 1
+        CONSUL_ADDR   = "consul.service.consul:8500"
+        */
       }
 
       resources {
@@ -58,16 +48,11 @@ job "hashi-ui" {
         memory = 512
 
         network {
-          mbits = 10
+          mbits = 5
 
-          # request for a static port
           port "http" {
             static = 3000
           }
-
-          # use a dynamic port
-
-          # port "http" {}
         }
       }
     }
