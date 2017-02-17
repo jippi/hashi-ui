@@ -58,14 +58,14 @@ func main() {
 	cfg := DefaultConfig()
 	cfg.Parse()
 
-	config := newrelic.NewConfig(cfg.NewRelicAppName, cfg.NewRelicLicense)
-	config.Logger = newrelic.NewLogger(os.Stdout)
+	newrelicConfig := newrelic.NewConfig(cfg.NewRelicAppName, cfg.NewRelicLicense)
+	newrelicConfig.Logger = newrelic.NewLogger(os.Stdout)
 
 	if cfg.NewRelicAppName == "" || cfg.NewRelicLicense == "" {
-		config.Enabled = false
+		newrelicConfig.Enabled = false
 	}
 
-	_, err := newrelic.NewApplication(config)
+	_, err := newrelic.NewApplication(newrelicConfig)
 	if err != nil {
 		logger.Error(err)
 		os.Exit(1)
