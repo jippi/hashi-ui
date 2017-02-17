@@ -14,6 +14,25 @@ class Job extends Component {
     this.props.dispatch({ type: UNWATCH_JOB, payload: this.props.params.jobId })
   }
 
+  breadcrumb() {
+    const query = this.props.location.query || {};
+    let out = []
+
+    if (query.taskGroupId) {
+      out = query.taskGroupId.split(".")
+    }
+
+    if (query.taskId) {
+      out = query.taskId.split(".")
+    }
+
+    if (out.length === 0) {
+      return this.props.job.Name
+    }
+
+    return out.join(" > ")
+  }
+
   render () {
     if (this.props.job == null) {
       return null
@@ -25,7 +44,7 @@ class Job extends Component {
 
         <div style={{ padding: 10, paddingBottom: 0, paddingTop: 0 }}>
           <div style={{ float: 'left', paddingTop: 11 }}>
-            <h2>Job: { this.props.job.Name }</h2>
+            <h2>Job: { this.breadcrumb() } </h2>
           </div>
 
           <div style={{ float: 'right', width: 50 }}>
