@@ -90,7 +90,7 @@ const ClientInfo = ({ node }) =>
       </Col>
     </Row>
     <Row style={{ marginTop: '1rem' }}>
-      <Col key='unique-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
+      <Col key='nomad-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
         <Card>
           <CardTitle title='Nomad Properties' />
           <CardText>
@@ -98,6 +98,33 @@ const ClientInfo = ({ node }) =>
           </CardText>
         </Card>
       </Col>
+      <Col key='value-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
+        <Card>
+          <CardTitle title='Vault Properties' />
+          <CardText>
+            <MetaPayload dtWithClass='wide' metaBag={ withPrefix(node.Attributes, 'vault.') } />
+          </CardText>
+        </Card>
+      </Col>
+    </Row>
+    <Row style={{ marginTop: '1rem' }}>
+      <Col key='memory-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
+        <Card>
+          <CardTitle title='Memory Properties' />
+          <CardText>
+            <MetaPayload dtWithClass='wide' metaBag={ withPrefix(node.Attributes, 'memory.') } />
+          </CardText>
+        </Card>
+      </Col>
+      <Col key='os-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
+        <Card>
+          <CardTitle title='OS Properties' />
+          <CardText>
+            <MetaPayload dtWithClass='wide' metaBag={ withPrefix(node.Attributes, 'os.') } />
+          </CardText>
+        </Card>
+      </Col>
+
     </Row>
   </Grid>
 
