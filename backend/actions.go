@@ -9,6 +9,7 @@ type Action struct {
 }
 
 const (
+	keepAlive           = "INTERNAL_KEEP_ALIVE"
 	errorNotification   = "ERROR_NOTIFICATION"
 	successNotification = "SUCCESS_NOTIFICATION"
 )
