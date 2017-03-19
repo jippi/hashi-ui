@@ -299,7 +299,7 @@ func (c *NomadConnection) keepAlive() {
 			return
 		case <-ticker.C:
 			logger.Debugf("Sending keep-alive packet")
-			c.socket.WriteMessage(websocket.PingMessage, []byte("keepalive"))
+			c.send <- &Action{Type: keepAlive, Payload: "hello-world", Index: 0}
 		}
 	}
 }
