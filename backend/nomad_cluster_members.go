@@ -3,8 +3,8 @@ package main
 import (
 	"crypto/sha1"
 	"fmt"
+	"net"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/cnf/structhash"
@@ -86,11 +86,10 @@ func (c *NomadCluster) MembersWithID() ([]*AgentMemberWithID, error) {
 			continue
 		}
 
-		parts := strings.Split(leader, ":")
-		if len(parts) != 2 {
+		addr, port, err := net.SplitHostPort(leader)
+		if err != nil {
 			return nil, fmt.Errorf("Failed to parse leader: %s", leader)
 		}
-		addr, port := parts[0], parts[1]
 
 		for _, m := range ms {
 			mPort, ok := m.Tags["port"]
