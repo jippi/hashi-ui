@@ -107,12 +107,12 @@ func (n *NomadRegion) watchAllocs() {
 		localWaitIndex := q.WaitIndex
 
 		// only work if the WaitIndex have changed
-		if remoteWaitIndex == localWaitIndex {
-			logger.Debugf("Allocations index is unchanged (%d == %d)", localWaitIndex, remoteWaitIndex)
+		if remoteWaitIndex <= localWaitIndex {
+			logger.Debugf("Allocations index is unchanged (%d <= %d)", remoteWaitIndex, localWaitIndex)
 			continue
 		}
 
-		logger.Debugf("Allocations index is changed (%d <> %d)", localWaitIndex, remoteWaitIndex)
+		logger.Debugf("Allocations index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
 
 		n.allocations = allocations
 		n.broadcastChannels.allocations.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
@@ -135,12 +135,12 @@ func (n *NomadRegion) watchAllocsShallow() {
 		localWaitIndex := q.WaitIndex
 
 		// only work if the WaitIndex have changed
-		if remoteWaitIndex == localWaitIndex {
-			logger.Debugf("Allocations (shallow) index is unchanged (%d == %d)", localWaitIndex, remoteWaitIndex)
+		if remoteWaitIndex <= localWaitIndex {
+			logger.Debugf("Allocations (shallow) index is unchanged (%d <= %d)", remoteWaitIndex, localWaitIndex)
 			continue
 		}
 
-		logger.Debugf("Allocations (shallow) index is changed (%d <> %d)", localWaitIndex, remoteWaitIndex)
+		logger.Debugf("Allocations (shallow) index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
 
 		for i := range allocations {
 			allocations[i].TaskStates = make(map[string]*api.TaskState)
@@ -174,10 +174,12 @@ func (n *NomadRegion) watchNodes() {
 		localWaitIndex := q.WaitIndex
 
 		// only work if the WaitIndex have changed
-		if remoteWaitIndex == localWaitIndex {
-			logger.Debugf("Nodes wait-index is unchanged (%d <> %d)", localWaitIndex, remoteWaitIndex)
+		if remoteWaitIndex <= localWaitIndex {
+			logger.Debugf("Nodes wait-index is unchanged (%d <= %d)", remoteWaitIndex, localWaitIndex)
 			continue
 		}
+
+		logger.Debugf("Nodes index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
 
 		// http://stackoverflow.com/a/28999886
 		sort.Sort(ClientNameSorter(nodes))
@@ -202,10 +204,12 @@ func (n *NomadRegion) watchEvals() {
 		localWaitIndex := q.WaitIndex
 
 		// only work if the WaitIndex have changed
-		if remoteWaitIndex == localWaitIndex {
-			logger.Debugf("Evaluations wait-index is unchanged (%d <> %d)", localWaitIndex, remoteWaitIndex)
+		if remoteWaitIndex <= localWaitIndex {
+			logger.Debugf("Evaluations wait-index is unchanged (%d <= %d)", remoteWaitIndex, localWaitIndex)
 			continue
 		}
+
+		logger.Debugf("Evaluations index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
 
 		n.evaluations = evaluations
 		n.broadcastChannels.evaluations.Update(&Action{Type: fetchedEvals, Payload: evaluations, Index: remoteWaitIndex})
@@ -227,10 +231,12 @@ func (n *NomadRegion) watchJobs() {
 		localWaitIndex := q.WaitIndex
 
 		// only work if the WaitIndex have changed
-		if remoteWaitIndex == localWaitIndex {
-			logger.Debugf("Jobs wait-index is unchanged (%d <> %d)", localWaitIndex, remoteWaitIndex)
+		if remoteWaitIndex <= localWaitIndex {
+			logger.Debugf("Jobs wait-index is unchanged (%d <= %d)", remoteWaitIndex, localWaitIndex)
 			continue
 		}
+
+		logger.Debugf("Jobs index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
 
 		n.jobs = jobs
 		n.broadcastChannels.jobs.Update(&Action{Type: fetchedJobs, Payload: jobs, Index: remoteWaitIndex})
