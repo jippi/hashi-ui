@@ -28,7 +28,7 @@ class Evaluation extends Component {
 
     return (
       <div>
-        <EvaluationTopbar />
+        <EvaluationTopbar { ...this.props } />
 
         <div style={{ padding: 10, paddingBottom: 0 }}>
           <h2>Evaluation: { this.props.evaluation.ID }</h2>
