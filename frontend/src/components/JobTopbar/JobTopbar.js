@@ -12,10 +12,8 @@ const rawIcon = <FontIcon className='material-icons'>code</FontIcon>
 class _JobTopbar extends PureComponent {
 
   handleActive (tab) {
-    let path = location.pathname.split('/')
-    path.pop()
-    path = path.join('/')
-    this.props.router.push(path + '/' + tab)
+    const prefix = `/nomad/${this.props.router.params.region}/jobs/${this.props.job.Name}`
+    this.props.router.push(prefix + '/' + tab)
   }
 
   getActiveTab () {
@@ -87,7 +85,8 @@ class _JobTopbar extends PureComponent {
 
 _JobTopbar.propTypes = {
   router: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired
+  location: PropTypes.object.isRequired,
+  job: PropTypes.object.isRequired
 }
 
 const ViewJobTopbar = withRouter(_JobTopbar)
