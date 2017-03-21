@@ -555,6 +555,14 @@ func (c *NomadConnection) watchJob(action Action) {
 		default:
 			job, meta, err := c.region.Client.Jobs().Info(jobID, q)
 
+			for _, taskGroup := range job.TaskGroups {
+				for _, task := range taskGroup.Tasks {
+					for k := range task.Env {
+						task.Env[k] = ""
+					}
+				}
+			}
+
 			if err != nil {
 				c.Errorf("connection: unable to fetch job info: %s", err)
 				time.Sleep(10 * time.Second)
