@@ -156,9 +156,15 @@ func (n *NomadRegion) watchAllocsShallow() {
 // ClientNameSorter sorts planets by name
 type ClientNameSorter []*api.NodeListStub
 
-func (a ClientNameSorter) Len() int           { return len(a) }
-func (a ClientNameSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ClientNameSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
+func (a ClientNameSorter) Len() int {
+	return len(a)
+}
+func (a ClientNameSorter) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+func (a ClientNameSorter) Less(i, j int) bool {
+	return a[i].Name < a[j].Name
+}
 
 func (n *NomadRegion) watchNodes() {
 	q := &api.QueryOptions{WaitIndex: 1}
@@ -245,9 +251,10 @@ func (n *NomadRegion) watchJobs() {
 }
 
 func (n *NomadRegion) updateJob(job *api.Job) (*Action, error) {
-	if n.Config.NomadReadOnly {
-		logger.Errorf("Unable to run jon: NomadReadOnly is set to true")
+	if n.Config.NomadReadOnly || defaultConfig.HideEnvs {
+		logger.Errorf("Unable to run job: NomadReadOnly is set to true")
 		return &Action{Type: errorNotification, Payload: "The backend server is set to read-only"}, errors.New("Nomad is in read-only mode")
+
 	}
 
 	logger.Infof("Started run job with id: %s", job.ID)
