@@ -8,26 +8,26 @@ import (
 
 var (
 	flagLogLevel = flag.String("log-level", "",
-		"The log level for hashi-ui to run under. "+flagDefault(defaultConfig.LogLevel))
+		"The log level for hashi-ui to run under. " + flagDefault(defaultConfig.LogLevel))
 
 	flagProxyAddress = flag.String("proxy-address", "",
-		"The address used on an external proxy (exmaple: example.com/nomad) "+flagDefault(defaultConfig.ProxyAddress))
+		"The address used on an external proxy (exmaple: example.com/nomad) " + flagDefault(defaultConfig.ProxyAddress))
 
 	flagListenAddress = flag.String("listen-address", "",
-		"The address on which to expose the web interface. "+flagDefault(defaultConfig.ListenAddress))
+		"The address on which to expose the web interface. " + flagDefault(defaultConfig.ListenAddress))
 
 	flagNewRelicAppName = flag.String("newrelic-app-name", "hashi-ui",
-		"The NewRelic app name. "+flagDefault(defaultConfig.NewRelicAppName))
+		"The NewRelic app name. " + flagDefault(defaultConfig.NewRelicAppName))
 
 	flagNewRelicLicense = flag.String("newrelic-license", "",
-		"The NewRelic license key. "+flagDefault(defaultConfig.NewRelicLicense))
+		"The NewRelic license key. " + flagDefault(defaultConfig.NewRelicLicense))
 )
 
 // Config for the hashi-ui server
 type Config struct {
-	LogLevel      string
-	ProxyAddress  string
-	ListenAddress string
+	LogLevel        string
+	ProxyAddress    string
+	ListenAddress   string
 
 	NewRelicAppName string
 	NewRelicLicense string
@@ -40,11 +40,11 @@ type Config struct {
 	NomadReadOnly   bool
 	NomadSkipVerify bool
 
-	ConsulEnable   bool
-	ConsulReadOnly bool
-	ConsulAddress  string
-	ConsulACLToken string
-	HideEnvs       bool
+	ConsulEnable    bool
+	ConsulReadOnly  bool
+	ConsulAddress   string
+	ConsulACLToken  string
+	HideEnvs        bool
 }
 
 // DefaultConfig is the basic out-of-the-box configuration for hashi-ui

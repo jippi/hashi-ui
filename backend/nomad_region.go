@@ -156,9 +156,15 @@ func (n *NomadRegion) watchAllocsShallow() {
 // ClientNameSorter sorts planets by name
 type ClientNameSorter []*api.NodeListStub
 
-func (a ClientNameSorter) Len() int           { return len(a) }
-func (a ClientNameSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ClientNameSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
+func (a ClientNameSorter) Len() int {
+	return len(a)
+}
+func (a ClientNameSorter) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+func (a ClientNameSorter) Less(i, j int) bool {
+	return a[i].Name < a[j].Name
+}
 
 func (n *NomadRegion) watchNodes() {
 	q := &api.QueryOptions{WaitIndex: 1}

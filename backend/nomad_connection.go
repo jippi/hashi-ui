@@ -337,7 +337,7 @@ func (c *NomadConnection) watchAlloc(action Action) {
 			remoteWaitIndex := meta.LastIndex
 			localWaitIndex := q.WaitIndex
 
-			// only broadcast if the LastIndex has changed
+		// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &Action{Type: fetchedAlloc, Payload: alloc, Index: remoteWaitIndex}
 				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
@@ -377,7 +377,7 @@ func (c *NomadConnection) watchEval(action Action) {
 			remoteWaitIndex := meta.LastIndex
 			localWaitIndex := q.WaitIndex
 
-			// only broadcast if the LastIndex has changed
+		// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &Action{Type: fetchedEval, Payload: eval, Index: remoteWaitIndex}
 				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
@@ -474,7 +474,7 @@ func (c *NomadConnection) watchNode(action Action) {
 			remoteWaitIndex := meta.LastIndex
 			localWaitIndex := q.WaitIndex
 
-			// only broadcast if the LastIndex has changed
+		// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &Action{Type: fetchedNode, Payload: node, Index: remoteWaitIndex}
 				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
@@ -508,7 +508,7 @@ func (c *NomadConnection) watchGenericBroadcast(watchKey string, actionEvent str
 			return
 
 		case <-stream.Changes():
-			// advance to next value
+		// advance to next value
 			stream.Next()
 
 			channelAction := stream.Value().(*Action)
@@ -577,7 +577,7 @@ func (c *NomadConnection) watchJob(action Action) {
 			remoteWaitIndex := meta.LastIndex
 			localWaitIndex := q.WaitIndex
 
-			// only broadcast if the LastIndex has changed
+		// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &Action{Type: fetchedJob, Payload: job, Index: remoteWaitIndex}
 				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
@@ -736,11 +736,11 @@ func (c *NomadConnection) watchFile(action Action) {
 	var r io.ReadCloser
 	frameReader := api.NewFrameReader(frames, cancel)
 	frameReader.SetUnblockTime(500 * time.Millisecond)
-	r = command.NewLineLimitReader(frameReader, int(defaultTailLines), int(defaultTailLines*bytesToLines), 1*time.Second)
+	r = command.NewLineLimitReader(frameReader, int(defaultTailLines), int(defaultTailLines * bytesToLines), 1 * time.Second)
 
 	// Turn the reader into a channel
 	lines := make(chan []byte)
-	b := make([]byte, defaultTailLines*bytesToLines)
+	b := make([]byte, defaultTailLines * bytesToLines)
 	go func() {
 		for {
 			n, err := r.Read(b[:cap(b)])
