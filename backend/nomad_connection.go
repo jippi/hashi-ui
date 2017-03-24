@@ -912,9 +912,15 @@ func (c *NomadConnection) submitJob(action Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
-	if c.region.Config.NomadReadOnly || defaultConfig.HideEnvData {
+	if c.region.Config.NomadReadOnly {
 		logger.Errorf("Unable to submit job: NomadReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		return
+	}
+
+	if defaultConfig.HideEnvData {
+		logger.Errorf("Unable to submit job: HideEnvData is set to true")
+		c.send <- &Action{Type: errorNotification, Payload: "HideEnvData must be false to submit job", Index: index}
 		return
 	}
 
