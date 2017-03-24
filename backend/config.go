@@ -44,6 +44,7 @@ type Config struct {
 	ConsulReadOnly bool
 	ConsulAddress  string
 	ConsulACLToken string
+	HideEnvData    bool
 }
 
 // DefaultConfig is the basic out-of-the-box configuration for hashi-ui
@@ -59,6 +60,7 @@ func DefaultConfig() *Config {
 
 		ConsulReadOnly: false,
 		ConsulAddress:  "127.0.0.1:8500",
+		HideEnvData:    false,
 	}
 }
 
