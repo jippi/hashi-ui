@@ -245,9 +245,10 @@ func (n *NomadRegion) watchJobs() {
 }
 
 func (n *NomadRegion) updateJob(job *api.Job) (*Action, error) {
-	if n.Config.NomadReadOnly {
-		logger.Errorf("Unable to run jon: NomadReadOnly is set to true")
+	if n.Config.NomadReadOnly || defaultConfig.HideEnvs {
+		logger.Errorf("Unable to run job: NomadReadOnly is set to true")
 		return &Action{Type: errorNotification, Payload: "The backend server is set to read-only"}, errors.New("Nomad is in read-only mode")
+
 	}
 
 	logger.Infof("Started run job with id: %s", job.ID)
