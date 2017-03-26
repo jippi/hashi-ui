@@ -916,7 +916,9 @@ func (c *NomadConnection) submitJob(action Action) {
 		logger.Errorf("Unable to submit job: NomadReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
 		return
-	} else if defaultConfig.HideEnvData {
+	}
+
+	if defaultConfig.HideEnvData {
 		logger.Errorf("Unable to submit job: HideEnvData is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "HideEnvData must be false to submit job", Index: index}
 		return
