@@ -60,13 +60,16 @@ class AllocationInfo extends Component {
                 const output = (
                   <TableRow key={ index }>
                     <TableRowColumn style={{ width: 180 }}>
-                      <FormatTime time={ element.Time } />
+                      <FormatTime
+                        time={ element.Time }
+                        identifier={ `${allocation.ID}-${element.Time}` }
+                      />
                     </TableRowColumn>
                     <TableRowColumn style={{ width: 180 }}>
                       <FormatTime
                         time={ element.Time }
                         now={ lastEventTime }
-                        identifier={ allocation.ID }
+                        identifier={ `${allocation.ID}-${element.Time}` }
                         durationInterval='ms'
                         durationFormat='h [hour] m [min] s [seconds]'
                       />
