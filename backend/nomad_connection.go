@@ -555,7 +555,7 @@ func (c *NomadConnection) watchJob(action Action) {
 		default:
 			job, meta, err := c.region.Client.Jobs().Info(jobID, q)
 
-			if c.region.Config.HideEnvData {
+			if c.region.Config.NomadHideEnvData {
 				for _, taskGroup := range job.TaskGroups {
 					for _, task := range taskGroup.Tasks {
 						for k := range task.Env {
