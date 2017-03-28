@@ -28,6 +28,8 @@ var (
 
 	flagNomadClientKey = flag.String("nomad-client-key", "", "Path to the Nomad Client Key File. "+
 		"Overrides the NOMAD_CLIENT_KEY environment variable if set. "+flagDefault(defaultConfig.NomadClientKey))
+
+	flagNomadHideEnvData = flag.String("hide-env-data", "", "Path to hideEnv bool. "+flagDefault(defaultConfig.HideEnvData))
 )
 
 // ParseNomadEnvConfig ...
@@ -75,6 +77,10 @@ func ParseNomadEnvConfig(c *Config) {
 	if ok {
 		c.NomadSkipVerify = nomadSkipVerify != "false"
 	}
+	hideEnvData, ok := syscall.Getenv("HIDE_ENV_DATA")
+	if ok {
+		c.HideEnvData = hideEnvData != "false"
+	}
 }
 
 // ParseNomadFlagConfig ...
@@ -105,5 +111,9 @@ func ParseNomadFlagConfig(c *Config) {
 
 	if *flagNomadClientKey != "" {
 		c.NomadClientKey = *flagNomadClientKey
+	}
+
+	if *flagNomadHideEnvData != "" {
+		c.HideEnvData = *flagNomadHideEnvData
 	}
 }

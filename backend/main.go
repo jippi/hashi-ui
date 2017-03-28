@@ -79,6 +79,7 @@ func main() {
 	logger.Infof("| listen-address  	: http://%-43s |", cfg.ListenAddress)
 	logger.Infof("| proxy-address   	: %-50s |", cfg.ProxyAddress)
 	logger.Infof("| log-level       	: %-50s |", cfg.LogLevel)
+	logger.Infof("| hide-env-data       	: %-50s |", cfg.HideEnvData)
 
 	if cfg.NewRelicAppName != "" && cfg.NewRelicLicense != "" {
 		logger.Infof("| newrelic-app-name   : %-50s |", cfg.NewRelicAppName)
