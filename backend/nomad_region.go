@@ -250,7 +250,7 @@ func (n *NomadRegion) updateJob(job *api.Job) (*Action, error) {
 		return &Action{Type: errorNotification, Payload: "The backend server is set to read-only"}, errors.New("Nomad is in read-only mode")
 	}
 
-	if defaultConfig.HideEnvData {
+	if n.Config.NomadHideEnvData {
 		logger.Errorf("Unable to submit job: HideEnvData is set to true")
 		return &Action{Type: errorNotification, Payload: "HideEnv is set to true"}, errors.New("HideEnvData must be false to update")
 

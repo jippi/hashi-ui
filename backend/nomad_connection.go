@@ -555,7 +555,7 @@ func (c *NomadConnection) watchJob(action Action) {
 		default:
 			job, meta, err := c.region.Client.Jobs().Info(jobID, q)
 
-			if defaultConfig.HideEnvData {
+			if c.region.Config.HideEnvData {
 				for _, taskGroup := range job.TaskGroups {
 					for _, task := range taskGroup.Tasks {
 						for k := range task.Env {
@@ -918,7 +918,7 @@ func (c *NomadConnection) submitJob(action Action) {
 		return
 	}
 
-	if defaultConfig.HideEnvData {
+	if c.region.Config.NomadHideEnvData {
 		logger.Errorf("Unable to submit job: HideEnvData is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "HideEnvData must be false to submit job", Index: index}
 		return
