@@ -97,6 +97,10 @@ func ParseNomadFlagConfig(c *Config) {
 		c.NomadReadOnly = *flagNomadReadOnly
 	}
 
+	if *flagNomadHideEnvData {
+		c.NomadHideEnvData = *flagNomadHideEnvData
+	}
+
 	if *flagNomadAddress != "" {
 		c.NomadAddress = *flagNomadAddress
 	}
@@ -111,9 +115,5 @@ func ParseNomadFlagConfig(c *Config) {
 
 	if *flagNomadClientKey != "" {
 		c.NomadClientKey = *flagNomadClientKey
-	}
-
-	if *flagNomadHideEnvData != "" {
-		c.NomadHideEnvData = *flagNomadHideEnvData
 	}
 }
