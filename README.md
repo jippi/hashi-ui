@@ -95,7 +95,7 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 
 ## General Configuration
 
-| Environment        	  | CLI (`--flag`)            | Default                 	| Description                                                                                                      |
+| Environment        	  |CLI (`--flag`)            | Default                 	| Description                                                                                                      |
 |-------------------------|---------------------------|---------------------------- |------------------------------------------------------------------------------------------------------------------|
 | `LOG_LEVEL` 	          | `log-level`               | `info`                  	| Log level to use while running the hashi-ui server - (`critical`, `error`, `warning`, `notice`, `info`, `debug`) |
 | `PROXY_ADDRESS`         | `proxy-address` 	      | `<empty>`               	| (optional) The base URL of the UI when running behind a reverse proxy (ie: example.com/nomad/)                   |
@@ -103,7 +103,7 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 
 ## Nomad Configuration
 
-| Environment        	  | CLI (`--flag`)    	      | Default                 	| Description                                                                                                      |
+| Environment        	  |CLI (`--flag`)    	      | Default                 	| Description                                                                                                      |
 |-------------------------|---------------------------|-----------------------------|------------------------------------------------------------------------------------------------------------------|
 | `NOMAD_ENABLE`          | `nomad-enable`      	  | `false` 	                | Use `--nomad.enable` or env `NOMAD_ENABLE=1` to enable Nomad backend                                             |
 | `NOMAD_ADDR`            | `nomad-address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your .                                                                                |
@@ -125,7 +125,7 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 
 ## Instrumentation Configuration
 
-| Environment        	  | CLI (`--flag`)    	      | Default                     | Description                                                                                                      |
+| Environment        	  |CLI (`--flag`)    	      | Default                     | Description                                                                                                      |
 |-------------------------|-------------------------  |-----------------------------|------------------------------------------------------------------------------------------------------------------|
 | `NEWRELIC_APP_NAME`     | `newrelic.app_name`  	  | `hashi-ui`               	| (optional) NewRelic application name                                                                             |
 | `NEWRELIC_LICENSE`      | `newrelic.license`  	  | `<empty>`          	  		| (optional) NewRelic license key               
