@@ -95,38 +95,38 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 
 ## General Configuration
 
-| Environment        	    | CLI (`--flag`)      		  | Default                 	| Description                                                                                                      |
-|-------------------------|---------------------------|---------------------------|------------------------------------------------------------------------------------------------------------------|
+| Environment        	  | CLI (`--flag`)            | Default                 	| Description                                                                                                      |
+|-------------------------|---------------------------|---------------------------- |------------------------------------------------------------------------------------------------------------------|
 | `LOG_LEVEL` 	          | `log-level`               | `info`                  	| Log level to use while running the hashi-ui server - (`critical`, `error`, `warning`, `notice`, `info`, `debug`) |
-| `PROXY_ADDRESS`         | `proxy-address` 	        | `<empty>`               	| (optional) The base URL of the UI when running behind a reverse proxy (ie: example.com/nomad/)                   |
-| `LISTEN_ADDRESS`        | `listen-address`          | `0.0.0.0:3000`            | The IP + PORT to listen on                                                                                       |
+| `PROXY_ADDRESS`         | `proxy-address` 	      | `<empty>`               	| (optional) The base URL of the UI when running behind a reverse proxy (ie: example.com/nomad/)                   |
+| `LISTEN_ADDRESS`        | `listen-address`          | `0.0.0.0:3000`              | The IP + PORT to listen on                                                                                       |
 
 ## Nomad Configuration
 
-| Environment        	    | CLI (`--flag`)    		  | Default                 	| Description                                                                                                      |
-|-------------------------|-------------------------|---------------------------|------------------------------------------------------------------------------------------------------------------|
+| Environment        	  | CLI (`--flag`)    	      | Default                 	| Description                                                                                                      |
+|-------------------------|---------------------------|-----------------------------|------------------------------------------------------------------------------------------------------------------|
 | `NOMAD_ENABLE`          | `nomad-enable`      	  | `false` 	                | Use `--nomad.enable` or env `NOMAD_ENABLE=1` to enable Nomad backend                                             |
 | `NOMAD_ADDR`            | `nomad-address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your .                                                                                |
-| `NOMAD_READ_ONLY`    	  | `nomad-read-only`   	  | `false` 		        	    | Should hash-ui allowed to modify Nomad state (stop/start jobs and so forth)	                                     |
+| `NOMAD_READ_ONLY`    	  | `nomad-read-only`   	  | `false` 		        	| Should hash-ui allowed to modify Nomad state (stop/start jobs and so forth)	                                     |
 | `NOMAD_CACERT`      	  | `nomad-ca-cert`      	  | `<empty>`   	            | (optional) path to a CA Cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)                 |
-| `NOMAD_CLIENT_CERT`  	  | `nomad-client-cert`     | `<empty>` 	              | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
-| `NOMAD_CLIENT_KEY`  	  | `nomad-client-key`      | `<empty>` 	              | (optional) path to a client key file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)          	   |
+| `NOMAD_CLIENT_CERT`  	  | `nomad-client-cert`       | `<empty>` 	                | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
+| `NOMAD_CLIENT_KEY`  	  | `nomad-client-key`        | `<empty>` 	                | (optional) path to a client key file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)          	   |
 | `NOMAD_PORT_http` 	  | `<none>` 	              | `0.0.0.0:3000`          	| The IP + PORT to listen on (will overwrite `LISTEN_ADDRESS`)                                                     |
-| `NOMAD_HIDE_ENV_DATA`   | `nomad-hide-env-data` 	  | `false`          	| Whether Nomad env{} values should be hidden (will prevent updating jobs in the UI)                                                    |
+| `NOMAD_HIDE_ENV_DATA`   | `nomad-hide-env-data` 	  | `false`          	        | Whether Nomad env{} values should be hidden (will prevent updating jobs in the UI)                                                    |
 
 ## Consul Configuration
 
-| Environment        	    | CLI (`--flag`)    		  | Default                 	| Description                                                                                                      |
-|-------------------------|-------------------------|---------------------------|------------------------------------------------------------------------------------------------------------------|
+| Environment        	  |CLI (`--flag`)   	      | Default                     | Description                                                                                                      |
+|-------------------------|-------------------------  |-----------------------------|------------------------------------------------------------------------------------------------------------------|
 | `CONSUL_ENABLE`         | `consul.enable`      	  | `false` 	                | Use `--consul.enable` or env `CONSUL_ENABLE=1` to enable Consul backend                                          |
-| `CONSUL_ADDR`           | `consul.address`    	  | `127.0.0.1:8500           | Host + Port for your Consul server, e.g. `localhost:8500` (Do not include protocol)                              |
-| `CONSUL_READ_ONLY`  	  | `consul.read-only`   	  | `false` 		            	| Should hash-ui allowed to modify Consul state (modify KV, Services and so forth)                                 |
+| `CONSUL_ADDR`           | `consul.address`    	  | `127.0.0.1:8500`            | Host + Port for your Consul server, e.g. localhost:8500` (Do not include protocol)                              |
+| `CONSUL_READ_ONLY`  	  | `consul.read-only`   	  | `false` 		            | Should hash-ui allowed to modify Consul state (modify KV, Services and so forth)                                 |
 | `CONSUL_ACL_TOKEN`  	  | `consul.acl-token`   	  | `<empty>` 		          	| Should hash-ui allowed to modify Consul state (modify KV, Services and so forth)                                 |
 
 ## Instrumentation Configuration
 
-| Environment        	    | CLI (`--flag`)    		  | Default                 	| Description                                                                                                      |
-|-------------------------|-------------------------|---------------------------|------------------------------------------------------------------------------------------------------------------|
+| Environment        	  | CLI (`--flag`)    	      | Default                     | Description                                                                                                      |
+|-------------------------|-------------------------  |-----------------------------|------------------------------------------------------------------------------------------------------------------|
 | `NEWRELIC_APP_NAME`     | `newrelic.app_name`  	  | `hashi-ui`               	| (optional) NewRelic application name                                                                             |
 | `NEWRELIC_LICENSE`      | `newrelic.license`  	  | `<empty>`          	  		| (optional) NewRelic license key               
 
