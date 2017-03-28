@@ -79,7 +79,6 @@ func main() {
 	logger.Infof("| listen-address  	: http://%-43s |", cfg.ListenAddress)
 	logger.Infof("| proxy-address   	: %-50s |", cfg.ProxyAddress)
 	logger.Infof("| log-level       	: %-50s |", cfg.LogLevel)
-	logger.Infof("| hide-env-data       	: %-50s |", cfg.NomadHideEnvData)
 
 	if cfg.NewRelicAppName != "" && cfg.NewRelicLicense != "" {
 		logger.Infof("| newrelic-app-name   : %-50s |", cfg.NewRelicAppName)
@@ -98,6 +97,7 @@ func main() {
 	logger.Infof("| nomad-client-cert     : %-50s |", cfg.NomadClientCert)
 	logger.Infof("| nomad-client-key      : %-50s |", cfg.NomadClientKey)
 	logger.Infof("| nomad-skip-verify   	: %-50t |", cfg.NomadSkipVerify)
+	logger.Infof("| hide-env-data       	: %-50s |", cfg.NomadHideEnvData)
 	if cfg.NomadSkipVerify {
 		logger.Infof("| nomad-skip-verify     : %-50s |", "Yes")
 	} else {
