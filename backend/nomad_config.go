@@ -29,7 +29,7 @@ var (
 	flagNomadClientKey = flag.String("nomad-client-key", "", "Path to the Nomad Client Key File. "+
 		"Overrides the NOMAD_CLIENT_KEY environment variable if set. "+flagDefault(defaultConfig.NomadClientKey))
 
-	flagNomadHideEnvData = flag.Bool("nomad-hide-env-data", "", "Whether Nomad env{} values should be hidden (will prevent updating jobs in the UI)"+flagDefault(defaultConfig.NomadHideEnvData))
+	flagNomadHideEnvData = flag.Bool("nomad-hide-env-data", "", "Whether Nomad env{} values should be hidden (will prevent updating jobs in the UI)"+flagDefault(strconv.FormatBool(defaultConfig.NomadHideEnvData)))
 )
 
 // ParseNomadEnvConfig ...
