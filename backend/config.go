@@ -32,13 +32,14 @@ type Config struct {
 	NewRelicAppName string
 	NewRelicLicense string
 
-	NomadEnable     bool
-	NomadAddress    string
-	NomadCACert     string
-	NomadClientCert string
-	NomadClientKey  string
-	NomadReadOnly   bool
-	NomadSkipVerify bool
+	NomadEnable      bool
+	NomadAddress     string
+	NomadCACert      string
+	NomadClientCert  string
+	NomadClientKey   string
+	NomadReadOnly    bool
+	NomadSkipVerify  bool
+	NomadHideEnvData bool
 
 	ConsulEnable   bool
 	ConsulReadOnly bool
@@ -54,8 +55,9 @@ func DefaultConfig() *Config {
 
 		NewRelicAppName: "hashi-ui",
 
-		NomadReadOnly: false,
-		NomadAddress:  "http://127.0.0.1:4646",
+		NomadReadOnly:    false,
+		NomadAddress:     "http://127.0.0.1:4646",
+		NomadHideEnvData: false,
 
 		ConsulReadOnly: false,
 		ConsulAddress:  "127.0.0.1:8500",
