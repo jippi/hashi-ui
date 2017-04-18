@@ -555,6 +555,16 @@ func (c *NomadConnection) watchJob(action Action) {
 		default:
 			job, meta, err := c.region.Client.Jobs().Info(jobID, q)
 
+			if c.region.Config.NomadHideEnvData {
+				for _, taskGroup := range job.TaskGroups {
+					for _, task := range taskGroup.Tasks {
+						for k := range task.Env {
+							task.Env[k] = ""
+						}
+					}
+				}
+			}
+
 			if err != nil {
 				c.Errorf("connection: unable to fetch job info: %s", err)
 				time.Sleep(10 * time.Second)
@@ -905,6 +915,12 @@ func (c *NomadConnection) submitJob(action Action) {
 	if c.region.Config.NomadReadOnly {
 		logger.Errorf("Unable to submit job: NomadReadOnly is set to true")
 		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		return
+	}
+
+	if c.region.Config.NomadHideEnvData {
+		logger.Errorf("Unable to submit job: HideEnvData is set to true")
+		c.send <- &Action{Type: errorNotification, Payload: "HideEnvData must be false to submit job", Index: index}
 		return
 	}
 
