@@ -641,7 +641,7 @@ func (c *NomadConnection) watchClientStats(action Action) {
 	}
 }
 
-func nodeUrl(payload map[string]interface{}) string {
+func nodeUrl(params map[string]interface{}) string {
 	addr := params["addr"].(string)
 	if params["secure"].(bool) {
 		return fmt.Sprintf("https://%s", addr)
