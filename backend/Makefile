@@ -83,3 +83,7 @@ endif
 dist-clean: clean
 	@echo "=> dist-cleaning backend ..."
 	rm -rf vendor/{github.com,golang.org,gopkg.in}
+
+test:
+	@echo "==> Running $@..."
+	@go test -v -tags $(shell go list ./... | grep -v vendor)
