@@ -6,6 +6,7 @@ frontend:
 .PHONY: backend
 backend:
 	$(MAKE) -j -C backend build
+	$(MAKE) -j -C backend test
 
 # Since backend will call the frontend/Makefile when need be, this target will
 # just trigger a pure bakcend build
