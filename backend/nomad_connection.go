@@ -641,18 +641,25 @@ func (c *NomadConnection) watchClientStats(action Action) {
 	}
 }
 
+func nodeUrl(params map[string]interface{}) string {
+	addr := params["addr"].(string)
+	if params["secure"].(bool) {
+		return fmt.Sprintf("https://%s", addr)
+	}
+	return fmt.Sprintf("http://%s", addr)
+}
+
 func (c *NomadConnection) fetchDir(action Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
 		return
 	}
-	addr := params["addr"].(string)
 	path := params["path"].(string)
 	allocID := params["allocID"].(string)
 
 	config := api.DefaultConfig()
-	config.Address = fmt.Sprintf("http://%s", addr)
+	config.Address = nodeUrl(params)
 
 	client, err := api.NewClient(config)
 	if err != nil {
@@ -681,12 +688,11 @@ func (c *NomadConnection) watchFile(action Action) {
 		return
 	}
 
-	addr := params["addr"].(string)
 	path := params["path"].(string)
 	allocID := params["allocID"].(string)
 
 	config := api.DefaultConfig()
-	config.Address = fmt.Sprintf("http://%s", addr)
+	config.Address = nodeUrl(params)
 
 	client, err := api.NewClient(config)
 	if err != nil {
