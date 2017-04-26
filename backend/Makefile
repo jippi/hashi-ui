@@ -62,7 +62,7 @@ bindata_assetfs.go:
 	go-bindata-assetfs -prefix ../frontend ../frontend/build/...
 
 .PHONY: build
-build: install fmt vet
+build: install fmt vet test
 	@echo "=> building backend ..."
 	$(MAKE) -j $(BINARIES)
 
@@ -83,3 +83,7 @@ endif
 dist-clean: clean
 	@echo "=> dist-cleaning backend ..."
 	rm -rf vendor/{github.com,golang.org,gopkg.in}
+
+test:
+	@echo "==> Running $@..."
+	@go test -v -tags "$(BUILDTAGS) cgo" $(shell go list ./... | grep -v vendor)
