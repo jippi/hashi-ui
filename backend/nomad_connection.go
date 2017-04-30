@@ -283,8 +283,6 @@ func (c *NomadConnection) Handle() {
 
 	c.Debugf("Connection closing down")
 
-	c.destroyCh <- struct{}{}
-
 	// Kill any remaining watcher routines
 	close(c.destroyCh)
 }
