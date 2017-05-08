@@ -30,6 +30,9 @@ var (
 		"Overrides the NOMAD_CLIENT_KEY environment variable if set. "+flagDefault(defaultConfig.NomadClientKey))
 
 	flagNomadHideEnvData = flag.Bool("nomad-hide-env-data", false, "Whether Nomad env{} values should be hidden (will prevent updating jobs in the UI)"+flagDefault(strconv.FormatBool(defaultConfig.NomadHideEnvData)))
+
+	flagNomadAllowStale = flag.Bool("nomad-allow-stale", true, "Whether Hashi-UI should use stale mode when connection to the nomad-api servers"+
+		"Overrides the NOMAD_ALLOW_STALE environment variable if set. "+flagDefault(strconv.FormatBool(defaultConfig.NomadAllowStale)))
 )
 
 // ParseNomadEnvConfig ...
@@ -81,6 +84,10 @@ func ParseNomadEnvConfig(c *Config) {
 	if ok {
 		c.NomadHideEnvData = hideEnvData != "false"
 	}
+	nomadAllowStale, ok := syscall.Getenv("NOMAD_ALLOW_STALE")
+	if ok {
+		c.NomadAllowStale = nomadAllowStale != "true"
+	}
 }
 
 // ParseNomadFlagConfig ...
@@ -115,5 +122,9 @@ func ParseNomadFlagConfig(c *Config) {
 
 	if *flagNomadClientKey != "" {
 		c.NomadClientKey = *flagNomadClientKey
+	}
+
+	if *flagNomadAllowStale {
+		c.NomadAllowStale = *flagNomadAllowStale
 	}
 }
