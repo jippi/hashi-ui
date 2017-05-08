@@ -113,6 +113,7 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | `NOMAD_CLIENT_KEY`  	  | `nomad-client-key`        | `<empty>` 	                | (optional) path to a client key file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)          	   |
 | `NOMAD_PORT_http` 	  | `<none>` 	              | `0.0.0.0:3000`          	| The IP + PORT to listen on (will overwrite `LISTEN_ADDRESS`)                                                     |
 | `NOMAD_HIDE_ENV_DATA`   | `nomad-hide-env-data` 	  | `false`          	        | Whether Nomad env{} values should be hidden (will prevent updating jobs in the UI)                               |
+| `NOMAD_ALLOW_STALE`     | `nomad-allow-stale` 	  | `true`          	        | Whether Hashi-UI should use stale mode when connecting to the nomad-api servers                                  |
 
 ## Consul Configuration
 
