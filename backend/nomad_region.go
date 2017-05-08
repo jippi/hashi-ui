@@ -93,7 +93,7 @@ func (n *NomadRegion) StartWatchers() {
 }
 
 func (n *NomadRegion) watchAllocs() {
-	q := &api.QueryOptions{WaitIndex: 1, AllowStale: true}
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
 
 	for {
 		allocations, meta, err := n.Client.Allocations().List(q)
@@ -116,12 +116,12 @@ func (n *NomadRegion) watchAllocs() {
 
 		n.allocations = allocations
 		n.broadcastChannels.allocations.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
-		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: true}
+		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
 	}
 }
 
 func (n *NomadRegion) watchAllocsShallow() {
-	q := &api.QueryOptions{WaitIndex: 1, AllowStale: true}
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
 
 	for {
 		allocations, meta, err := n.Client.Allocations().List(q)
@@ -149,7 +149,7 @@ func (n *NomadRegion) watchAllocsShallow() {
 		n.allocationsShallow = allocations
 		n.broadcastChannels.allocationsShallow.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
 
-		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: true}
+		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
 	}
 }
 
@@ -161,7 +161,7 @@ func (a ClientNameSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ClientNameSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
 
 func (n *NomadRegion) watchNodes() {
-	q := &api.QueryOptions{WaitIndex: 1, AllowStale: true}
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
 	for {
 		nodes, meta, err := n.Client.Nodes().List(q)
 		if err != nil {
@@ -186,12 +186,12 @@ func (n *NomadRegion) watchNodes() {
 
 		n.nodes = nodes
 		n.broadcastChannels.nodes.Update(&Action{Type: fetchedNodes, Payload: nodes, Index: remoteWaitIndex})
-		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: true}
+		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
 	}
 }
 
 func (n *NomadRegion) watchEvals() {
-	q := &api.QueryOptions{WaitIndex: 1, AllowStale: true}
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
 	for {
 		evaluations, meta, err := n.Client.Evaluations().List(q)
 		if err != nil {
@@ -213,12 +213,12 @@ func (n *NomadRegion) watchEvals() {
 
 		n.evaluations = evaluations
 		n.broadcastChannels.evaluations.Update(&Action{Type: fetchedEvals, Payload: evaluations, Index: remoteWaitIndex})
-		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: true}
+		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
 	}
 }
 
 func (n *NomadRegion) watchJobs() {
-	q := &api.QueryOptions{WaitIndex: 1, AllowStale: true}
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
 	for {
 		jobs, meta, err := n.Client.Jobs().List(q)
 		if err != nil {
@@ -240,7 +240,7 @@ func (n *NomadRegion) watchJobs() {
 
 		n.jobs = jobs
 		n.broadcastChannels.jobs.Update(&Action{Type: fetchedJobs, Payload: jobs, Index: remoteWaitIndex})
-		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: true}
+		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
 	}
 }
 

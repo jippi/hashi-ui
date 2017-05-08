@@ -40,6 +40,7 @@ type Config struct {
 	NomadReadOnly    bool
 	NomadSkipVerify  bool
 	NomadHideEnvData bool
+	NomadAllowStale  bool
 
 	ConsulEnable   bool
 	ConsulReadOnly bool
