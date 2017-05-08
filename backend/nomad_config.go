@@ -31,7 +31,7 @@ var (
 
 	flagNomadHideEnvData = flag.Bool("nomad-hide-env-data", false, "Whether Nomad env{} values should be hidden (will prevent updating jobs in the UI)"+flagDefault(strconv.FormatBool(defaultConfig.NomadHideEnvData)))
 
-	flagNomadAllowStale = flag.Bool("nomad-allow-stale", true, "Whether Hashi-UI should use stale mode when connection to the nomad-api servers"+
+	flagNomadAllowStale = flag.Bool("nomad-allow-stale", true, "Whether Hashi-UI should use stale mode when connecting to the nomad-api servers"+
 		"Overrides the NOMAD_ALLOW_STALE environment variable if set. "+flagDefault(strconv.FormatBool(defaultConfig.NomadAllowStale)))
 )
 
