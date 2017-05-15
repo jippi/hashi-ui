@@ -165,6 +165,7 @@ class AllocationFiles extends Component {
       type: FETCH_DIR,
       payload: {
         addr: props.node.HTTPAddr,
+        secure: props.node.TLSEnabled,
         path: dir || '/',
         allocID: props.allocation.ID
       }
@@ -182,6 +183,7 @@ class AllocationFiles extends Component {
       type: WATCH_FILE,
       payload: {
         addr: props.node.HTTPAddr,
+        secure: props.node.TLSEnabled,
         path: filePath,
         allocID: props.allocation.ID
       }

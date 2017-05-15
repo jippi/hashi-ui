@@ -283,8 +283,6 @@ func (c *NomadConnection) Handle() {
 
 	c.Debugf("Connection closing down")
 
-	c.destroyCh <- struct{}{}
-
 	// Kill any remaining watcher routines
 	close(c.destroyCh)
 }
@@ -315,7 +313,7 @@ func (c *NomadConnection) watchAlloc(action Action) {
 
 	c.Infof("Started watching alloc with id: %s", allocID)
 
-	q := &api.QueryOptions{WaitIndex: 1}
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 
 	for {
 		select {
@@ -340,7 +338,7 @@ func (c *NomadConnection) watchAlloc(action Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &Action{Type: fetchedAlloc, Payload: alloc, Index: remoteWaitIndex}
-				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
 			}
 		}
 	}
@@ -357,7 +355,7 @@ func (c *NomadConnection) watchEval(action Action) {
 
 	c.Infof("Started watching eval with id: %s", evalID)
 
-	q := &api.QueryOptions{WaitIndex: 1}
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 	for {
 		select {
 		case <-c.destroyCh:
@@ -380,7 +378,7 @@ func (c *NomadConnection) watchEval(action Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &Action{Type: fetchedEval, Payload: eval, Index: remoteWaitIndex}
-				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
 			}
 		}
 	}
@@ -453,7 +451,7 @@ func (c *NomadConnection) watchNode(action Action) {
 
 	c.Infof("Started watching node with id: %s", nodeID)
 
-	q := &api.QueryOptions{WaitIndex: 1}
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 	for {
 		select {
 		case <-c.destroyCh:
@@ -477,7 +475,7 @@ func (c *NomadConnection) watchNode(action Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &Action{Type: fetchedNode, Payload: node, Index: remoteWaitIndex}
-				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
 			}
 		}
 	}
@@ -546,7 +544,7 @@ func (c *NomadConnection) watchJob(action Action) {
 
 	c.Infof("Started watching job with id: %s", jobID)
 
-	q := &api.QueryOptions{WaitIndex: 1}
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 	for {
 		select {
 		case <-c.destroyCh:
@@ -581,7 +579,7 @@ func (c *NomadConnection) watchJob(action Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &Action{Type: fetchedJob, Payload: job, Index: remoteWaitIndex}
-				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
 			}
 		}
 	}
@@ -641,18 +639,25 @@ func (c *NomadConnection) watchClientStats(action Action) {
 	}
 }
 
+func nodeUrl(params map[string]interface{}) string {
+	addr := params["addr"].(string)
+	if params["secure"].(bool) {
+		return fmt.Sprintf("https://%s", addr)
+	}
+	return fmt.Sprintf("http://%s", addr)
+}
+
 func (c *NomadConnection) fetchDir(action Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
 		return
 	}
-	addr := params["addr"].(string)
 	path := params["path"].(string)
 	allocID := params["allocID"].(string)
 
 	config := api.DefaultConfig()
-	config.Address = fmt.Sprintf("http://%s", addr)
+	config.Address = nodeUrl(params)
 
 	client, err := api.NewClient(config)
 	if err != nil {
@@ -681,12 +686,11 @@ func (c *NomadConnection) watchFile(action Action) {
 		return
 	}
 
-	addr := params["addr"].(string)
 	path := params["path"].(string)
 	allocID := params["allocID"].(string)
 
 	config := api.DefaultConfig()
-	config.Address = fmt.Sprintf("http://%s", addr)
+	config.Address = nodeUrl(params)
 
 	client, err := api.NewClient(config)
 	if err != nil {
@@ -833,7 +837,7 @@ func (c *NomadConnection) changeTaskGroupCount(action Action) {
 	taskGroupID := params["taskGroup"].(string)
 	scaleAction := params["scaleAction"].(string)
 
-	job, _, err := c.region.Client.Jobs().Info(jobID, &api.QueryOptions{})
+	job, _, err := c.region.Client.Jobs().Info(jobID, &api.QueryOptions{AllowStale: c.region.Config.NomadAllowStale})
 	if err != nil {
 		c.Errorf("connection: unable to fetch job info: %s", err)
 		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Could not find job: %s", jobID), Index: index}
