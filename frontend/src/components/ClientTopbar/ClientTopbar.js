@@ -12,8 +12,8 @@ const rawIcon = <FontIcon className='material-icons'>code</FontIcon>
 class _ClientTopbar extends PureComponent {
 
   handleActive (tab) {
-    const prefix = `/nomad/${this.props.router.params.region}/clients/${this.props.node.ID}`
-    this.props.router.push(prefix + '/' + tab)
+    const path = ['nomad', this.props.router.params.region, 'clients', this.props.node.ID, tab]
+    this.props.router.push(path.map(encodeURIComponent).join('/'))
   }
 
   getActiveTab () {
