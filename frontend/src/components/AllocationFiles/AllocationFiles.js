@@ -298,14 +298,14 @@ class AllocationFiles extends Component {
       </span>
     )
 
-    const baseUrl = `${location.protocol}//${window.NOMAD_ENDPOINT}`
     const downloadPath = `nomad/${this.props.router.params.region}/download${this.props.file.File}`
 
     const downloadBtn = this.props.file.File.indexOf('<') >= 0
       ? ''
       : (
         <form
-          style={{ display: 'inline', float: 'right' }} method='get' action={ `${baseUrl}/${downloadPath}` } >
+          style={{ display: 'inline', float: 'right' }} method='get'
+          action={ `${window.NOMAD_ENDPOINT}/${downloadPath}` } >
           <input type='hidden' name='client' value={ this.props.node.HTTPAddr } />
           <input type='hidden' name='allocID' value={ this.props.allocation.ID } />
           { oversizedWarning }
