@@ -62,11 +62,15 @@ the deletion of the binary frontend bundle, and just recompile the Go code.
 Run `make -j build` in the root directory to get all dependencies and binaries setup and built.
 
 If the work you plan to do only involve the frontend, run a command similar to this to get the Go server API available:
-`NOMAD_LOG_LEVEL=debug NOMAD_ADDR=http://localhost:4646 ./backend/build/hashi-ui-darwin-amd64`
+`NOMAD_LOG_LEVEL=debug NOMAD_ADDR=http://localhost:4646 ./backend/build/hashi-ui-darwin-amd64 --nomad-enable`. You can
+enable the Consul UI by setting the `CONSUL_ADDR` environment variable and passing the `--consul-enable` flag.
 
 Once the hashi-ui server is running, go to the `frontend/` directory and run `yarn start`.
-Once its running you can access http://0.0.0.0:3333 for the hot-reloading reactjs frontend, which will automatically
-update your browser with any JS changes you do in your editor on file save.
+Once its running you can access http://0.0.0.0:3333/nomad or http://0.0.0.0:3333/consul for the hot-reloading reactjs
+frontend, which will automatically update your browser with any JS changes you do in your editor on file save.
+
+You may get redirected to the Go backend which runs by default on port 3000, so you will need to set the port value back
+to 3333 in order to hit the hot-reloading reactjs frontend.
 
 If your code involve Go changes as well, a workflow like the following is fairly efficient (from the `backend/`) directory
 `KEEP_BINDATA_ASSETFS=1 make -j rebuild && NOMAD_LOG_LEVEL=debug NOMAD_ADDR=http://localhost:4646 ./build/hashi-ui-darwin-amd64`
