@@ -58,14 +58,14 @@ func main() {
 	cfg := DefaultConfig()
 	cfg.Parse()
 
-	config := newrelic.NewConfig(cfg.NewRelicAppName, cfg.NewRelicLicense)
-	config.Logger = newrelic.NewLogger(os.Stdout)
+	newrelicConfig := newrelic.NewConfig(cfg.NewRelicAppName, cfg.NewRelicLicense)
+	newrelicConfig.Logger = newrelic.NewLogger(os.Stdout)
 
 	if cfg.NewRelicAppName == "" || cfg.NewRelicLicense == "" {
-		config.Enabled = false
+		newrelicConfig.Enabled = false
 	}
 
-	_, err := newrelic.NewApplication(config)
+	_, err := newrelic.NewApplication(newrelicConfig)
 	if err != nil {
 		logger.Error(err)
 		os.Exit(1)
@@ -133,7 +133,7 @@ func main() {
 
 		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			logger.Infof("Redirecting / to /nomad")
-			http.Redirect(w, r, "/nomad", 302)
+			http.Redirect(w, r, cfg.ProxyAddress+"/nomad", 302)
 		})
 
 		router.HandleFunc("/ws/nomad", nomadHub.Handler)
@@ -150,7 +150,7 @@ func main() {
 		if !cfg.NomadEnable {
 			router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 				logger.Infof("Redirecting / to /consul")
-				http.Redirect(w, r, "/consul", 302)
+				http.Redirect(w, r, cfg.ProxyAddress+"/consul", 302)
 			})
 		}
 
@@ -187,13 +187,12 @@ func main() {
 			}
 
 			response = append(response, fmt.Sprintf("window.ENABLED_SERVICES=[%s]", strings.Join(enabledServices, ",")))
-			response = append(response, fmt.Sprintf("window.NOMAD_ADDR=\"%s\"", cfg.NomadAddress))
 
 			var endpointURL string
 			if cfg.ProxyAddress != "" {
 				endpointURL = fmt.Sprintf("\"%s\"", strings.TrimSuffix(cfg.ProxyAddress, "/"))
 			} else {
-				endpointURL = "document.location.hostname + ':' + (window.NOMAD_ENDPOINT_PORT || document.location.port)"
+				endpointURL = "document.location.protocol + '//' + document.location.hostname + ':' + (window.NOMAD_ENDPOINT_PORT || document.location.port)"
 			}
 
 			response = append(response, fmt.Sprintf("window.NOMAD_ENDPOINT=%s", endpointURL))

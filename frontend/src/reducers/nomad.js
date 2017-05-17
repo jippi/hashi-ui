@@ -4,11 +4,11 @@ export function ChangeNomadRegionReducer (state = {}, action) {
   switch (action.type) {
 
   case SET_NOMAD_REGION:
-    document.location.href = '//' + window.location.host + '/nomad/' + action.payload + '/cluster'
+    document.location.href = window.NOMAD_ENDPOINT + '/nomad/' + action.payload + '/cluster'
     return {}
 
   case UNKNOWN_NOMAD_REGION:
-    document.location.href = '//' + window.location.host + '/nomad';
+    document.location.href = window.NOMAD_ENDPOINT + '/nomad';
     return {}
 
   }
