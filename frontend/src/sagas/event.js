@@ -241,9 +241,14 @@ function* events (socket) {
 
 export default function eventSaga () {
   return new Promise((resolve, reject) => {
+    const parser = document.createElement('a');
+    parser.href = window.NOMAD_ENDPOINT
+
+    const host = parser.host ? parser.host : document.location.host
     const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
-    let wsURL = `${protocol}//${window.NOMAD_ENDPOINT}/ws`
-    let relPath = document.location.pathname.replace(window.NOMAD_ENDPOINT, '')
+    let relPath = document.location.pathname.replace(parser.pathname, '/').replace("//", "/")
+    let wsRoot = `${protocol}//${host}`
+    let wsURL = `/${parser.pathname}/ws`.replace("//", "/")
 
     // inside nomad scope
     if (relPath.indexOf('/nomad') === 0) {
@@ -263,7 +268,10 @@ export default function eventSaga () {
       }
     }
 
-    const p = connectTo(wsURL)
+    // cleanup double slashes, yes, dirty hack :)
+    wsURL = wsURL.replace("//", "/")
+
+    const p = connectTo(wsRoot + wsURL)
 
     return p
       .then((socket) => {

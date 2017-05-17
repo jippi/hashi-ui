@@ -20,11 +20,11 @@ export function ChangeConsulRegionReducer (state = {}, action) {
   switch (action.type) {
 
   case SET_CONSUL_REGION:
-    document.location.href = '//' + window.location.host + '/consul/' + action.payload + '/services'
+    document.location.href = window.NOMAD_ENDPOINT + '/consul/' + action.payload + '/services'
     return {}
 
   case UNKNOWN_CONSUL_REGION:
-    document.location.href = '//' + window.location.host + '/consul';
+    document.location.href = window.NOMAD_ENDPOINT + '/consul';
     return {}
 
   }
