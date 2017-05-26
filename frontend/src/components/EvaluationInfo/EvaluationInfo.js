@@ -5,6 +5,7 @@ import { Card, CardTitle, CardText } from 'material-ui/Card'
 import MetaPayload from '../MetaPayload/MetaPayload'
 import EvaluationLink from '../EvaluationLink/EvaluationLink'
 import JobLink from '../JobLink/JobLink'
+import { WATCH_EVAL, UNWATCH_EVAL } from '../../sagas/event'
 
 const evaluationProps = [
   'ID',
@@ -19,6 +20,15 @@ const evaluationProps = [
 ]
 
 class EvaluationInfo extends Component {
+
+  shouldComponentUpdate(nextProps) {
+    if (this.props.params.evalId !== nextProps.routeParams.evalId) {
+      this.props.dispatch({ type: UNWATCH_EVAL, payload: this.props.params.evalId })
+      this.props.dispatch({ type: WATCH_EVAL, payload: nextProps.routeParams.evalId})
+    }
+    return true;
+  }
+
   render () {
     const evaluation = this.props.evaluation
     const evalValues = {}
@@ -60,7 +70,9 @@ function mapStateToProps ({ evaluation }) {
 }
 
 EvaluationInfo.propTypes = {
-  evaluation: PropTypes.object.isRequired
+  dispatch: PropTypes.func.isRequired,
+  evaluation: PropTypes.object.isRequired,
+  params: PropTypes.object.isRequired,
 }
 
 export default connect(mapStateToProps)(EvaluationInfo)
