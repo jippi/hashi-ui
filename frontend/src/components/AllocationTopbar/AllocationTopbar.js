@@ -11,7 +11,7 @@ const rawIcon = <FontIcon className='material-icons'>code</FontIcon>
 class _AllocationTopbar extends PureComponent {
 
   handleActive (tab) {
-    const path = ['nomad', this.props.router.params.region, 'allocations', this.props.allocation.ID, tab]
+    const path = ['', 'nomad', this.props.router.params.region, 'allocations', this.props.allocation.ID, tab]
     this.props.router.push(path.map(encodeURIComponent).join('/'))
   }
 

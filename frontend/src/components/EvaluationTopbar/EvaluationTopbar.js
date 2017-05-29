@@ -10,7 +10,7 @@ const rawIcon = <FontIcon className='material-icons'>code</FontIcon>
 class _EvaluationTopbar extends PureComponent {
 
   handleActive (tab) {
-    const path = ['nomad', this.props.router.params.region, 'evaluations', this.props.evaluation.ID, tab]
+    const path = ['', 'nomad', this.props.router.params.region, 'evaluations', this.props.evaluation.ID, tab]
     this.props.router.push(path.map(encodeURIComponent).join('/'))
   }
 

@@ -9,7 +9,7 @@ const rawIcon = <FontIcon className='material-icons'>code</FontIcon>
 class _ViewServerTopbar extends PureComponent {
 
   handleActive (tab) {
-    const path = ['nomad', this.props.router.params.region, 'servers', this.props.member.Name, tab]
+    const path = ['', 'nomad', this.props.router.params.region, 'servers', this.props.member.Name, tab]
     this.props.router.push(path.map(encodeURIComponent).join('/'))
   }
 
