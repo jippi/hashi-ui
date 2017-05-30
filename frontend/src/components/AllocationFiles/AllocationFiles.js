@@ -284,8 +284,10 @@ class AllocationFiles extends Component {
     }
 
     const oversizedWarning = !this.props.file.Oversized ? '' : (
-      <span>
-        <i className='pe-7s-attention' data-tip data-for={ `tooltip-${this.props.file.File}` }></i>
+      <span style={{ position: 'relative', top: 7, right: 6}}>
+        <FontIcon className='material-icons' data-tip data-for={ `tooltip-${this.props.file.File}` }>
+          report_problem
+        </FontIcon>
         <span>
           <ReactTooltip id={ `tooltip-${this.props.file.File}` }>
             <span className='file-size-warning'>
@@ -315,6 +317,13 @@ class AllocationFiles extends Component {
 
     const title = <span>Current path: <strong>{this.props.location.query.path || '/'}</strong></span>
     const padding = { padding: 10 }
+    const headline = {
+      ...padding,
+      display: 'flex',
+      'justify-content': 'space-between',
+      'align-items': 'center  '
+    }
+
 
     return (
       <Grid fluid style={{ padding: 0 }}>
@@ -327,7 +336,7 @@ class AllocationFiles extends Component {
           </Col>
           <Col key='content-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 8 }>
             <Paper>
-              <div key='headline' style={ padding }>File: { fileName } { downloadBtn }</div>
+              <div key='headline' style={ headline }>File: { fileName } { downloadBtn }</div>
               <div key='contents' style={ padding } className='content-file' ref={ (c) => { this.content = c } }>
                 { this.state.contents }
               </div>

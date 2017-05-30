@@ -57,6 +57,7 @@
     "react-addons-css-transition-group": "^15.4.1",
     "react-addons-perf": "^15.4.1",
     "react-addons-transition-group": "^15.4.1",
+    "react-append-to-body": "^2.0.1",
     "react-bootstrap": "^0.30.7",
     "react-dom": "^15.4.1",
     "react-flexbox-grid": "^0.10.2",

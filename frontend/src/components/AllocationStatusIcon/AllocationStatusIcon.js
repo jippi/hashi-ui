@@ -1,5 +1,5 @@
 import React, { PureComponent, PropTypes } from 'react'
-import ReactTooltip from 'react-tooltip'
+import AppendedReactTooltip from '../AppendedReactTooltip/AppendedReactTooltip'
 import FontIcon from 'material-ui/FontIcon'
 import { amber500, green500, red500 } from 'material-ui/styles/colors'
 
@@ -44,9 +44,9 @@ class AllocationStatusIcon extends PureComponent {
 
     return (
       <div>
-        <ReactTooltip id={ `client-status-${allocation.ID}` }>
+        <AppendedReactTooltip id={ `client-status-${allocation.ID}` }>
           { allocation.ClientStatus } -&gt; { allocation.DesiredStatus }
-        </ReactTooltip>
+        </AppendedReactTooltip>
         <span data-tip data-for={ `client-status-${allocation.ID}` }>{ icon }</span>
       </div>
     )
