@@ -284,7 +284,7 @@ class AllocationFiles extends Component {
     }
 
     const oversizedWarning = !this.props.file.Oversized ? '' : (
-      <span style={{ position: 'relative', top: 7, right: 6}}>
+      <span style={{ display: 'inline-block', position: 'relative', top: 7, right: 6}}>
         <FontIcon className='material-icons' data-tip data-for={ `tooltip-${this.props.file.File}` }>
           report_problem
         </FontIcon>
@@ -306,7 +306,7 @@ class AllocationFiles extends Component {
       ? ''
       : (
         <form
-          style={{ display: 'inline', float: 'right' }} method='get'
+          method='get'
           action={ `${window.NOMAD_ENDPOINT}/${downloadPath}` } >
           <input type='hidden' name='client' value={ this.props.node.HTTPAddr } />
           <input type='hidden' name='allocID' value={ this.props.allocation.ID } />
