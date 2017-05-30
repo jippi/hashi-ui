@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import ReactTooltip from 'react-tooltip'
+import AppendedReactTooltip from '../AppendedReactTooltip/AppendedReactTooltip'
 // eslint-disable-next-line no-unused-vars
 import momentDurationFormat from 'moment-duration-format'
 import moment from 'moment'
@@ -22,7 +22,7 @@ const FormatTime = ({ time, now, identifier, display, timeFormat, durationInterv
   if (display === 'relative') {
     return (
       <span>
-        <ReactTooltip id={ `time-${identifier}` }>{ _time.format(timeFormat) }</ReactTooltip>
+        <AppendedReactTooltip id={ `time-${identifier}` }>{ _time.format(timeFormat) }</AppendedReactTooltip>
         <span data-tip data-for={ `time-${identifier}` }>
           { timeDiff }
         </span>
@@ -32,7 +32,7 @@ const FormatTime = ({ time, now, identifier, display, timeFormat, durationInterv
 
   return (
     <span>
-      <ReactTooltip id={ `time-${identifier}` }>{ timeDiff }</ReactTooltip>
+      <AppendedReactTooltip id={ `time-${identifier}` }>{ timeDiff }</AppendedReactTooltip>
       <span data-tip data-for={ `time-${identifier}` }>{ _time.format(timeFormat) }</span>
     </span>
   )
