@@ -78,6 +78,8 @@ start a webserver that will serve the application.
 docker run -e NOMAD_ENABLE=1 -e NOMAD_ADDR=... -p 8000:3000 jippi/hashi-ui
 # consul only
 docker run -e CONSUL_ENABLE=1 -e CONSUL_ADDR=... -p 8000:3000 jippi/hashi-ui
+# consul only with https
+docker run -e CONSUL_HTTP_TOKEN=one_ring -e CONSUL_HTTP_SSL_VERIFY=false -e CONSUL_HTTP_SSL=true CONSUL_ENABLE=1 -e CONSUL_ADDR=... -p 8000:3000 jippi/hashi-ui 
 # nomad + consul
 docker run -e NOMAD_ENABLE=1 -e NOMAD_ADDR=... -e CONSUL_ENABLE=1 -e CONSUL_ADDR=... -p 8000:3000 jippi/hashi-ui
 ```
@@ -123,6 +125,10 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | `CONSUL_ADDR`           | `consul.address`    	  | `127.0.0.1:8500`            | Host + Port for your Consul server, e.g. localhost:8500` (Do not include protocol)                               |
 | `CONSUL_READ_ONLY`  	  | `consul.read-only`   	  | `false` 		            | Should hash-ui allowed to modify Consul state (modify KV, Services and so forth)                                 |
 | `CONSUL_ACL_TOKEN`  	  | `consul.acl-token`   	  | `<empty>` 		          	| Should hash-ui allowed to modify Consul state (modify KV, Services and so forth)                                 |
+| `CONSUL_HTTP_TOKEN`    |  `<empty>`              | `<empty>`     | The consul Token |
+| `CONSUL_HTTP_SSL_VERIFY` |  `<empty>`              | `true`     | Choose if you want your certificate is verify (Should false if you have a custom ssl certificate |
+| `CONSUL_HTTP_SSL`    |  `<empty>`              | `false`     | Enable HTTPS client to consul |
+
 
 ## Instrumentation Configuration
 
