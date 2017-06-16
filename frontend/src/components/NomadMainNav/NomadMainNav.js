@@ -8,7 +8,7 @@ const SelectableList = makeSelectable(List)
 class NomadMainNav extends PureComponent {
   constructor() {
     super()
-    this._onClick = this.handleActive.bind(this)
+    this._onClick = this.setActiveMenu.bind(this)
   }
 
   getRoute(index) {
@@ -47,11 +47,11 @@ class NomadMainNav extends PureComponent {
     return route
   }
 
-  handleActive(a, index) {
+  setActiveMenu(e, index) {
     this.props.router.push(this.getRoute(index))
   }
 
-  getActiveTab() {
+  getActiveMenu() {
     const location = this.props.location
 
     const prefix = `/nomad/${this.props.router.params.region}`
@@ -84,19 +84,61 @@ class NomadMainNav extends PureComponent {
   }
 
   tabs() {
-    let nope = e => {
-      e.preventDefault()
-      return false
+    let clickHandler = x => {
+      return e => {
+        // allow cmd/shift/ctrl key to open link in new tab without changing navigation in current page
+        if (
+          e.ctrlKey ||
+          e.shiftKey ||
+          e.metaKey || // apple
+          (e.button && e.button == 1) // middle click, >IE9 + everyone else
+        ) {
+          return false
+        }
+
+        // don't trigger the normal href
+        e.preventDefault()
+
+        // push the new URL through redux
+        this.setActiveMenu(e, x)
+
+        return false
+      }
     }
 
     return (
-      <SelectableList value={this.getActiveTab()} onChange={this._onClick}>
-        <ListItem primaryText="Cluster" value="cluster" href={this.getRoute("cluster")} onClick={nope} />
-        <ListItem primaryText="Jobs" value="jobs" href={this.getRoute("jobs")} onClick={nope} />
-        <ListItem primaryText="Allocations" value="allocations" href={this.getRoute("allocations")} />
-        <ListItem primaryText="Evaluations" value="evaluations" href={this.getRoute("evaluations")} />
-        <ListItem primaryText="Clients" value="clients" href={this.getRoute("clients")} />
-        <ListItem primaryText="Servers" value="servers" href={this.getRoute("servers")} />
+      <SelectableList value={this.getActiveMenu()}>
+        <ListItem
+          primaryText="Cluster"
+          value="cluster"
+          href={this.getRoute("cluster")}
+          onClick={clickHandler("cluster")}
+        />
+        <ListItem primaryText="Jobs" value="jobs" href={this.getRoute("jobs")} onClick={clickHandler("jobs")} />
+        <ListItem
+          primaryText="Allocations"
+          value="allocations"
+          href={this.getRoute("allocations")}
+          onClick={clickHandler("allocations")}
+        />
+        <ListItem
+          primaryText="Evaluations"
+          value="evaluations"
+          href={this.getRoute("evaluations")}
+          onClick={clickHandler("evaluations")}
+        />
+        <ListItem
+          primaryText="Clients"
+          value="clients"
+          href={this.getRoute("clients")}
+          onClick={clickHandler("clients")}
+        />
+        <ListItem
+          primaryText="Servers"
+          value="servers"
+          href={this.getRoute("servers")}
+          onClick={clickHandler("servers")}
+        />
       </SelectableList>
     )
   }
