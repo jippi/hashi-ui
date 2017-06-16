@@ -1,33 +1,32 @@
-import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { WATCH_EVALS, UNWATCH_EVALS } from '../../sagas/event'
-import EvaluationList from '../EvaluationList/EvaluationList'
+import React, { Component, PropTypes } from "react"
+import { connect } from "react-redux"
+import { WATCH_EVALS, UNWATCH_EVALS } from "../../sagas/event"
+import EvaluationList from "../EvaluationList/EvaluationList"
 
 class ClientEvaluations extends Component {
-
-  componentWillMount () {
-    this.props.dispatch({ type: WATCH_EVALS})
+  componentWillMount() {
+    this.props.dispatch({ type: WATCH_EVALS })
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.props.dispatch({ type: UNWATCH_EVALS })
   }
 
-  render () {
+  render() {
     const nodeId = this.props.params.nodeId
     const evals = this.props.evaluations.filter(evaluation => evaluation.NodeID === nodeId)
 
-    return <EvaluationList evaluations={ evals } nested />
+    return <EvaluationList evaluations={evals} nested />
   }
 }
 
-function mapStateToProps ({ evaluations }) {
+function mapStateToProps({ evaluations }) {
   return { evaluations }
 }
 
 ClientEvaluations.defaultProps = {
   evaluations: [],
-  params: {}
+  params: {},
 }
 
 ClientEvaluations.propTypes = {

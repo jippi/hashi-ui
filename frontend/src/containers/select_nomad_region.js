@@ -1,13 +1,12 @@
-import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { List, ListItem } from 'material-ui/List';
-import { Card, CardHeader, CardText } from 'material-ui/Card';
-import FontIcon from 'material-ui/FontIcon'
-import { FETCH_NOMAD_REGIONS, SET_NOMAD_REGION } from '../sagas/event'
+import React, { Component, PropTypes } from "react"
+import { connect } from "react-redux"
+import { List, ListItem } from "material-ui/List"
+import { Card, CardHeader, CardText } from "material-ui/Card"
+import FontIcon from "material-ui/FontIcon"
+import { FETCH_NOMAD_REGIONS, SET_NOMAD_REGION } from "../sagas/event"
 
 class SelectNomadRegion extends Component {
-
-  constructor (props) {
+  constructor(props) {
     super(props)
     this._onClick = this.handleChangeNomadRegion.bind(this)
   }
@@ -19,23 +18,23 @@ class SelectNomadRegion extends Component {
   handleChangeNomadRegion(region) {
     this.props.dispatch({
       type: SET_NOMAD_REGION,
-      payload: region
+      payload: region,
     })
   }
 
   render() {
     return (
       <Card>
-        <CardHeader title='Please select a nomad region' />
+        <CardHeader title="Please select a nomad region" />
         <CardText>
           <List>
-            { Object.keys(this.props.nomadRegions).map(region => {
+            {Object.keys(this.props.nomadRegions).map(region => {
               const regionName = this.props.nomadRegions[region]
               return (
                 <ListItem
-                  leftIcon={ <FontIcon className='material-icons'>public</FontIcon> }
-                  primaryText={ regionName }
-                  onTouchTap={ () => this._onClick(regionName) }
+                  leftIcon={<FontIcon className="material-icons">public</FontIcon>}
+                  primaryText={regionName}
+                  onTouchTap={() => this._onClick(regionName)}
                 />
               )
             })}
@@ -46,12 +45,12 @@ class SelectNomadRegion extends Component {
   }
 }
 
-function mapStateToProps ({ nomadRegions }) {
+function mapStateToProps({ nomadRegions }) {
   return { nomadRegions }
 }
 
 SelectNomadRegion.defaultProps = {
-  nomadRegions: []
+  nomadRegions: [],
 }
 
 SelectNomadRegion.propTypes = {

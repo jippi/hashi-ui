@@ -1,18 +1,8 @@
-import React, { PropTypes } from 'react'
-import FontIcon from 'material-ui/FontIcon'
-import { green500, red500 } from 'material-ui/styles/colors'
+import React, { PropTypes } from "react"
+import FontIcon from "material-ui/FontIcon"
+import { green500, red500 } from "material-ui/styles/colors"
 
-const FormatBoolean = ({
-    title,
-    value,
-    withIcon,
-    withText,
-    withColor,
-    trueText,
-    falseText,
-    falseIcon,
-    trueIcon
-}) => {
+const FormatBoolean = ({ title, value, withIcon, withText, withColor, trueText, falseText, falseIcon, trueIcon }) => {
   let color
   let icon
   let text
@@ -22,16 +12,18 @@ const FormatBoolean = ({
   }
 
   if (withIcon) {
-    icon = <FontIcon className='material-icons' style={{ color }}>{ value ? trueIcon : falseIcon }</FontIcon>
+    icon = (
+      <FontIcon className="material-icons" style={{ color }}>
+        {value ? trueIcon : falseIcon}
+      </FontIcon>
+    )
   }
 
   if (withText) {
-    text = <span>{ value ? trueText : falseText }</span>
+    text = <span>{value ? trueText : falseText}</span>
   }
 
-  return (
-    <span title={ title }>{ icon } { text }</span>
-  )
+  return <span title={title}>{icon} {text}</span>
 }
 
 FormatBoolean.defaultProps = {
@@ -42,11 +34,11 @@ FormatBoolean.defaultProps = {
   withIcon: true,
   withText: false,
 
-  trueText: 'yes',
-  trueIcon: 'check',
+  trueText: "yes",
+  trueIcon: "check",
 
-  falseText: 'no',
-  falseIcon: 'close'
+  falseText: "no",
+  falseIcon: "close",
 }
 
 FormatBoolean.propTypes = {
@@ -61,7 +53,7 @@ FormatBoolean.propTypes = {
   trueIcon: PropTypes.string.isRequired,
 
   falseText: PropTypes.string.isRequired,
-  falseIcon: PropTypes.string.isRequired
+  falseIcon: PropTypes.string.isRequired,
 }
 
 export default FormatBoolean

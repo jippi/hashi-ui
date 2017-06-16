@@ -133,7 +133,8 @@ func main() {
 
 		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			logger.Infof("Redirecting / to /nomad")
-			http.Redirect(w, r, cfg.ProxyAddress+"/nomad", 302)
+			w.Write([]byte("<script>document.location.href='" + cfg.ProxyAddress + "/nomad'</script>"))
+			return
 		})
 
 		router.HandleFunc("/ws/nomad", nomadHub.Handler)

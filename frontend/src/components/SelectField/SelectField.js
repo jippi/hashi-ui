@@ -1,6 +1,6 @@
-import React, {Component, PropTypes} from 'react';
-import TextField from 'material-ui/TextField';
-import DropDownMenu from 'material-ui/DropDownMenu';
+import React, { Component, PropTypes } from "react"
+import TextField from "material-ui/TextField"
+import DropDownMenu from "material-ui/DropDownMenu"
 
 function getStyles(props) {
   return {
@@ -13,12 +13,12 @@ function getStyles(props) {
       top: props.floatingLabelText ? 22 : 14,
     },
     hideDropDownUnderline: {
-      borderTop: 'none',
+      borderTop: "none",
     },
     dropDownMenu: {
-      display: 'block',
+      display: "block",
     },
-  };
+  }
 }
 
 class SelectField extends Component {
@@ -130,17 +130,17 @@ class SelectField extends Component {
      * The value that is currently selected.
      */
     value: PropTypes.any,
-  };
+  }
 
   static defaultProps = {
     autoWidth: false,
     disabled: false,
     fullWidth: false,
-  };
+  }
 
   static contextTypes = {
     muiTheme: PropTypes.object.isRequired,
-  };
+  }
 
   render() {
     let {
@@ -170,9 +170,9 @@ class SelectField extends Component {
       onChange,
       value,
       ...other
-    } = this.props;
+    } = this.props
 
-    const styles = getStyles(this.props, this.context);
+    const styles = getStyles(this.props, this.context)
 
     style = style || {}
     style.height = 48
@@ -185,41 +185,41 @@ class SelectField extends Component {
 
     return (
       <TextField
-        { ...other }
-        style={ style }
-        disabled={ disabled }
-        floatingLabelFixed={ floatingLabelFixed }
-        floatingLabelText={ floatingLabelText }
-        floatingLabelStyle={ floatingLabelStyle }
-        hintStyle={ hintStyle }
-        hintText={ (!hintText && !floatingLabelText) ? ' ' : hintText }
-        fullWidth={ fullWidth }
-        errorText={ errorText }
-        underlineStyle={ underlineStyle }
-        errorStyle={ errorStyle }
-        onFocus={ onFocus }
-        onBlur={ onBlur }
-        id={ id }
-        underlineDisabledStyle={ underlineDisabledStyle }
-        underlineFocusStyle={ underlineFocusStyle }
+        {...other}
+        style={style}
+        disabled={disabled}
+        floatingLabelFixed={floatingLabelFixed}
+        floatingLabelText={floatingLabelText}
+        floatingLabelStyle={floatingLabelStyle}
+        hintStyle={hintStyle}
+        hintText={!hintText && !floatingLabelText ? " " : hintText}
+        fullWidth={fullWidth}
+        errorText={errorText}
+        underlineStyle={underlineStyle}
+        errorStyle={errorStyle}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        id={id}
+        underlineDisabledStyle={underlineDisabledStyle}
+        underlineFocusStyle={underlineFocusStyle}
       >
         <DropDownMenu
-          disabled={ disabled }
-          style={ Object.assign(styles.dropDownMenu, menuStyle) }
-          labelStyle={ Object.assign(styles.label, labelStyle) }
-          iconStyle={ Object.assign(styles.icon, iconStyle) }
-          underlineStyle={ styles.hideDropDownUnderline }
-          listStyle={ listStyle }
-          autoWidth={ autoWidth }
-          value={ value }
-          onChange={ onChange }
-          maxHeight={ maxHeight }
+          disabled={disabled}
+          style={Object.assign(styles.dropDownMenu, menuStyle)}
+          labelStyle={Object.assign(styles.label, labelStyle)}
+          iconStyle={Object.assign(styles.icon, iconStyle)}
+          underlineStyle={styles.hideDropDownUnderline}
+          listStyle={listStyle}
+          autoWidth={autoWidth}
+          value={value}
+          onChange={onChange}
+          maxHeight={maxHeight}
         >
           {children}
         </DropDownMenu>
       </TextField>
-    );
+    )
   }
 }
 
-export default SelectField;
+export default SelectField

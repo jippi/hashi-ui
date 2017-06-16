@@ -1,14 +1,13 @@
-import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { Card, CardText } from 'material-ui/Card'
-import { green500 } from 'material-ui/styles/colors'
-import FontIcon from 'material-ui/FontIcon'
-import { WATCH_MEMBERS, UNWATCH_MEMBERS } from '../sagas/event'
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from '../components/Table'
-import ServerLink from '../components/ServerLink/ServerLink'
+import React, { Component, PropTypes } from "react"
+import { connect } from "react-redux"
+import { Card, CardText } from "material-ui/Card"
+import { green500 } from "material-ui/styles/colors"
+import FontIcon from "material-ui/FontIcon"
+import { WATCH_MEMBERS, UNWATCH_MEMBERS } from "../sagas/event"
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "../components/Table"
+import ServerLink from "../components/ServerLink/ServerLink"
 
 class Servers extends Component {
-
   componentDidMount() {
     this.props.dispatch({ type: WATCH_MEMBERS })
   }
@@ -22,7 +21,11 @@ class Servers extends Component {
       return null
     }
 
-    return <FontIcon className='material-icons' style={{ color: green500 }}>check</FontIcon>
+    return (
+      <FontIcon className="material-icons" style={{ color: green500 }}>
+        check
+      </FontIcon>
+    )
   }
 
   render() {
@@ -45,22 +48,25 @@ class Servers extends Component {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                { this.props.members.map((member) => {
+                {this.props.members.map(member => {
                   return (
-                    <TableRow key={ member.ID }>
-                      <TableRowColumn><ServerLink serverId={ member.Name } /></TableRowColumn>
-                      <TableRowColumn>{ member.Addr }</TableRowColumn>
-                      <TableRowColumn>{ member.Port }</TableRowColumn>
-                      <TableRowColumn>{ member.Tags.region }</TableRowColumn>
-                      <TableRowColumn>{ member.Tags.dc }</TableRowColumn>
-                      <TableRowColumn>{ member.Status }</TableRowColumn>
-                      <TableRowColumn>{ this.showLeaderIcon(member) }</TableRowColumn>
-                      <TableRowColumn>{ member.ProtocolCur }</TableRowColumn>
-                      <TableRowColumn>{ member.Tags.build }</TableRowColumn>
+                    <TableRow key={member.ID}>
+                      <TableRowColumn>
+                        <ServerLink serverId={member.Name} />
+                      </TableRowColumn>
+                      <TableRowColumn>{member.Addr}</TableRowColumn>
+                      <TableRowColumn>{member.Port}</TableRowColumn>
+                      <TableRowColumn>{member.Tags.region}</TableRowColumn>
+                      <TableRowColumn>{member.Tags.dc}</TableRowColumn>
+                      <TableRowColumn>{member.Status}</TableRowColumn>
+                      <TableRowColumn>
+                        {this.showLeaderIcon(member)}
+                      </TableRowColumn>
+                      <TableRowColumn>{member.ProtocolCur}</TableRowColumn>
+                      <TableRowColumn>{member.Tags.build}</TableRowColumn>
                     </TableRow>
                   )
-                })
-              }
+                })}
               </TableBody>
             </Table>
           </CardText>
@@ -70,7 +76,7 @@ class Servers extends Component {
   }
 }
 
-function mapStateToProps ({ members }) {
+function mapStateToProps({ members }) {
   return { members }
 }
 

@@ -1,13 +1,12 @@
-import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { List, ListItem } from 'material-ui/List';
-import { Card, CardHeader, CardText } from 'material-ui/Card';
-import FontIcon from 'material-ui/FontIcon'
-import { FETCH_CONSUL_REGIONS, SET_CONSUL_REGION } from '../sagas/event'
+import React, { Component, PropTypes } from "react"
+import { connect } from "react-redux"
+import { List, ListItem } from "material-ui/List"
+import { Card, CardHeader, CardText } from "material-ui/Card"
+import FontIcon from "material-ui/FontIcon"
+import { FETCH_CONSUL_REGIONS, SET_CONSUL_REGION } from "../sagas/event"
 
 class SelectConsulRegion extends Component {
-
-  constructor (props) {
+  constructor(props) {
     super(props)
     this._onClick = this.handleChangeRegion.bind(this)
   }
@@ -19,23 +18,23 @@ class SelectConsulRegion extends Component {
   handleChangeRegion(region) {
     this.props.dispatch({
       type: SET_CONSUL_REGION,
-      payload: region
+      payload: region,
     })
   }
 
   render() {
     return (
       <Card>
-        <CardHeader title='Please select a consul datacenter' />
+        <CardHeader title="Please select a consul datacenter" />
         <CardText>
           <List>
-            { Object.keys(this.props.consulRegions).map(region => {
+            {Object.keys(this.props.consulRegions).map(region => {
               const regionName = this.props.consulRegions[region]
               return (
                 <ListItem
-                  leftIcon={ <FontIcon className='material-icons'>public</FontIcon> }
-                  primaryText={ regionName }
-                  onTouchTap={ () => this._onClick(regionName) }
+                  leftIcon={<FontIcon className="material-icons">public</FontIcon>}
+                  primaryText={regionName}
+                  onTouchTap={() => this._onClick(regionName)}
                 />
               )
             })}
@@ -46,12 +45,12 @@ class SelectConsulRegion extends Component {
   }
 }
 
-function mapStateToProps ({ consulRegions }) {
+function mapStateToProps({ consulRegions }) {
   return { consulRegions }
 }
 
 SelectConsulRegion.defaultProps = {
-  consulRegions: []
+  consulRegions: [],
 }
 
 SelectConsulRegion.propTypes = {

@@ -1,28 +1,28 @@
-import React, { PropTypes } from 'react'
-import { blue500, green500, red500 } from 'material-ui/styles/colors'
+import React, { PropTypes } from "react"
+import { blue500, green500, red500 } from "material-ui/styles/colors"
 
 const NodeStatus = ({ value }) => {
   switch (value) {
-  case 'initializing':
-    return <span style={{ color: blue500 }}>initializing</span>
+    case "initializing":
+      return <span style={{ color: blue500 }}>initializing</span>
 
-  case 'ready':
-    return <span style={{ color: green500 }}>ready</span>
+    case "ready":
+      return <span style={{ color: green500 }}>ready</span>
 
-  case 'down':
-    return <span style={{ color: red500 }}>down</span>
+    case "down":
+      return <span style={{ color: red500 }}>down</span>
 
-  default:
-    return (<span>{value}</span>)
+    default:
+      return <span>{value}</span>
   }
 }
 
 NodeStatus.defaultProps = {
-  value: null
+  value: null,
 }
 
 NodeStatus.propTypes = {
-  value: PropTypes.string.isRequired
+  value: PropTypes.string.isRequired,
 }
 
 export default NodeStatus

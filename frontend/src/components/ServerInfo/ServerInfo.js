@@ -1,32 +1,27 @@
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { Grid, Row, Col } from 'react-flexbox-grid'
-import { Card, CardTitle, CardText } from 'material-ui/Card'
-import { TableRow, TableRowColumn } from '../Table'
-import TableHelper from '../TableHelper/TableHelper'
+import React, { PropTypes } from "react"
+import { connect } from "react-redux"
+import { Grid, Row, Col } from "react-flexbox-grid"
+import { Card, CardTitle, CardText } from "material-ui/Card"
+import { TableRow, TableRowColumn } from "../Table"
+import TableHelper from "../TableHelper/TableHelper"
 
-const memberProps = [
-  'Name',
-  'Addr',
-  'Port',
-  'Status',
-]
+const memberProps = ["Name", "Addr", "Port", "Status"]
 
 const ServerInfo = ({ member }) => {
   if (!member) {
-    return 'Loading ...';
+    return "Loading ..."
   }
 
   const tags = member.Tags
 
-  const memberTags = Object.keys(tags).map((key) => {
+  const memberTags = Object.keys(tags).map(key => {
     const name = key
     const value = tags[key]
 
     return (
-      <TableRow key={ name }>
-        <TableRowColumn>{ name }</TableRowColumn>
-        <TableRowColumn>{ value }</TableRowColumn>
+      <TableRow key={name}>
+        <TableRowColumn>{name}</TableRowColumn>
+        <TableRowColumn>{value}</TableRowColumn>
       </TableRow>
     )
   })
@@ -34,29 +29,26 @@ const ServerInfo = ({ member }) => {
   return (
     <Grid fluid style={{ padding: 0 }}>
       <Row>
-        <Col key='properties-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
+        <Col key="properties-pane" xs={12} sm={12} md={6} lg={6}>
           <Card>
-            <CardTitle title='Server Properties' />
+            <CardTitle title="Server Properties" />
             <CardText>
-              <dl className='dl-horizontal'>
-                { memberProps.map(memberProp =>
-                  <div key={ memberProp }>
-                    <dt>{ memberProp }</dt>
-                    <dd>{ member[memberProp] }</dd>
+              <dl className="dl-horizontal">
+                {memberProps.map(memberProp =>
+                  <div key={memberProp}>
+                    <dt>{memberProp}</dt>
+                    <dd>{member[memberProp]}</dd>
                   </div>
-                  )}
+                )}
               </dl>
             </CardText>
           </Card>
         </Col>
-        <Col key='tags-pane' xs={ 12 } sm={ 12 } md={ 6 } lg={ 6 }>
+        <Col key="tags-pane" xs={12} sm={12} md={6} lg={6}>
           <Card>
-            <CardTitle title='Server tags' />
+            <CardTitle title="Server tags" />
             <CardText>
-              { (memberTags.length > 0)
-                ? <TableHelper headers={ ['Name', 'Value'] } body={ memberTags } />
-                : null
-              }
+              {memberTags.length > 0 ? <TableHelper headers={["Name", "Value"]} body={memberTags} /> : null}
             </CardText>
           </Card>
         </Col>
@@ -65,12 +57,12 @@ const ServerInfo = ({ member }) => {
   )
 }
 
-function mapStateToProps ({ member }) {
+function mapStateToProps({ member }) {
   return { member }
 }
 
 ServerInfo.propTypes = {
-  member: PropTypes.object.isRequired
+  member: PropTypes.object.isRequired,
 }
 
 export default connect(mapStateToProps)(ServerInfo)

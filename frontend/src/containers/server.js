@@ -1,40 +1,45 @@
-import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import ServerTopbar from '../components/ServerTopbar/ServerTopbar'
-import { WATCH_MEMBER, UNWATCH_MEMBER } from '../sagas/event'
+import React, { Component, PropTypes } from "react"
+import { connect } from "react-redux"
+import ServerTopbar from "../components/ServerTopbar/ServerTopbar"
+import { WATCH_MEMBER, UNWATCH_MEMBER } from "../sagas/event"
 
 class Server extends Component {
-
-  componentWillMount () {
-    this.props.dispatch({ type: WATCH_MEMBER, payload: this.props.params.memberId })
+  componentWillMount() {
+    this.props.dispatch({
+      type: WATCH_MEMBER,
+      payload: this.props.params.memberId,
+    })
   }
 
-  componentWillUnmount () {
-    this.props.dispatch({ type: UNWATCH_MEMBER, payload: this.props.params.memberId })
+  componentWillUnmount() {
+    this.props.dispatch({
+      type: UNWATCH_MEMBER,
+      payload: this.props.params.memberId,
+    })
   }
 
-  render () {
+  render() {
     if (this.props.member == null) {
-      return 'Loading ...';
+      return "Loading ..."
     }
 
     return (
       <div>
-        <ServerTopbar { ...this.props } />
+        <ServerTopbar {...this.props} />
 
         <div style={{ padding: 10, paddingBottom: 0 }}>
-          <h2>Server: { this.props.member.Name }</h2>
+          <h2>Server: {this.props.member.Name}</h2>
 
           <br />
 
-          { this.props.children }
+          {this.props.children}
         </div>
       </div>
     )
   }
 }
 
-function mapStateToProps ({ member }) {
+function mapStateToProps({ member }) {
   return { member }
 }
 
@@ -43,7 +48,7 @@ Server.propTypes = {
   params: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   member: PropTypes.object.isRequired,
-  children: PropTypes.object.isRequired
+  children: PropTypes.object.isRequired,
 }
 
 export default connect(mapStateToProps)(Server)

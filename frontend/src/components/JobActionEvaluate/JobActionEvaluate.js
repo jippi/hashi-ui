@@ -1,16 +1,15 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import { EVALUATE_JOB, JOB_HIDE_DIALOG } from '../../sagas/event'
+import React from "react"
+import { connect } from "react-redux"
+import { EVALUATE_JOB, JOB_HIDE_DIALOG } from "../../sagas/event"
 
 class JobActionEvaluate extends React.Component {
-
   handleSubmit = () => {
     this.props.dispatch({ type: JOB_HIDE_DIALOG })
     this.props.dispatch({ type: EVALUATE_JOB, payload: this.props.job.ID })
-  };
+  }
 
   componentWillUpdate(nextProps) {
-    if (nextProps.jobDialog === 'evaluate') {
+    if (nextProps.jobDialog === "evaluate") {
       this.props.dispatch({ type: JOB_HIDE_DIALOG })
       this.props.dispatch({ type: EVALUATE_JOB, payload: this.props.job.ID })
     }
@@ -25,7 +24,7 @@ class JobActionEvaluate extends React.Component {
   }
 }
 
-function mapStateToProps ({ job, jobDialog }) {
+function mapStateToProps({ job, jobDialog }) {
   return { job, jobDialog }
 }
 

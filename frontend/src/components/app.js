@@ -1,19 +1,31 @@
-import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import { red500, green800, green900 } from 'material-ui/styles/colors'
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import AppBar from 'material-ui/AppBar'
-import Drawer from 'material-ui/Drawer'
-import MenuItem from 'material-ui/MenuItem'
-import NomadTopbar from './NomadTopbar/NomadTopbar'
-import ConsulTopbar from './ConsulTopbar/ConsulTopbar'
-import NotificationsBar from './NotificationsBar/NotificationsBar'
-import { NOMAD_COLOR, CONSUL_COLOR } from '../config.js'
-import { APP_DRAWER_OPEN, APP_DRAWER_CLOSE, UNKNOWN_CONSUL_REGION, UNKNOWN_NOMAD_REGION } from '../sagas/event'
+import React, { Component, PropTypes } from "react"
+import { connect } from "react-redux"
+import { withRouter } from "react-router"
+import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
+import { red500, green800, green900 } from "material-ui/styles/colors"
+import getMuiTheme from "material-ui/styles/getMuiTheme"
+import AppBar from "material-ui/AppBar"
+import Drawer from "material-ui/Drawer"
+import MenuItem from "material-ui/MenuItem"
+import NomadTopbar from "./NomadTopbar/NomadTopbar"
+import NomadMainNav from "./NomadMainNav/NomadMainNav"
+import ConsulTopbar from "./ConsulTopbar/ConsulTopbar"
+import NotificationsBar from "./NotificationsBar/NotificationsBar"
+import { NOMAD_COLOR, CONSUL_COLOR } from "../config.js"
+import { APP_DRAWER_OPEN, APP_DRAWER_CLOSE, UNKNOWN_CONSUL_REGION, UNKNOWN_NOMAD_REGION } from "../sagas/event"
 
 class App extends Component {
+  constructor() {
+    super()
+    this.state = { width: window.innerWidth - 220 }
+    window.onresize = this.setW.bind(this)
+  }
+
+  setW() {
+    this.setState({
+      width: window.innerWidth - 220,
+    })
+  }
 
   DrawerRequestedChange(open) {
     if (!open) {
@@ -27,17 +39,17 @@ class App extends Component {
     this.props.dispatch({ type: APP_DRAWER_CLOSE })
 
     switch (app) {
-    case 'consul':
-      this.props.dispatch({ type: UNKNOWN_CONSUL_REGION })
-      break
-    case 'nomad':
-      this.props.dispatch({ type: UNKNOWN_NOMAD_REGION })
-      break
+      case "consul":
+        this.props.dispatch({ type: UNKNOWN_CONSUL_REGION })
+        break
+      case "nomad":
+        this.props.dispatch({ type: UNKNOWN_NOMAD_REGION })
+        break
     }
   }
 
   capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+    return string.charAt(0).toUpperCase() + string.slice(1)
   }
 
   appDrawer() {
@@ -47,83 +59,100 @@ class App extends Component {
 
     return (
       <Drawer
-        docked={ false }
-        open={ this.props.appDrawer }
-        onRequestChange={ open => { this.DrawerRequestedChange(open) } }
+        docked={false}
+        open={this.props.appDrawer}
+        onRequestChange={open => {
+          this.DrawerRequestedChange(open)
+        }}
       >
-        { window.ENABLED_SERVICES.map(service => {
+        {window.ENABLED_SERVICES.map(service => {
           return (
-            <MenuItem onTouchTap={ () => { this.changeToApp(service) } }>
-              { this.capitalizeFirstLetter(service) }
+            <MenuItem
+              onTouchTap={() => {
+                this.changeToApp(service)
+              }}
+            >
+              {this.capitalizeFirstLetter(service)}
             </MenuItem>
           )
         })}
       </Drawer>
     )
-
   }
 
-  render () {
-    let uncaughtExceptionBar = undefined;
+  render() {
+    let uncaughtExceptionBar = undefined
 
     if (this.props.route.uncaughtException) {
-      uncaughtExceptionBar = <AppBar
-        showMenuIconButton={ false }
-        style={{ backgroundColor: red500 }}
-        title={ `Error: ${this.props.route.uncaughtException}` }
-      />
+      uncaughtExceptionBar = (
+        <AppBar
+          showMenuIconButton={false}
+          style={{ backgroundColor: red500 }}
+          title={`Error: ${this.props.route.uncaughtException}`}
+        />
+      )
     }
 
     if (Object.keys(this.props.appError).length > 0) {
-      const title = this.props.appError.error.reason
-        || this.props.appError.reason
-        || 'Unhandled application error, please check console'
+      const title =
+        this.props.appError.error.reason ||
+        this.props.appError.reason ||
+        "Unhandled application error, please check console"
 
-      uncaughtExceptionBar = <AppBar
-        showMenuIconButton={ false }
-        style={{ backgroundColor: red500 }}
-        title={ title }
-      />
+      uncaughtExceptionBar = <AppBar showMenuIconButton={false} style={{ backgroundColor: red500 }} title={title} />
     }
 
     const muiTheme = {
       palette: {
         primary1Color: NOMAD_COLOR,
         primary2Color: green800,
-        primary3Color: green900
+        primary3Color: green900,
       },
       appBar: {
-        height: 50
-      }
+        height: 50,
+      },
     }
 
-    let topbar = undefined;
+    let topbar,
+      navbar = undefined
 
-    if (this.props.router.location.pathname.startsWith('/consul')) {
+    if (this.props.router.location.pathname.startsWith("/consul")) {
       muiTheme.palette.primary1Color = CONSUL_COLOR
-      topbar = <ConsulTopbar { ...this.props } />
+      topbar = <ConsulTopbar {...this.props} />
     }
 
-    if (this.props.router.location.pathname.startsWith('/nomad')) {
+    if (this.props.router.location.pathname.startsWith("/nomad")) {
       muiTheme.palette.primary1Color = NOMAD_COLOR
-      topbar = <NomadTopbar { ...this.props } />
+      topbar = <NomadTopbar {...this.props} />
+      navbar = <NomadMainNav {...this.props} />
     }
 
     return (
-      <MuiThemeProvider muiTheme={ getMuiTheme(muiTheme) }>
+      <MuiThemeProvider muiTheme={getMuiTheme(muiTheme)}>
         <div>
-          { this.appDrawer() }
-          <NotificationsBar />
-          { uncaughtExceptionBar }
-          { topbar }
-          { this.props.children }
+          <div>
+            {this.appDrawer()}
+            <NotificationsBar />
+            {uncaughtExceptionBar}
+          </div>
+          <div>
+            {topbar}
+          </div>
+          <div>
+            <div style={{ float: "left", width: "200px" }}>
+              {navbar}
+            </div>
+            <div style={{ float: "right", width: this.state.width }}>
+              {this.props.children}
+            </div>
+          </div>
         </div>
       </MuiThemeProvider>
     )
   }
 }
 
-function mapStateToProps ({ appError, errorNotification, successNotification, appDrawer }) {
+function mapStateToProps({ appError, errorNotification, successNotification, appDrawer }) {
   return { appError, errorNotification, successNotification, appDrawer }
 }
 

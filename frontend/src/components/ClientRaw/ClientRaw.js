@@ -1,22 +1,22 @@
-import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { Card, CardTitle, CardText } from 'material-ui/Card'
-import RawJson from '../RawJson/RawJson'
+import React, { PropTypes } from "react"
+import { connect } from "react-redux"
+import { Card, CardTitle, CardText } from "material-ui/Card"
+import RawJson from "../RawJson/RawJson"
 
 const ClientRaw = ({ node }) =>
   <Card>
-    <CardTitle title='Raw node data' />
+    <CardTitle title="Raw node data" />
     <CardText>
-      <RawJson json={ node } />
+      <RawJson json={node} />
     </CardText>
   </Card>
 
-function mapStateToProps ({ node }) {
+function mapStateToProps({ node }) {
   return { node }
 }
 
 ClientRaw.propTypes = {
-  node: PropTypes.object.isRequired
+  node: PropTypes.object.isRequired,
 }
 
 export default connect(mapStateToProps)(ClientRaw)

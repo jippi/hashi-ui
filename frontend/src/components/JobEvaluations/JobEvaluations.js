@@ -1,33 +1,32 @@
-import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import EvaluationList from '../EvaluationList/EvaluationList'
-import { WATCH_EVALS, UNWATCH_EVALS } from '../../sagas/event'
+import React, { Component, PropTypes } from "react"
+import { connect } from "react-redux"
+import EvaluationList from "../EvaluationList/EvaluationList"
+import { WATCH_EVALS, UNWATCH_EVALS } from "../../sagas/event"
 
 class JobEvaluations extends Component {
-
-  componentWillMount () {
+  componentWillMount() {
     this.props.dispatch({ type: WATCH_EVALS })
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.props.dispatch({ type: UNWATCH_EVALS })
   }
 
-  render () {
+  render() {
     const jobId = this.props.params.jobId
     const evals = this.props.evaluations.filter(evaluation => evaluation.JobID === jobId)
 
-    return <EvaluationList evaluations={ evals } nested />
+    return <EvaluationList evaluations={evals} nested />
   }
 }
 
-function mapStateToProps ({ evaluations }) {
+function mapStateToProps({ evaluations }) {
   return { evaluations }
 }
 
 JobEvaluations.defaultProps = {
   evaluations: [],
-  params: {}
+  params: {},
 }
 
 JobEvaluations.propTypes = {
@@ -37,4 +36,3 @@ JobEvaluations.propTypes = {
 }
 
 export default connect(mapStateToProps)(JobEvaluations)
-

@@ -1,48 +1,56 @@
-import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import EvaluationTopbar from '../components/EvaluationTopbar/EvaluationTopbar'
+import React, { Component, PropTypes } from "react"
+import { connect } from "react-redux"
+import EvaluationTopbar from "../components/EvaluationTopbar/EvaluationTopbar"
 import {
-  WATCH_EVAL, UNWATCH_EVAL,
-  WATCH_ALLOCS_SHALLOW, UNWATCH_ALLOCS_SHALLOW,
-  WATCH_NODES, UNWATCH_NODES
-} from '../sagas/event'
+  WATCH_EVAL,
+  UNWATCH_EVAL,
+  WATCH_ALLOCS_SHALLOW,
+  UNWATCH_ALLOCS_SHALLOW,
+  WATCH_NODES,
+  UNWATCH_NODES,
+} from "../sagas/event"
 
 class Evaluation extends Component {
-
-  componentWillMount () {
-    this.props.dispatch({ type: WATCH_EVAL, payload: this.props.params.evalId })
+  componentWillMount() {
+    this.props.dispatch({
+      type: WATCH_EVAL,
+      payload: this.props.params.evalId,
+    })
     this.props.dispatch({ type: WATCH_ALLOCS_SHALLOW })
     this.props.dispatch({ type: WATCH_NODES })
   }
 
-  componentWillUnmount () {
-    this.props.dispatch({ type: UNWATCH_EVAL, payload: this.props.params.evalId })
+  componentWillUnmount() {
+    this.props.dispatch({
+      type: UNWATCH_EVAL,
+      payload: this.props.params.evalId,
+    })
     this.props.dispatch({ type: UNWATCH_ALLOCS_SHALLOW })
     this.props.dispatch({ type: UNWATCH_NODES })
   }
 
-  render () {
+  render() {
     if (this.props.evaluation == null) {
-      return (null)
+      return null
     }
 
     return (
       <div>
-        <EvaluationTopbar { ...this.props } />
+        <EvaluationTopbar {...this.props} />
 
         <div style={{ padding: 10, paddingBottom: 0 }}>
-          <h2>Evaluation: { this.props.evaluation.ID }</h2>
+          <h2>Evaluation: {this.props.evaluation.ID}</h2>
 
           <br />
 
-          { this.props.children }
+          {this.props.children}
         </div>
       </div>
     )
   }
 }
 
-function mapStateToProps ({ evaluation }) {
+function mapStateToProps({ evaluation }) {
   return { evaluation }
 }
 
@@ -50,7 +58,7 @@ Evaluation.propTypes = {
   dispatch: PropTypes.func.isRequired,
   params: PropTypes.object.isRequired,
   evaluation: PropTypes.object.isRequired,
-  children: PropTypes.object.isRequired
+  children: PropTypes.object.isRequired,
 }
 
 export default connect(mapStateToProps)(Evaluation)
