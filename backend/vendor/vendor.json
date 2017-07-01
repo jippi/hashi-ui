@@ -486,11 +486,11 @@
 			"revisionTime": "2016-10-29T22:21:16Z"
 		},
 		{
-			"checksumSHA1": "FXiaccMs+1NvIHh8W44lQJeGqms=",
+			"checksumSHA1": "RmhTKLvlDtxNPKZFnPYnfG/HzrI=",
 			"origin": "github.com/hashicorp/nomad/vendor/github.com/hashicorp/consul/api",
 			"path": "github.com/hashicorp/consul/api",
-			"revision": "f4a08a193d8fed7095b00c9080e09ff41cd7d4bf",
-			"revisionTime": "2017-02-11T00:41:28Z"
+			"revision": "d0abb99a6f38b8c71ef4100b7d1cbd256a5070e2",
+			"revisionTime": "2017-06-16T23:05:40Z"
 		},
 		{
 			"checksumSHA1": "0DPAA2cTBjrCGgXaxXil0vILcFs=",
