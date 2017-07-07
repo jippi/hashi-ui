@@ -16,6 +16,14 @@ var (
 	flagListenAddress = flag.String("listen-address", "",
 		"The address on which to expose the web interface. "+flagDefault(defaultConfig.ListenAddress))
 
+	flagHttpsEnable = flag.Bool("https-enable", false, "Use https protocol instead. ")
+
+	flagServerCert = flag.String("server-cert", "",
+		"Server certificate to use when https protocol is enabled.")
+
+	flagServerKey = flag.String("server-key", "",
+		"Server key to use when https protocol is enabled.")
+
 	flagNewRelicAppName = flag.String("newrelic-app-name", "hashi-ui",
 		"The NewRelic app name. "+flagDefault(defaultConfig.NewRelicAppName))
 
@@ -28,6 +36,9 @@ type Config struct {
 	LogLevel      string
 	ProxyAddress  string
 	ListenAddress string
+	HttpsEnable   bool
+	ServerCert    string
+	ServerKey     string
 
 	NewRelicAppName string
 	NewRelicLicense string
@@ -100,6 +111,19 @@ func ParseAppFlagConfig(c *Config) {
 	if *flagProxyAddress != "" {
 		c.ProxyAddress = *flagProxyAddress
 	}
+
+	if *flagHttpsEnable {
+		c.HttpsEnable = *flagHttpsEnable
+	}
+
+	if *flagServerCert != "" {
+		c.ServerCert = *flagServerCert
+	}
+
+	if *flagServerKey != "" {
+		c.ServerKey = *flagServerKey
+	}
+
 }
 
 // ParseNewRelicConfig ...
