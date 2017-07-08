@@ -10,8 +10,6 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/newrelic/go-agent"
-	"github.com/op/go-logging"
 )
 
 var logger = logging.MustGetLogger("hashi-ui")
