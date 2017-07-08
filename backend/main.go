@@ -74,7 +74,7 @@ func main() {
 	startLogging(cfg.LogLevel)
 
 	logger.Infof("-----------------------------------------------------------------------------")
-	logger.Infof("|                             NOMAD UI                                      |")
+	logger.Infof("|                             HASHI UI                                      |")
 	logger.Infof("-----------------------------------------------------------------------------")
 	if !cfg.HttpsEnable {
 		logger.Infof("| listen-address        : http://%-43s |", cfg.ListenAddress)
