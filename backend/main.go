@@ -76,7 +76,13 @@ func main() {
 	logger.Infof("-----------------------------------------------------------------------------")
 	logger.Infof("|                             NOMAD UI                                      |")
 	logger.Infof("-----------------------------------------------------------------------------")
-	logger.Infof("| listen-address  	: http://%-43s |", cfg.ListenAddress)
+	if !cfg.HttpsEnable {
+		logger.Infof("| listen-address        : http://%-43s |", cfg.ListenAddress)
+	} else {
+		logger.Infof("| listen-address      : https://%-43s  |", cfg.ListenAddress)
+	}
+	logger.Infof("| server-certificate   	: %-50s |", cfg.ServerCert)
+	logger.Infof("| server-key       	: %-50s |", cfg.ServerKey)
 	logger.Infof("| proxy-address   	: %-50s |", cfg.ProxyAddress)
 	logger.Infof("| log-level       	: %-50s |", cfg.LogLevel)
 
@@ -210,7 +216,14 @@ func main() {
 	})
 
 	logger.Infof("Listening ...")
-	err = http.ListenAndServe(cfg.ListenAddress, router)
+	if cfg.HttpsEnable {
+		if cfg.ServerCert == "" || cfg.ServerKey == "" {
+			logger.Fatal("Using https protocol but server certificate or key were not specified.")
+		}
+		err = http.ListenAndServeTLS(cfg.ListenAddress, cfg.ServerCert, cfg.ServerKey, router)
+	} else {
+		err = http.ListenAndServe(cfg.ListenAddress, router)
+	}
 	if err != nil {
 		logger.Fatal(err)
 	}
