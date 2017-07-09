@@ -101,7 +101,12 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 |-------------------------|---------------------------|---------------------------- |------------------------------------------------------------------------------------------------------------------|
 | `LOG_LEVEL` 	          | `log-level`               | `info`                  	| Log level to use while running the hashi-ui server - (`critical`, `error`, `warning`, `notice`, `info`, `debug`) |
 | `PROXY_ADDRESS`         | `proxy-address` 	      | `<empty>`               	| (optional) The base URL of the UI when running behind a reverse proxy (ie: example.com/nomad/)                   |
-| `LISTEN_ADDRESS`        | `listen-address`          | `0.0.0.0:3000`              | The IP + PORT to listen on                                                                                       |
+| `LISTEN_ADDRESS`        | `listen-address`          | `0.0.0.0:3000`              | The IP + PORT to listen on |
+| `HTTPS_ENABLE`          | `https-enable`            | `false`                     | Use https protocol instead of http |
+| `SERVER_CERT`           | `server-cert`             | `<empty>`                   | Server certificate to use when https protocol is enabled |
+| `SERVER_KEY`            | `server-key`              | `<empty>`                   | Server key to use when https protocol is enabled |
+                                           |
+
 
 ## Nomad Configuration
 
