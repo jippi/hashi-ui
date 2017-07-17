@@ -101,14 +101,19 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 |-------------------------|---------------------------|---------------------------- |------------------------------------------------------------------------------------------------------------------|
 | `LOG_LEVEL` 	          | `log-level`               | `info`                  	| Log level to use while running the hashi-ui server - (`critical`, `error`, `warning`, `notice`, `info`, `debug`) |
 | `PROXY_ADDRESS`         | `proxy-address` 	      | `<empty>`               	| (optional) The base URL of the UI when running behind a reverse proxy (ie: example.com/nomad/)                   |
-| `LISTEN_ADDRESS`        | `listen-address`          | `0.0.0.0:3000`              | The IP + PORT to listen on                                                                                       |
+| `LISTEN_ADDRESS`        | `listen-address`          | `0.0.0.0:3000`              | The IP + PORT to listen on |
+| `HTTPS_ENABLE`          | `https-enable`            | `false`                     | Use https protocol instead of http |
+| `SERVER_CERT`           | `server-cert`             | `<empty>`                   | Server certificate to use when https protocol is enabled |
+| `SERVER_KEY`            | `server-key`              | `<empty>`                   | Server key to use when https protocol is enabled |
+                                           |
+
 
 ## Nomad Configuration
 
 | Environment        	  |CLI (`--flag`)    	      | Default                 	| Description                                                                                                      |
 |-------------------------|---------------------------|-----------------------------|------------------------------------------------------------------------------------------------------------------|
 | `NOMAD_ENABLE`          | `nomad-enable`      	  | `false` 	                | Use `--nomad.enable` or env `NOMAD_ENABLE=1` to enable Nomad backend                                             |
-| `NOMAD_ADDR`            | `nomad-address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your .                                                                                |
+| `NOMAD_ADDR`            | `nomad-address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your Nomad instance                                                                               |
 | `NOMAD_READ_ONLY`    	  | `nomad-read-only`   	  | `false` 		        	| Should hash-ui allowed to modify Nomad state (stop/start jobs and so forth)	                                   |
 | `NOMAD_CACERT`      	  | `nomad-ca-cert`      	  | `<empty>`   	            | (optional) path to a CA Cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)                 |
 | `NOMAD_CLIENT_CERT`  	  | `nomad-client-cert`       | `<empty>` 	                | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
@@ -121,14 +126,16 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 
 | Environment        	  |CLI (`--flag`)   	      | Default                     | Description                                                                                                      |
 |-------------------------|-------------------------  |-----------------------------|------------------------------------------------------------------------------------------------------------------|
-| `CONSUL_ENABLE`         | `consul.enable`      	  | `false` 	                | Use `--consul.enable` or env `CONSUL_ENABLE=1` to enable Consul backend                                          |
-| `CONSUL_ADDR`           | `consul.address`    	  | `127.0.0.1:8500`            | Host + Port for your Consul server, e.g. localhost:8500` (Do not include protocol)                               |
-| `CONSUL_READ_ONLY`  	  | `consul.read-only`   	  | `false` 		            | Should hash-ui allowed to modify Consul state (modify KV, Services and so forth)                                 |
-| `CONSUL_ACL_TOKEN`  	  | `consul.acl-token`   	  | `<empty>` 		          	| Should hash-ui allowed to modify Consul state (modify KV, Services and so forth)                                 |
-| `CONSUL_HTTP_TOKEN`    |  `<empty>`              | `<empty>`     | The consul Token |
-| `CONSUL_HTTP_SSL_VERIFY` |  `<empty>`              | `true`     | Choose if you want your certificate is verify (Should false if you have a custom ssl certificate |
-| `CONSUL_HTTP_SSL`    |  `<empty>`              | `false`     | Enable HTTPS client to consul |
-
+| `CONSUL_ENABLE`         | `consul-enable`      	  | `false` 	                | Use `--consul-enable` or env `CONSUL_ENABLE=1` to enable Consul backend                                          |
+| `CONSUL_ADDR`           | `consul-address`    	  | `127.0.0.1:8500`            | Host + Port for your Consul server, e.g. localhost:8500` (Do not include protocol)                               |
+| `CONSUL_READ_ONLY`  	  | `consul-read-only`   	  | `false` 		            | Should hash-ui be allowed to modify Consul state (modify KV, Services and so forth)                              |
+| `CONSUL_ACL_TOKEN`  	  | `consul.acl-token`   	  | `<empty>` 		          	| The Consul access token to use (optional)                                                                        |
+| `CONSUL_HTTP_TOKEN`     | `<empty>`                 | `<empty>`                   | Synonym for `CONSUL_ACL_TOKEN`                                                                                   |
+| `CONSUL_HTTP_SSL_VERIFY`| `<empty>`                 | `true`                      | Choose if you want your certificate to be verified (Likely to choose false if you have a custom SSL certificate) |
+| `CONSUL_HTTP_SSL`       | `<empty>`                 | `false`                     | Enable HTTPS client to consul                                                                                    |
+| `CONSUL_CACERT`      	  | `<empty>`      	          | `<empty>`   	            | (optional) path to a CA Cert file (remember to set `CONSUL_HTTP_SSL` to true)                                    |
+| `CONSUL_CLIENT_CERT`    | `<empty>`                 | `<empty>` 	                | (optional) path to a client cert file (remember to set `CONSUL_HTTP_SSL` to true)                                |
+| `CONSUL_CLIENT_KEY`  	  | `<empty>`                 | `<empty>` 	                | (optional) path to a client key file (remember to set `CONSUL_HTTP_SSL` to true)          	                   |
 
 ## Instrumentation Configuration
 
