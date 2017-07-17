@@ -14,6 +14,10 @@ const jobProps = ["ID", "Name", "Region", "Datacenters", "Status", "Priority"]
 
 class JobInfo extends Component {
   render() {
+    if (this.props.job.ID == null) {
+      return <div>Loading job ...</div>
+    }
+
     const tasks = []
     const job = this.props.job
     const jobMetaBag = job.Meta || {}
@@ -33,10 +37,18 @@ class JobInfo extends Component {
                 {task.Name}
               </JobLink>
             </TableRowColumn>
-            <TableRowColumn>{task.Driver}</TableRowColumn>
-            <TableRowColumn>{task.Resources.CPU}</TableRowColumn>
-            <TableRowColumn>{task.Resources.MemoryMB}</TableRowColumn>
-            <TableRowColumn>{task.Resources.DiskMB}</TableRowColumn>
+            <TableRowColumn>
+              {task.Driver}
+            </TableRowColumn>
+            <TableRowColumn>
+              {task.Resources.CPU}
+            </TableRowColumn>
+            <TableRowColumn>
+              {task.Resources.MemoryMB}
+            </TableRowColumn>
+            <TableRowColumn>
+              {task.Resources.DiskMB}
+            </TableRowColumn>
             <TableRowColumn>
               <ConstraintTable idPrefix={task.ID} asTooltip constraints={task.Constraints} />
             </TableRowColumn>
@@ -52,12 +64,18 @@ class JobInfo extends Component {
               {taskGroup.Name}
             </JobLink>
           </TableRowColumn>
-          <TableRowColumn>{taskGroup.Count}</TableRowColumn>
-          <TableRowColumn>{taskGroup.Tasks.length}</TableRowColumn>
+          <TableRowColumn>
+            {taskGroup.Count}
+          </TableRowColumn>
+          <TableRowColumn>
+            {taskGroup.Tasks.length}
+          </TableRowColumn>
           <TableRowColumn>
             <MetaPayload asTooltip metaBag={taskGroupMeta} />
           </TableRowColumn>
-          <TableRowColumn>{taskGroup.RestartPolicy.Mode}</TableRowColumn>
+          <TableRowColumn>
+            {taskGroup.RestartPolicy.Mode}
+          </TableRowColumn>
           <TableRowColumn>
             <ConstraintTable idPrefix={taskGroup.ID} asTooltip constraints={taskGroup.Constraints} />
           </TableRowColumn>
@@ -84,8 +102,16 @@ class JobInfo extends Component {
                     }
 
                     const result = []
-                    result.push(<dt>{jobProp}</dt>)
-                    result.push(<dd>{jobPropValue}</dd>)
+                    result.push(
+                      <dt>
+                        {jobProp}
+                      </dt>
+                    )
+                    result.push(
+                      <dd>
+                        {jobPropValue}
+                      </dd>
+                    )
 
                     return result
                   }, this)}
@@ -151,10 +177,10 @@ class JobInfo extends Component {
 
 JobInfo.defaultProps = {
   job: {
-    constraints: [],
+    constraints: []
   },
   allocations: {},
-  evaluations: {},
+  evaluations: {}
 }
 
 function mapStateToProps({ job, allocations, evaluations }) {
@@ -162,7 +188,7 @@ function mapStateToProps({ job, allocations, evaluations }) {
 }
 
 JobInfo.propTypes = {
-  job: PropTypes.object.isRequired,
+  job: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(JobInfo)

@@ -6,13 +6,16 @@ import { WATCH_JOB, UNWATCH_JOB } from "../sagas/event"
 
 class Job extends Component {
   componentWillMount() {
-    this.props.dispatch({ type: WATCH_JOB, payload: this.props.params.jobId })
+    this.props.dispatch({
+      type: WATCH_JOB,
+      payload: this.props.params.jobId
+    })
   }
 
   componentWillUnmount() {
     this.props.dispatch({
       type: UNWATCH_JOB,
-      payload: this.props.params.jobId,
+      payload: this.props.params.jobId
     })
   }
 
@@ -43,7 +46,9 @@ class Job extends Component {
     return (
       <div>
         <div style={{ float: "left", paddingTop: 11 }}>
-          <h2>Job: {this.breadcrumb()} </h2>
+          <h2>
+            Job: {this.breadcrumb()}{" "}
+          </h2>
         </div>
 
         <div style={{ float: "right", width: 50 }}>
@@ -69,7 +74,7 @@ Job.propTypes = {
   params: PropTypes.object.isRequired,
   job: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  children: PropTypes.object.isRequired,
+  children: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(Job)

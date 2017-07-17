@@ -12,17 +12,19 @@ class Allocation extends Component {
   componentWillMount() {
     this.props.dispatch({
       type: WATCH_ALLOC,
-      payload: this.props.params.allocId,
+      payload: this.props.params.allocId
     })
   }
 
   componentWillUnmount() {
     this.props.dispatch({
       type: UNWATCH_ALLOC,
-      payload: this.props.params.allocId,
+      payload: this.props.params.allocId
     })
 
-    this.props.dispatch({ type: UNWATCH_ALLOCS })
+    this.props.dispatch({
+      type: UNWATCH_ALLOCS
+    })
   }
 
   componentDidUpdate(prevProps) {
@@ -41,13 +43,13 @@ class Allocation extends Component {
     if (prevProps.params.allocId) {
       this.props.dispatch({
         type: UNWATCH_ALLOC,
-        payload: prevProps.params.allocId,
+        payload: prevProps.params.allocId
       })
     }
 
     this.props.dispatch({
       type: WATCH_ALLOC,
-      payload: this.props.params.allocId,
+      payload: this.props.params.allocId
     })
   }
 
@@ -77,41 +79,33 @@ class Allocation extends Component {
     alt = alt[0]
     return (
       <div className="warning-bar" style={{ backgroundColor: orange500 }}>
-        <FontIcon className="material-icons" color="white">info</FontIcon>
+        <FontIcon className="material-icons" color="white">
+          info
+        </FontIcon>
         <div>
-          <AllocationLink allocationId={alt.ID}>
-            View replacement allocation
-          </AllocationLink>
+          <AllocationLink allocationId={alt.ID}>View replacement allocation</AllocationLink>
         </div>
       </div>
     )
   }
 
   render() {
-    if (this.props.allocation.Name == null) {
-      return null
+    if (this.props.allocation.ID == null) {
+      return <div>Loading allocation ...</div>
     }
 
     return (
       <div>
         <div style={{ padding: 10, paddingBottom: 0 }}>
           <h3>
-            Allocation:
-
-            &nbsp;
-
+            Allocation: &nbsp;
             <JobLink jobId={this.props.allocation.JobID} />
-
             &nbsp; > &nbsp;
-
             <JobLink jobId={this.props.allocation.JobID} taskGroupId={this.props.allocation.TaskGroupId}>
               {this.props.allocation.TaskGroup}
             </JobLink>
-
             &nbsp; #{this.getName()}
-
-            &nbsp; @{" "}
-            <ClientLink clientId={this.props.allocation.NodeID} clients={this.props.nodes} />
+            &nbsp; @ <ClientLink clientId={this.props.allocation.NodeID} clients={this.props.nodes} />
           </h3>
 
           {this.derp()}
@@ -140,7 +134,7 @@ Allocation.propTypes = {
   allocations: PropTypes.array.isRequired,
   nodes: PropTypes.array.isRequired,
   location: PropTypes.object.isRequired, // eslint-disable-line no-unused-vars
-  children: PropTypes.object.isRequired,
+  children: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(Allocation)

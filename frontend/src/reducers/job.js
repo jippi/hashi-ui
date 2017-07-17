@@ -1,7 +1,9 @@
-import { FETCHED_JOB, FETCHED_JOBS, JOB_HIDE_DIALOG, JOB_SHOW_DIALOG } from "../sagas/event"
+import { FETCHED_JOB, FETCHED_JOBS, JOB_HIDE_DIALOG, JOB_SHOW_DIALOG, UNWATCH_JOB } from "../sagas/event"
 
 export function JobInfoReducer(state = { TaskGroups: [] }, action) {
   switch (action.type) {
+    case UNWATCH_JOB:
+      return {}
     case FETCHED_JOB: {
       const job = action.payload
       job.TaskGroups.forEach((group, gidx) => {

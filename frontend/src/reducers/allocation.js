@@ -1,7 +1,9 @@
-import { FETCHED_ALLOCS, FETCHED_ALLOC } from "../sagas/event"
+import { FETCHED_ALLOCS, FETCHED_ALLOC, UNWATCH_ALLOC } from "../sagas/event"
 
 export function AllocInfoReducer(state = {}, action) {
   switch (action.type) {
+    case UNWATCH_ALLOC:
+      return {}
     case FETCHED_ALLOC: {
       const allocation = action.payload
       allocation.TaskGroupId = `${allocation.JobID}.${allocation.TaskGroup}`
@@ -18,7 +20,7 @@ export function AllocListReducer(state = [], action) {
     case FETCHED_ALLOCS: {
       const allocations = action.payload.map(allocation =>
         Object.assign({}, allocation, {
-          TaskGroupId: `${allocation.JobID}.${allocation.TaskGroup}`,
+          TaskGroupId: `${allocation.JobID}.${allocation.TaskGroup}`
         })
       )
 
