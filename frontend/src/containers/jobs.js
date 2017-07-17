@@ -11,7 +11,7 @@ const columnFormat = {
   width: 50,
   maxWidth: 50,
   overflow: "inherit",
-  whiteSpace: "normal",
+  whiteSpace: "normal"
 }
 
 const summaryLabels = ["Starting", "Running", "Queued", "Complete", "Failed", "Lost"]
@@ -37,7 +37,7 @@ const getJobStatisticsRow = job => {
     Failed: 0,
     Running: 0,
     Starting: 0,
-    Lost: 0,
+    Lost: 0
   }
 
   if (job.JobSummary !== null) {
@@ -105,7 +105,7 @@ class Jobs extends Component {
       width: 300,
       minWidth: 300,
       overflow: "display",
-      whiteSpace: "normal",
+      whiteSpace: "normal"
     }
 
     return (
@@ -124,21 +124,11 @@ class Jobs extends Component {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHeaderColumn style={flexibleWidth}>
-                    ID
-                  </TableHeaderColumn>
-                  <TableHeaderColumn style={columnFormat}>
-                    Status
-                  </TableHeaderColumn>
-                  <TableHeaderColumn style={columnFormat}>
-                    Type
-                  </TableHeaderColumn>
-                  <TableHeaderColumn style={columnFormat}>
-                    Priority
-                  </TableHeaderColumn>
-                  <TableHeaderColumn style={columnFormat}>
-                    Task Groups
-                  </TableHeaderColumn>
+                  <TableHeaderColumn style={flexibleWidth}>ID</TableHeaderColumn>
+                  <TableHeaderColumn style={columnFormat}>Status</TableHeaderColumn>
+                  <TableHeaderColumn style={columnFormat}>Type</TableHeaderColumn>
+                  <TableHeaderColumn style={columnFormat}>Priority</TableHeaderColumn>
+                  <TableHeaderColumn style={columnFormat}>Task Groups</TableHeaderColumn>
                   {getJobStatisticsHeader()}
                 </TableRow>
               </TableHeader>
@@ -180,13 +170,13 @@ function mapStateToProps({ jobs }) {
 
 Jobs.defaultProps = {
   jobs: [],
-  location: {},
+  location: {}
 }
 
 Jobs.propTypes = {
   jobs: PropTypes.array.isRequired,
   location: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect(mapStateToProps)(Jobs)

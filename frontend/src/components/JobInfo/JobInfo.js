@@ -10,7 +10,7 @@ import JobTaskGroupActionScale from "../JobTaskGroupActionScale/JobTaskGroupActi
 import JobTaskGroupActionStop from "../JobTaskGroupActionStop/JobTaskGroupActionStop"
 import { TableRow, TableRowColumn } from "../Table"
 
-const jobProps = ["ID", "Name", "Region", "Datacenters", "Status", "Priority"]
+const jobProps = ["ID", "Name", "Type", "Region", "Datacenters", "Status", "Priority"]
 
 class JobInfo extends Component {
   render() {

@@ -73,7 +73,7 @@ class _JobTopbar extends PureComponent {
 _JobTopbar.propTypes = {
   router: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  job: PropTypes.object.isRequired,
+  job: PropTypes.object.isRequired
 }
 
 const ViewJobTopbar = withRouter(_JobTopbar)

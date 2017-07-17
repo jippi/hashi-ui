@@ -846,13 +846,13 @@ func (c *NomadConnection) changeTaskGroupCount(action Action) {
 
 	var foundTaskGroup *api.TaskGroup
 	for _, taskGroup := range job.TaskGroups {
-		if taskGroup.Name == taskGroupID {
+		if *taskGroup.Name == taskGroupID {
 			foundTaskGroup = taskGroup
 			break
 		}
 	}
 
-	if foundTaskGroup.Name == "" {
+	if *foundTaskGroup.Name == "" {
 		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Could not find Task Group: %s", taskGroupID), Index: index}
 		return
 	}
@@ -861,13 +861,18 @@ func (c *NomadConnection) changeTaskGroupCount(action Action) {
 
 	switch scaleAction {
 	case "set":
-		foundTaskGroup.Count = params["count"].(int)
+		foundTaskGroup.Count = params["count"].(*int)
 	case "increase":
-		foundTaskGroup.Count++
+		x := *foundTaskGroup.Count
+		x = x + 1
+		foundTaskGroup.Count = &x
 	case "decrease":
-		foundTaskGroup.Count--
+		x := *foundTaskGroup.Count
+		x = x - 1
+		foundTaskGroup.Count = &x
 	case "stop":
-		foundTaskGroup.Count = 0
+		x := 0
+		foundTaskGroup.Count = &x
 	case "restart":
 		stopPayload := make(map[string]interface{})
 		for k, v := range params {
@@ -959,7 +964,7 @@ func (c *NomadConnection) stopJob(action Action) {
 
 	logger.Infof("Begin stop of job with id: %s", jobID)
 
-	_, _, err := c.region.Client.Jobs().Deregister(jobID, nil)
+	_, _, err := c.region.Client.Jobs().Deregister(jobID, false, nil)
 	if err != nil {
 		logger.Errorf("connection: unable to stop job '%s' : %s", jobID, err)
 		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to stop job : %s", err), Index: index}
