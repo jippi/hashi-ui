@@ -7,6 +7,7 @@ import getMuiTheme from "material-ui/styles/getMuiTheme"
 import AppBar from "material-ui/AppBar"
 import Drawer from "material-ui/Drawer"
 import MenuItem from "material-ui/MenuItem"
+import ReactTooltip from "react-tooltip"
 import NomadTopbar from "./NomadTopbar/NomadTopbar"
 import NomadMainNav from "./NomadMainNav/NomadMainNav"
 import ConsulTopbar from "./ConsulTopbar/ConsulTopbar"
@@ -23,7 +24,7 @@ class App extends Component {
 
   setW() {
     this.setState({
-      width: window.innerWidth - 220,
+      width: window.innerWidth - 220
     })
   }
 
@@ -106,11 +107,11 @@ class App extends Component {
       palette: {
         primary1Color: NOMAD_COLOR,
         primary2Color: green800,
-        primary3Color: green900,
+        primary3Color: green900
       },
       appBar: {
-        height: 50,
-      },
+        height: 50
+      }
     }
 
     let topbar,
@@ -144,6 +145,7 @@ class App extends Component {
             </div>
             <div style={{ float: "right", width: this.state.width }}>
               {this.props.children}
+              <ReactTooltip />
             </div>
           </div>
         </div>
@@ -159,7 +161,7 @@ function mapStateToProps({ appError, errorNotification, successNotification, app
 App.defaultProps = {
   successNotification: undefined,
   errorNotification: undefined,
-  appDrawer: false,
+  appDrawer: false
 }
 
 App.propTypes = {
@@ -171,7 +173,7 @@ App.propTypes = {
   appError: PropTypes.object,
   route: PropTypes.object.isRequired,
   router: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect(mapStateToProps)(withRouter(App))

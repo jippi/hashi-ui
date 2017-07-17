@@ -60,8 +60,16 @@ const ClientLinkCell = ({ rowIndex, data, clients, ...props }) =>
   </Cell>
 
 const AgeCell = ({ rowIndex, data, ...props }) =>
-  <Cell {...props}>
-    <FormatTime identifier={data[rowIndex].ID} time={data[rowIndex].CreateTime} />
+  <Cell
+    {...props}
+    onMouseEnter={() => {
+      ReactTooltip.show()
+    }}
+    onMouseLeave={() => {
+      ReactTooltip.hide()
+    }}
+  >
+    <FormatTime inTable identifier={data[rowIndex].ID} time={data[rowIndex].CreateTime} />
   </Cell>
 
 const StatusCell = ({ rowIndex, data, ...props }) =>
@@ -368,10 +376,9 @@ class AllocationList extends Component {
     if (height < 300) {
       height = 300
     }
-
     return (
       <div>
-        <Card>
+        <Card key="filter">
           <CardHeader title="Filter list" actAsExpander showExpandableButton />
           <CardText expandable>
             <Grid fluid style={{ padding: 0 }}>
@@ -385,9 +392,10 @@ class AllocationList extends Component {
           </CardText>
         </Card>
 
-        <Card style={{ marginTop: "1rem" }}>
+        <Card key="list" style={{ marginTop: "1rem" }}>
           <CardText>
             <Table
+              key="table"
               rowHeight={35}
               headerHeight={35}
               rowsCount={allocations.length}
@@ -410,8 +418,8 @@ class AllocationList extends Component {
               <Column header={<Cell>Age</Cell>} cell={<AgeCell data={allocations} />} width={100} />
               <Column header={<Cell>Actions</Cell>} cell={<ActionsCell data={allocations} />} width={100} />
             </Table>
-            <ReactTooltip />
           </CardText>
+          <ReactTooltip />
         </Card>
       </div>
     )
