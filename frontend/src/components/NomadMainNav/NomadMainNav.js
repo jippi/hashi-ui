@@ -144,7 +144,7 @@ class NomadMainNav extends PureComponent {
   }
 
   render() {
-    return "region" in this.props.router.params ? this.tabs() : undefined
+    return "region" in this.props.router.params ? this.tabs() : null
   }
 }
 
@@ -153,7 +153,7 @@ NomadMainNav.defaultProps = {}
 NomadMainNav.propTypes = {
   router: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 function mapStateToProps() {
