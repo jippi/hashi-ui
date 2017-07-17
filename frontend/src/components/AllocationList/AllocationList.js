@@ -376,6 +376,7 @@ class AllocationList extends Component {
     if (height < 300) {
       height = 300
     }
+
     return (
       <div>
         <Card key="filter">
