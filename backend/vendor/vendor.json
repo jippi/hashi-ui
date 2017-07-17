@@ -211,6 +211,12 @@
 			"path": "gopkg.in/fatih/set.v0",
 			"revision": "27c40922c40b43fe04554d8223a402af3ea333f3",
 			"revisionTime": "2014-12-10T08:48:24Z"
+		},
+		{
+			"checksumSHA1": "KHOUE9QA14iPCFNIVs5X72MYdkA=",
+			"path": "gopkg.in/yaml.v2",
+			"revision": "3b4ad1db5b2a649883ff3782f5f9f6fb52be71af",
+			"revisionTime": "2017-07-13T20:15:20Z"
 		}
 	],
 	"rootPath": "github.com/jippi/hashi-ui/backend"
