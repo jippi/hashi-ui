@@ -40,9 +40,15 @@ class UtilizationPieChart extends Component {
     return (
       <g>
         <text x={cx} y={textY} dy={4} textAnchor="middle" fill={fill}>
-          <tspan x={cx} dy="1.2em">{payload.name}</tspan>
-          <tspan x={cx} dy="1.2em">{fValue}</tspan>
-          <tspan x={cx} dy="1.2em">{p}%</tspan>
+          <tspan x={cx} dy="1.2em">
+            {payload.name}
+          </tspan>
+          <tspan x={cx} dy="1.2em">
+            {fValue}
+          </tspan>
+          <tspan x={cx} dy="1.2em">
+            {p}%
+          </tspan>
         </text>
         <Sector
           cx={cx}
@@ -97,8 +103,12 @@ class UtilizationPieChart extends Component {
           <div style={{ marginTop: "1rem" }}>
             <dl className="metrics">
               {this.props.data.map(entry => [
-                <dt style={{ color: entry.color }}>{entry.name}</dt>,
-                <dd style={{ color: entry.color }}>{entry.humanValue}</dd>,
+                <dt style={{ color: entry.color }}>
+                  {entry.name}
+                </dt>,
+                <dd style={{ color: entry.color }}>
+                  {entry.humanValue}
+                </dd>
               ])}
             </dl>
           </div>
@@ -110,7 +120,7 @@ class UtilizationPieChart extends Component {
 
 UtilizationPieChart.propTypes = {
   data: PropTypes.object.isRequired,
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired
 }
 
 export default UtilizationPieChart

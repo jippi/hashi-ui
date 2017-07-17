@@ -14,7 +14,7 @@ import {
   WATCH_MEMBERS,
   UNWATCH_MEMBERS,
   WATCH_CLUSTER_STATISTICS,
-  UNWATCH_CLUSTER_STATISTICS,
+  UNWATCH_CLUSTER_STATISTICS
 } from "../sagas/event"
 
 class Cluster extends Component {
@@ -37,24 +37,24 @@ class Cluster extends Component {
       jobStatus: {
         running: 0,
         pending: 0,
-        dead: 0,
+        dead: 0
       },
       jobTypes: {
         service: 0,
         batch: 0,
-        system: 0,
+        system: 0
       },
       nodeStatus: {
         ready: 0,
         initializing: 0,
-        down: 0,
+        down: 0
       },
       memberStatus: {
         alive: 0,
         leaving: 0,
         left: 0,
-        shutdown: 0,
-      },
+        shutdown: 0
+      }
     }
 
     for (const job of this.props.jobs) {
@@ -83,14 +83,14 @@ class Cluster extends Component {
         name: "Used",
         value: UsedMemory,
         humanValue: UsedMemory.toFixed(2) + " GB",
-        color: green500,
+        color: green500
       },
       {
         name: "Available",
         value: TotalMemory - UsedMemory,
         humanValue: (TotalMemory - UsedMemory).toFixed(2) + " GB",
-        color: blue500,
-      },
+        color: blue500
+      }
     ]
 
     const CPU = this.props.clusterStatistics.CPUIdleTime / this.props.clusterStatistics.CPUCores
@@ -99,14 +99,14 @@ class Cluster extends Component {
         name: "busy",
         value: 100 - Math.ceil(CPU),
         humanValue: (100 - CPU).toFixed(0) + " %",
-        color: green500,
+        color: green500
       },
       {
         name: "idle",
         value: Math.ceil(CPU),
         humanValue: CPU.toFixed(0) + " %",
-        color: blue500,
-      },
+        color: blue500
+      }
     ]
 
     return (
@@ -157,7 +157,7 @@ Cluster.propTypes = {
   nodes: PropTypes.array.isRequired,
   members: PropTypes.array.isRequired,
   clusterStatistics: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect(mapStateToProps)(Cluster)

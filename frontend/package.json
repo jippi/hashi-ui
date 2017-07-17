@@ -16,12 +16,7 @@
     "build": "webpack --config webpack-prod.config.js -p --progress",
     "lint": "eslint src"
   },
-  "keywords": [
-    "nomad",
-    "consul",
-    "hashi-ui",
-    "hashicorp"
-  ],
+  "keywords": ["nomad", "consul", "hashi-ui", "hashicorp"],
   "author": {
     "name": "Christian Winther",
     "email": "jippignu@gmail.com",
@@ -66,7 +61,7 @@
     "react-tap-event-plugin": "^2.0.1",
     "react-toolbox": "^2.0.0-beta.12",
     "react-tooltip": "^3.3.0",
-    "recharts": "^1.0.0-alpha.2",
+    "recharts": "^0.20.0",
     "recompose": "^0.24.0",
     "redux": "^3.7.2",
     "redux-saga": "^0.15.4",
