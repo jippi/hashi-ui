@@ -28,7 +28,7 @@ class EvaluationList extends PureComponent {
     this.setState({
       ...this.state,
       width: window.innerWidth,
-      height: window.innerHeight,
+      height: window.innerHeight
     })
   }
 
@@ -46,8 +46,8 @@ class EvaluationList extends PureComponent {
 
   render() {
     const evaluations = this.props.evaluations
-    const width = this.state.width - 30
-    let height = this.state.height - 170
+    const width = this.state.width - 240
+    let height = this.state.height - 90
 
     if (this.props.nested) {
       height = height - 120
@@ -99,12 +99,12 @@ class EvaluationList extends PureComponent {
 
 EvaluationList.defaultProps = {
   evaluations: [],
-  nested: false,
+  nested: false
 }
 
 EvaluationList.propTypes = {
   evaluations: PropTypes.array.isRequired,
-  nested: PropTypes.bool.isRequired,
+  nested: PropTypes.bool.isRequired
 }
 
 export default EvaluationList

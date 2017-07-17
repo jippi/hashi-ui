@@ -6,6 +6,7 @@ import { Card, CardHeader, CardText } from "material-ui/Card"
 import SelectField from "../SelectField/SelectField"
 import TextField from "material-ui/TextField"
 import MenuItem from "material-ui/MenuItem"
+import ReactTooltip from "react-tooltip"
 import { Table, Column, Cell } from "fixed-data-table-2"
 import AllocationStatusIcon from "../AllocationStatusIcon/AllocationStatusIcon"
 import AllocationLink from "../AllocationLink/AllocationLink"
@@ -24,7 +25,15 @@ const getAllocationNumberFromName = allocationName => {
 /* eslint-disable react/prop-types */
 
 const AllocationStatusIconCell = ({ rowIndex, data, ...props }) =>
-  <Cell {...props}>
+  <Cell
+    {...props}
+    onMouseEnter={() => {
+      ReactTooltip.show()
+    }}
+    onMouseLeave={() => {
+      ReactTooltip.hide()
+    }}
+  >
     <AllocationStatusIcon allocation={data[rowIndex]} />
   </Cell>
 
@@ -149,7 +158,7 @@ class AllocationList extends Component {
             <Link
               to={{
                 pathname: location.pathname,
-                query: { ...query, status: undefined },
+                query: { ...query, status: undefined }
               }}
             >
               - Any -
@@ -159,7 +168,7 @@ class AllocationList extends Component {
             <Link
               to={{
                 pathname: location.pathname,
-                query: { ...query, status: "running" },
+                query: { ...query, status: "running" }
               }}
             >
               Running
@@ -169,7 +178,7 @@ class AllocationList extends Component {
             <Link
               to={{
                 pathname: location.pathname,
-                query: { ...query, status: "complete" },
+                query: { ...query, status: "complete" }
               }}
             >
               Complete
@@ -179,7 +188,7 @@ class AllocationList extends Component {
             <Link
               to={{
                 pathname: location.pathname,
-                query: { ...query, status: "pending" },
+                query: { ...query, status: "pending" }
               }}
             >
               Pending
@@ -189,7 +198,7 @@ class AllocationList extends Component {
             <Link
               to={{
                 pathname: location.pathname,
-                query: { ...query, status: "lost" },
+                query: { ...query, status: "lost" }
               }}
             >
               Lost
@@ -199,7 +208,7 @@ class AllocationList extends Component {
             <Link
               to={{
                 pathname: location.pathname,
-                query: { ...query, status: "failed" },
+                query: { ...query, status: "failed" }
               }}
             >
               Failed
@@ -254,7 +263,7 @@ class AllocationList extends Component {
         <Link
           to={{
             pathname: location.pathname,
-            query: { ...query, job: undefined },
+            query: { ...query, job: undefined }
           }}
         >
           - Any -
@@ -303,7 +312,7 @@ class AllocationList extends Component {
         <Link
           to={{
             pathname: location.pathname,
-            query: { ...query, client: undefined },
+            query: { ...query, client: undefined }
           }}
         >
           - Any -
@@ -323,7 +332,7 @@ class AllocationList extends Component {
   updateDimensions() {
     this.setState({
       width: window.innerWidth,
-      height: window.innerHeight,
+      height: window.innerHeight
     })
   }
 
@@ -344,8 +353,13 @@ class AllocationList extends Component {
     const showClientColumn = this.props.showClientColumn
     const allocations = this.filteredAllocations()
 
-    const width = this.state.width - 30
-    let height = this.state.height - 240
+    let width = this.state.width - 240
+
+    if (!showClientColumn || !showJobColumn) {
+      width = width - 30
+    }
+
+    let height = this.state.height - 165
 
     if (!showJobColumn || !showClientColumn || this.props.nested) {
       height = height - 120
@@ -396,6 +410,7 @@ class AllocationList extends Component {
               <Column header={<Cell>Age</Cell>} cell={<AgeCell data={allocations} />} width={100} />
               <Column header={<Cell>Actions</Cell>} cell={<ActionsCell data={allocations} />} width={100} />
             </Table>
+            <ReactTooltip />
           </CardText>
         </Card>
       </div>
@@ -410,7 +425,7 @@ AllocationList.defaultProps = {
 
   showJobColumn: true,
   showClientColumn: true,
-  nested: false,
+  nested: false
 }
 
 AllocationList.propTypes = {
@@ -421,7 +436,7 @@ AllocationList.propTypes = {
   nested: PropTypes.bool.isRequired,
 
   showJobColumn: PropTypes.bool.isRequired,
-  showClientColumn: PropTypes.bool.isRequired,
+  showClientColumn: PropTypes.bool.isRequired
 }
 
 export default AllocationList

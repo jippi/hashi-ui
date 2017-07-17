@@ -48,7 +48,7 @@ FormatTime.defaultProps = {
   display: "relative",
   timeFormat: "DD-MM-YYYY H:mm:ss",
   durationInterval: null,
-  durationFormat: null,
+  durationFormat: null
 }
 
 FormatTime.propTypes = {
@@ -58,7 +58,7 @@ FormatTime.propTypes = {
   display: PropTypes.string.isRequired,
   timeFormat: PropTypes.string.isRequired,
   durationInterval: PropTypes.string,
-  durationFormat: PropTypes.string,
+  durationFormat: PropTypes.string
 }
 
 export default FormatTime

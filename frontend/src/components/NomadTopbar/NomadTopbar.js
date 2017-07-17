@@ -12,7 +12,7 @@ import { NOMAD_COLOR } from "../../config.js"
 class AppTopbar extends PureComponent {
   componentWillMount() {
     this.props.dispatch({
-      type: FETCH_NOMAD_REGIONS,
+      type: FETCH_NOMAD_REGIONS
     })
   }
 
@@ -24,7 +24,7 @@ class AppTopbar extends PureComponent {
   handleChangeNomadRegion(region) {
     this.props.dispatch({
       type: SET_NOMAD_REGION,
-      payload: region,
+      payload: region
     })
   }
 
@@ -44,6 +44,11 @@ class AppTopbar extends PureComponent {
 
   nomadRegions() {
     if (!Array.isArray(this.props.nomadRegions)) {
+      return
+    }
+
+    // don't show region switcher unless there are multiple regions
+    if (this.props.nomadRegions.length < 2) {
       return
     }
 
@@ -79,14 +84,14 @@ class AppTopbar extends PureComponent {
 }
 
 AppTopbar.defaultProps = {
-  nomadRegions: [],
+  nomadRegions: []
 }
 
 AppTopbar.propTypes = {
   router: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   nomadRegions: PropTypes.array.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 function mapStateToProps({ nomadRegions }) {
