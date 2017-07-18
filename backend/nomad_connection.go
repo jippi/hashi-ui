@@ -11,7 +11,6 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/hashicorp/nomad/api"
-	"github.com/hashicorp/nomad/command"
 	"github.com/imkira/go-observer"
 
 	uuid "github.com/satori/go.uuid"
@@ -743,7 +742,7 @@ func (c *NomadConnection) watchFile(action Action) {
 	var r io.ReadCloser
 	frameReader := api.NewFrameReader(frames, cancel)
 	frameReader.SetUnblockTime(500 * time.Millisecond)
-	r = command.NewLineLimitReader(frameReader, int(defaultTailLines), int(defaultTailLines*bytesToLines), 1*time.Second)
+	r = NewLineLimitReader(frameReader, int(defaultTailLines), int(defaultTailLines*bytesToLines), 1*time.Second)
 
 	// Turn the reader into a channel
 	lines := make(chan []byte)
