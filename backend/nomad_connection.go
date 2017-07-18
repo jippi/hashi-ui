@@ -290,7 +290,9 @@ func (c *NomadConnection) Handle() {
 func (c *NomadConnection) keepAlive() {
 	logger.Debugf("Starting keep-alive packer sender")
 	ticker := time.NewTicker(10 * time.Second)
-
+	defer func() {
+		ticker.Stop()
+	}()
 	for {
 		select {
 		case <-c.destroyCh:
