@@ -11,7 +11,7 @@ const rawIcon = <FontIcon className="material-icons">code</FontIcon>
 
 class _JobTopbar extends PureComponent {
   handleActive(tab) {
-    const path = ["", "nomad", this.props.router.params.region, "jobs", this.props.job.Name, tab]
+    const path = ["", "nomad", this.props.router.params.region, "jobs", this.props.job.ID, tab]
     this.props.router.push(path.map(encodeURIComponent).join("/"))
   }
 
