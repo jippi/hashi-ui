@@ -1,9 +1,9 @@
-import React, { PropTypes } from 'react'
-import { Link, withRouter } from 'react-router'
-import { default as shortenUUID } from '../../helpers/uuid'
+import React, { PropTypes } from "react"
+import { Link, withRouter } from "react-router"
+import { default as shortenUUID } from "../../helpers/uuid"
 
 const EvaluationLink = ({ children, evaluationId, linkAppend, shortUUID, router }) => {
-  let innerChildren = children;
+  let innerChildren = children
 
   if (children === undefined) {
     innerChildren = shortUUID ? shortenUUID(evaluationId) : evaluationId
@@ -11,16 +11,18 @@ const EvaluationLink = ({ children, evaluationId, linkAppend, shortUUID, router 
 
   return (
     <Link
-      to={{ pathname: `/nomad/${router.params.region}/evaluations/${evaluationId}${linkAppend}` }}
+      to={{
+        pathname: `/nomad/${router.params.region}/evaluations/${evaluationId}${linkAppend}`,
+      }}
     >
-      { innerChildren }
+      {innerChildren}
     </Link>
   )
 }
 
 EvaluationLink.defaultProps = {
-  linkAppend: '',
-  shortUUID: true
+  linkAppend: "",
+  shortUUID: true,
 }
 
 EvaluationLink.propTypes = {

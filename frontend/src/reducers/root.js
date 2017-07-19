@@ -1,19 +1,19 @@
-import { combineReducers } from 'redux'
+import { combineReducers } from "redux"
 
 import {
   AppDrawer,
   AppErrorReducer,
   ClusterStatisticsReducer,
   ErrorNotificationReducer,
-  SuccessNotificationReducer
-} from './app'
-import { MemberInfoReducer, MemberListReducer } from './member'
-import { JobInfoReducer, JobListReducer, JobDialogReducer } from './job'
-import { AllocInfoReducer, AllocListReducer } from './allocation'
-import { EvalInfoReducer, EvalListReducer } from './evaluation'
-import { NodeInfoReducer, NodeStatsReducer, NodeListReducer } from './node'
-import { DirectoryReducer, FileReducer } from './filesystem'
-import { ChangeNomadRegionReducer , NomadRegionsReducer } from './nomad'
+  SuccessNotificationReducer,
+} from "./app"
+import { MemberInfoReducer, MemberListReducer } from "./member"
+import { JobInfoReducer, JobListReducer, JobDialogReducer } from "./job"
+import { AllocInfoReducer, AllocListReducer } from "./allocation"
+import { EvalInfoReducer, EvalListReducer } from "./evaluation"
+import { NodeInfoReducer, NodeStatsReducer, NodeListReducer } from "./node"
+import { DirectoryReducer, FileReducer } from "./filesystem"
+import { ChangeNomadRegionReducer, NomadRegionsReducer } from "./nomad"
 import {
   ConsulServiceList,
   ConsulService,
@@ -23,7 +23,7 @@ import {
   ConsulKVPath,
   ConsulKVPair,
   ChangeConsulRegionReducer,
-} from './consul'
+} from "./consul"
 
 const rootReducer = combineReducers({
   allocation: AllocInfoReducer,

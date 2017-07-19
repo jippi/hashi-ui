@@ -1,10 +1,9 @@
-import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { WATCH_EVALS, UNWATCH_EVALS } from '../sagas/event'
-import EvaluationList from '../components/EvaluationList/EvaluationList'
+import React, { Component, PropTypes } from "react"
+import { connect } from "react-redux"
+import { WATCH_EVALS, UNWATCH_EVALS } from "../sagas/event"
+import EvaluationList from "../components/EvaluationList/EvaluationList"
 
 class Evaluations extends Component {
-
   componentDidMount() {
     this.props.dispatch({ type: WATCH_EVALS })
   }
@@ -14,16 +13,16 @@ class Evaluations extends Component {
   }
 
   render() {
-    return <EvaluationList evaluations={ this.props.evaluations } containerClassName='content' />
+    return <EvaluationList evaluations={this.props.evaluations} containerClassName="content" />
   }
 }
 
-function mapStateToProps ({ evaluations }) {
+function mapStateToProps({ evaluations }) {
   return { evaluations }
 }
 
 Evaluations.defaultProps = {
-  evaluations: {}
+  evaluations: {},
 }
 
 Evaluations.propTypes = {

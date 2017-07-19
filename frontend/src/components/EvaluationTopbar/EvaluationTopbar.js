@@ -1,63 +1,54 @@
-import FontIcon from 'material-ui/FontIcon'
-import React, { PureComponent, PropTypes } from 'react'
-import { BottomNavigation, BottomNavigationItem } from 'material-ui/BottomNavigation'
-import { withRouter } from 'react-router'
+import FontIcon from "material-ui/FontIcon"
+import React, { PureComponent, PropTypes } from "react"
+import { BottomNavigation, BottomNavigationItem } from "material-ui/BottomNavigation"
+import { withRouter } from "react-router"
 
-const infoIcon = <FontIcon className='material-icons'>info_outline</FontIcon>
-const allocationIcon = <FontIcon className='material-icons'>apps</FontIcon>
-const rawIcon = <FontIcon className='material-icons'>code</FontIcon>
+const infoIcon = <FontIcon className="material-icons">info_outline</FontIcon>
+const allocationIcon = <FontIcon className="material-icons">apps</FontIcon>
+const rawIcon = <FontIcon className="material-icons">code</FontIcon>
 
 class _EvaluationTopbar extends PureComponent {
-
-  handleActive (tab) {
-    const path = ['', 'nomad', this.props.router.params.region, 'evaluations', this.props.evaluation.ID, tab]
-    this.props.router.push(path.map(encodeURIComponent).join('/'))
+  handleActive(tab) {
+    const path = ["", "nomad", this.props.router.params.region, "evaluations", this.props.evaluation.ID, tab]
+    this.props.router.push(path.map(encodeURIComponent).join("/"))
   }
 
-  getActiveTab () {
+  getActiveTab() {
     const location = this.props.location
-    const end = location.pathname.split('/').pop()
+    const end = location.pathname.split("/").pop()
 
-    if (end.startsWith('info')) {
+    if (end.startsWith("info")) {
       return 0
     }
 
-    if (end.startsWith('allocations')) {
+    if (end.startsWith("allocations")) {
       return 1
     }
 
-    if (end.startsWith('raw')) {
+    if (end.startsWith("raw")) {
       return 2
     }
 
     return 0
   }
 
-  getStyle () {
+  getStyle() {
     return {
-      borderBottom: '1px solid #e0e0e0',
-      marginBottom: 10
+      borderBottom: "1px solid #e0e0e0",
+      marginBottom: 10,
     }
   }
 
-  render () {
+  render() {
     return (
-      <BottomNavigation selectedIndex={ this.getActiveTab() } style={ this.getStyle() }>
+      <BottomNavigation selectedIndex={this.getActiveTab()} style={this.getStyle()}>
+        <BottomNavigationItem label="Info" icon={infoIcon} onTouchTap={() => this.handleActive("info")} />
         <BottomNavigationItem
-          label='Info'
-          icon={ infoIcon }
-          onTouchTap={ () => this.handleActive('info') }
+          label="Allocations"
+          icon={allocationIcon}
+          onTouchTap={() => this.handleActive("allocations")}
         />
-        <BottomNavigationItem
-          label='Allocations'
-          icon={ allocationIcon }
-          onTouchTap={ () => this.handleActive('allocations') }
-        />
-        <BottomNavigationItem
-          label='Raw'
-          icon={ rawIcon }
-          onTouchTap={ () => this.handleActive('raw') }
-        />
+        <BottomNavigationItem label="Raw" icon={rawIcon} onTouchTap={() => this.handleActive("raw")} />
       </BottomNavigation>
     )
   }
@@ -66,7 +57,7 @@ class _EvaluationTopbar extends PureComponent {
 _EvaluationTopbar.propTypes = {
   router: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  evaluation: PropTypes.object.isRequired
+  evaluation: PropTypes.object.isRequired,
 }
 
 const ViewEvaluationTopbar = withRouter(_EvaluationTopbar)

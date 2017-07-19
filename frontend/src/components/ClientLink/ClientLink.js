@@ -1,6 +1,6 @@
-import React, { PureComponent, PropTypes } from 'react'
-import { Link, withRouter } from 'react-router'
-import shortUUID from '../../helpers/uuid'
+import React, { PureComponent, PropTypes } from "react"
+import { Link, withRouter } from "react-router"
+import shortUUID from "../../helpers/uuid"
 
 const clientLookupCache = {}
 
@@ -21,8 +21,7 @@ const findClientNameById = (clientId, clients) => {
 }
 
 class ClientLink extends PureComponent {
-
-  render () {
+  render() {
     const clientId = this.props.clientId
     let linkAppend = this.props.linkAppend
     let children = this.props.children
@@ -38,14 +37,16 @@ class ClientLink extends PureComponent {
     }
 
     if (!linkAppend) {
-      linkAppend = '/info'
+      linkAppend = "/info"
     }
 
     return (
       <Link
-        to={{ pathname: `/nomad/${this.props.router.params.region}/clients/${clientId}${linkAppend}` }}
+        to={{
+          pathname: `/nomad/${this.props.router.params.region}/clients/${clientId}${linkAppend}`,
+        }}
       >
-        { children }
+        {children}
       </Link>
     )
   }
@@ -54,7 +55,7 @@ class ClientLink extends PureComponent {
 ClientLink.defaultProps = {
   clients: [],
   shortUUID: true,
-  linkAppend: ''
+  linkAppend: "",
 }
 
 ClientLink.propTypes = {

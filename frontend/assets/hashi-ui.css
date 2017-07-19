@@ -8,7 +8,7 @@ body {
   line-height: 24px;
   margin: 0;
   padding: 0;
-  background: #f3f3f3
+  background: #f3f3f3;
 }
 
 body, h1, h2, h3, h4, h5, h6 {
@@ -37,7 +37,7 @@ dt {
   text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-weight: 500
+  font-weight: 500;
 }
 
 dl.metrics {
@@ -49,7 +49,7 @@ dl.metrics dt {
 }
 
 dl.metrics dd {
-  margin-left: 20px
+  margin-left: 20px;
 }
 
 dt:after {
@@ -73,7 +73,7 @@ dd {
 
 .content-file.small {
   height: auto;
-  padding: 1em
+  padding: 1em;
 }
 
 code {
@@ -85,7 +85,7 @@ code {
 }
 
 th {
-  text-align: left
+  text-align: left;
 }
 
 .nomad-table-responsive {
@@ -99,24 +99,24 @@ th {
 }
 
 .breadcrumb:before {
-    content: "\e7c3";
-    font-family: "Material-Design-Icons";
+  content: "\e7c3";
+  font-family: "Material-Design-Icons";
 }
 
 .breadcrumb:before {
-    content: '\E5CC';
-    vertical-align: top;
-    display: inline-block;
-    font-family: 'Material Icons';
-    font-weight: normal;
-    font-style: normal;
-    font-size: 20px;
-    margin: 0 5px 0 5px;
-    -webkit-font-smoothing: antialiased;
+  content: '\E5CC';
+  vertical-align: top;
+  display: inline-block;
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  margin: 0 5px 0 5px;
+  -webkit-font-smoothing: antialiased;
 }
 
 .breadcrumb.no-icon:before {
-  content: ''
+  content: '';
 }
 
 .warning-bar {
@@ -135,6 +135,6 @@ th {
   clear: both;
 }
 .warning-bar a {
-  color:white;
-  text-decoration: underline
+  color: white;
+  text-decoration: underline;
 }

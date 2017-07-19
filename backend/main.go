@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/newrelic/go-agent"
@@ -139,7 +138,8 @@ func main() {
 
 		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			logger.Infof("Redirecting / to /nomad")
-			http.Redirect(w, r, cfg.ProxyAddress+"/nomad", 302)
+			w.Write([]byte("<script>document.location.href='" + cfg.ProxyAddress + "/nomad'</script>"))
+			return
 		})
 
 		router.HandleFunc("/ws/nomad", nomadHub.Handler)
@@ -211,7 +211,12 @@ func main() {
 		if bs, assetErr := myAssetFS.Open(responseFile); err != nil {
 			logger.Errorf("%s: %s", responseFile, assetErr)
 		} else {
-			http.ServeContent(w, r, responseFile[1:], time.Now(), bs)
+			stat, err := bs.Stat()
+			if err != nil {
+				logger.Errorf("Failed to stat %s: %s", responseFile, err)
+			} else {
+				http.ServeContent(w, r, responseFile[1:], stat.ModTime(), bs)
+			}
 		}
 	})
 

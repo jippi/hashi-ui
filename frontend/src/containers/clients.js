@@ -1,14 +1,13 @@
-import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import { Card, CardText } from 'material-ui/Card'
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from '../components/Table'
-import { WATCH_NODES, UNWATCH_NODES } from '../sagas/event'
-import ClientLink from '../components/ClientLink/ClientLink'
-import FormatBoolean from '../components/FormatBoolean/FormatBoolean'
-import NodeStatus from '../components/NodeStatus/NodeStatus'
+import React, { Component, PropTypes } from "react"
+import { connect } from "react-redux"
+import { Card, CardText } from "material-ui/Card"
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "../components/Table"
+import { WATCH_NODES, UNWATCH_NODES } from "../sagas/event"
+import ClientLink from "../components/ClientLink/ClientLink"
+import FormatBoolean from "../components/FormatBoolean/FormatBoolean"
+import NodeStatus from "../components/NodeStatus/NodeStatus"
 
 class Clients extends Component {
-
   componentDidMount() {
     this.props.dispatch({ type: WATCH_NODES })
   }
@@ -34,19 +33,26 @@ class Clients extends Component {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                { this.props.nodes.map((node) => {
+                {this.props.nodes.map(node => {
                   return (
-                    <TableRow key={ node.ID }>
-                      <TableRowColumn><ClientLink clientId={ node.ID } /></TableRowColumn>
-                      <TableRowColumn>{ node.Name }</TableRowColumn>
-                      <TableRowColumn><NodeStatus value={ node.Status } /></TableRowColumn>
-                      <TableRowColumn><FormatBoolean value={ node.Drain } /></TableRowColumn>
-                      <TableRowColumn>{ node.Datacenter }</TableRowColumn>
-                      <TableRowColumn>{ node.NodeClass ? node.NodeClass : '<none>'}</TableRowColumn>
+                    <TableRow key={node.ID}>
+                      <TableRowColumn>
+                        <ClientLink clientId={node.ID} />
+                      </TableRowColumn>
+                      <TableRowColumn>{node.Name}</TableRowColumn>
+                      <TableRowColumn>
+                        <NodeStatus value={node.Status} />
+                      </TableRowColumn>
+                      <TableRowColumn>
+                        <FormatBoolean value={node.Drain} />
+                      </TableRowColumn>
+                      <TableRowColumn>{node.Datacenter}</TableRowColumn>
+                      <TableRowColumn>
+                        {node.NodeClass ? node.NodeClass : "<none>"}
+                      </TableRowColumn>
                     </TableRow>
                   )
-                })
-              }
+                })}
               </TableBody>
             </Table>
           </CardText>
@@ -56,7 +62,7 @@ class Clients extends Component {
   }
 }
 
-function mapStateToProps ({ nodes }) {
+function mapStateToProps({ nodes }) {
   return { nodes }
 }
 

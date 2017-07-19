@@ -1,18 +1,17 @@
-import React from 'react'
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
-import { connect } from 'react-redux'
-import { SUBMIT_JOB, JOB_HIDE_DIALOG } from '../../sagas/event'
-import AceEditor from 'react-ace';
-import 'brace/mode/json'
-import 'brace/theme/github'
+import React from "react"
+import Dialog from "material-ui/Dialog"
+import FlatButton from "material-ui/FlatButton"
+import { connect } from "react-redux"
+import { SUBMIT_JOB, JOB_HIDE_DIALOG } from "../../sagas/event"
+import AceEditor from "react-ace"
+import "brace/mode/json"
+import "brace/theme/github"
 
 class JobEditRawJSON extends React.Component {
-
   modifiedJob = undefined
 
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {}
   }
@@ -23,7 +22,7 @@ class JobEditRawJSON extends React.Component {
    * @param  {string} value
    * @return {void}
    */
-  onEditorChange = (value) => {
+  onEditorChange = value => {
     this.modifiedJob = value
   }
 
@@ -36,7 +35,7 @@ class JobEditRawJSON extends React.Component {
    */
   handleCancel = () => {
     this.props.dispatch({ type: JOB_HIDE_DIALOG })
-  };
+  }
 
   /**
    * When submitting the job by clicking 'submit'
@@ -47,27 +46,27 @@ class JobEditRawJSON extends React.Component {
     this.setState({
       ...this.state,
       submittingJob: true,
-      readOnlyEditor: true
+      readOnlyEditor: true,
     })
 
     this.props.dispatch({
       type: SUBMIT_JOB,
-      payload: this.modifiedJob
+      payload: this.modifiedJob,
     })
-  };
+  }
 
-  componentWillReceiveProps = (nextProps) =>  {
+  componentWillReceiveProps = nextProps => {
     // if we got no job prop, ignore the props
     if (!nextProps.job.ID) {
-      return;
+      return
     }
 
     // if there is no dialog to be shown, reset
     if (!nextProps.jobDialog) {
-      this.modifiedJob = '';
+      this.modifiedJob = ""
       this.state = {}
-      this.forceUpdate();
-      return;
+      this.forceUpdate()
+      return
     }
 
     // if we get props while submitting a job
@@ -75,7 +74,7 @@ class JobEditRawJSON extends React.Component {
       // on success, close the dialog
       if (nextProps.successNotification.index) {
         this.props.dispatch({ type: JOB_HIDE_DIALOG })
-        return;
+        return
       }
 
       // on error, make the form editable again
@@ -86,7 +85,7 @@ class JobEditRawJSON extends React.Component {
           readOnlyEditor: false,
         })
 
-        return;
+        return
       }
     }
 
@@ -100,9 +99,9 @@ class JobEditRawJSON extends React.Component {
         submittingJob: false,
         jobOutOfSync: false,
         readOnlyEditor: false,
-      });
+      })
 
-      return;
+      return
     }
 
     // the current job state and the new job prop JobModifyIndex is different, our editor is stale
@@ -117,54 +116,50 @@ class JobEditRawJSON extends React.Component {
 
   render() {
     const actions = [
+      <FlatButton label="Cancel" primary onTouchTap={this.handleCancel} />,
       <FlatButton
-        label='Cancel'
+        label="Submit job"
         primary
-        onTouchTap={ this.handleCancel }
+        disabled={this.state.jobOutOfSync || this.state.submittingJob}
+        onTouchTap={this.handleSubmit}
       />,
-      <FlatButton
-        label='Submit job'
-        primary
-        disabled={ this.state.jobOutOfSync || this.state.submittingJob }
-        onTouchTap={ this.handleSubmit }
-      />,
-    ];
+    ]
 
     let title = `Edit job: ${this.props.job.ID}`
-    let titleStyle = {};
+    let titleStyle = {}
     if (this.state.jobOutOfSync && !this.state.submittingJob) {
-      title = title + ' - JOB WAS CHANGED SINCE YOU LOADED IT';
-      titleStyle = { color: 'red' }
+      title = title + " - JOB WAS CHANGED SINCE YOU LOADED IT"
+      titleStyle = { color: "red" }
     }
 
     return (
       <Dialog
-        title={ title }
-        titleStyle={ titleStyle }
-        actions={ actions }
+        title={title}
+        titleStyle={titleStyle}
+        actions={actions}
         modal
-        open={ this.props.jobDialog === 'edit' }
+        open={this.props.jobDialog === "edit"}
         bodyStyle={{ padding: 0 }}
       >
         <AceEditor
-          mode='json'
-          theme='github'
-          name='edit-job-json'
-          value={ this.modifiedJob }
-          readOnly={ this.state.readOnlyEditor }
-          width='100%'
-          height={ 380 }
-          tabSize={ 2 }
-          onChange={ this.onEditorChange }
+          mode="json"
+          theme="github"
+          name="edit-job-json"
+          value={this.modifiedJob}
+          readOnly={this.state.readOnlyEditor}
+          width="100%"
+          height={380}
+          tabSize={2}
+          onChange={this.onEditorChange}
           wrapEnabled
           focus
         />
       </Dialog>
-    );
+    )
   }
 }
 
-function mapStateToProps ({ job, jobDialog, errorNotification, successNotification }) {
+function mapStateToProps({ job, jobDialog, errorNotification, successNotification }) {
   return { job, jobDialog, errorNotification, successNotification }
 }
 

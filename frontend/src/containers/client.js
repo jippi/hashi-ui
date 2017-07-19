@@ -1,40 +1,45 @@
-import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-import ClientTopbar from '../components/ClientTopbar/ClientTopbar'
-import { WATCH_NODE, UNWATCH_NODE } from '../sagas/event'
+import React, { Component, PropTypes } from "react"
+import { connect } from "react-redux"
+import ClientTopbar from "../components/ClientTopbar/ClientTopbar"
+import { WATCH_NODE, UNWATCH_NODE } from "../sagas/event"
 
 class Client extends Component {
-
-  componentWillMount () {
-    this.props.dispatch({ type: WATCH_NODE, payload: this.props.params.nodeId })
+  componentWillMount() {
+    this.props.dispatch({
+      type: WATCH_NODE,
+      payload: this.props.params.nodeId,
+    })
   }
 
-  componentWillUnmount () {
-    this.props.dispatch({ type: UNWATCH_NODE, payload: this.props.params.nodeId })
+  componentWillUnmount() {
+    this.props.dispatch({
+      type: UNWATCH_NODE,
+      payload: this.props.params.nodeId,
+    })
   }
 
-  render () {
+  render() {
     if (this.props.node == null) {
       return null
     }
 
     return (
       <div>
-        <ClientTopbar { ...this.props } />
+        <ClientTopbar {...this.props} />
 
         <div style={{ padding: 10, paddingBottom: 0 }}>
-          <h2>Client: { this.props.node.Name }</h2>
+          <h2>Client: {this.props.node.Name}</h2>
 
           <br />
 
-          { this.props.children }
+          {this.props.children}
         </div>
       </div>
     )
   }
 }
 
-function mapStateToProps ({ node }) {
+function mapStateToProps({ node }) {
   return { node }
 }
 
@@ -43,7 +48,7 @@ Client.propTypes = {
   params: PropTypes.object.isRequired,
   node: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  children: PropTypes.object.isRequired
+  children: PropTypes.object.isRequired,
 }
 
 export default connect(mapStateToProps)(Client)

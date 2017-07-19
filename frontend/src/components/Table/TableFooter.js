@@ -1,7 +1,5 @@
-import { TableFooter as MaterialTableFooter } from 'material-ui/Table'
+import { TableFooter as MaterialTableFooter } from "material-ui/Table"
 
-class TableFooter extends MaterialTableFooter {
-
-}
+class TableFooter extends MaterialTableFooter {}
 
 export default TableFooter

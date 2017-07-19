@@ -1,12 +1,11 @@
-import React, { PropTypes } from 'react'
-import { Link, withRouter } from 'react-router'
+import React, { PropTypes } from "react"
+import { Link, withRouter } from "react-router"
 
 const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId, router }) => {
-
   const JobIdUrl = encodeURIComponent(jobId)
 
   if (taskGroupId) {
-    linkAppend = linkAppend + '/groups'
+    linkAppend = linkAppend + "/groups"
   }
 
   if (children === undefined) {
@@ -14,28 +13,28 @@ const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId, router }) =
   }
 
   if (!linkAppend) {
-    linkAppend = '/info'
+    linkAppend = "/info"
   }
 
   const query = {
     taskGroupId,
-    taskId
+    taskId,
   }
 
   const to = {
     pathname: `/nomad/${router.params.region}/jobs/${JobIdUrl}${linkAppend}`,
-    query
+    query,
   }
 
   return (
-    <Link to={ to }>
-      { children }
+    <Link to={to}>
+      {children}
     </Link>
   )
 }
 
 JobLink.defaultProps = {
-  linkAppend: ''
+  linkAppend: "",
 }
 
 JobLink.propTypes = {

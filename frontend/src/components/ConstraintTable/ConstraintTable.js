@@ -1,12 +1,11 @@
-import React, { Component, PropTypes } from 'react'
-import ReactTooltip from 'react-tooltip'
-import ConstraintRow from '../ConstraintRow/ConstraintRow'
+import React, { Component, PropTypes } from "react"
+import ReactTooltip from "react-tooltip"
+import ConstraintRow from "../ConstraintRow/ConstraintRow"
 
 class ConstraintTable extends Component {
-
-  render () {
-    function getUniqueKeyForConstraint (constraint) {
-      return (`${constraint.LTarget}@${constraint.RTarget}@${constraint.Operand}`)
+  render() {
+    function getUniqueKeyForConstraint(constraint) {
+      return `${constraint.LTarget}@${constraint.RTarget}@${constraint.Operand}`
     }
 
     if (this.props.constraints === null || this.props.constraints.length === 0) {
@@ -14,7 +13,7 @@ class ConstraintTable extends Component {
     }
 
     const table = (
-      <table width='100%'>
+      <table width="100%">
         <thead>
           <tr>
             <th>Key</th>
@@ -23,11 +22,11 @@ class ConstraintTable extends Component {
           </tr>
         </thead>
         <tbody>
-          { this.props.constraints.map(constraint =>
+          {this.props.constraints.map(constraint =>
             <ConstraintRow
-              key={ getUniqueKeyForConstraint(constraint) }
-              idPrefix={ this.props.idPrefix }
-              constraint={ constraint }
+              key={getUniqueKeyForConstraint(constraint)}
+              idPrefix={this.props.idPrefix}
+              constraint={constraint}
             />
           )}
         </tbody>
@@ -37,9 +36,11 @@ class ConstraintTable extends Component {
     if (this.props.asTooltip) {
       return (
         <div>
-          <ReactTooltip id={ `tooltip-constraints-${this.props.idPrefix}` }>{ table }</ReactTooltip>
-          <span data-tip data-for={ `tooltip-constraints-${this.props.idPrefix}` } className='dotted'>
-            { this.props.constraints.length } constraints
+          <ReactTooltip id={`tooltip-constraints-${this.props.idPrefix}`}>
+            {table}
+          </ReactTooltip>
+          <span data-tip data-for={`tooltip-constraints-${this.props.idPrefix}`} className="dotted">
+            {this.props.constraints.length} constraints
           </span>
         </div>
       )
@@ -52,13 +53,13 @@ class ConstraintTable extends Component {
 ConstraintTable.defaultProps = {
   constraints: [],
   asTooltip: false,
-  idPrefix: null
+  idPrefix: null,
 }
 
 ConstraintTable.propTypes = {
   constraints: PropTypes.array,
   idPrefix: PropTypes.string,
-  asTooltip: PropTypes.bool.isRequired
+  asTooltip: PropTypes.bool.isRequired,
 }
 
 export default ConstraintTable

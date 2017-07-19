@@ -1,8 +1,7 @@
-import React from 'react'
-import { Table as MaterialTable } from 'material-ui/Table'
+import React from "react"
+import { Table as MaterialTable } from "material-ui/Table"
 
 class Table extends MaterialTable {
-
   static defaultProps = {
     allRowsSelected: false,
     fixedFooter: false,
@@ -10,26 +9,26 @@ class Table extends MaterialTable {
     multiSelectable: false,
     selectable: false,
 
-    height: 'inherit',
+    height: "inherit",
 
     wrapperStyle: {
-      overflow: 'display'
+      overflow: "display",
     },
 
     style: {
-      tableLayout: 'auto',
+      tableLayout: "auto",
     },
 
     bodyStyle: {
-      overflowX: 'inherit',
-      overflowY: 'inherit'
-    }
+      overflowX: "inherit",
+      overflowY: "inherit",
+    },
   }
 
   render() {
     return (
-      <div className='nomad-table-responsive'>
-        { Object.getPrototypeOf(Table.prototype).render.call(this) }
+      <div className="nomad-table-responsive">
+        {Object.getPrototypeOf(Table.prototype).render.call(this)}
       </div>
     )
   }
