@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strconv"
 	"syscall"
 )
 
@@ -17,7 +18,7 @@ var (
 		"The address on which to expose the web interface. "+flagDefault(defaultConfig.ListenAddress))
 
 	flagHttpsEnable = flag.Bool("https-enable", false,
-		"Use https protocol instead. "+flagDefault(defaultConfig.HttpsEnable))
+		"Use https protocol instead. "+flagDefault(strconv.FormatBool(defaultConfig.HttpsEnable)))
 
 	flagServerCert = flag.String("server-cert", "",
 		"Server certificate to use when https protocol is enabled. "+flagDefault(defaultConfig.ServerCert))
