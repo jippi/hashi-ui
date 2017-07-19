@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"strconv"
 	"syscall"
 )
 
@@ -16,13 +17,14 @@ var (
 	flagListenAddress = flag.String("listen-address", "",
 		"The address on which to expose the web interface. "+flagDefault(defaultConfig.ListenAddress))
 
-	flagHttpsEnable = flag.Bool("https-enable", false, "Use https protocol instead. ")
+	flagHttpsEnable = flag.Bool("https-enable", false,
+		"Use https protocol instead. "+flagDefault(strconv.FormatBool(defaultConfig.HttpsEnable)))
 
 	flagServerCert = flag.String("server-cert", "",
-		"Server certificate to use when https protocol is enabled.")
+		"Server certificate to use when https protocol is enabled. "+flagDefault(defaultConfig.ServerCert))
 
 	flagServerKey = flag.String("server-key", "",
-		"Server key to use when https protocol is enabled.")
+		"Server key to use when https protocol is enabled. "+flagDefault(defaultConfig.ServerKey))
 
 	flagNewRelicAppName = flag.String("newrelic-app-name", "hashi-ui",
 		"The NewRelic app name. "+flagDefault(defaultConfig.NewRelicAppName))
@@ -64,6 +66,7 @@ func DefaultConfig() *Config {
 	return &Config{
 		LogLevel:      "info",
 		ListenAddress: "0.0.0.0:3000",
+		HttpsEnable:   false,
 
 		NewRelicAppName: "hashi-ui",
 
@@ -95,6 +98,21 @@ func ParseAppEnvConfig(c *Config) {
 	listenAddress, ok := syscall.Getenv("LISTEN_ADDRESS")
 	if ok {
 		c.ListenAddress = listenAddress
+	}
+
+	httpsEnable, ok := syscall.Getenv("HTTPS_ENABLE")
+	if ok {
+		c.HttpsEnable = httpsEnable != "0"
+	}
+
+	serverCert, ok := syscall.Getenv("SERVER_CERT")
+	if ok {
+		c.ServerCert = serverCert
+	}
+
+	serverKey, ok := syscall.Getenv("SERVER_KEY")
+	if ok {
+		c.ServerKey = serverKey
 	}
 }
 
