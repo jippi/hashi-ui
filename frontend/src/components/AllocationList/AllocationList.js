@@ -150,18 +150,18 @@ class AllocationList extends Component {
     return allocations
   }
 
-  clientStatusFilter() {
+  allocationStatusFilter () {
     const location = this.props.location
     const query = this.props.location.query || {}
 
-    let title = "Client Status"
-    if ("status" in query) {
-      title = <span>{title}: <code>{query.status}</code></span>
+    let title = 'Allocation Status'
+    if ('status' in query) {
+      title = <span>{title}: <code>{ query.status }</code></span>
     }
 
     return (
-      <Col key="client-status-filter-pane" xs={12} sm={6} md={6} lg={3}>
-        <SelectField floatingLabelText={title} maxHeight={200}>
+      <Col key='allocation-status-filter-pane' xs={ 12 } sm={ 6 } md={ 6 } lg={ 3 }>
+        <SelectField floatingLabelText={ title } maxHeight={ 200 }>
           <MenuItem>
             <Link
               to={{
@@ -384,10 +384,10 @@ class AllocationList extends Component {
           <CardText expandable>
             <Grid fluid style={{ padding: 0 }}>
               <Row>
-                {this.allocationIdFilter()}
-                {showClientColumn ? this.clientFilter() : null}
-                {this.clientStatusFilter()}
-                {showJobColumn ? this.jobIdFilter() : null}
+                { this.allocationIdFilter() }
+                { showClientColumn ? this.clientFilter() : null }
+                { this.allocationStatusFilter() }
+                { showJobColumn ? this.jobIdFilter() : null }
               </Row>
             </Grid>
           </CardText>
