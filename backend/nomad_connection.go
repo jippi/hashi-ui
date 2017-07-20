@@ -937,7 +937,7 @@ func (c *NomadConnection) submitJob(action Action) {
 
 	_, _, err := c.region.Client.Jobs().Register(&runjob, nil)
 	if err != nil {
-		logger.Errorf("connection: unable to submit job '%s' : %s", runjob.ID, err)
+		logger.Errorf("connection: unable to submit job '%s' : %s", *runjob.ID, err)
 		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to submit job : %s", err), Index: index}
 		return
 	}
