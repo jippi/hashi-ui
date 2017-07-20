@@ -11,6 +11,10 @@ import JobTaskGroupActionRestart from "../JobTaskGroupActionRestart/JobTaskGroup
 import ConstraintTable from "../ConstraintTable/ConstraintTable"
 
 const JobTaskGroups = ({ job, location }) => {
+  if (!job || !("TaskGroups" in job)) {
+    return <div>Loading ...</div>
+  }
+
   const taskGroups = []
   const tasks = {}
 
@@ -42,10 +46,18 @@ const JobTaskGroups = ({ job, location }) => {
               {task.Name}
             </JobLink>
           </TableRowColumn>
-          <TableRowColumn>{task.Driver}</TableRowColumn>
-          <TableRowColumn>{task.Resources.CPU}</TableRowColumn>
-          <TableRowColumn>{task.Resources.MemoryMB}</TableRowColumn>
-          <TableRowColumn>{task.Resources.DiskMB}</TableRowColumn>
+          <TableRowColumn>
+            {task.Driver}
+          </TableRowColumn>
+          <TableRowColumn>
+            {task.Resources.CPU}
+          </TableRowColumn>
+          <TableRowColumn>
+            {task.Resources.MemoryMB}
+          </TableRowColumn>
+          <TableRowColumn>
+            {task.Resources.DiskMB}
+          </TableRowColumn>
           <TableRowColumn>
             <ConstraintTable idPrefix={task.ID} asTooltip constraints={task.Constraints} />
           </TableRowColumn>
@@ -141,7 +153,7 @@ function mapStateToProps({ job }) {
 
 JobTaskGroups.propTypes = {
   job: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(JobTaskGroups)
