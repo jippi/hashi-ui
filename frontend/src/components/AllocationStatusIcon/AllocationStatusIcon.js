@@ -78,7 +78,6 @@ class AllocationStatusIcon extends PureComponent {
     }
 
     let tt = allocation.ClientStatus + " -> " + allocation.DesiredStatus
-    console.log("yo")
 
     return (
       <div ref="valueDiv" data-tip={tt}>
