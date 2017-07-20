@@ -862,18 +862,13 @@ func (c *NomadConnection) changeTaskGroupCount(action Action) {
 
 	switch scaleAction {
 	case "set":
-		foundTaskGroup.Count = params["count"].(*int)
+		foundTaskGroup.Count = IntToPtr(params["count"].(int))
 	case "increase":
-		x := *foundTaskGroup.Count
-		x = x + 1
-		foundTaskGroup.Count = &x
+		foundTaskGroup.Count = IntToPtr(PtrToInt(foundTaskGroup.Count) + 1)
 	case "decrease":
-		x := *foundTaskGroup.Count
-		x = x - 1
-		foundTaskGroup.Count = &x
+		foundTaskGroup.Count = IntToPtr(PtrToInt(foundTaskGroup.Count) - 1)
 	case "stop":
-		x := 0
-		foundTaskGroup.Count = &x
+		foundTaskGroup.Count = IntToPtr(0)
 	case "restart":
 		stopPayload := make(map[string]interface{})
 		for k, v := range params {

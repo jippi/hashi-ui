@@ -6,6 +6,16 @@ import (
 	"time"
 )
 
+// IntToPtr returns the pointer to an int
+func IntToPtr(i int) *int {
+	return &i
+}
+
+// PtrToInt returns the value of an *int
+func PtrToInt(i *int) int {
+	return *i
+}
+
 // LineLimitReader wraps another reader and provides `tail -n` like behavior.
 // LineLimitReader buffers up to the searchLimit and returns `-n` number of
 // lines. After those lines have been returned, LineLimitReader streams the
