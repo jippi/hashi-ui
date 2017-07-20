@@ -81,8 +81,11 @@ class AllocationInfo extends Component {
                       {element.Message ||
                         element.SetupError ||
                         element.DriverError ||
+                        element.DriverMessage ||
+                        element.FailedSibling ||
                         element.KillError ||
                         element.DownloadError ||
+                        element.TaskSignal ||
                         element.ValidationError ||
                         element.VaultError ||
                         element.RestartReason ||
