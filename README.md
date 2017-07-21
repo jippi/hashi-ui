@@ -21,6 +21,7 @@ An awesome user interface (even for mobile devices!) for HashiCorp Consul & Noma
   * [Consul Configuration](#consul-configuration)
   * [Instrumentation Configuration](#instrumentation-configuration)
   * [Running in AWS](#running-in-aws)
+  * [Running in Docker Compose](#running-in-docker-compose)
 - [Try](#try)
   * [Nomad](#nomad)
   * [Consul](#consul)
@@ -79,7 +80,7 @@ docker run -e NOMAD_ENABLE=1 -e NOMAD_ADDR=... -p 8000:3000 jippi/hashi-ui
 # consul only
 docker run -e CONSUL_ENABLE=1 -e CONSUL_ADDR=... -p 8000:3000 jippi/hashi-ui
 # consul only with https
-docker run -e CONSUL_HTTP_TOKEN=one_ring -e CONSUL_HTTP_SSL_VERIFY=false -e CONSUL_HTTP_SSL=true CONSUL_ENABLE=1 -e CONSUL_ADDR=... -p 8000:3000 jippi/hashi-ui 
+docker run -e CONSUL_HTTP_TOKEN=one_ring -e CONSUL_HTTP_SSL_VERIFY=false -e CONSUL_HTTP_SSL=true CONSUL_ENABLE=1 -e CONSUL_ADDR=... -p 8000:3000 jippi/hashi-ui
 # nomad + consul
 docker run -e NOMAD_ENABLE=1 -e NOMAD_ADDR=... -e CONSUL_ENABLE=1 -e CONSUL_ADDR=... -p 8000:3000 jippi/hashi-ui
 ```
@@ -140,12 +141,24 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | Environment        	  |CLI (`--flag`)    	      | Default                     | Description                                                                                                      |
 |-------------------------|-------------------------  |-----------------------------|------------------------------------------------------------------------------------------------------------------|
 | `NEWRELIC_APP_NAME`     | `newrelic.app_name`  	  | `hashi-ui`               	| (optional) NewRelic application name                                                                             |
-| `NEWRELIC_LICENSE`      | `newrelic.license`  	  | `<empty>`          	  		| (optional) NewRelic license key               
+| `NEWRELIC_LICENSE`      | `newrelic.license`  	  | `<empty>`          	  		| (optional) NewRelic license key
 
 
 ## Running in AWS
 
 When Running Hashi UI behind AWS ELB (even with Nginx/Traefik in between), ELB should be configured with TCP not HTTP Listeners (HTTP Listener doesn't support websockets)
+
+## Running in Docker Compose
+
+When running Hashi UI in [Docker Compose](https://docs.docker.com/compose/), configure Consul with the following environment variable for Hashi UI's deregister button to work.
+
+```
+services:
+  consul:
+    image: consul
+    environment:
+      CONSUL_BIND_INTERFACE: eth0
+```
 
 # Try
 
