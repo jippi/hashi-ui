@@ -292,6 +292,10 @@ class ConsulServices extends Component {
               secondaryText += ` / Warning: ${counters.warning}`
               secondaryText += ` / Critical: ${counters.critical}`
 
+              if (entry.Service.Port) {
+                secondaryText += ` | Port: ${entry.Service.Port}`
+              }
+
               if (entry.Service.Tags && entry.Service.Tags.length > 0) {
                 secondaryText += ` | Tags: ${entry.Service.Tags.join(", ")}`
               }
