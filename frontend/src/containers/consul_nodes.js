@@ -268,7 +268,11 @@ class ConsulNodes extends Component {
               let secondaryText = `Passing: ${counters.passing}`
               secondaryText += ` / Warning: ${counters.warning}`
               secondaryText += ` / Critical: ${counters.critical}`
-              secondaryText += ` / ID: ${entry.ID}`
+              secondaryText += ` | ID: ${entry.ID}`
+
+              if (entry.Port) {
+                secondaryText += ` | Port: ${entry.Port}`
+              }
 
               if (entry.Tags && entry.Tags.length > 0) {
                 secondaryText += ` | Tags: ${entry.Tags.join(", ")}`
