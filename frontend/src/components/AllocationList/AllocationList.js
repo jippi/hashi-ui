@@ -256,6 +256,7 @@ class AllocationList extends Component {
       .filter((v, i, a) => {
         return a.indexOf(v) === i
       })
+      .sort()
       .map(job => {
         return (
           <MenuItem key={job}>
@@ -306,10 +307,17 @@ class AllocationList extends Component {
         return a.indexOf(v) === i
       })
       .map(client => {
+        return {ID: client, Name: this.findNodeNameById(client)}
+      })
+      .sort((a, b) => {
+        return a.Name.localeCompare(b.Name);
+      })
+      .map(client => {
+        let NodeID = client.ID;
         return (
-          <MenuItem key={client}>
-            <Link to={{ pathname: location.pathname, query: { ...query, client } }}>
-              {this.findNodeNameById(client)}
+          <MenuItem key={NodeID}>
+            <Link to={{ pathname: location.pathname, query: { ...query, NodeID } }}>
+              {client.Name}
             </Link>
           </MenuItem>
         )
