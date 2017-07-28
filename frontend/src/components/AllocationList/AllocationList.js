@@ -160,7 +160,7 @@ class AllocationList extends Component {
     }
 
     return (
-      <Col key='allocation-status-filter-pane' xs={ 12 } sm={ 6 } md={ 6 } lg={ 3 }>
+      <Col key="allocation-status-filter-pane" xs={ 12 } sm={ 6 } md={ 6 } lg={ 3 }>
         <SelectField floatingLabelText={ title } maxHeight={ 200 }>
           <MenuItem>
             <Link
