@@ -13,7 +13,11 @@ module.exports = {
     preLoaders: [
       {
         test: /\.js$/,
-        loader: 'eslint'
+        loader: 'eslint',
+        options: {
+          failOnWarning: true,
+          failOnError: true,
+        }
       }
     ]
   },
