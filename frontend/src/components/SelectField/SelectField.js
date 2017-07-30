@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import TextField from "material-ui/TextField"
 import DropDownMenu from "material-ui/DropDownMenu"
 
@@ -6,18 +7,18 @@ function getStyles(props) {
   return {
     label: {
       paddingLeft: 0,
-      top: props.floatingLabelText ? 6 : -4,
+      top: props.floatingLabelText ? 6 : -4
     },
     icon: {
       right: 0,
-      top: props.floatingLabelText ? 22 : 14,
+      top: props.floatingLabelText ? 22 : 14
     },
     hideDropDownUnderline: {
-      borderTop: "none",
+      borderTop: "none"
     },
     dropDownMenu: {
-      display: "block",
-    },
+      display: "block"
+    }
   }
 }
 
@@ -129,17 +130,17 @@ class SelectField extends Component {
     /**
      * The value that is currently selected.
      */
-    value: PropTypes.any,
+    value: PropTypes.any
   }
 
   static defaultProps = {
     autoWidth: false,
     disabled: false,
-    fullWidth: false,
+    fullWidth: false
   }
 
   static contextTypes = {
-    muiTheme: PropTypes.object.isRequired,
+    muiTheme: PropTypes.object.isRequired
   }
 
   render() {

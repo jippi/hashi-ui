@@ -29,6 +29,7 @@ export function JobDialogReducer(state = [], action) {
     case JOB_HIDE_DIALOG:
       return ""
     default:
+      return ""
   }
   return state
 }

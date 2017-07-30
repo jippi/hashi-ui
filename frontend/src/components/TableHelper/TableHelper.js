@@ -1,11 +1,16 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import { Table, TableHeader, TableRow, TableHeaderColumn, TableBody } from "../Table"
 
 const TableHelper = ({ headers, body }) =>
   <Table>
     <TableHeader>
       <TableRow>
-        {headers.map(header => <TableHeaderColumn key={header}>{header}</TableHeaderColumn>)}
+        {headers.map(header =>
+          <TableHeaderColumn key={header}>
+            {header}
+          </TableHeaderColumn>
+        )}
       </TableRow>
     </TableHeader>
     <TableBody>
@@ -15,7 +20,7 @@ const TableHelper = ({ headers, body }) =>
 
 TableHelper.propTypes = {
   headers: PropTypes.array.isRequired,
-  body: PropTypes.array.isRequired,
+  body: PropTypes.array.isRequired
 }
 
 export default TableHelper

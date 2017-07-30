@@ -1,4 +1,5 @@
-import React, { PureComponent, PropTypes } from "react"
+import React, { PureComponent } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import AppBar from "material-ui/AppBar"
 import { withRouter } from "react-router"
@@ -14,7 +15,7 @@ import { CONSUL_COLOR } from "../../config.js"
 class ConsulTopbar extends PureComponent {
   componentWillMount() {
     this.props.dispatch({
-      type: FETCH_CONSUL_REGIONS,
+      type: FETCH_CONSUL_REGIONS
     })
   }
 
@@ -27,7 +28,7 @@ class ConsulTopbar extends PureComponent {
   handleChangeRegion(region) {
     this.props.dispatch({
       type: SET_CONSUL_REGION,
-      payload: region,
+      payload: region
     })
   }
 
@@ -138,14 +139,14 @@ class ConsulTopbar extends PureComponent {
 }
 
 ConsulTopbar.defaultProps = {
-  consulRegions: [],
+  consulRegions: []
 }
 
 ConsulTopbar.propTypes = {
   router: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   consulRegions: PropTypes.array.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 function mapStateToProps({ consulRegions }) {

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import ServerTopbar from "../components/ServerTopbar/ServerTopbar"
 import { WATCH_MEMBER, UNWATCH_MEMBER } from "../sagas/event"
@@ -7,14 +8,14 @@ class Server extends Component {
   componentWillMount() {
     this.props.dispatch({
       type: WATCH_MEMBER,
-      payload: this.props.params.memberId,
+      payload: this.props.params.memberId
     })
   }
 
   componentWillUnmount() {
     this.props.dispatch({
       type: UNWATCH_MEMBER,
-      payload: this.props.params.memberId,
+      payload: this.props.params.memberId
     })
   }
 
@@ -28,7 +29,9 @@ class Server extends Component {
         <ServerTopbar {...this.props} />
 
         <div style={{ padding: 10, paddingBottom: 0 }}>
-          <h2>Server: {this.props.member.Name}</h2>
+          <h2>
+            Server: {this.props.member.Name}
+          </h2>
 
           <br />
 
@@ -48,7 +51,7 @@ Server.propTypes = {
   params: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   member: PropTypes.object.isRequired,
-  children: PropTypes.object.isRequired,
+  children: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(Server)

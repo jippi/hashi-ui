@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import { blue500, green500, red500 } from "material-ui/styles/colors"
 
 const NodeStatus = ({ value }) => {
@@ -13,16 +14,20 @@ const NodeStatus = ({ value }) => {
       return <span style={{ color: red500 }}>down</span>
 
     default:
-      return <span>{value}</span>
+      return (
+        <span>
+          {value}
+        </span>
+      )
   }
 }
 
 NodeStatus.defaultProps = {
-  value: null,
+  value: null
 }
 
 NodeStatus.propTypes = {
-  value: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired
 }
 
 export default NodeStatus

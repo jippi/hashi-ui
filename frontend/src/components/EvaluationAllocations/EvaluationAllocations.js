@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import AllocationList from "../AllocationList/AllocationList"
 
@@ -15,7 +16,7 @@ function mapStateToProps({ evaluation, allocations, nodes }) {
 EvaluationAllocations.propTypes = {
   allocations: PropTypes.array.isRequired,
   evaluation: PropTypes.object.isRequired,
-  nodes: PropTypes.array.isRequired,
+  nodes: PropTypes.array.isRequired
 }
 
 export default connect(mapStateToProps)(EvaluationAllocations)

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import AllocationList from "../AllocationList/AllocationList"
 import { WATCH_ALLOCS_SHALLOW, UNWATCH_ALLOCS_SHALLOW, WATCH_NODES, UNWATCH_NODES } from "../../sagas/event"
@@ -36,7 +37,7 @@ JobAllocations.defaultProps = {
   allocations: [],
   nodes: [],
   params: {},
-  location: {},
+  location: {}
 }
 
 JobAllocations.propTypes = {
@@ -44,7 +45,7 @@ JobAllocations.propTypes = {
   params: PropTypes.object.isRequired,
   nodes: PropTypes.array.isRequired,
   location: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect(mapStateToProps)(JobAllocations)

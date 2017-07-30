@@ -1,4 +1,5 @@
 import React from "react"
+import PropTypes from "prop-types"
 import Dialog from "material-ui/Dialog"
 import FlatButton from "material-ui/FlatButton"
 import { connect } from "react-redux"
@@ -18,7 +19,7 @@ class JobActionStop extends React.Component {
   render() {
     const actions = [
       <FlatButton label="Cancel" primary onTouchTap={this.handleCancel} />,
-      <FlatButton label="Stop job" backgroundColor={red400} onTouchTap={this.handleSubmit} />,
+      <FlatButton label="Stop job" backgroundColor={red400} onTouchTap={this.handleSubmit} />
     ]
 
     return (
@@ -34,9 +35,9 @@ function mapStateToProps({ job, jobDialog }) {
 }
 
 JobActionStop.propTypes = {
-  dispatch: React.PropTypes.func.isRequired,
-  job: React.PropTypes.object.isRequired,
-  jobDialog: React.PropTypes.string,
+  dispatch: PropTypes.func.isRequired,
+  job: PropTypes.object.isRequired,
+  jobDialog: PropTypes.string
 }
 
 export default connect(mapStateToProps)(JobActionStop)

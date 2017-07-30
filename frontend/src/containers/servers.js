@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Card, CardText } from "material-ui/Card"
 import { green500 } from "material-ui/styles/colors"
@@ -30,48 +31,60 @@ class Servers extends Component {
 
   render() {
     return (
-      <div>
-        <Card>
-          <CardText>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHeaderColumn>Name</TableHeaderColumn>
-                  <TableHeaderColumn>Address</TableHeaderColumn>
-                  <TableHeaderColumn>Port</TableHeaderColumn>
-                  <TableHeaderColumn>Region</TableHeaderColumn>
-                  <TableHeaderColumn>Datacenter</TableHeaderColumn>
-                  <TableHeaderColumn>Status</TableHeaderColumn>
-                  <TableHeaderColumn>Leader</TableHeaderColumn>
-                  <TableHeaderColumn>Protocol</TableHeaderColumn>
-                  <TableHeaderColumn>Build</TableHeaderColumn>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {this.props.members.map(member => {
-                  return (
-                    <TableRow key={member.ID}>
-                      <TableRowColumn>
-                        <ServerLink serverId={member.Name} />
-                      </TableRowColumn>
-                      <TableRowColumn>{member.Addr}</TableRowColumn>
-                      <TableRowColumn>{member.Port}</TableRowColumn>
-                      <TableRowColumn>{member.Tags.region}</TableRowColumn>
-                      <TableRowColumn>{member.Tags.dc}</TableRowColumn>
-                      <TableRowColumn>{member.Status}</TableRowColumn>
-                      <TableRowColumn>
-                        {this.showLeaderIcon(member)}
-                      </TableRowColumn>
-                      <TableRowColumn>{member.ProtocolCur}</TableRowColumn>
-                      <TableRowColumn>{member.Tags.build}</TableRowColumn>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </CardText>
-        </Card>
-      </div>
+      <Card>
+        <CardText>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHeaderColumn>Name</TableHeaderColumn>
+                <TableHeaderColumn>Address</TableHeaderColumn>
+                <TableHeaderColumn>Port</TableHeaderColumn>
+                <TableHeaderColumn>Region</TableHeaderColumn>
+                <TableHeaderColumn>Datacenter</TableHeaderColumn>
+                <TableHeaderColumn>Status</TableHeaderColumn>
+                <TableHeaderColumn>Leader</TableHeaderColumn>
+                <TableHeaderColumn>Protocol</TableHeaderColumn>
+                <TableHeaderColumn>Build</TableHeaderColumn>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {this.props.members.map(member => {
+                return (
+                  <TableRow key={member.Name}>
+                    <TableRowColumn>
+                      <ServerLink serverId={member.Name} />
+                    </TableRowColumn>
+                    <TableRowColumn>
+                      {member.Addr}
+                    </TableRowColumn>
+                    <TableRowColumn>
+                      {member.Port}
+                    </TableRowColumn>
+                    <TableRowColumn>
+                      {member.Tags.region}
+                    </TableRowColumn>
+                    <TableRowColumn>
+                      {member.Tags.dc}
+                    </TableRowColumn>
+                    <TableRowColumn>
+                      {member.Status}
+                    </TableRowColumn>
+                    <TableRowColumn>
+                      {this.showLeaderIcon(member)}
+                    </TableRowColumn>
+                    <TableRowColumn>
+                      {member.ProtocolCur}
+                    </TableRowColumn>
+                    <TableRowColumn>
+                      {member.Tags.build}
+                    </TableRowColumn>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </CardText>
+      </Card>
     )
   }
 }
@@ -82,7 +95,7 @@ function mapStateToProps({ members }) {
 
 Servers.propTypes = {
   members: PropTypes.array.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect(mapStateToProps)(Servers)

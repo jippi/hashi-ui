@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import FontIcon from "material-ui/FontIcon"
 import { Link } from "react-router"
@@ -150,18 +151,22 @@ class AllocationList extends Component {
     return allocations
   }
 
-  allocationStatusFilter () {
+  allocationStatusFilter() {
     const location = this.props.location
     const query = this.props.location.query || {}
 
-    let title = 'Allocation Status'
-    if ('status' in query) {
-      title = <span>{title}: <code>{ query.status }</code></span>
+    let title = "Allocation Status"
+    if ("status" in query) {
+      title = (
+        <span>
+          {title}: <code>{query.status}</code>
+        </span>
+      )
     }
 
     return (
-      <Col key="allocation-status-filter-pane" xs={ 12 } sm={ 6 } md={ 6 } lg={ 3 }>
-        <SelectField floatingLabelText={ title } maxHeight={ 200 }>
+      <Col key="allocation-status-filter-pane" xs={12} sm={6} md={6} lg={3}>
+        <SelectField floatingLabelText={title} maxHeight={200}>
           <MenuItem>
             <Link
               to={{
@@ -246,7 +251,11 @@ class AllocationList extends Component {
 
     let title = "Job"
     if ("job" in query) {
-      title = <span>{title}: <code>{query.job}</code></span>
+      title = (
+        <span>
+          {title}: <code>{query.job}</code>
+        </span>
+      )
     }
 
     const jobs = this.props.allocations
@@ -296,7 +305,11 @@ class AllocationList extends Component {
     let title = "Client"
 
     if ("client" in query) {
-      title = <span>{title}: <code>{this.findNodeNameById(query.client)}</code></span>
+      title = (
+        <span>
+          {title}: <code>{this.findNodeNameById(query.client)}</code>
+        </span>
+      )
     }
 
     const clients = this.props.allocations
@@ -307,13 +320,13 @@ class AllocationList extends Component {
         return a.indexOf(v) === i
       })
       .map(client => {
-        return {ID: client, Name: this.findNodeNameById(client)}
+        return { ID: client, Name: this.findNodeNameById(client) }
       })
       .sort((a, b) => {
-        return a.Name.localeCompare(b.Name);
+        return a.Name.localeCompare(b.Name)
       })
       .map(client => {
-        let NodeID = client.ID;
+        let NodeID = client.ID
         return (
           <MenuItem key={NodeID}>
             <Link to={{ pathname: location.pathname, query: { ...query, NodeID } }}>
@@ -392,10 +405,10 @@ class AllocationList extends Component {
           <CardText expandable>
             <Grid fluid style={{ padding: 0 }}>
               <Row>
-                { this.allocationIdFilter() }
-                { showClientColumn ? this.clientFilter() : null }
-                { this.allocationStatusFilter() }
-                { showJobColumn ? this.jobIdFilter() : null }
+                {this.allocationIdFilter()}
+                {showClientColumn ? this.clientFilter() : null}
+                {this.allocationStatusFilter()}
+                {showJobColumn ? this.jobIdFilter() : null}
               </Row>
             </Grid>
           </CardText>

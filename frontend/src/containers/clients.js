@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Card, CardText } from "material-ui/Card"
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "../components/Table"
@@ -39,14 +40,18 @@ class Clients extends Component {
                       <TableRowColumn>
                         <ClientLink clientId={node.ID} />
                       </TableRowColumn>
-                      <TableRowColumn>{node.Name}</TableRowColumn>
+                      <TableRowColumn>
+                        {node.Name}
+                      </TableRowColumn>
                       <TableRowColumn>
                         <NodeStatus value={node.Status} />
                       </TableRowColumn>
                       <TableRowColumn>
                         <FormatBoolean value={node.Drain} />
                       </TableRowColumn>
-                      <TableRowColumn>{node.Datacenter}</TableRowColumn>
+                      <TableRowColumn>
+                        {node.Datacenter}
+                      </TableRowColumn>
                       <TableRowColumn>
                         {node.NodeClass ? node.NodeClass : "<none>"}
                       </TableRowColumn>
@@ -68,7 +73,7 @@ function mapStateToProps({ nodes }) {
 
 Clients.propTypes = {
   nodes: PropTypes.array.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect(mapStateToProps)(Clients)

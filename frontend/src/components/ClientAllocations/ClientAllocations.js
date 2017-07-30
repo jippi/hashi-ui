@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { WATCH_ALLOCS_SHALLOW, UNWATCH_ALLOCS_SHALLOW } from "../../sagas/event"
 import AllocationList from "../AllocationList/AllocationList"
@@ -27,14 +28,14 @@ function mapStateToProps({ allocations }) {
 ClientAllocations.defaultProps = {
   allocations: [],
   params: {},
-  location: {},
+  location: {}
 }
 
 ClientAllocations.propTypes = {
   allocations: PropTypes.array.isRequired,
   params: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect(mapStateToProps)(ClientAllocations)

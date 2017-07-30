@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import FontIcon from "material-ui/FontIcon"
 import { connect } from "react-redux"
 import { orange500 } from "material-ui/styles/colors"
@@ -10,8 +11,8 @@ const restart = ({ job, taskGroup, dispatch }) => {
     payload: {
       job: job.ID,
       taskGroup: taskGroup.Name,
-      scaleAction: "restart",
-    },
+      scaleAction: "restart"
+    }
   })
 }
 
@@ -32,7 +33,7 @@ const JobTaskGroupActionRestart = ({ job, taskGroup, dispatch }) => {
 JobTaskGroupActionRestart.propTypes = {
   job: PropTypes.object.isRequired,
   taskGroup: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect()(JobTaskGroupActionRestart)

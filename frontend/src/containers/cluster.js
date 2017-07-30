@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { green500, blue500 } from "material-ui/styles/colors"
 import { Grid, Row, Col } from "react-flexbox-grid"

@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import { Link, withRouter } from "react-router"
 import SelectField from "material-ui/SelectField"
 import MenuItem from "material-ui/MenuItem"
@@ -8,7 +9,11 @@ const JobTypeFilter = ({ location }) => {
 
   let title = "Job Type"
   if ("job_type" in query) {
-    title = <span>{title}: <code>{query.job_type}</code></span>
+    title = (
+      <span>
+        {title}: <code>{query.job_type}</code>
+      </span>
+    )
   }
 
   return (
@@ -17,7 +22,7 @@ const JobTypeFilter = ({ location }) => {
         <Link
           to={{
             pathname: location.pathname,
-            query: { ...query, job_type: undefined },
+            query: { ...query, job_type: undefined }
           }}
         >
           - Any -
@@ -27,7 +32,7 @@ const JobTypeFilter = ({ location }) => {
         <Link
           to={{
             pathname: location.pathname,
-            query: { ...query, job_type: "system" },
+            query: { ...query, job_type: "system" }
           }}
         >
           System
@@ -37,7 +42,7 @@ const JobTypeFilter = ({ location }) => {
         <Link
           to={{
             pathname: location.pathname,
-            query: { ...query, job_type: "batch" },
+            query: { ...query, job_type: "batch" }
           }}
         >
           Batch
@@ -47,7 +52,7 @@ const JobTypeFilter = ({ location }) => {
         <Link
           to={{
             pathname: location.pathname,
-            query: { ...query, job_type: "service" },
+            query: { ...query, job_type: "service" }
           }}
         >
           Service
@@ -58,7 +63,7 @@ const JobTypeFilter = ({ location }) => {
 }
 
 JobTypeFilter.propTypes = {
-  location: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired
 }
 
 export default withRouter(JobTypeFilter)

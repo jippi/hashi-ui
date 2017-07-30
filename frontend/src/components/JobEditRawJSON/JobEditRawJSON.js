@@ -1,4 +1,5 @@
 import React from "react"
+import PropTypes from "prop-types"
 import Dialog from "material-ui/Dialog"
 import FlatButton from "material-ui/FlatButton"
 import { connect } from "react-redux"
@@ -46,12 +47,12 @@ class JobEditRawJSON extends React.Component {
     this.setState({
       ...this.state,
       submittingJob: true,
-      readOnlyEditor: true,
+      readOnlyEditor: true
     })
 
     this.props.dispatch({
       type: SUBMIT_JOB,
-      payload: this.modifiedJob,
+      payload: this.modifiedJob
     })
   }
 
@@ -82,7 +83,7 @@ class JobEditRawJSON extends React.Component {
         this.setState({
           ...this.state,
           submittingJob: false,
-          readOnlyEditor: false,
+          readOnlyEditor: false
         })
 
         return
@@ -98,7 +99,7 @@ class JobEditRawJSON extends React.Component {
         job: nextProps.job,
         submittingJob: false,
         jobOutOfSync: false,
-        readOnlyEditor: false,
+        readOnlyEditor: false
       })
 
       return
@@ -109,7 +110,7 @@ class JobEditRawJSON extends React.Component {
       this.setState({
         ...this.state,
         jobOutOfSync: true,
-        readOnlyEditor: true,
+        readOnlyEditor: true
       })
     }
   }
@@ -122,7 +123,7 @@ class JobEditRawJSON extends React.Component {
         primary
         disabled={this.state.jobOutOfSync || this.state.submittingJob}
         onTouchTap={this.handleSubmit}
-      />,
+      />
     ]
 
     let title = `Edit job: ${this.props.job.ID}`
@@ -148,7 +149,7 @@ class JobEditRawJSON extends React.Component {
           value={this.modifiedJob}
           readOnly={this.state.readOnlyEditor}
           width="100%"
-          height={380}
+          height="380px"
           tabSize={2}
           onChange={this.onEditorChange}
           wrapEnabled
@@ -164,9 +165,9 @@ function mapStateToProps({ job, jobDialog, errorNotification, successNotificatio
 }
 
 JobEditRawJSON.propTypes = {
-  dispatch: React.PropTypes.func.isRequired,
-  job: React.PropTypes.object.isRequired,
-  jobDialog: React.PropTypes.string,
+  dispatch: PropTypes.func.isRequired,
+  job: PropTypes.object.isRequired,
+  jobDialog: PropTypes.string
 }
 
 export default connect(mapStateToProps)(JobEditRawJSON)

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { WATCH_EVALS, UNWATCH_EVALS } from "../../sagas/event"
 import EvaluationList from "../EvaluationList/EvaluationList"
@@ -26,13 +27,13 @@ function mapStateToProps({ evaluations }) {
 
 ClientEvaluations.defaultProps = {
   evaluations: [],
-  params: {},
+  params: {}
 }
 
 ClientEvaluations.propTypes = {
   evaluations: PropTypes.array.isRequired,
   params: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect(mapStateToProps)(ClientEvaluations)

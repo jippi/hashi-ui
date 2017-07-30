@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import ReactTooltip from "react-tooltip"
 import ConstraintRow from "../ConstraintRow/ConstraintRow"
 
@@ -53,13 +54,13 @@ class ConstraintTable extends Component {
 ConstraintTable.defaultProps = {
   constraints: [],
   asTooltip: false,
-  idPrefix: null,
+  idPrefix: null
 }
 
 ConstraintTable.propTypes = {
   constraints: PropTypes.array,
   idPrefix: PropTypes.string,
-  asTooltip: PropTypes.bool.isRequired,
+  asTooltip: PropTypes.bool.isRequired
 }
 
 export default ConstraintTable

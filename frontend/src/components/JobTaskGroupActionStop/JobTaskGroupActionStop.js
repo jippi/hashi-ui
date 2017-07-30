@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import FontIcon from "material-ui/FontIcon"
 import { connect } from "react-redux"
 import { red500 } from "material-ui/styles/colors"
@@ -10,8 +11,8 @@ const stop = ({ job, taskGroup, dispatch }) => {
     payload: {
       job: job.ID,
       taskGroup: taskGroup.Name,
-      scaleAction: "stop",
-    },
+      scaleAction: "stop"
+    }
   })
 }
 
@@ -32,7 +33,7 @@ const JobTaskGroupActionStop = ({ job, taskGroup, dispatch }) => {
 JobTaskGroupActionStop.propTypes = {
   job: PropTypes.object.isRequired,
   taskGroup: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect()(JobTaskGroupActionStop)

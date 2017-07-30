@@ -1,4 +1,5 @@
-import React, { PureComponent, PropTypes } from "react"
+import React, { PureComponent } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import AppBar from "material-ui/AppBar"
 import IconButton from "material-ui/IconButton"

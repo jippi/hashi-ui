@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import { List, ListItem } from "material-ui/List"
@@ -15,7 +16,7 @@ import {
   WATCH_CONSUL_NODE,
   UNWATCH_CONSUL_NODE,
   DEREGISTER_CONSUL_SERVICE_CHECK,
-  DEREGISTER_CONSUL_SERVICE,
+  DEREGISTER_CONSUL_SERVICE
 } from "../sagas/event"
 
 class ConsulNodes extends Component {
@@ -30,7 +31,7 @@ class ConsulNodes extends Component {
     if (this.props.routeParams.name) {
       this.props.dispatch({
         type: WATCH_CONSUL_NODE,
-        payload: this.props.routeParams.name,
+        payload: this.props.routeParams.name
       })
     }
   }
@@ -41,7 +42,7 @@ class ConsulNodes extends Component {
     if (this.props.routeParams.name) {
       this.props.dispatch({
         type: UNWATCH_CONSUL_NODE,
-        payload: this.props.routeParams.name,
+        payload: this.props.routeParams.name
       })
     }
   }
@@ -51,7 +52,7 @@ class ConsulNodes extends Component {
       if (prevProps.routeParams.name) {
         this.props.dispatch({
           type: UNWATCH_CONSUL_NODE,
-          payload: prevProps.routeParams.name,
+          payload: prevProps.routeParams.name
         })
       }
       return
@@ -64,19 +65,19 @@ class ConsulNodes extends Component {
     if (prevProps.routeParams.name) {
       this.props.dispatch({
         type: UNWATCH_CONSUL_NODE,
-        payload: prevProps.routeParams.name,
+        payload: prevProps.routeParams.name
       })
     }
 
     this.props.dispatch({
       type: WATCH_CONSUL_NODE,
-      payload: this.props.routeParams.name,
+      payload: this.props.routeParams.name
     })
   }
 
   monitorNode(name) {
     this.props.router.push({
-      pathname: `/consul/${this.props.router.params.region}/nodes/${name}`,
+      pathname: `/consul/${this.props.router.params.region}/nodes/${name}`
     })
     window.scrollTo(0, document.getElementById("value-pane").offsetTop)
   }
@@ -84,14 +85,14 @@ class ConsulNodes extends Component {
   deregisterServiceCheck(nodeAddress, checkID) {
     this.props.dispatch({
       type: DEREGISTER_CONSUL_SERVICE_CHECK,
-      payload: { nodeAddress, checkID },
+      payload: { nodeAddress, checkID }
     })
   }
 
   deregisterService(nodeAddress, serviceID) {
     this.props.dispatch({
       type: DEREGISTER_CONSUL_SERVICE,
-      payload: { nodeAddress, serviceID },
+      payload: { nodeAddress, serviceID }
     })
   }
 
@@ -143,7 +144,7 @@ class ConsulNodes extends Component {
                   const counters = {
                     passing: 0,
                     warning: 0,
-                    critical: 0,
+                    critical: 0
                   }
 
                   node.Checks.map(check => {
@@ -197,7 +198,7 @@ class ConsulNodes extends Component {
               const counters = {
                 passing: 0,
                 warning: 0,
-                critical: 0,
+                critical: 0
               }
 
               const checks = this.getServiceChecks(entry.ID).map(check => {
@@ -259,7 +260,6 @@ class ConsulNodes extends Component {
                           this.deregisterServiceCheck(this.props.consulNode.Address, check.CheckID)
                         }}
                       />
-
                     </CardText>
                   </Card>
                 )
@@ -284,7 +284,7 @@ class ConsulNodes extends Component {
                     style={{
                       float: "right",
                       marginTop: buttonOffset,
-                      clear: "both",
+                      clear: "both"
                     }}
                   >
                     <RaisedButton
@@ -364,7 +364,6 @@ class ConsulNodes extends Component {
                         this.deregisterServiceCheck(this.props.consulNode.Address, check.CheckID)
                       }}
                     />
-
                   </CardText>
                 </Card>
               )
@@ -382,7 +381,7 @@ function mapStateToProps({ consulNodes, consulNode }) {
 
 ConsulNodes.defaultProps = {
   consulNodes: [],
-  consulNode: {},
+  consulNode: {}
 }
 
 ConsulNodes.propTypes = {
@@ -390,7 +389,7 @@ ConsulNodes.propTypes = {
   consulNodes: PropTypes.array.isRequired,
   consulNode: PropTypes.object.isRequired,
   router: PropTypes.object.isRequired,
-  routeParams: PropTypes.object.isRequired,
+  routeParams: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(withRouter(ConsulNodes))

@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Card, CardTitle, CardText } from "material-ui/Card"
 import RawJson from "../RawJson/RawJson"
@@ -16,7 +17,7 @@ function mapStateToProps({ job }) {
 }
 
 JobRaw.propTypes = {
-  job: PropTypes.object.isRequired,
+  job: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(JobRaw)

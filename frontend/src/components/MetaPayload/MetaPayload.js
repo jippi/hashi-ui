@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import ReactTooltip from "react-tooltip"
 import uuid from "node-uuid"
 
@@ -23,18 +24,32 @@ class MetaPayload extends Component {
     }
 
     keys.forEach(key => {
-      meta.push(<dt className={dtWithClass} key={`${key}dt`}>{key}</dt>)
-      meta.push(<dd key={`${key}dd`}>{metaBag[key]}</dd>)
+      meta.push(
+        <dt className={dtWithClass} key={`${key}dt`}>
+          {key}
+        </dt>
+      )
+      meta.push(
+        <dd key={`${key}dd`}>
+          {metaBag[key]}
+        </dd>
+      )
     })
 
     if (meta.length > 0) {
-      metaTag = <dl className="dl-horizontal dl-tooltip">{meta}</dl>
+      metaTag = (
+        <dl className="dl-horizontal dl-tooltip">
+          {meta}
+        </dl>
+      )
     }
 
     if (asTooltip) {
       return (
         <div>
-          <ReactTooltip id={`tooltip-${identifier}`}>{metaTag}</ReactTooltip>
+          <ReactTooltip id={`tooltip-${identifier}`}>
+            {metaTag}
+          </ReactTooltip>
           <span data-tip data-for={`tooltip-${identifier}`} className="dotted">
             {keys.length} keys
           </span>
@@ -50,14 +65,14 @@ MetaPayload.defaultProps = {
   metaBag: {},
   dtWithClass: "default",
   sortKeys: true,
-  asTooltip: false,
+  asTooltip: false
 }
 
 MetaPayload.propTypes = {
   metaBag: PropTypes.object,
   dtWithClass: PropTypes.string.isRequired,
   sortKeys: PropTypes.bool.isRequired,
-  asTooltip: PropTypes.bool.isRequired,
+  asTooltip: PropTypes.bool.isRequired
 }
 
 export default MetaPayload

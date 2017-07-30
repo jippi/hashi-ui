@@ -1,5 +1,6 @@
 import FontIcon from "material-ui/FontIcon"
-import React, { PureComponent, PropTypes } from "react"
+import React, { PureComponent } from "react"
+import PropTypes from "prop-types"
 import { BottomNavigation, BottomNavigationItem } from "material-ui/BottomNavigation"
 import { withRouter } from "react-router"
 
@@ -35,7 +36,7 @@ class _EvaluationTopbar extends PureComponent {
   getStyle() {
     return {
       borderBottom: "1px solid #e0e0e0",
-      marginBottom: 10,
+      marginBottom: 10
     }
   }
 
@@ -57,7 +58,7 @@ class _EvaluationTopbar extends PureComponent {
 _EvaluationTopbar.propTypes = {
   router: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  evaluation: PropTypes.object.isRequired,
+  evaluation: PropTypes.object.isRequired
 }
 
 const ViewEvaluationTopbar = withRouter(_EvaluationTopbar)

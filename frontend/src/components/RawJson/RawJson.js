@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import JSONFormatter from "json-formatter-js"
 
 class Json extends Component {
@@ -6,7 +7,7 @@ class Json extends Component {
     const formatter = new JSONFormatter(this.props.json, 2, {
       hoverPreviewEnabled: true,
       hoverPreviewArrayCount: 100,
-      hoverPreviewFieldCount: 5,
+      hoverPreviewFieldCount: 5
     })
     this.json.appendChild(formatter.render())
   }
@@ -15,7 +16,7 @@ class Json extends Component {
     const formatter = new JSONFormatter(this.props.json, 2, {
       hoverPreviewEnabled: true,
       hoverPreviewArrayCount: 100,
-      hoverPreviewFieldCount: 5,
+      hoverPreviewFieldCount: 5
     })
 
     // Remove the old JSON
@@ -39,7 +40,7 @@ class Json extends Component {
 }
 
 Json.propTypes = {
-  json: PropTypes.object.isRequired,
+  json: PropTypes.object.isRequired
 }
 
 export default Json

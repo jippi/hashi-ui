@@ -1,5 +1,6 @@
 import FontIcon from "material-ui/FontIcon"
-import React, { PureComponent, PropTypes } from "react"
+import React, { PureComponent } from "react"
+import PropTypes from "prop-types"
 import { BottomNavigation, BottomNavigationItem } from "material-ui/BottomNavigation"
 import { withRouter } from "react-router"
 
@@ -45,7 +46,7 @@ class _ClientTopbar extends PureComponent {
   getStyle() {
     return {
       borderBottom: "1px solid #e0e0e0",
-      marginBottom: 10,
+      marginBottom: 10
     }
   }
 
@@ -73,7 +74,7 @@ class _ClientTopbar extends PureComponent {
 _ClientTopbar.propTypes = {
   router: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  node: PropTypes.object.isRequired,
+  node: PropTypes.object.isRequired
 }
 
 const ClientTopbar = withRouter(_ClientTopbar)

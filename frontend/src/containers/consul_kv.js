@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import { List, ListItem } from "material-ui/List"
@@ -18,7 +19,7 @@ import {
   UNWATCH_CONSUL_KV_PATH,
   DELETE_CONSUL_KV_FOLDER,
   CLEAR_CONSUL_KV_PAIR,
-  DELETE_CONSUL_KV_PAIR,
+  DELETE_CONSUL_KV_PAIR
 } from "../sagas/event"
 
 class ConsulKV extends Component {
@@ -30,7 +31,7 @@ class ConsulKV extends Component {
       value: "",
       index: 0,
       deleteKeyTreeDialog: false,
-      deleteKeyDialog: false,
+      deleteKeyDialog: false
     }
 
     this._onClickPath = this.changePath.bind(this)
@@ -43,7 +44,7 @@ class ConsulKV extends Component {
     if (this.props.routeParams.splat) {
       this.props.dispatch({
         type: WATCH_CONSUL_KV_PATH,
-        payload: this.getPath(this.props),
+        payload: this.getPath(this.props)
       })
     } else {
       this.props.dispatch({ type: WATCH_CONSUL_KV_PATH, payload: "/" })
@@ -53,7 +54,7 @@ class ConsulKV extends Component {
     if ("file" in this.props.location.query) {
       this.props.dispatch({
         type: GET_CONSUL_KV_PAIR,
-        payload: this.getPath(this.props) + this.props.location.query.file,
+        payload: this.getPath(this.props) + this.props.location.query.file
       })
     }
   }
@@ -63,7 +64,7 @@ class ConsulKV extends Component {
     if (this.props.routeParams.splat) {
       this.props.dispatch({
         type: UNWATCH_CONSUL_KV_PATH,
-        payload: this.getPath(this.props),
+        payload: this.getPath(this.props)
       })
     }
   }
@@ -79,7 +80,7 @@ class ConsulKV extends Component {
       this.setState({
         key: this.baseName(nextProps.consulKVPair.Key),
         value: nextProps.consulKVPair.Value ? this.b64DecodeUnicode(nextProps.consulKVPair.Value) : "",
-        index: nextProps.consulKVPair.ModifyIndex,
+        index: nextProps.consulKVPair.ModifyIndex
       })
     }
   }
@@ -105,13 +106,13 @@ class ConsulKV extends Component {
     // unwatch the old path
     this.props.dispatch({
       type: UNWATCH_CONSUL_KV_PATH,
-      payload: this.getPath(prevProps),
+      payload: this.getPath(prevProps)
     })
 
     // watch the new path
     this.props.dispatch({
       type: WATCH_CONSUL_KV_PATH,
-      payload: this.getPath(this.props),
+      payload: this.getPath(this.props)
     })
   }
 
@@ -147,7 +148,7 @@ class ConsulKV extends Component {
     }
 
     this.props.router.push({
-      pathname: `/consul/${this.props.router.params.region}/kv/${path}`,
+      pathname: `/consul/${this.props.router.params.region}/kv/${path}`
     })
     this.resetState(false, true)
   }
@@ -159,7 +160,7 @@ class ConsulKV extends Component {
     if (fetch) {
       this.props.dispatch({
         type: GET_CONSUL_KV_PAIR,
-        payload: file,
+        payload: file
       })
     }
 
@@ -170,7 +171,7 @@ class ConsulKV extends Component {
 
     this.props.router.push({
       pathname: this.props.location.pathname,
-      query: { file: this.baseName(file) },
+      query: { file: this.baseName(file) }
     })
 
     window.scrollTo(0, document.getElementById("value-pane").offsetTop)
@@ -260,8 +261,8 @@ class ConsulKV extends Component {
       payload: {
         path: filePath,
         value: this.state.value,
-        index: this.state.index,
-      },
+        index: this.state.index
+      }
     })
 
     // reset state when creating directories
@@ -289,7 +290,7 @@ class ConsulKV extends Component {
     this.setState({
       key: "",
       value: "",
-      index: 0,
+      index: 0
     })
   }
 
@@ -305,8 +306,8 @@ class ConsulKV extends Component {
       type: DELETE_CONSUL_KV_PAIR,
       payload: {
         path: this.relativePath(this.getPath(this.props)) + this.state.key,
-        index: this.props.consulKVPair.ModifyIndex,
-      },
+        index: this.props.consulKVPair.ModifyIndex
+      }
     })
   }
 
@@ -316,7 +317,7 @@ class ConsulKV extends Component {
   deleteKeyTree() {
     this.props.dispatch({
       type: DELETE_CONSUL_KV_FOLDER,
-      payload: this.props.routeParams.splat,
+      payload: this.props.routeParams.splat
     })
 
     this.resetState()
@@ -347,7 +348,7 @@ class ConsulKV extends Component {
           okAction.bind(this)()
           this.handleCloseDeleteDialog(key)
         }}
-      />,
+      />
     ]
 
     return (
@@ -390,7 +391,11 @@ class ConsulKV extends Component {
       </a>
     )
 
-    return <div>{crumbs.reverse()}</div>
+    return (
+      <div>
+        {crumbs.reverse()}
+      </div>
+    )
   }
 
   valuePaneTitle() {
@@ -456,11 +461,7 @@ class ConsulKV extends Component {
                   {this.props.routeParams.splat
                     ? <ListItem
                         onTouchTap={() => this._onClickPath("..")}
-                        leftIcon={
-                          <FontIcon className="material-icons">
-                            arrow_upward
-                          </FontIcon>
-                        }
+                        leftIcon={<FontIcon className="material-icons">arrow_upward</FontIcon>}
                         primaryText={".."}
                       />
                     : null}
@@ -471,11 +472,7 @@ class ConsulKV extends Component {
                       return (
                         <ListItem
                           onTouchTap={() => this._onClickPath(path)}
-                          leftIcon={
-                            <FontIcon className="material-icons">
-                              folder
-                            </FontIcon>
-                          }
+                          leftIcon={<FontIcon className="material-icons">folder</FontIcon>}
                           primaryText={this.getHumanPathName(path)}
                         />
                       )
@@ -483,11 +480,7 @@ class ConsulKV extends Component {
                       return (
                         <ListItem
                           onTouchTap={() => this._onClickFIle(path)}
-                          leftIcon={
-                            <FontIcon className="material-icons">
-                              insert_drive_file
-                            </FontIcon>
-                          }
+                          leftIcon={<FontIcon className="material-icons">insert_drive_file</FontIcon>}
                           primaryText={this.getHumanFileName(path)}
                         />
                       )
@@ -511,7 +504,9 @@ class ConsulKV extends Component {
                   }}
                   disabled={this.props.consulKVPair.ModifyIndex && this.props.consulKVPair.ModifyIndex != 0}
                 />
-                <div>To create a folder, end the key with <code>/</code></div>
+                <div>
+                  To create a folder, end the key with <code>/</code>
+                </div>
 
                 {this.state.key.slice(-1) != "/"
                   ? <span>
@@ -535,8 +530,7 @@ class ConsulKV extends Component {
                         label="Save"
                         primary
                       />
-                      &nbsp;
-                      &nbsp;
+                      &nbsp; &nbsp;
                       {this.state.key || this.state.value
                         ? <RaisedButton
                             onClick={() => {
@@ -545,8 +539,7 @@ class ConsulKV extends Component {
                             label="Cancel"
                           />
                         : null}
-                      &nbsp;
-                      &nbsp;
+                      &nbsp; &nbsp;
                       {this.props.consulKVPair.Key
                         ? <span>
                             {this.confirmDeleteAction(
@@ -588,7 +581,7 @@ function mapStateToProps({ consulKVPaths, consulKVPair }) {
 
 ConsulKV.defaultProps = {
   consulKVPaths: [],
-  consulKVPair: {},
+  consulKVPair: {}
 }
 
 ConsulKV.propTypes = {
@@ -597,7 +590,7 @@ ConsulKV.propTypes = {
   location: PropTypes.object.isRequired,
   routeParams: PropTypes.object.isRequired,
   consulKVPaths: PropTypes.array.isRequired,
-  consulKVPair: PropTypes.object.isRequired,
+  consulKVPair: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(withRouter(ConsulKV))

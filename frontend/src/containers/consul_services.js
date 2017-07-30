@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import { List, ListItem } from "material-ui/List"
@@ -17,7 +18,7 @@ import {
   WATCH_CONSUL_SERVICE,
   UNWATCH_CONSUL_SERVICE,
   DEREGISTER_CONSUL_SERVICE_CHECK,
-  DEREGISTER_CONSUL_SERVICE,
+  DEREGISTER_CONSUL_SERVICE
 } from "../sagas/event"
 
 class ConsulServices extends Component {
@@ -33,7 +34,7 @@ class ConsulServices extends Component {
     if (this.props.routeParams.name) {
       this.props.dispatch({
         type: WATCH_CONSUL_SERVICE,
-        payload: this.props.routeParams.name,
+        payload: this.props.routeParams.name
       })
     }
   }
@@ -44,7 +45,7 @@ class ConsulServices extends Component {
     if (this.props.routeParams.name) {
       this.props.dispatch({
         type: UNWATCH_CONSUL_SERVICE,
-        payload: this.props.routeParams.name,
+        payload: this.props.routeParams.name
       })
     }
   }
@@ -54,7 +55,7 @@ class ConsulServices extends Component {
       if (prevProps.routeParams.name) {
         this.props.dispatch({
           type: UNWATCH_CONSUL_SERVICE,
-          payload: prevProps.routeParams.name,
+          payload: prevProps.routeParams.name
         })
       }
       return
@@ -67,20 +68,20 @@ class ConsulServices extends Component {
     if (prevProps.routeParams.name) {
       this.props.dispatch({
         type: UNWATCH_CONSUL_SERVICE,
-        payload: prevProps.routeParams.name,
+        payload: prevProps.routeParams.name
       })
     }
 
     this.props.dispatch({
       type: WATCH_CONSUL_SERVICE,
-      payload: this.props.routeParams.name,
+      payload: this.props.routeParams.name
     })
   }
 
   monitorService(name) {
     window.scrollTo(0, document.getElementById("value-pane").offsetTop)
     this.props.router.push({
-      pathname: `/consul/${this.props.router.params.region}/services/${name}`,
+      pathname: `/consul/${this.props.router.params.region}/services/${name}`
     })
   }
 
@@ -91,14 +92,14 @@ class ConsulServices extends Component {
   deregisterServiceCheck(nodeAddress, checkID) {
     this.props.dispatch({
       type: DEREGISTER_CONSUL_SERVICE_CHECK,
-      payload: { nodeAddress, checkID },
+      payload: { nodeAddress, checkID }
     })
   }
 
   deregisterService(nodeAddress, serviceID) {
     this.props.dispatch({
       type: DEREGISTER_CONSUL_SERVICE,
-      payload: { nodeAddress, serviceID },
+      payload: { nodeAddress, serviceID }
     })
   }
 
@@ -220,7 +221,7 @@ class ConsulServices extends Component {
               const counters = {
                 passing: 0,
                 warning: 0,
-                critical: 0,
+                critical: 0
               }
 
               const checks = entry.Checks.map(check => {
@@ -282,7 +283,6 @@ class ConsulServices extends Component {
                           this.deregisterServiceCheck(entry.Node.Address, check.CheckID)
                         }}
                       />
-
                     </CardText>
                   </Card>
                 )
@@ -333,7 +333,7 @@ function mapStateToProps({ consulServices, consulService }) {
 
 ConsulServices.defaultProps = {
   consulServices: [],
-  ConsulService: [],
+  ConsulService: []
 }
 
 ConsulServices.propTypes = {
@@ -341,7 +341,7 @@ ConsulServices.propTypes = {
   consulServices: PropTypes.array.isRequired,
   consulService: PropTypes.array.isRequired,
   router: PropTypes.object.isRequired,
-  routeParams: PropTypes.object.isRequired,
+  routeParams: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(withRouter(ConsulServices))

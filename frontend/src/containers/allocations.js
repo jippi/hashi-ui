@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import AllocationList from "../components/AllocationList/AllocationList"
 import { WATCH_ALLOCS_SHALLOW, UNWATCH_ALLOCS_SHALLOW, WATCH_NODES, UNWATCH_NODES } from "../sagas/event"
@@ -26,7 +27,7 @@ function mapStateToProps({ allocations, nodes }) {
 Allocations.propTypes = {
   allocations: PropTypes.array.isRequired, // eslint-disable-line no-unused-vars
   nodes: PropTypes.array.isRequired, // eslint-disable-line no-unused-vars
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect(mapStateToProps)(Allocations)

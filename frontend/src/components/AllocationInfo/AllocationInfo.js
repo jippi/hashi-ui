@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { Card, CardTitle, CardText } from "material-ui/Card"
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "../Table"
 import { connect } from "react-redux"
@@ -22,36 +23,25 @@ class AllocationInfo extends Component {
   static taskState(allocation, name, states) {
     const title = (
       <h3>
-        Task state history for {allocation.JobID}.{allocation.TaskGroup}.{name}{" "}
-        (final state: {states.State})
+        Task state history for {allocation.JobID}.{allocation.TaskGroup}.{name} (final state: {states.State})
       </h3>
     )
 
     let lastEventTime = null
 
     return (
-      <Card>
+      <Card key={allocation.ID}>
         <CardTitle title={title} />
         <CardText>
           <Table selectable={false} showCheckboxes={false}>
             <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
               <TableRow>
-                <TableHeaderColumn style={{ width: 180 }}>
-                  When
-                </TableHeaderColumn>
-                <TableHeaderColumn style={{ width: 180 }}>
-                  Duration
-                </TableHeaderColumn>
-                <TableHeaderColumn style={{ width: 180 }}>
-                  Type
-                </TableHeaderColumn>
+                <TableHeaderColumn style={{ width: 180 }}>When</TableHeaderColumn>
+                <TableHeaderColumn style={{ width: 180 }}>Duration</TableHeaderColumn>
+                <TableHeaderColumn style={{ width: 180 }}>Type</TableHeaderColumn>
                 <TableHeaderColumn>Message / Reason</TableHeaderColumn>
-                <TableHeaderColumn style={{ width: 75 }}>
-                  Signal
-                </TableHeaderColumn>
-                <TableHeaderColumn style={{ width: 50 }}>
-                  Code
-                </TableHeaderColumn>
+                <TableHeaderColumn style={{ width: 75 }}>Signal</TableHeaderColumn>
+                <TableHeaderColumn style={{ width: 50 }}>Code</TableHeaderColumn>
               </TableRow>
             </TableHeader>
             <TableBody preScanRows={false} displayRowCheckbox={false} showRowHover>
@@ -140,7 +130,7 @@ class AllocationInfo extends Component {
 
     const states = []
     Object.keys(allocation.TaskStates || {}).forEach(key => {
-      states.push(<br />)
+      states.push(<br key={key} />)
       states.push(AllocationInfo.taskState(allocation, key, allocation.TaskStates[key]))
     })
 
@@ -166,7 +156,7 @@ function mapStateToProps({ allocation, nodes }) {
 AllocationInfo.propTypes = {
   dispatch: PropTypes.func.isRequired,
   allocation: PropTypes.object.isRequired,
-  nodes: PropTypes.array.isRequired,
+  nodes: PropTypes.array.isRequired
 }
 
 export default connect(mapStateToProps)(AllocationInfo)

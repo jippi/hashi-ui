@@ -1,15 +1,16 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { TableHeaderColumn as MaterialTableHeaderColumn } from "material-ui/Table"
 
 class TableHeaderColumn extends Component {
   static propTypes = {
-    style: PropTypes.object,
+    style: PropTypes.object
   }
 
   render() {
     const overrideStyle = {
       paddingLeft: 0,
-      height: 30,
+      height: 30
     }
 
     const newStyle = Object.assign({}, this.props.style, overrideStyle)

@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import { Card, CardTitle, CardText } from "material-ui/Card"
@@ -20,8 +21,12 @@ const ServerInfo = ({ member }) => {
 
     return (
       <TableRow key={name}>
-        <TableRowColumn>{name}</TableRowColumn>
-        <TableRowColumn>{value}</TableRowColumn>
+        <TableRowColumn>
+          {name}
+        </TableRowColumn>
+        <TableRowColumn>
+          {value}
+        </TableRowColumn>
       </TableRow>
     )
   })
@@ -36,8 +41,12 @@ const ServerInfo = ({ member }) => {
               <dl className="dl-horizontal">
                 {memberProps.map(memberProp =>
                   <div key={memberProp}>
-                    <dt>{memberProp}</dt>
-                    <dd>{member[memberProp]}</dd>
+                    <dt>
+                      {memberProp}
+                    </dt>
+                    <dd>
+                      {member[memberProp]}
+                    </dd>
                   </div>
                 )}
               </dl>
@@ -62,7 +71,7 @@ function mapStateToProps({ member }) {
 }
 
 ServerInfo.propTypes = {
-  member: PropTypes.object.isRequired,
+  member: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(ServerInfo)

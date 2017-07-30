@@ -14,7 +14,7 @@ export function ChangeNomadRegionReducer(state = {}, action) {
   return state
 }
 
-export function NomadRegionsReducer(state = {}, action) {
+export function NomadRegionsReducer(state = [], action) {
   switch (action.type) {
     case FETCHED_NOMAD_REGIONS:
       return action.payload

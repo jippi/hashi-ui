@@ -33,7 +33,7 @@ AllocationLink.defaultProps = {
 }
 
 AllocationLink.propTypes = {
-  children: PropTypes.array,
+  children: PropTypes.any,
   allocationId: PropTypes.string.isRequired,
   linkAppend: PropTypes.string,
   linkQuery: PropTypes.object,

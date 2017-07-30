@@ -1,4 +1,5 @@
-import React, { PureComponent, PropTypes } from "react"
+import React, { PureComponent } from "react"
+import PropTypes from "prop-types"
 import { Table, Column, Cell } from "fixed-data-table-2"
 import { Card, CardText } from "material-ui/Card"
 import EvaluationLink from "../EvaluationLink/EvaluationLink"

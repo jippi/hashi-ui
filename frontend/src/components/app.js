@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
@@ -69,6 +70,7 @@ class App extends Component {
         {window.ENABLED_SERVICES.map(service => {
           return (
             <MenuItem
+              key={service}
               onTouchTap={() => {
                 this.changeToApp(service)
               }}
@@ -168,8 +170,8 @@ App.propTypes = {
   children: PropTypes.object.isRequired,
   appDrawer: PropTypes.bool.isRequired,
   uncaughtException: PropTypes.object,
-  successNotification: PropTypes.string,
-  errorNotification: PropTypes.string,
+  successNotification: PropTypes.object,
+  errorNotification: PropTypes.object,
   appError: PropTypes.object,
   route: PropTypes.object.isRequired,
   router: PropTypes.object.isRequired,

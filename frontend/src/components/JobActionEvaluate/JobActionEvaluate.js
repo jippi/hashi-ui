@@ -1,4 +1,5 @@
 import React from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { EVALUATE_JOB, JOB_HIDE_DIALOG } from "../../sagas/event"
 
@@ -29,9 +30,9 @@ function mapStateToProps({ job, jobDialog }) {
 }
 
 JobActionEvaluate.propTypes = {
-  dispatch: React.PropTypes.func.isRequired,
-  job: React.PropTypes.object.isRequired,
-  jobDialog: React.PropTypes.string,
+  dispatch: PropTypes.func.isRequired,
+  job: PropTypes.object.isRequired,
+  jobDialog: PropTypes.string
 }
 
 export default connect(mapStateToProps)(JobActionEvaluate)

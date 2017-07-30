@@ -1,4 +1,5 @@
-import React, { PureComponent, PropTypes } from "react"
+import React, { PureComponent } from "react"
+import PropTypes from "prop-types"
 import AppendedReactTooltip from "../AppendedReactTooltip/AppendedReactTooltip"
 // eslint-disable-next-line no-unused-vars
 import momentDurationFormat from "moment-duration-format"
@@ -21,7 +22,11 @@ class FormatTime extends PureComponent {
 
     if (display === "relative") {
       if (inTable) {
-        return <div ref="valueDiv" data-tip={_time.format(timeFormat)}>{timeDiff}</div>
+        return (
+          <div ref="valueDiv" data-tip={_time.format(timeFormat)}>
+            {timeDiff}
+          </div>
+        )
       }
 
       return (
@@ -37,7 +42,11 @@ class FormatTime extends PureComponent {
     }
 
     if (inTable) {
-      return <div ref="valueDiv" data-tip={timeDiff}>{_time.format(timeFormat)}}</div>
+      return (
+        <div ref="valueDiv" data-tip={timeDiff}>
+          {_time.format(timeFormat)}}
+        </div>
+      )
     }
 
     return (

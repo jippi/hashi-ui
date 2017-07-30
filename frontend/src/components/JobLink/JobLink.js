@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import { Link, withRouter } from "react-router"
 
 const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId, router }) => {
@@ -18,12 +19,12 @@ const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId, router }) =
 
   const query = {
     taskGroupId,
-    taskId,
+    taskId
   }
 
   const to = {
     pathname: `/nomad/${router.params.region}/jobs/${JobIdUrl}${linkAppend}`,
-    query,
+    query
   }
 
   return (
@@ -34,16 +35,16 @@ const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId, router }) =
 }
 
 JobLink.defaultProps = {
-  linkAppend: "",
+  linkAppend: ""
 }
 
 JobLink.propTypes = {
-  children: PropTypes.array,
-  jobId: PropTypes.string.isRequired,
+  children: PropTypes.any,
+  jobId: PropTypes.string,
   linkAppend: PropTypes.string,
   taskGroupId: PropTypes.string,
-  taskId: PropTypes.string.isRequired,
-  router: PropTypes.object.isRequired,
+  taskId: PropTypes.string,
+  router: PropTypes.object.isRequired
 }
 
 export default withRouter(JobLink)

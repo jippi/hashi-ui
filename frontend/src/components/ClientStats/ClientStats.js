@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import { connect } from "react-redux"
 import { WATCH_CLIENT_STATS, UNWATCH_CLIENT_STATS } from "../../sagas/event"
@@ -25,14 +26,14 @@ class ClientStats extends Component {
   componentWillUnmount() {
     this.props.dispatch({
       type: UNWATCH_CLIENT_STATS,
-      payload: this.props.node.ID,
+      payload: this.props.node.ID
     })
   }
 
   watchForStats(props) {
     this.props.dispatch({
       type: WATCH_CLIENT_STATS,
-      payload: props.node.ID,
+      payload: props.node.ID
     })
   }
 
@@ -85,14 +86,14 @@ class ClientStats extends Component {
         name: "busy",
         value: 100 - CPU,
         humanValue: 100 - CPU + " %",
-        color: green500,
+        color: green500
       },
       {
         name: "idle",
         value: CPU,
         humanValue: CPU + " %",
-        color: blue500,
-      },
+        color: blue500
+      }
     ]
 
     const TotalMemory = this.props.nodeStats.Memory.Total / 1024 / 1024 / 1024
@@ -103,14 +104,14 @@ class ClientStats extends Component {
         name: "Used",
         value: UsedMemory,
         humanValue: UsedMemory.toFixed(2) + " GB",
-        color: green500,
+        color: green500
       },
       {
         name: "Available",
         value: TotalMemory - UsedMemory,
         humanValue: (TotalMemory - UsedMemory).toFixed(2) + " GB",
-        color: blue500,
-      },
+        color: blue500
+      }
     ]
 
     return (
@@ -150,7 +151,7 @@ function mapStateToProps({ node, nodeStats }) {
 ClientStats.propTypes = {
   node: PropTypes.object.isRequired,
   nodeStats: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect(mapStateToProps)(ClientStats)

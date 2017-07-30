@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import Snackbar from "material-ui/Snackbar"
 import { green500, red500 } from "material-ui/styles/colors"
@@ -13,7 +14,7 @@ class NotificationsBar extends Component {
       errorMessage: "",
 
       showSuccessMessage: false,
-      successMessage: "",
+      successMessage: ""
     }
   }
 
@@ -22,7 +23,7 @@ class NotificationsBar extends Component {
       this.setState({
         ...this.state,
         showSuccessMessage: true,
-        successMessage: nextProps.successNotification.message,
+        successMessage: nextProps.successNotification.message
       })
     }
 
@@ -30,7 +31,7 @@ class NotificationsBar extends Component {
       this.setState({
         ...this.state,
         showErrorMessage: true,
-        errorMessage: nextProps.errorNotification.message,
+        errorMessage: nextProps.errorNotification.message
       })
     }
   }
@@ -41,7 +42,7 @@ class NotificationsBar extends Component {
     this.setState({
       ...this.state,
       showSuccessMessage: false,
-      successMessage: "",
+      successMessage: ""
     })
   }
 
@@ -51,7 +52,7 @@ class NotificationsBar extends Component {
     this.setState({
       ...this.state,
       showErrorMessage: false,
-      errorMessage: "",
+      errorMessage: ""
     })
   }
 
@@ -66,7 +67,7 @@ class NotificationsBar extends Component {
           bodyStyle={{
             backgroundColor: red500,
             width: "100%",
-            maxWidth: "none",
+            maxWidth: "none"
           }}
           onRequestClose={() => {
             this.resetErrorMessage()
@@ -81,7 +82,7 @@ class NotificationsBar extends Component {
           bodyStyle={{
             backgroundColor: green500,
             width: "100%",
-            maxWidth: "none",
+            maxWidth: "none"
           }}
           onRequestClose={() => {
             this.resetSuccessMessage()
@@ -95,7 +96,7 @@ class NotificationsBar extends Component {
 NotificationsBar.propTypes = {
   job: PropTypes.object.isRequired,
   taskGroup: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 function mapStateToProps({ errorNotification, successNotification }) {
@@ -104,12 +105,12 @@ function mapStateToProps({ errorNotification, successNotification }) {
 
 NotificationsBar.defaultProps = {
   successNotification: {},
-  errorNotification: {},
+  errorNotification: {}
 }
 
 NotificationsBar.propTypes = {
   successNotification: PropTypes.object,
-  errorNotification: PropTypes.object,
+  errorNotification: PropTypes.object
 }
 
 export default connect(mapStateToProps)(NotificationsBar)

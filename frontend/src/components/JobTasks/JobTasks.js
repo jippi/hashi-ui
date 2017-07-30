@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import JobLink from "../JobLink/JobLink"
 import TableHelper from "../TableHelper/TableHelper"
@@ -15,16 +16,26 @@ const JobTasks = ({ job, location }) => {
           <td>
             <JobLink jobId={job.ID} taskId={task.ID} taskGroupId={taskGroup.ID} />
           </td>
-          <td>{task.Name}</td>
+          <td>
+            {task.Name}
+          </td>
           <td>
             <JobLink jobId={job.ID} taskGroupId={taskGroup.ID}>
               {taskGroup.Name}
             </JobLink>
           </td>
-          <td>{task.Driver}</td>
-          <td>{task.Resources.CPU}</td>
-          <td>{task.Resources.MemoryMB}</td>
-          <td>{task.Resources.DiskMB}</td>
+          <td>
+            {task.Driver}
+          </td>
+          <td>
+            {task.Resources.CPU}
+          </td>
+          <td>
+            {task.Resources.MemoryMB}
+          </td>
+          <td>
+            {task.Resources.DiskMB}
+          </td>
         </tr>
       )
     })
@@ -73,7 +84,7 @@ function mapStateToProps({ job }) {
 
 JobTasks.propTypes = {
   job: PropTypes.object.isRequired,
-  location: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(JobTasks)

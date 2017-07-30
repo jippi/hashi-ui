@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import { Link, withRouter } from "react-router"
 import SelectField from "material-ui/SelectField"
 import MenuItem from "material-ui/MenuItem"
@@ -8,7 +9,11 @@ const JobStatusFilter = ({ location }) => {
 
   let title = "Job Status"
   if ("job_status" in query) {
-    title = <span>{title}: <code>{query.job_status}</code></span>
+    title = (
+      <span>
+        {title}: <code>{query.job_status}</code>
+      </span>
+    )
   }
 
   return (
@@ -17,7 +22,7 @@ const JobStatusFilter = ({ location }) => {
         <Link
           to={{
             pathname: location.pathname,
-            query: { ...query, job_status: undefined },
+            query: { ...query, job_status: undefined }
           }}
         >
           - Any -
@@ -27,7 +32,7 @@ const JobStatusFilter = ({ location }) => {
         <Link
           to={{
             pathname: location.pathname,
-            query: { ...query, job_status: "running" },
+            query: { ...query, job_status: "running" }
           }}
         >
           Running
@@ -37,7 +42,7 @@ const JobStatusFilter = ({ location }) => {
         <Link
           to={{
             pathname: location.pathname,
-            query: { ...query, job_status: "pending" },
+            query: { ...query, job_status: "pending" }
           }}
         >
           Pending
@@ -47,7 +52,7 @@ const JobStatusFilter = ({ location }) => {
         <Link
           to={{
             pathname: location.pathname,
-            query: { ...query, job_status: "dead" },
+            query: { ...query, job_status: "dead" }
           }}
         >
           Dead
@@ -58,7 +63,7 @@ const JobStatusFilter = ({ location }) => {
 }
 
 JobStatusFilter.propTypes = {
-  location: PropTypes.object.isRequired,
+  location: PropTypes.object.isRequired
 }
 
 export default withRouter(JobStatusFilter)

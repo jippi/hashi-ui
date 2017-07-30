@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import FontIcon from "material-ui/FontIcon"
 import { connect } from "react-redux"
 import { green500, orange500 } from "material-ui/styles/colors"
@@ -10,8 +11,8 @@ const scaleUp = ({ job, taskGroup, dispatch }) => {
     payload: {
       job: job.ID,
       taskGroup: taskGroup.Name,
-      scaleAction: "increase",
-    },
+      scaleAction: "increase"
+    }
   })
 }
 
@@ -21,8 +22,8 @@ const scaleDown = ({ job, taskGroup, dispatch }) => {
     payload: {
       job: job.ID,
       taskGroup: taskGroup.Name,
-      scaleAction: "decrease",
-    },
+      scaleAction: "decrease"
+    }
   })
 }
 
@@ -55,7 +56,7 @@ const JobTaskGroupActionScale = ({ job, taskGroup, dispatch }) => {
 JobTaskGroupActionScale.propTypes = {
   job: PropTypes.object.isRequired,
   taskGroup: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect()(JobTaskGroupActionScale)

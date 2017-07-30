@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { ResponsiveContainer, PieChart, Pie, Cell, Sector } from "recharts"
 import { Card, CardTitle, CardText } from "material-ui/Card"
 
@@ -95,7 +96,7 @@ class UtilizationPieChart extends Component {
                 outerRadius={80}
                 isAnimationActive={false}
               >
-                {this.props.data.map(entry => <Cell fill={entry.color} />)}
+                {this.props.data.map(entry => <Cell key={entry.name} fill={entry.color} />)}
               </Pie>
             </PieChart>
           </ResponsiveContainer>
@@ -119,7 +120,7 @@ class UtilizationPieChart extends Component {
 }
 
 UtilizationPieChart.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.array.isRequired,
   title: PropTypes.string.isRequired
 }
 

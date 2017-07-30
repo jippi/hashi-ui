@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { withRouter } from "react-router"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import ReactTooltip from "react-tooltip"
@@ -16,7 +17,7 @@ import {
   UNWATCH_FILE,
   WATCH_FILE,
   WATCH_NODES,
-  UNWATCH_NODES,
+  UNWATCH_NODES
 } from "../../sagas/event"
 
 class AllocationFiles extends Component {
@@ -38,7 +39,7 @@ class AllocationFiles extends Component {
       contents: "",
       fileWatching: false,
       initialDirectoryFetched: false,
-      width: undefined,
+      width: undefined
     }
   }
 
@@ -83,8 +84,8 @@ class AllocationFiles extends Component {
       this.props.dispatch({
         type: CLEAR_RECEIVED_FILE_DATA,
         payload: {
-          File: nextProps.file.File,
-        },
+          File: nextProps.file.File
+        }
       })
     }
 
@@ -124,7 +125,7 @@ class AllocationFiles extends Component {
     this.setState({
       contents: "",
       fileWatching: false,
-      initialDirectoryFetched: false,
+      initialDirectoryFetched: false
     })
   }
 
@@ -149,7 +150,7 @@ class AllocationFiles extends Component {
     if (props.node == null || allocNode.ID !== props.node.ID) {
       this.props.dispatch({
         type: FETCH_NODE,
-        payload: allocNode.ID,
+        payload: allocNode.ID
       })
 
       return false
@@ -166,8 +167,8 @@ class AllocationFiles extends Component {
         addr: props.node.HTTPAddr,
         secure: props.node.TLSEnabled,
         path: dir || "/",
-        allocID: props.allocation.ID,
-      },
+        allocID: props.allocation.ID
+      }
     })
   }
 
@@ -184,15 +185,15 @@ class AllocationFiles extends Component {
         addr: props.node.HTTPAddr,
         secure: props.node.TLSEnabled,
         path: filePath,
-        allocID: props.allocation.ID,
-      },
+        allocID: props.allocation.ID
+      }
     })
   }
 
   unwatchFile(props) {
     props.dispatch({
       type: UNWATCH_FILE,
-      payload: props.location.query.path + props.location.query.file,
+      payload: props.location.query.path + props.location.query.file
     })
   }
 
@@ -208,7 +209,7 @@ class AllocationFiles extends Component {
 
       this.props.router.push({
         pathname: this.props.location.pathname,
-        query: { path },
+        query: { path }
       })
 
       return
@@ -218,8 +219,8 @@ class AllocationFiles extends Component {
       pathname: this.props.location.pathname,
       query: {
         path,
-        file: file.Name,
-      },
+        file: file.Name
+      }
     })
   }
 
@@ -251,6 +252,7 @@ class AllocationFiles extends Component {
 
       return (
         <MenuItem
+          key={file.Name}
           innerDivStyle={{ paddingRight: 0 }}
           onTouchTap={() => this.handleClick(file)}
           leftIcon={i}
@@ -264,7 +266,12 @@ class AllocationFiles extends Component {
       const x = <FontIcon className="material-icons">arrow_upward</FontIcon>
 
       files.unshift(
-        <MenuItem onTouchTap={() => this.handleClick({ Name: "back", IsDir: true })} leftIcon={x} primaryText=".." />
+        <MenuItem
+          key="back"
+          onTouchTap={() => this.handleClick({ Name: "back", IsDir: true })}
+          leftIcon={x}
+          primaryText=".."
+        />
       )
     }
 
@@ -287,7 +294,7 @@ class AllocationFiles extends Component {
             display: "inline-block",
             position: "relative",
             top: 7,
-            right: 6,
+            right: 6
           }}
         >
           <FontIcon className="material-icons" data-tip data-for={`tooltip-${this.props.file.File}`}>
@@ -306,14 +313,15 @@ class AllocationFiles extends Component {
 
     const downloadPath = `nomad/${this.props.router.params.region}/download${this.props.file.File}`
 
-    const downloadBtn = this.props.file.File.indexOf("<") >= 0
-      ? ""
-      : <form method="get" action={`${window.NOMAD_ENDPOINT}/${downloadPath}`}>
-          <input type="hidden" name="client" value={this.props.node.HTTPAddr} />
-          <input type="hidden" name="allocID" value={this.props.allocation.ID} />
-          {oversizedWarning}
-          <RaisedButton label="Download" type="submit" className="btn-download" />
-        </form>
+    const downloadBtn =
+      this.props.file.File.indexOf("<") >= 0
+        ? ""
+        : <form method="get" action={`${window.NOMAD_ENDPOINT}/${downloadPath}`}>
+            <input type="hidden" name="client" value={this.props.node.HTTPAddr} />
+            <input type="hidden" name="allocID" value={this.props.allocation.ID} />
+            {oversizedWarning}
+            <RaisedButton label="Download" type="submit" className="btn-download" />
+          </form>
 
     const title = (
       <span>
@@ -324,8 +332,8 @@ class AllocationFiles extends Component {
     const headline = {
       ...padding,
       display: "flex",
-      "justify-content": "space-between",
-      "align-items": "center  ",
+      justifyContent: "space-between",
+      alignItems: "center  "
     }
 
     return (
@@ -375,8 +383,7 @@ AllocationFiles.propTypes = {
   dispatch: PropTypes.func.isRequired,
   file: PropTypes.object.isRequired,
   directory: PropTypes.array.isRequired,
-  history: PropTypes.object.isRequired,
-  router: PropTypes.object.isRequired,
+  router: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(withRouter(AllocationFiles))

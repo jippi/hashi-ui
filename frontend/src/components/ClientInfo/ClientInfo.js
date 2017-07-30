@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import MetaPayload from "../MetaPayload/MetaPayload"
 import { Grid, Row, Col } from "react-flexbox-grid"
@@ -28,8 +29,12 @@ const ClientInfo = ({ node }) =>
             <dl className="dl-horizontal">
               {nodeProps.map(nodeProp =>
                 <div key={nodeProp}>
-                  <dt>{nodeProp}</dt>
-                  <dd>{node[nodeProp] ? node[nodeProp] : "-"}</dd>
+                  <dt>
+                    {nodeProp}
+                  </dt>
+                  <dd>
+                    {node[nodeProp] ? node[nodeProp] : "-"}
+                  </dd>
                 </div>
               )}
             </dl>
@@ -116,7 +121,6 @@ const ClientInfo = ({ node }) =>
           </CardText>
         </Card>
       </Col>
-
     </Row>
   </Grid>
 
@@ -125,7 +129,7 @@ function mapStateToProps({ node }) {
 }
 
 ClientInfo.propTypes = {
-  node: PropTypes.object.isRequired,
+  node: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(ClientInfo)

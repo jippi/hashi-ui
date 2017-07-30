@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { List, ListItem } from "material-ui/List"
 import { Card, CardHeader, CardText } from "material-ui/Card"
@@ -18,7 +19,7 @@ class SelectConsulRegion extends Component {
   handleChangeRegion(region) {
     this.props.dispatch({
       type: SET_CONSUL_REGION,
-      payload: region,
+      payload: region
     })
   }
 
@@ -50,12 +51,12 @@ function mapStateToProps({ consulRegions }) {
 }
 
 SelectConsulRegion.defaultProps = {
-  consulRegions: [],
+  consulRegions: []
 }
 
 SelectConsulRegion.propTypes = {
   consulRegions: PropTypes.array.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect(mapStateToProps)(SelectConsulRegion)

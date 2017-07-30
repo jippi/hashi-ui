@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { ResponsiveContainer, PieChart, Pie, Cell, Sector } from "recharts"
 import { green500, red500, blue500, yellow500 } from "material-ui/styles/colors"
 import { Card, CardTitle, CardText } from "material-ui/Card"
@@ -30,9 +31,15 @@ class Progressbar extends Component {
     return (
       <g>
         <text x={cx} y={textY} dy={8} textAnchor="middle" fill={fill}>
-          <tspan x={cx} dy="1.2em">{payload.name}</tspan>
-          <tspan x={cx} dy="1.2em">{payload.value}</tspan>
-          <tspan x={cx} dy="1.2em">{p}%</tspan>
+          <tspan x={cx} dy="1.2em">
+            {payload.name}
+          </tspan>
+          <tspan x={cx} dy="1.2em">
+            {payload.value}
+          </tspan>
+          <tspan x={cx} dy="1.2em">
+            {p}%
+          </tspan>
         </text>
         <Sector
           cx={cx}
@@ -84,7 +91,7 @@ class Progressbar extends Component {
       starting: green500,
       queued: red500,
       failed: blue500,
-      lost: yellow500,
+      lost: yellow500
     }[index]
   }
 
@@ -97,7 +104,7 @@ class Progressbar extends Component {
     let data = normalizedKeys.map(index => {
       return {
         name: index,
-        value: normalizedValues[index],
+        value: normalizedValues[index]
       }
     })
 
@@ -126,7 +133,7 @@ class Progressbar extends Component {
                 isAnimationActive={false}
                 label={this.state.showLabel}
               >
-                {data.map(entry => <Cell fill={this.colorIndex(entry.name)} />)}
+                {data.map(entry => <Cell key={entry.name} fill={this.colorIndex(entry.name)} />)}
               </Pie>
             </PieChart>
           </ResponsiveContainer>
@@ -138,7 +145,7 @@ class Progressbar extends Component {
 
 Progressbar.propTypes = {
   data: PropTypes.object.isRequired,
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired
 }
 
 export default Progressbar

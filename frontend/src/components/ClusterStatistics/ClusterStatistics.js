@@ -1,11 +1,12 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import Progressbar from "../Progressbar/Progressbar"
 
 const ClusterStatistics = ({ jobs }) => {
   const clientStatus = {
     Running: 0,
-    Starting: 0,
+    Starting: 0
   }
 
   let hasJobSummary = true
@@ -41,7 +42,7 @@ function mapStateToProps({ jobs }) {
 }
 
 ClusterStatistics.propTypes = {
-  jobs: PropTypes.array.isRequired,
+  jobs: PropTypes.array.isRequired
 }
 
 export default connect(mapStateToProps)(ClusterStatistics)

@@ -1,4 +1,5 @@
-import React, { PureComponent, PropTypes } from "react"
+import React, { PureComponent } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import { List, ListItem, makeSelectable } from "material-ui/List"
@@ -109,31 +110,42 @@ class NomadMainNav extends PureComponent {
     return (
       <SelectableList value={this.getActiveMenu()}>
         <ListItem
+          key="cluster"
           primaryText="Cluster"
           value="cluster"
           href={this.getRoute("cluster")}
           onClick={clickHandler("cluster")}
         />
-        <ListItem primaryText="Jobs" value="jobs" href={this.getRoute("jobs")} onClick={clickHandler("jobs")} />
         <ListItem
+          key="jobs"
+          primaryText="Jobs"
+          value="jobs"
+          href={this.getRoute("jobs")}
+          onClick={clickHandler("jobs")}
+        />
+        <ListItem
+          key="allocations"
           primaryText="Allocations"
           value="allocations"
           href={this.getRoute("allocations")}
           onClick={clickHandler("allocations")}
         />
         <ListItem
+          key="evaluations"
           primaryText="Evaluations"
           value="evaluations"
           href={this.getRoute("evaluations")}
           onClick={clickHandler("evaluations")}
         />
         <ListItem
+          key="clients"
           primaryText="Clients"
           value="clients"
           href={this.getRoute("clients")}
           onClick={clickHandler("clients")}
         />
         <ListItem
+          key="servers"
           primaryText="Servers"
           value="servers"
           href={this.getRoute("servers")}

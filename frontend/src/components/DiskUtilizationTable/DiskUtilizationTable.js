@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { Card, CardTitle, CardText } from "material-ui/Card"
 import { Table, TableHeader, TableRow, TableHeaderColumn, TableBody, TableRowColumn } from "../Table"
 
@@ -14,7 +15,9 @@ class DiskUtilizationTable extends Component {
     this.props.data.forEach(disk => {
       rows.push(
         <TableRow key={disk.Mountpoint}>
-          <TableRowColumn>{disk.Mountpoint}</TableRowColumn>
+          <TableRowColumn>
+            {disk.Mountpoint}
+          </TableRowColumn>
           <TableRowColumn style={styles}>
             {(disk.Size / 1024 / 1024 / 1024).toFixed(2)} GB
           </TableRowColumn>
@@ -38,9 +41,7 @@ class DiskUtilizationTable extends Component {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHeaderColumn key="Mountpoint">
-                  Mountpoint
-                </TableHeaderColumn>
+                <TableHeaderColumn key="Mountpoint">Mountpoint</TableHeaderColumn>
                 <TableHeaderColumn style={styles} key="Size">
                   Size
                 </TableHeaderColumn>
@@ -67,7 +68,7 @@ class DiskUtilizationTable extends Component {
 
 DiskUtilizationTable.propTypes = {
   title: PropTypes.string.isRequired,
-  data: PropTypes.object.isRequired,
+  data: PropTypes.array.isRequired
 }
 
 export default DiskUtilizationTable

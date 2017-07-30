@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import { Router, Route, Redirect, IndexRedirect, browserHistory } from "react-router"
 
 import App from "./components/app"
@@ -59,33 +60,26 @@ const AppRouter = ({ history }) =>
       <Redirect from="/allocations/**" to="/nomad" />
       <Redirect from="/evaluations/" to="/nomad" />
       <Redirect from="/evaluations/**" to="/nomad" />
-
       <IndexRedirect to="/nomad" />
-
       // Consul
       <Route path="/consul" component={SelectConsulRegion} />
       <Redirect from="/consul/:region" to="/consul/:region/services" />
       <Route path="/consul/:region/kv" component={ConsulKV} />
       <Route path="/consul/:region/kv/*" component={ConsulKV} />
-
       <Route path="/consul/:region/nodes" component={ConsulNodes} />
       <Route path="/consul/:region/nodes/:name" component={ConsulNodes} />
-
       <Route path="/consul/:region/services" component={ConsulServices} />
       <Route path="/consul/:region/services/:name" component={ConsulServices} />
-
       // Nomad
       <Route path="/nomad" component={SelectNomadRegion} />
       <Redirect from="/nomad/:region" to="/nomad/:region/cluster" />
       <Route path="/nomad/:region/cluster" component={Cluster} />
-
       <Route path="/nomad/:region/servers" component={Servers} />
       <Route path="/nomad/:region/servers/:memberId" component={Server}>
         <IndexRedirect to="/nomad/:region/servers/:memberId/info" />
         <Route path="/nomad/:region/servers/:memberId/info" component={ServerInfo} />
         <Route path="/nomad/:region/servers/:memberId/raw" component={ServerRaw} />
       </Route>
-
       <Route path="/nomad/:region/jobs" component={Jobs} />
       <Route path="/nomad/:region/jobs/:jobId" component={Job}>
         <IndexRedirect to="/nomad/:region/jobs/:jobId/info" />
@@ -95,7 +89,6 @@ const AppRouter = ({ history }) =>
         <Route path="/nomad/:region/jobs/:jobId/groups" component={JobTaskGroups} />
         <Route path="/nomad/:region/jobs/:jobId/raw" component={JobRaw} />
       </Route>
-
       <Route path="/nomad/:region/clients" component={Clients} />
       <Route path="/nomad/:region/clients/:nodeId" component={Client}>
         <IndexRedirect to="/nomad/:region/clients/:nodeId/info" />
@@ -105,7 +98,6 @@ const AppRouter = ({ history }) =>
         <Route path="/nomad/:region/clients/:nodeId/evaluations" component={ClientEvaluations} />
         <Route path="/nomad/:region/clients/:nodeId/raw" component={ClientRaw} />
       </Route>
-
       <Route path="/nomad/:region/allocations" component={Allocations} />
       <Route path="/nomad/:region/allocations/:allocId" component={Allocation}>
         <IndexRedirect to="/nomad/:region/allocations/:allocId/info" />
@@ -118,7 +110,6 @@ const AppRouter = ({ history }) =>
         <Route path="/nomad/:region/allocations/:allocId/files" component={AllocFiles} query={{ path: "" }} />
         <Route path="/nomad/:region/allocations/:allocId/raw" component={AllocRaw} />
       </Route>
-
       <Route path="/nomad/:region/evaluations" component={Evaluations} />
       <Route path="/nomad/:region/evaluations/:evalId" component={Evaluation}>
         <IndexRedirect to="/nomad/:region/evaluations/:evalId/info" />
@@ -130,7 +121,7 @@ const AppRouter = ({ history }) =>
   </Router>
 
 AppRouter.propTypes = {
-  history: PropTypes.instanceOf(browserHistory.constructor).isRequired,
+  history: PropTypes.instanceOf(browserHistory.constructor).isRequired
 }
 
 export default AppRouter

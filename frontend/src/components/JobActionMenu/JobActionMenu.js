@@ -1,4 +1,5 @@
 import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import IconMenu from "material-ui/IconMenu"
 import IconButton from "material-ui/IconButton"
@@ -20,7 +21,9 @@ class JobActionMenu extends Component {
   render() {
     const icon = (
       <IconButton>
-        <FontIcon className="material-icons" color="white">more_vert</FontIcon>
+        <FontIcon className="material-icons" color="white">
+          more_vert
+        </FontIcon>
       </IconButton>
     )
 
@@ -58,7 +61,7 @@ class JobActionMenu extends Component {
 }
 
 JobActionMenu.propTypes = {
-  dispatch: React.PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect()(JobActionMenu)

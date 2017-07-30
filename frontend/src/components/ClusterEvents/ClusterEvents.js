@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from "react"
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import AllocationLink from "../AllocationLink/AllocationLink"
 import FormatTime from "../FormatTime/FormatTime"
@@ -31,7 +32,9 @@ class ClusterEvents extends Component {
                     {allocation.JobID}.{task}
                   </AllocationLink>
                 </TableRowColumn>
-                <TableRowColumn>{event.Type}</TableRowColumn>
+                <TableRowColumn>
+                  {event.Type}
+                </TableRowColumn>
                 <TableRowColumn>
                   {event.KillError ||
                     event.DriverError ||
@@ -41,7 +44,7 @@ class ClusterEvents extends Component {
                     "<none>"}
                 </TableRowColumn>
                 <TableRowColumn>
-                  <FormatTime time={event.Time} />
+                  <FormatTime identifier={eventID} time={event.Time} />
                 </TableRowColumn>
               </TableRow>
             )
@@ -67,7 +70,7 @@ function mapStateToProps({ allocations }) {
 
 ClusterEvents.propTypes = {
   allocations: PropTypes.array.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 export default connect(mapStateToProps)(ClusterEvents)
