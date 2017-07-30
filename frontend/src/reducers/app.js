@@ -6,7 +6,7 @@ import {
   CLEAR_SUCCESS_NOTIFICATION,
   FETCHED_CLUSTER_STATISTICS,
   APP_DRAWER_OPEN,
-  APP_DRAWER_CLOSE,
+  APP_DRAWER_CLOSE
 } from "../sagas/event"
 
 export function ClusterStatisticsReducer(state = {}, action) {
@@ -25,7 +25,7 @@ export function ErrorNotificationReducer(state = {}, action) {
     case ERROR_NOTIFICATION:
       return {
         message: action.payload,
-        index: action.index,
+        index: action.index
       }
   }
   return state
@@ -34,11 +34,11 @@ export function ErrorNotificationReducer(state = {}, action) {
 export function SuccessNotificationReducer(state = {}, action) {
   switch (action.type) {
     case CLEAR_SUCCESS_NOTIFICATION:
-      return {}
+      return ""
     case SUCCESS_NOTIFICATION:
       return {
         message: action.payload,
-        index: action.index,
+        index: action.index
       }
   }
   return state

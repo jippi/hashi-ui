@@ -71,7 +71,7 @@
     "recharts": "^0.20.0",
     "recompose": "^0.24.0",
     "redux": "^3.7.2",
-    "redux-saga": "^0.15.6",
+    "redux-saga": "0.15.4",
     "superagent": "^3.5.2"
   },
   "devDependencies": {
