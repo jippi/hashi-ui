@@ -7,10 +7,13 @@ import { red500, green800, green900 } from "material-ui/styles/colors"
 import getMuiTheme from "material-ui/styles/getMuiTheme"
 import AppBar from "material-ui/AppBar"
 import Drawer from "material-ui/Drawer"
+import Divider from "material-ui/Divider"
 import MenuItem from "material-ui/MenuItem"
+import FlatButton from "material-ui/FlatButton"
 import ReactTooltip from "react-tooltip"
 import NomadTopbar from "./NomadTopbar/NomadTopbar"
 import NomadMainNav from "./NomadMainNav/NomadMainNav"
+import ConsulMainNav from "./ConsulMainNav/ConsulMainNav"
 import ConsulTopbar from "./ConsulTopbar/ConsulTopbar"
 import NotificationsBar from "./NotificationsBar/NotificationsBar"
 import { NOMAD_COLOR, CONSUL_COLOR } from "../config.js"
@@ -29,16 +32,19 @@ class App extends Component {
     })
   }
 
-  DrawerRequestedChange(open) {
-    if (!open) {
-      this.props.dispatch({ type: APP_DRAWER_CLOSE })
-    } else {
-      this.props.dispatch({ type: APP_DRAWER_OPEN })
+  changeToApp(e, app) {
+    // allow cmd/shift/ctrl key to open link in new tab without changing navigation in current page
+    if (
+      e.ctrlKey ||
+      e.shiftKey ||
+      e.metaKey || // apple
+      (e.button && e.button == 1) // middle click, >IE9 + everyone else
+    ) {
+      return false
     }
-  }
 
-  changeToApp(app) {
-    this.props.dispatch({ type: APP_DRAWER_CLOSE })
+    // don't trigger the normal href
+    e.preventDefault()
 
     switch (app) {
       case "consul":
@@ -52,35 +58,6 @@ class App extends Component {
 
   capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1)
-  }
-
-  appDrawer() {
-    if (window.ENABLED_SERVICES.length < 2) {
-      return null
-    }
-
-    return (
-      <Drawer
-        docked={false}
-        open={this.props.appDrawer}
-        onRequestChange={open => {
-          this.DrawerRequestedChange(open)
-        }}
-      >
-        {window.ENABLED_SERVICES.map(service => {
-          return (
-            <MenuItem
-              key={service}
-              onTouchTap={() => {
-                this.changeToApp(service)
-              }}
-            >
-              {this.capitalizeFirstLetter(service)}
-            </MenuItem>
-          )
-        })}
-      </Drawer>
-    )
   }
 
   render() {
@@ -122,6 +99,7 @@ class App extends Component {
     if (this.props.router.location.pathname.startsWith("/consul")) {
       muiTheme.palette.primary1Color = CONSUL_COLOR
       topbar = <ConsulTopbar {...this.props} />
+      navbar = <ConsulMainNav {...this.props} />
     }
 
     if (this.props.router.location.pathname.startsWith("/nomad")) {
@@ -130,11 +108,39 @@ class App extends Component {
       navbar = <NomadMainNav {...this.props} />
     }
 
+    let changeAppBar = null
+
+    if (window.ENABLED_SERVICES.length > 1) {
+      changeAppBar = (
+        <div style={{ marginTop: 10 }}>
+          <FlatButton
+            key="switch-to-nomad"
+            href="/nomad"
+            label=" "
+            style={{ width: "50%" }}
+            className="nomad-logo"
+            onClick={e => {
+              this.changeToApp(e, "nomad")
+            }}
+          />
+          <FlatButton
+            key="switch-to-consul"
+            label=" "
+            href="/consul"
+            className="consul-logo"
+            style={{ width: "50%" }}
+            onClick={e => {
+              this.changeToApp(e, "consul")
+            }}
+          />
+        </div>
+      )
+    }
+
     return (
       <MuiThemeProvider muiTheme={getMuiTheme(muiTheme)}>
         <div>
           <div>
-            {this.appDrawer()}
             <NotificationsBar />
             {uncaughtExceptionBar}
           </div>
@@ -144,6 +150,8 @@ class App extends Component {
           <div>
             <div style={{ float: "left", width: "200px" }}>
               {navbar}
+              <Divider />
+              {changeAppBar}
             </div>
             <div style={{ float: "right", width: this.state.width }}>
               {this.props.children}

@@ -145,3 +145,15 @@ th {
   color: white;
   text-decoration: underline;
 }
+
+.consul-logo {
+  background: url('img/consul.png');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.nomad-logo {
+  background: url('img/nomad.png');
+  background-repeat: no-repeat;
+  background-position: center;
+}

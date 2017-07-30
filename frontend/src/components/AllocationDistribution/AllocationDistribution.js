@@ -59,7 +59,7 @@ class AllocationDistribution extends Component {
       label,
       value,
       className,
-      percent: value / sum * 100,
+      percent: sum > 0 ? value / sum * 100 : 0,
       offset: mapBy(data.slice(0, index), "value").reduce(sumAggregate, 0) / sum * 100
     }))
   }

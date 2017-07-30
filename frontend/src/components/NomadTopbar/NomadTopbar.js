@@ -39,10 +39,6 @@ class AppTopbar extends PureComponent {
     return title
   }
 
-  leftIconClick() {
-    this.props.dispatch({ type: APP_DRAWER_OPEN })
-  }
-
   nomadRegions() {
     if (!Array.isArray(this.props.nomadRegions)) {
       return
@@ -73,12 +69,7 @@ class AppTopbar extends PureComponent {
   render() {
     return (
       <section style={{ backgroundColor: NOMAD_COLOR }}>
-        <AppBar
-          title={this.title()}
-          showMenuIconButton={window.ENABLED_SERVICES.length > 1}
-          iconElementRight={this.nomadRegions()}
-          onLeftIconButtonTouchTap={() => this.leftIconClick()}
-        />
+        <AppBar iconElementLeft={<img />} title={this.title()} iconElementRight={this.nomadRegions()} />
       </section>
     )
   }

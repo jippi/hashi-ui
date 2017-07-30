@@ -21,7 +21,6 @@ class ConsulTopbar extends PureComponent {
 
   constructor() {
     super()
-    this._onClick = this.handleActive.bind(this)
     this.onChangeRegion = this.handleChangeRegion.bind(this)
   }
 
@@ -30,50 +29,6 @@ class ConsulTopbar extends PureComponent {
       type: SET_CONSUL_REGION,
       payload: region
     })
-  }
-
-  handleActive(index) {
-    const prefix = `/consul/${this.props.router.params.region}`
-    let route = prefix
-
-    switch (index) {
-      case 0:
-        route = `${prefix}/services`
-        break
-
-      case 1:
-        route = `${prefix}/kv`
-        break
-
-      case 2:
-        route = `${prefix}/nodes`
-        break
-
-      default:
-        route = `${prefix}/services`
-    }
-
-    this.props.router.push(route)
-  }
-
-  getActiveTab() {
-    const location = this.props.location
-
-    const prefix = `/consul/${this.props.router.params.region}`
-
-    if (location.pathname.startsWith(prefix + "/services")) {
-      return 0
-    }
-
-    if (location.pathname.startsWith(prefix + "/kv")) {
-      return 1
-    }
-
-    if (location.pathname.startsWith(prefix + "/nodes")) {
-      return 2
-    }
-
-    return 0
   }
 
   consulRegions() {
@@ -98,16 +53,6 @@ class ConsulTopbar extends PureComponent {
     )
   }
 
-  tabs() {
-    return (
-      <Tabs index={this.getActiveTab()} onChange={this._onClick} theme={theme} fixed>
-        <Tab label="Services" value="services" />
-        <Tab label="Key/Value" value="key-value" />
-        <Tab label="Nodes" value="nodes" />
-      </Tabs>
-    )
-  }
-
   title() {
     let title = "Consul"
 
@@ -118,21 +63,10 @@ class ConsulTopbar extends PureComponent {
     return title
   }
 
-  leftIconClick() {
-    this.props.dispatch({ type: APP_DRAWER_OPEN })
-  }
-
   render() {
-    const tabs = "region" in this.props.router.params ? this.tabs() : undefined
     return (
       <section style={{ backgroundColor: CONSUL_COLOR }}>
-        <AppBar
-          title={this.title()}
-          showMenuIconButton={window.ENABLED_SERVICES.length > 1}
-          iconElementRight={this.consulRegions()}
-          onLeftIconButtonTouchTap={() => this.leftIconClick()}
-        />
-        {tabs}
+        <AppBar title={this.title()} iconElementRight={this.consulRegions()} iconElementLeft={<img />} />
       </section>
     )
   }
