@@ -130,7 +130,6 @@ class AllocationDistribution extends Component {
             <rect width="100%" height="100%" className="border" />
           </svg>
         </div>
-        <ReactTooltip />
       </div>
     )
   }

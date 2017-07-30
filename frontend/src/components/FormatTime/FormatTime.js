@@ -1,7 +1,6 @@
 import React, { PureComponent } from "react"
 import PropTypes from "prop-types"
 import AppendedReactTooltip from "../AppendedReactTooltip/AppendedReactTooltip"
-// eslint-disable-next-line no-unused-vars
 import momentDurationFormat from "moment-duration-format"
 import moment from "moment"
 import getMoment from "../../helpers/time"
@@ -61,6 +60,7 @@ class FormatTime extends PureComponent {
     )
   }
 }
+
 FormatTime.defaultProps = {
   time: null,
   now: "now",
