@@ -68,30 +68,34 @@ class AllocationDistribution extends Component {
     let data = this.data()
     let percentSum = 0
     let self = this
-    // let tooltipClass = "tooltip " + (self.state.active ? "active" : "inactive")
-    let tooltipClass = ""
+    let tt = ""
+
+    if (this.state.active) {
+      tt = (
+        <ReactTooltip id={`job-stats-${this.props.job.ID}`} className="tt" type="light">
+          <ol>
+            {data.map(x => {
+              return (
+                <li key={x.label}>
+                  <span className="label">
+                    <span className={`color-swatch ${x.className}`} />
+                    {x.label}
+                  </span>
+                  <span className="value">
+                    {x.value}
+                  </span>
+                </li>
+              )
+            })}
+          </ol>
+        </ReactTooltip>
+      )
+    }
 
     return (
       <div>
         <div style={{ height: 20 }} className="chart distribution-bar">
-          <ReactTooltip id={`job-stats-${this.props.job.ID}`} className="tt" type="light">
-            <ol>
-              {data.map(x => {
-                return (
-                  <li key={x.label}>
-                    <span className="label">
-                      <span className={`color-swatch ${x.className}`} />
-                      {x.label}
-                    </span>
-                    <span className="value">
-                      {x.value}
-                    </span>
-                  </li>
-                )
-              })}
-            </ol>
-          </ReactTooltip>
-
+          {tt}
           <svg data-tip data-for={`job-stats-${this.props.job.ID}`}>
             <g className="bars">
               {data.map(x => {
