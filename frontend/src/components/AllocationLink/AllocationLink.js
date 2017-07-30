@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import React from "react"
+import PropTypes from "prop-types"
 import { Link, withRouter } from "react-router"
 import { default as shortenUUID } from "../../helpers/uuid"
 
@@ -17,7 +18,7 @@ const AllocationLink = ({ children, allocationId, linkAppend, shortUUID, linkQue
     <Link
       to={{
         pathname: `/nomad/${router.params.region}/allocations/${allocationId}${linkAppend}`,
-        query: linkQuery,
+        query: linkQuery
       }}
     >
       {innerChildren}
@@ -28,7 +29,7 @@ const AllocationLink = ({ children, allocationId, linkAppend, shortUUID, linkQue
 AllocationLink.defaultProps = {
   shortUUID: true,
   linkAppend: "",
-  linkQuery: {},
+  linkQuery: {}
 }
 
 AllocationLink.propTypes = {
@@ -36,8 +37,8 @@ AllocationLink.propTypes = {
   allocationId: PropTypes.string.isRequired,
   linkAppend: PropTypes.string,
   linkQuery: PropTypes.object,
-  shortUUID: PropTypes.boolean.isRequired,
-  router: PropTypes.object.isRequired,
+  shortUUID: PropTypes.bool.isRequired,
+  router: PropTypes.object.isRequired
 }
 
 export default withRouter(AllocationLink)

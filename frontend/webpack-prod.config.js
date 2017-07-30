@@ -1,74 +1,81 @@
-const path = require('path');
-const merge = require('webpack-merge');
-const webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { resolve } = require("path")
+const webpack = require("webpack")
+const ExtractTextPlugin = require("extract-text-webpack-plugin")
+const HtmlWebpackPlugin = require("html-webpack-plugin")
 
-var webpackConfig = require("./webpack-base.config.js");
+const config = {
+  devtool: "source-map",
 
-webpackConfig = merge(webpackConfig, {
+  entry: ["babel-polyfill", "./src/main.js"],
+
   output: {
-    filename: 'static/[name].[chunkhash].js',
-    chunkFilename: 'static/[name].[chunkhash].chunks.js',
-    publicPath: '',
+    filename: "static/[name].[chunkhash].js",
+    sourceMapFilename: "static/[name].[chunkhash].map",
+    chunkFilename: "static/[name].[chunkhash].chunks.js",
+    path: resolve(__dirname, "build/"),
+    publicPath: ""
   },
+
+  performance: {
+    hints: "warning"
+  },
+
   bail: true,
-  entry: [
-    'babel-polyfill',
-    './src/main.js'
-  ],
-  devtool: 'source-map',
+
   module: {
-    loaders: [
+    rules: [
       {
-        test: /(\.scss|\.css)$/,
-        loader: ExtractTextPlugin.extract('style', 'css?sourceMap&modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss!sass'),
-        exclude: /flexboxgrid|assets/,
+        test: /\.js$/,
+        loaders: ["babel-loader"],
+        exclude: /node_modules/
       },
       {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style', 'css?sourceMap&modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'),
-        include: /flexboxgrid/,
-        exclude: /assets/,
+        test: /\.s?css$/,
+        use: [
+          {
+            loader: "style-loader" // creates style nodes from JS strings
+          },
+          {
+            loader: "css-loader" // translates CSS into CommonJS
+          },
+          {
+            loader: "sass-loader" // compiles Sass to CSS
+          }
+        ]
       },
-      {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style', 'css?importLoaders=1'),
-        include: /assets/,
-      },
-      {
-        test: /\.jsx?$/,
-        exclude: /node_modules/,
-        loader: 'babel',
-        query: require('./config/babel.prod'),
-      }
+      { test: /\.(png|jpg)$/, use: "url-loader?limit=15000" },
+      { test: /\.eot(\?v=\d+.\d+.\d+)?$/, use: "file-loader" },
+      { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, use: "url-loader?limit=10000&mimetype=application/font-woff" },
+      { test: /\.[ot]tf(\?v=\d+.\d+.\d+)?$/, use: "url-loader?limit=10000&mimetype=application/octet-stream" },
+      { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, use: "url-loader?limit=10000&mimetype=image/svg+xml" }
     ]
   },
+
   plugins: [
-    new webpack.DefinePlugin({'process.env.NODE_ENV': '"production"'}),
-    new ExtractTextPlugin('static/[name].[contenthash].css'),
-    new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.optimize.DedupePlugin(),
+    new webpack.DefinePlugin({ "process.env": { NODE_ENV: JSON.stringify("production") } }),
+    new webpack.optimize.CommonsChunkPlugin({ name: "common" }),
+    new ExtractTextPlugin("static/[name].[contenthash].css"),
+    new webpack.LoaderOptionsPlugin({
+      minimize: true,
+      debug: false
+    }),
     new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        screw_ie8: true,
-        warnings: false
-      },
+      beautify: false,
       mangle: {
+        screw_ie8: true,
+        keep_fnames: true
+      },
+      compress: {
         screw_ie8: true
       },
-      output: {
-        comments: false,
-        screw_ie8: true
-      }
+      comments: false
     }),
     new HtmlWebpackPlugin({
-      title: 'Hashi-UI',
+      title: "Hashi-UI",
       inject: false,
-      favicon: './assets/img/favicon.png',
-      template: './index.html.ejs',
-      appMountId: 'app',
+      favicon: "./assets/img/favicon.png",
+      template: "./index.html.ejs",
+      appMountId: "app",
       production: true,
       minify: {
         removeComments: true,
@@ -84,6 +91,6 @@ webpackConfig = merge(webpackConfig, {
       }
     })
   ]
-});
+}
 
-module.exports = webpackConfig;
+module.exports = config

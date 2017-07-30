@@ -1,82 +1,91 @@
-const merge = require('webpack-merge');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const { resolve } = require("path")
 
-var webpackConfig = require("./webpack-base.config.js");
-webpackConfig = merge(webpackConfig, {
-  output: {
-    filename: 'static/bundle.js'
-  },
+const webpack = require("webpack")
+const ExtractTextPlugin = require("extract-text-webpack-plugin")
+const HtmlWebpackPlugin = require("html-webpack-plugin")
+
+const config = {
+  devtool: "cheap-module-eval-source-map",
 
   entry: [
-    'webpack-dev-server/client?http://localhost:3333',
-    'webpack/hot/only-dev-server',
-    'babel-polyfill',
-    './src/main.js'
+    "react-hot-loader/patch",
+    "webpack-dev-server/client?http://localhost:3333",
+    "webpack/hot/only-dev-server",
+    "babel-polyfill",
+    "./src/main.js"
   ],
 
-  devtool: 'cheap-module-eval-source-map',
-
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: 'Hashi UI',
-      inject: false,
-      template: './index.html.ejs',
-      favicon: './assets/img/favicon.png',
-      appMountId: 'app',
-      window: {
-        NOMAD_ENDPOINT: process.env.GO_HOST || '127.0.0.1',
-        NOMAD_ENDPOINT_PORT: process.env.GO_PORT || 3000
-      }
-    }),
-    new webpack.DefinePlugin({ 'process.env.NODE_ENV': '"development"' }),
-    new webpack.DefinePlugin({ 'process.env.GO_PORT': process.env.GO_PORT || 3000 }),
-    new ExtractTextPlugin('static/bundle.css', { allChunks: true }),
-    new webpack.HotModuleReplacementPlugin()
-  ],
+  output: {
+    filename: "bundle.js",
+    sourceMapFilename: "static/bundle.map",
+    path: resolve(__dirname, "dist"),
+    publicPath: "/"
+  },
 
   devServer: {
     port: 3333,
     hot: true,
     historyApiFallback: true,
-    publicPath: webpackConfig.output.publicPath
+    publicPath: "/"
   },
 
   module: {
-    loaders: [
+    rules: [
       {
-        test: /(\.scss|\.css)$/,
-        loader: ExtractTextPlugin.extract('style', 'css?sourceMap&modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss!sass'),
-        exclude: /flexboxgrid|assets/,
+        test: /\.js$/,
+        loaders: ["babel-loader"],
+        exclude: /node_modules/
       },
       {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style', 'css?sourceMap&modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'),
-        include: /flexboxgrid/,
-        exclude: /assets/,
-      },
-      {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style', 'css?importLoaders=1'),
-        include: /assets/,
-      },
-      {
-        test: /\.jsx?$/,
-        exclude: /node_modules/,
-        loaders: [
-          'react-hot',
-          'babel?presets[]=es2015&presets[]=es2016&presets[]=react&presets[]=react-optimize&plugins[]=transform-react-inline-elements&plugins[]=syntax-trailing-function-commas&plugins[]=transform-runtime&plugins[]=transform-class-properties&plugins[]=transform-object-rest-spread'
+        test: /\.s?css$/,
+        use: [
+          {
+            loader: "style-loader" // creates style nodes from JS strings
+          },
+          {
+            loader: "css-loader" // translates CSS into CommonJS
+          },
+          {
+            loader: "sass-loader" // compiles Sass to CSS
+          }
         ]
-      }
+      },
+      { test: /\.(png|jpg)$/, use: "url-loader?limit=15000" },
+      { test: /\.eot(\?v=\d+.\d+.\d+)?$/, use: "file-loader" },
+      { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, use: "url-loader?limit=10000&mimetype=application/font-woff" },
+      { test: /\.[ot]tf(\?v=\d+.\d+.\d+)?$/, use: "url-loader?limit=10000&mimetype=application/octet-stream" },
+      { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, use: "url-loader?limit=10000&mimetype=image/svg+xml" }
     ]
   },
 
-  externals: {
-    'react/addons': true,
-    'react/lib/ExecutionEnvironment': true,
-    'react/lib/ReactContext': true
-  }
-});
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: "Hashi UI",
+      inject: false,
+      template: "./index.html.ejs",
+      favicon: "./assets/img/favicon.png",
+      appMountId: "app",
+      window: {
+        NOMAD_ENDPOINT: process.env.GO_HOST || "127.0.0.1",
+        NOMAD_ENDPOINT_PORT: process.env.GO_PORT || 3000
+      }
+    }),
+    new webpack.DefinePlugin({ "process.env.NODE_ENV": '"development"' }),
+    new webpack.DefinePlugin({ "process.env.GO_PORT": process.env.GO_PORT || 3000 }),
+    new webpack.LoaderOptionsPlugin({
+      test: /\.js$/,
+      options: {
+        eslint: {
+          configFile: resolve(__dirname, ".eslintrc"),
+          cache: false
+        }
+      }
+    }),
+    new webpack.optimize.ModuleConcatenationPlugin(),
+    new ExtractTextPlugin({ filename: "assets/data-table.css", disable: false, allChunks: true }),
+    new ExtractTextPlugin({ filename: "assets/hashi-ui.css", disable: false, allChunks: true }),
+    new webpack.HotModuleReplacementPlugin()
+  ]
+}
 
-module.exports = webpackConfig;
+module.exports = config
