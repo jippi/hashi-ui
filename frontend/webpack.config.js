@@ -5,13 +5,13 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 
 const config = {
-  devtool: "cheap-module-eval-source-map",
+  devtool: "inline-source-map",
 
   entry: [
+    "babel-polyfill",
     "react-hot-loader/patch",
     "webpack-dev-server/client?http://localhost:3333",
     "webpack/hot/only-dev-server",
-    "babel-polyfill",
     "./src/main.js"
   ],
 
@@ -32,9 +32,33 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.js$/,
-        loaders: ["babel-loader"],
-        exclude: /node_modules/
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            babelrc: false,
+            presets: [
+              "es2015",
+              [
+                "env",
+                {
+                  targets: {
+                    browsers: ["last 2 versions"]
+                  }
+                }
+              ],
+              "babel-preset-react"
+            ],
+            plugins: [
+              "transform-runtime",
+              "babel-plugin-syntax-trailing-function-commas",
+              "babel-plugin-transform-class-properties",
+              "babel-plugin-transform-object-rest-spread",
+              "babel-plugin-transform-react-constant-elements"
+            ]
+          }
+        }
       },
       {
         test: /\.s?css$/,
@@ -59,6 +83,23 @@ const config = {
   },
 
   plugins: [
+    new webpack.DefinePlugin({ "process.env.NODE_ENV": '"development"' }),
+    new webpack.DefinePlugin({ "process.env.GO_PORT": process.env.GO_PORT || 3000 }),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+
+    new webpack.LoaderOptionsPlugin({
+      test: /\.js$/,
+      options: {
+        eslint: {
+          configFile: resolve(__dirname, ".eslintrc"),
+          cache: false
+        }
+      }
+    }),
+    new ExtractTextPlugin({ filename: "assets/data-table.css", disable: false, allChunks: true }),
+    new ExtractTextPlugin({ filename: "assets/hashi-ui.css", disable: false, allChunks: true }),
     new HtmlWebpackPlugin({
       title: "Hashi UI",
       inject: false,
@@ -69,22 +110,7 @@ const config = {
         NOMAD_ENDPOINT: process.env.GO_HOST || "127.0.0.1",
         NOMAD_ENDPOINT_PORT: process.env.GO_PORT || 3000
       }
-    }),
-    new webpack.DefinePlugin({ "process.env.NODE_ENV": '"development"' }),
-    new webpack.DefinePlugin({ "process.env.GO_PORT": process.env.GO_PORT || 3000 }),
-    new webpack.LoaderOptionsPlugin({
-      test: /\.js$/,
-      options: {
-        eslint: {
-          configFile: resolve(__dirname, ".eslintrc"),
-          cache: false
-        }
-      }
-    }),
-    new webpack.optimize.ModuleConcatenationPlugin(),
-    new ExtractTextPlugin({ filename: "assets/data-table.css", disable: false, allChunks: true }),
-    new ExtractTextPlugin({ filename: "assets/hashi-ui.css", disable: false, allChunks: true }),
-    new webpack.HotModuleReplacementPlugin()
+    })
   ]
 }
 

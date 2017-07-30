@@ -1,5 +1,5 @@
-import { createStore, applyMiddleware, compose } from "redux"
-import createSagaMiddleware, { END } from "redux-saga"
+import { createStore, compose, applyMiddleware } from "redux"
+import createSagaMiddleware from "redux-saga"
 import rootReducer from "./reducers/root"
 import eventSaga from "./sagas/event"
 

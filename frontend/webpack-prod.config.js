@@ -26,8 +26,31 @@ const config = {
     rules: [
       {
         test: /\.js$/,
-        loaders: ["babel-loader"],
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              [
+                "env",
+                {
+                  targets: {
+                    browsers: ["last 2 versions"]
+                  }
+                }
+              ],
+              "babel-preset-react",
+              "babel-preset-react-optimize"
+            ],
+            plugins: [
+              "babel-plugin-transform-runtime",
+              "babel-plugin-syntax-trailing-function-commas",
+              "babel-plugin-transform-class-properties",
+              "babel-plugin-transform-object-rest-spread",
+              "babel-plugin-transform-react-constant-elements"
+            ]
+          }
+        }
       },
       {
         test: /\.s?css$/,
@@ -54,7 +77,6 @@ const config = {
   plugins: [
     new webpack.DefinePlugin({ "process.env": { NODE_ENV: JSON.stringify("production") } }),
     new webpack.optimize.CommonsChunkPlugin({ name: "common" }),
-    new ExtractTextPlugin("static/[name].[contenthash].css"),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       debug: false

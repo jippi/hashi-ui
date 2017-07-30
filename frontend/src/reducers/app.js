@@ -34,13 +34,14 @@ export function ErrorNotificationReducer(state = {}, action) {
 export function SuccessNotificationReducer(state = {}, action) {
   switch (action.type) {
     case CLEAR_SUCCESS_NOTIFICATION:
-      return ""
+      return {}
     case SUCCESS_NOTIFICATION:
       return {
         message: action.payload,
         index: action.index
       }
   }
+
   return state
 }
 
