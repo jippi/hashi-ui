@@ -11,7 +11,13 @@ body {
   background: #f3f3f3;
 }
 
-body, h1, h2, h3, h4, h5, h6 {
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0;
 }
 
@@ -86,6 +92,7 @@ code {
 
 th {
   text-align: left;
+  font-weight: 700;
 }
 
 .nomad-table-responsive {

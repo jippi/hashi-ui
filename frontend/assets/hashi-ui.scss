@@ -1,0 +1,127 @@
+$queued: lightGrey;
+$starting: desaturate(lighten(#fa8e23, 25%), 50%);
+$running: desaturate(lighten(#fa8e23, 10%), 10%);
+$complete: #25ba81;
+$failed: desaturate(lighten(#bd362f, 10%), 10%);
+
+.chart {
+  position: relative;
+
+  .queued {
+    fill: $queued;
+  }
+  .starting {
+    fill: $starting;
+  }
+  .running {
+    fill: $running;
+  }
+  .complete {
+    fill: $complete;
+  }
+  .failed {
+    fill: $failed;
+  }
+
+  .color-swatch {
+    display: inline-block;
+    height: 1rem;
+    width: 1rem;
+    margin-right: 0.25rem;
+    vertical-align: middle;
+    box-shadow: inset 0 0 0 1px rgba(#000, 0.3);
+
+    $color-sequence: #fa8e23, #f0ad4e, #2eb039, #1563ff, #5c4ee5, #c84034;
+    @for $i from 1 through length($color-sequence) {
+      &.swatch-#{$i - 1} {
+        background: nth($color-sequence, $i);
+      }
+    }
+
+    &.queued {
+      background: $queued;
+    }
+    &.starting {
+      background: $starting;
+    }
+    &.running {
+      background: $running;
+    }
+    &.complete {
+      background: $complete;
+    }
+    &.failed {
+      background: $failed;
+    }
+  }
+
+  &.distribution-bar {
+    display: block;
+    height: 100%;
+
+    svg {
+      display: inline-block;
+      height: 100%;
+      width: 100%;
+
+      .bars rect {
+        height: 100%;
+        transition: opacity 0.3s ease-in-out;
+        opacity: 1;
+
+        &.inactive {
+          opacity: 0.2;
+        }
+
+        $color-sequence: #fa8e23, #f0ad4e, #2eb039, #1563ff, #5c4ee5, #c84034;
+        @for $i from 1 through length($color-sequence) {
+          &.slice-#{$i - 1} {
+            fill: nth($color-sequence, $i);
+          }
+        }
+      }
+
+      .border {
+        stroke: #333;
+        stroke-width: 2px;
+        stroke-opacity: 0.3;
+        fill: transparent;
+        pointer-events: none;
+      }
+    }
+  }
+
+  .tt {
+    color: rgba(#000, 0.6);
+    pointer-events: none;
+    z-index: 9999999;
+    padding: 0px 10px;
+
+    ol {
+      list-style: none;
+      padding-left: 0;
+
+      li {
+        padding: 0;
+        flex-flow: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+
+        .label {
+          font-weight: 700;
+          color: rgba(#000, 0.6);
+          margin: 0;
+        }
+
+        .value {
+          text-align: right;
+          float: right;
+        }
+
+        + li {
+          border-top: 1px solid #eee;
+        }
+      }
+    }
+  }
+}

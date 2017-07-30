@@ -6,6 +6,7 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowCol
 import JobStatusFilter from "../components/JobStatusFilter/JobStatusFilter"
 import JobTypeFilter from "../components/JobTypeFilter/JobTypeFilter"
 import JobLink from "../components/JobLink/JobLink"
+import AllocationDistribution from "../components/AllocationDistribution/AllocationDistribution"
 import { WATCH_JOBS, UNWATCH_JOBS } from "../sagas/event"
 
 const columnFormat = {
@@ -14,57 +15,29 @@ const columnFormat = {
   overflow: "inherit",
   whiteSpace: "normal"
 }
+const flexibleWidth = {
+  width: 300,
+  minWidth: 300,
+  overflow: "display",
+  whiteSpace: "normal"
+}
 
 const summaryLabels = ["Starting", "Running", "Queued", "Complete", "Failed", "Lost"]
 
 const getJobStatisticsHeader = () => {
-  const output = []
-
-  summaryLabels.forEach(key => {
-    output.push(
-      <TableHeaderColumn style={columnFormat} key={`statistics-header-for-${key}`}>
-        {key}
-      </TableHeaderColumn>
-    )
-  })
-
-  return output
+  return (
+    <TableHeaderColumn style={flexibleWidth} key={`statistics-header`}>
+      Allocation Status
+    </TableHeaderColumn>
+  )
 }
 
 const getJobStatisticsRow = job => {
-  const counter = {
-    Queued: 0,
-    Complete: 0,
-    Failed: 0,
-    Running: 0,
-    Starting: 0,
-    Lost: 0
-  }
-
-  if (job.JobSummary !== null) {
-    const summary = job.JobSummary.Summary
-    Object.keys(summary).forEach(taskGroupID => {
-      counter.Queued += summary[taskGroupID].Queued
-      counter.Complete += summary[taskGroupID].Complete
-      counter.Failed += summary[taskGroupID].Failed
-      counter.Running += summary[taskGroupID].Running
-      counter.Starting += summary[taskGroupID].Starting
-      counter.Lost += summary[taskGroupID].Lost
-    })
-  } else {
-    Object.keys(counter).forEach(key => (counter[key] = "N/A"))
-  }
-
-  const output = []
-  summaryLabels.forEach(key => {
-    output.push(
-      <TableRowColumn style={columnFormat} key={`${job.ID}-${key}`}>
-        {counter[key]}
-      </TableRowColumn>
-    )
-  })
-
-  return output
+  return (
+    <TableRowColumn style={flexibleWidth} key={`${job.ID}-statistics`}>
+      <AllocationDistribution job={job} />
+    </TableRowColumn>
+  )
 }
 
 class Jobs extends Component {
@@ -101,14 +74,20 @@ class Jobs extends Component {
     return taskGroupCount
   }
 
-  render() {
-    const flexibleWidth = {
-      width: 300,
-      minWidth: 300,
-      overflow: "display",
-      whiteSpace: "normal"
+  failedTaskCount(job) {
+    let counter = 0
+
+    if (job.JobSummary !== null) {
+      const summary = job.JobSummary.Summary
+      Object.keys(job.JobSummary.Summary).forEach(taskGroupID => {
+        counter += summary[taskGroupID].Lost
+      })
     }
 
+    return counter
+  }
+
+  render() {
     return (
       <div>
         <Card>
@@ -125,12 +104,13 @@ class Jobs extends Component {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHeaderColumn style={flexibleWidth}>ID</TableHeaderColumn>
-                  <TableHeaderColumn style={columnFormat}>Status</TableHeaderColumn>
+                  <TableHeaderColumn style={flexibleWidth}>Name</TableHeaderColumn>
                   <TableHeaderColumn style={columnFormat}>Type</TableHeaderColumn>
                   <TableHeaderColumn style={columnFormat}>Priority</TableHeaderColumn>
-                  <TableHeaderColumn style={columnFormat}>Task Groups</TableHeaderColumn>
+                  <TableHeaderColumn style={columnFormat}>Status</TableHeaderColumn>
+                  <TableHeaderColumn style={columnFormat}>Groups</TableHeaderColumn>
                   {getJobStatisticsHeader()}
+                  <TableHeaderColumn style={columnFormat}># Lost</TableHeaderColumn>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -138,10 +118,7 @@ class Jobs extends Component {
                   return (
                     <TableRow key={job.ID}>
                       <TableRowColumn style={flexibleWidth}>
-                        <JobLink jobId={job.ID} />
-                      </TableRowColumn>
-                      <TableRowColumn style={columnFormat}>
-                        {job.Status}
+                        <JobLink jobId={job.Name} />
                       </TableRowColumn>
                       <TableRowColumn style={columnFormat}>
                         {job.Type}
@@ -150,9 +127,15 @@ class Jobs extends Component {
                         {job.Priority}
                       </TableRowColumn>
                       <TableRowColumn style={columnFormat}>
+                        {job.Status}
+                      </TableRowColumn>
+                      <TableRowColumn style={columnFormat}>
                         {this.taskGroupCount(job)}
                       </TableRowColumn>
                       {getJobStatisticsRow(job)}
+                      <TableRowColumn style={columnFormat}>
+                        {this.failedTaskCount(job)}
+                      </TableRowColumn>
                     </TableRow>
                   )
                 })}

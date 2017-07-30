@@ -10,7 +10,9 @@ class TableHeaderColumn extends Component {
   render() {
     const overrideStyle = {
       paddingLeft: 0,
-      height: 30
+      height: 30,
+      fontWeight: 700,
+      color: "black"
     }
 
     const newStyle = Object.assign({}, this.props.style, overrideStyle)
