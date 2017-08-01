@@ -102,7 +102,7 @@ func main() {
 	logger.Infof("| nomad-client-cert     : %-50s |", cfg.NomadClientCert)
 	logger.Infof("| nomad-client-key      : %-50s |", cfg.NomadClientKey)
 	logger.Infof("| nomad-skip-verify   	: %-50t |", cfg.NomadSkipVerify)
-	logger.Infof("| hide-env-data       	: %-50s |", cfg.NomadHideEnvData)
+	logger.Infof("| hide-env-data       	: %-50v |", cfg.NomadHideEnvData)
 	if cfg.NomadSkipVerify {
 		logger.Infof("| nomad-skip-verify     : %-50s |", "Yes")
 	} else {

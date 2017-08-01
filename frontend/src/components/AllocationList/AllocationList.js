@@ -401,8 +401,7 @@ class AllocationList extends Component {
     return (
       <div>
         <Card key="filter">
-          <CardHeader title="Filter list" actAsExpander showExpandableButton />
-          <CardText expandable>
+          <CardText style={{ paddingTop: 0, paddingBottom: 0 }}>
             <Grid fluid style={{ padding: 0 }}>
               <Row>
                 {this.allocationIdFilter()}
