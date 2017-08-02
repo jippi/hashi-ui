@@ -30,7 +30,7 @@ class AllocationInfo extends Component {
     let lastEventTime = null
 
     return (
-      <Card key={allocation.ID}>
+      <Card key={name}>
         <CardTitle title={title} />
         <CardText>
           <Table selectable={false} showCheckboxes={false}>
@@ -130,12 +130,12 @@ class AllocationInfo extends Component {
 
     const states = []
     Object.keys(allocation.TaskStates || {}).forEach(key => {
-      states.push(<br key={key} />)
+      states.push(<br key={`br-${key}`} />)
       states.push(AllocationInfo.taskState(allocation, key, allocation.TaskStates[key]))
     })
 
     return (
-      <div style={{ padding: 0 }}>
+      <div key={allocation.ID} style={{ padding: 0 }}>
         <Card>
           <CardTitle title="Allocation Properties" />
           <CardText>
