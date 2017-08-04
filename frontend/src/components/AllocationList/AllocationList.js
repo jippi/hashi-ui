@@ -307,8 +307,8 @@ class AllocationList extends Component {
               <Column header={<Cell>Age</Cell>} cell={<AgeCell data={allocations} />} width={100} />
               <Column header={<Cell>Actions</Cell>} cell={<ActionsCell data={allocations} />} width={100} />
             </Table>
+            <ReactTooltip />
           </CardText>
-          <ReactTooltip />
         </Card>
       </div>
     )

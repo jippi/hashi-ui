@@ -59,15 +59,16 @@ class AllocationStatusIcon extends PureComponent {
   shouldComponentUpdate(nextProps, nextState) {
     return (
       // id must be the same
-      this.props.allocation.id != nextProps.allocation.id &&
+      this.props.allocation.ID != nextProps.allocation.ID ||
       // client status must be the same
-      this.props.allocation.ClientStatus != nextProps.allocation.ClientStatus &&
+      this.props.allocation.ClientStatus != nextProps.allocation.ClientStatus ||
       // desired status must be the same
       this.props.allocation.DesiredStatus != nextProps.allocation.DesiredStatus
     )
   }
 
   render() {
+    console.log("RENDER!")
     const allocation = this.props.allocation
     const statusConfig = clientStatusColor[allocation.ClientStatus]
     let icon = null
