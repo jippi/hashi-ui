@@ -10,7 +10,6 @@ import Drawer from "material-ui/Drawer"
 import Divider from "material-ui/Divider"
 import MenuItem from "material-ui/MenuItem"
 import FlatButton from "material-ui/FlatButton"
-import ReactTooltip from "react-tooltip"
 import NomadTopbar from "./NomadTopbar/NomadTopbar"
 import NomadMainNav from "./NomadMainNav/NomadMainNav"
 import ConsulMainNav from "./ConsulMainNav/ConsulMainNav"
@@ -155,7 +154,6 @@ class App extends Component {
             </div>
             <div style={{ float: "right", width: this.state.width }}>
               {this.props.children}
-              <ReactTooltip />
             </div>
           </div>
         </div>
