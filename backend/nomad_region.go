@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/nomad/api"
+	"github.com/hashicorp/nomad/nomad/structs"
 	observer "github.com/imkira/go-observer"
 )
 
@@ -350,14 +351,19 @@ func (n *NomadRegion) collectAggregateClusterStatistics() {
 		wg:      &wg,
 	}
 
-	// spawn 10 workers
-	for i := 0; i < 10; i++ {
+	// spawn a worker per node
+	for i := 0; i <= len(nodes); i++ {
 		wg.Add(1)
 		go worker(payload)
 	}
 
 	// put the workers to... work
 	for _, node := range nodes {
+		// Only monitor stats on "ready" nodes
+		if node.Status != structs.NodeStatusReady {
+			continue
+		}
+
 		tasks <- &NomadRegionStatisticsTask{NodeID: node.ID, NodeName: node.Name}
 	}
 
