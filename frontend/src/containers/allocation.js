@@ -105,6 +105,10 @@ class Allocation extends Component {
             <JobLink jobId={this.props.allocation.JobID} taskGroupId={this.props.allocation.TaskGroupId}>
               {this.props.allocation.TaskGroup}
             </JobLink>
+            &nbsp; > &nbsp;
+            <JobLink jobId={this.props.allocation.JobID} linkAppend="/allocations">
+              allocations
+            </JobLink>
             &nbsp; #{this.getName()}
             &nbsp; @ <ClientLink clientId={this.props.allocation.NodeID} clients={this.props.nodes} />
           </h3>

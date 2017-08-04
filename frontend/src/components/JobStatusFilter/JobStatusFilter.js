@@ -4,66 +4,35 @@ import { Link, withRouter } from "react-router"
 import SelectField from "material-ui/SelectField"
 import MenuItem from "material-ui/MenuItem"
 
-const JobStatusFilter = ({ location }) => {
+const JobStatusFilter = ({ location, router }) => {
   const query = location.query || {}
+  const title = "Job Status"
 
-  let title = "Job Status"
-  if ("job_status" in query) {
-    title = (
-      <span>
-        {title}: <code>{query.job_status}</code>
-      </span>
-    )
+  const handleChange = (event, index, value) => {
+    router.push({
+      pathname: location.pathname,
+      query: { ...query, job_status: value }
+    })
   }
 
   return (
-    <SelectField floatingLabelText={title} maxHeight={200}>
-      <MenuItem>
-        <Link
-          to={{
-            pathname: location.pathname,
-            query: { ...query, job_status: undefined }
-          }}
-        >
-          - Any -
-        </Link>
-      </MenuItem>
-      <MenuItem>
-        <Link
-          to={{
-            pathname: location.pathname,
-            query: { ...query, job_status: "running" }
-          }}
-        >
-          Running
-        </Link>
-      </MenuItem>
-      <MenuItem>
-        <Link
-          to={{
-            pathname: location.pathname,
-            query: { ...query, job_status: "pending" }
-          }}
-        >
-          Pending
-        </Link>
-      </MenuItem>
-      <MenuItem>
-        <Link
-          to={{
-            pathname: location.pathname,
-            query: { ...query, job_status: "dead" }
-          }}
-        >
-          Dead
-        </Link>
-      </MenuItem>
+    <SelectField
+      floatingLabelText={title}
+      maxHeight={200}
+      value={query.job_status || undefined}
+      onChange={handleChange}
+    >
+      <MenuItem />
+      <MenuItem value="running" primaryText="Running" />
+      <MenuItem value="pending" primaryText="Pending" />
+      <MenuItem value="dead" primaryText="Dead" />
     </SelectField>
   )
 }
 
 JobStatusFilter.propTypes = {
-  location: PropTypes.object.isRequired
+  location: PropTypes.object.isRequired,
+  router: PropTypes.object.isRequired
 }
 
 export default withRouter(JobStatusFilter)

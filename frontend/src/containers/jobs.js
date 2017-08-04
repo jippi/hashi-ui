@@ -8,6 +8,7 @@ import JobTypeFilter from "../components/JobTypeFilter/JobTypeFilter"
 import JobLink from "../components/JobLink/JobLink"
 import AllocationDistribution from "../components/AllocationDistribution/AllocationDistribution"
 import { WATCH_JOBS, UNWATCH_JOBS } from "../sagas/event"
+import { Grid, Row, Col } from "react-flexbox-grid"
 
 const columnFormat = {
   width: 50,
@@ -91,10 +92,17 @@ class Jobs extends Component {
     return (
       <div>
         <Card>
-          <CardText style={{ paddingTop: 0, paddingBottom: 0 }}>
-            <JobStatusFilter />
-            &nbsp;
-            <JobTypeFilter />
+          <CardText>
+            <Grid fluid style={{ padding: 0, margin: 0 }}>
+              <Row>
+                <Col key="job-status-filter-pane" xs={6} sm={3} md={3} lg={3}>
+                  <JobStatusFilter />
+                </Col>
+                <Col key="job-type-filter-pane" xs={6} sm={3} md={3} lg={3}>
+                  <JobTypeFilter />
+                </Col>
+              </Row>
+            </Grid>
           </CardText>
         </Card>
 
