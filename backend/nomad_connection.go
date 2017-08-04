@@ -863,7 +863,7 @@ func (c *NomadConnection) changeTaskGroupCount(action Action) {
 
 	switch scaleAction {
 	case "set":
-		foundTaskGroup.Count = IntToPtr(params["count"].(int))
+		foundTaskGroup.Count = params["count"].(*int)
 	case "increase":
 		foundTaskGroup.Count = IntToPtr(PtrToInt(foundTaskGroup.Count) + 1)
 	case "decrease":
