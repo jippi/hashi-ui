@@ -1,7 +1,6 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import ReactTooltip from "react-tooltip"
-import uuid from "node-uuid"
 
 class MetaPayload extends Component {
   render() {
@@ -9,13 +8,13 @@ class MetaPayload extends Component {
     const dtWithClass = this.props.dtWithClass
     const sortKeys = this.props.sortKeys
     const asTooltip = this.props.asTooltip
+    const identifier = this.props.identifier
 
     let keys = Object.keys(metaBag || {})
     if (keys.length === 0) {
       return <div>- No data found -</div>
     }
 
-    const identifier = uuid.v1()
     const meta = []
     let metaTag = null
 
@@ -71,6 +70,7 @@ MetaPayload.defaultProps = {
 MetaPayload.propTypes = {
   metaBag: PropTypes.object,
   dtWithClass: PropTypes.string.isRequired,
+  identifier: PropTypes.string.isRequired,
   sortKeys: PropTypes.bool.isRequired,
   asTooltip: PropTypes.bool.isRequired
 }

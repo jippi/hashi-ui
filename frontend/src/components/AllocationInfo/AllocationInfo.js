@@ -139,7 +139,7 @@ class AllocationInfo extends Component {
         <Card>
           <CardTitle title="Allocation Properties" />
           <CardText>
-            <MetaPayload metaBag={allocValues} sortKeys={false} />
+            <MetaPayload metaBag={allocValues} sortKeys={false} identifier={allocation.ID} />
           </CardText>
         </Card>
 

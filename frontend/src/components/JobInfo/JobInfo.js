@@ -72,7 +72,7 @@ class JobInfo extends Component {
             {taskGroup.Tasks.length}
           </TableRowColumn>
           <TableRowColumn>
-            <MetaPayload asTooltip metaBag={taskGroupMeta} />
+            <MetaPayload asTooltip metaBag={taskGroupMeta} identifier={taskGroup.ID} />
           </TableRowColumn>
           <TableRowColumn>
             {taskGroup.RestartPolicy.Mode}
@@ -124,7 +124,7 @@ class JobInfo extends Component {
             <Card>
               <CardTitle title="Meta Properties" />
               <CardText>
-                <MetaPayload dtWithClass="wide" metaBag={jobMetaBag} />
+                <MetaPayload dtWithClass="wide" metaBag={jobMetaBag} identifier="meta" />
               </CardText>
             </Card>
           </Col>

@@ -45,7 +45,7 @@ const ClientInfo = ({ node }) =>
         <Card>
           <CardTitle title="Meta Properties" />
           <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={node.Meta} />
+            <MetaPayload dtWithClass="wide" metaBag={node.Meta} identifier="meta" />
           </CardText>
         </Card>
       </Col>
@@ -55,7 +55,7 @@ const ClientInfo = ({ node }) =>
         <Card>
           <CardTitle title="CPU Properties" />
           <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "cpu.")} />
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "cpu.")} identifier="cpu" />
           </CardText>
         </Card>
       </Col>
@@ -63,7 +63,7 @@ const ClientInfo = ({ node }) =>
         <Card>
           <CardTitle title="Driver Properties" />
           <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "driver.")} />
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "driver.")} identifier="driver" />
           </CardText>
         </Card>
       </Col>
@@ -73,7 +73,7 @@ const ClientInfo = ({ node }) =>
         <Card>
           <CardTitle title="Kernel Properties" />
           <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "kernel.")} />
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "kernel.")} identifier="kernel" />
           </CardText>
         </Card>
       </Col>
@@ -81,7 +81,7 @@ const ClientInfo = ({ node }) =>
         <Card>
           <CardTitle title="Unique Properties" />
           <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "unique.")} />
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "unique.")} identifier="unique" />
           </CardText>
         </Card>
       </Col>
@@ -91,7 +91,7 @@ const ClientInfo = ({ node }) =>
         <Card>
           <CardTitle title="Nomad Properties" />
           <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "nomad.")} />
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "nomad.")} identifier="nomad" />
           </CardText>
         </Card>
       </Col>
@@ -99,7 +99,7 @@ const ClientInfo = ({ node }) =>
         <Card>
           <CardTitle title="Vault Properties" />
           <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "vault.")} />
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "vault.")} identifier="vault" />
           </CardText>
         </Card>
       </Col>
@@ -109,7 +109,7 @@ const ClientInfo = ({ node }) =>
         <Card>
           <CardTitle title="Memory Properties" />
           <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "memory.")} />
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "memory.")} identifier="memory" />
           </CardText>
         </Card>
       </Col>
@@ -117,7 +117,7 @@ const ClientInfo = ({ node }) =>
         <Card>
           <CardTitle title="OS Properties" />
           <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "os.")} />
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "os.")} identifier="os" />
           </CardText>
         </Card>
       </Col>

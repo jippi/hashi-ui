@@ -60,7 +60,7 @@ class EvaluationInfo extends Component {
             <Card>
               <CardTitle title="Evaluation Properties" />
               <CardText>
-                <MetaPayload metaBag={evalValues} sortKeys={false} />
+                <MetaPayload metaBag={evalValues} sortKeys={false} identifier="eval" />
               </CardText>
             </Card>
           </Col>
