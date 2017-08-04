@@ -292,6 +292,7 @@ func (c *NomadConnection) keepAlive() {
 	defer func() {
 		ticker.Stop()
 	}()
+
 	for {
 		select {
 		case <-c.destroyCh:
