@@ -1,28 +1,39 @@
 import React, { PureComponent } from "react"
 import PropTypes from "prop-types"
 import AppendedReactTooltip from "../AppendedReactTooltip/AppendedReactTooltip"
-import momentDurationFormat from "moment-duration-format"
-import moment from "moment"
-import getMoment from "../../helpers/time"
+import distanceInWordsStrict from "date-fns/distance_in_words_strict"
+import format from "date-fns/format"
+
+const nanosecondLength = 19
+
+function normalizeTime(time) {
+  const length = time.toString().length
+
+  if (length >= nanosecondLength) {
+    return time / 1000000
+  }
+
+  return time
+}
+
+function getDate(time) {
+  if (time === "now" || time === null) {
+    return new Date()
+  }
+
+  return new Date(normalizeTime(time))
+}
 
 class FormatTime extends PureComponent {
   render() {
     const { time, now, identifier, display, timeFormat, durationInterval, durationFormat, inTable } = this.props
-    const _time = getMoment(time)
-    const _now = getMoment(now)
-
-    let timeDiff = undefined
-
-    if (durationInterval && durationFormat) {
-      timeDiff = moment.duration(_time.diff(_now), durationInterval).format(durationFormat, { forceLength: true })
-    } else {
-      timeDiff = _time.from(_now, true)
-    }
+    const _time = getDate(time)
+    const timeDiff = distanceInWordsStrict(getDate(now), _time, { includeSeconds: true })
 
     if (display === "relative") {
       if (inTable) {
         return (
-          <div ref="valueDiv" data-tip={_time.format(timeFormat)}>
+          <div ref="valueDiv" data-tip={format(_time, timeFormat)}>
             {timeDiff}
           </div>
         )
@@ -31,7 +42,7 @@ class FormatTime extends PureComponent {
       return (
         <span>
           <AppendedReactTooltip id={`time-${identifier}`}>
-            {_time.format(timeFormat)}
+            {format(_time, timeFormat)}
           </AppendedReactTooltip>
           <span data-tip data-for={`time-${identifier}`}>
             {timeDiff}
@@ -43,7 +54,7 @@ class FormatTime extends PureComponent {
     if (inTable) {
       return (
         <div ref="valueDiv" data-tip={timeDiff}>
-          {_time.format(timeFormat)}}
+          {format(_time, timeFormat)}}
         </div>
       )
     }
