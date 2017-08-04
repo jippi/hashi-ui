@@ -250,7 +250,7 @@ func (n *NomadRegion) updateJob(job *api.Job) (*Action, error) {
 		return &Action{Type: errorNotification, Payload: "The backend server is set to read-only"}, errors.New("Nomad is in read-only mode")
 	}
 
-	logger.Infof("Started run job with id: %s", job.ID)
+	logger.Infof("Started run job with id: %s", *job.ID)
 
 	_, _, err := n.Client.Jobs().Register(job, nil)
 	if err != nil {
