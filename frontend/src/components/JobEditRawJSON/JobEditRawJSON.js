@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Component } from "react"
 import PropTypes from "prop-types"
 import Dialog from "material-ui/Dialog"
 import FlatButton from "material-ui/FlatButton"
@@ -8,7 +8,7 @@ import AceEditor from "react-ace"
 import "brace/mode/json"
 import "brace/theme/github"
 
-class JobEditRawJSON extends React.Component {
+class JobEditRawJSON extends Component {
   modifiedJob = undefined
 
   constructor(props) {

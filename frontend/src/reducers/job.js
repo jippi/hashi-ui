@@ -22,13 +22,11 @@ export function JobInfoReducer(state = { TaskGroups: [] }, action) {
   return state
 }
 
-export function JobDialogReducer(state = [], action) {
+export function JobDialogReducer(state = "", action) {
   switch (action.type) {
     case JOB_SHOW_DIALOG:
       return action.payload
     case JOB_HIDE_DIALOG:
-      return ""
-    default:
       return ""
   }
   return state

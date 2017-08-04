@@ -57,7 +57,7 @@ const JobTaskGroupLinkCell = ({ rowIndex, data, ...props }) =>
 
 const ClientLinkCell = ({ rowIndex, data, clients, ...props }) =>
   <Cell {...props}>
-    <ClientLink clientId={data[rowIndex].NodeID} clients={clients} short />
+    <ClientLink clientId={data[rowIndex].NodeID} clients={clients} />
   </Cell>
 
 const AgeCell = ({ rowIndex, data, ...props }) =>
@@ -94,7 +94,12 @@ const jobColumn = (allocations, display) =>
 
 const clientColumn = (allocations, display, clients) =>
   display
-    ? <Column header={<Cell>Client</Cell>} cell={<ClientLinkCell data={allocations} clients={clients} />} width={200} />
+    ? <Column
+        header={<Cell>Client</Cell>}
+        cell={<ClientLinkCell data={allocations} clients={clients} />}
+        flexGrow={2}
+        width={200}
+      />
     : null
 
 class AllocationList extends Component {
