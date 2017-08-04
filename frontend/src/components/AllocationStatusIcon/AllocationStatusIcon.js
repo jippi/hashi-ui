@@ -68,7 +68,6 @@ class AllocationStatusIcon extends PureComponent {
   }
 
   render() {
-    console.log("RENDER!")
     const allocation = this.props.allocation
     const statusConfig = clientStatusColor[allocation.ClientStatus]
     let icon = null
