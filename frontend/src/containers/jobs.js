@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Card, CardHeader, CardText } from "material-ui/Card"
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "../components/Table"
+import FilterFreetext from "../components/FilterFreetext/FilterFreetext"
 import JobStatusFilter from "../components/JobStatusFilter/JobStatusFilter"
 import JobTypeFilter from "../components/JobTypeFilter/JobTypeFilter"
 import JobLink from "../components/JobLink/JobLink"
@@ -54,6 +55,10 @@ class Jobs extends Component {
     const query = this.props.location.query || {}
     let jobs = this.props.jobs
 
+    if ("name" in query) {
+      jobs = jobs.filter(job => job.Name.indexOf(query.name) != -1)
+    }
+
     if ("job_type" in query) {
       jobs = jobs.filter(job => job.Type === query.job_type)
     }
@@ -95,6 +100,9 @@ class Jobs extends Component {
           <CardText>
             <Grid fluid style={{ padding: 0, margin: 0 }}>
               <Row>
+                <Col key="job-name-filter-pane" xs={6} sm={3} md={3} lg={3}>
+                  <FilterFreetext query="name" label="Name" />
+                </Col>
                 <Col key="job-status-filter-pane" xs={6} sm={3} md={3} lg={3}>
                   <JobStatusFilter />
                 </Col>
