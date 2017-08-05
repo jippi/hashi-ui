@@ -140,7 +140,7 @@ class AllocationList extends Component {
   allocationStatusFilter() {
     const location = this.props.location
     const query = this.props.location.query || {}
-    const title = "Allocation Status"
+    const title = "Status"
     const handleChange = (event, index, value) => {
       this.props.router.push({
         pathname: location.pathname,
@@ -174,7 +174,7 @@ class AllocationList extends Component {
     return (
       <Col key="allocation-id-filter-pane" xs={12} sm={6} md={6} lg={3}>
         <TextField
-          floatingLabelText="Allocation ID"
+          floatingLabelText="ID"
           value={query.allocation_id || undefined}
           onChange={(proxy, value) => {
             this.props.router.push({
@@ -194,7 +194,7 @@ class AllocationList extends Component {
     return (
       <Col key="job-filter-pane" xs={12} sm={6} md={6} lg={3}>
         <TextField
-          floatingLabelText="Job ID"
+          floatingLabelText="Job"
           value={query.job || undefined}
           onChange={(proxy, value) => {
             this.props.router.push({
@@ -272,10 +272,10 @@ class AllocationList extends Component {
           <CardText>
             <Grid fluid style={{ padding: 0, margin: 0 }}>
               <Row>
-                {this.allocationStatusFilter()}
                 {this.allocationIdFilter()}
-                {showClientColumn ? this.clientFilter() : null}
                 {showJobColumn ? this.jobIdFilter() : null}
+                {this.allocationStatusFilter()}
+                {showClientColumn ? this.clientFilter() : null}
               </Row>
             </Grid>
           </CardText>

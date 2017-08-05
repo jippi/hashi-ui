@@ -6,7 +6,7 @@ import MenuItem from "material-ui/MenuItem"
 
 const JobTypeFilter = ({ location, router }) => {
   const query = location.query || {}
-  const title = "Job Type"
+  const title = "Type"
 
   const handleChange = (event, index, value) => {
     router.push({

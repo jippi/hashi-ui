@@ -103,11 +103,11 @@ class Jobs extends Component {
                 <Col key="job-name-filter-pane" xs={6} sm={3} md={3} lg={3}>
                   <FilterFreetext query="name" label="Name" />
                 </Col>
-                <Col key="job-status-filter-pane" xs={6} sm={3} md={3} lg={3}>
-                  <JobStatusFilter />
-                </Col>
                 <Col key="job-type-filter-pane" xs={6} sm={3} md={3} lg={3}>
                   <JobTypeFilter />
+                </Col>
+                <Col key="job-status-filter-pane" xs={6} sm={3} md={3} lg={3}>
+                  <JobStatusFilter />
                 </Col>
               </Row>
             </Grid>
