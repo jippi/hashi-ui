@@ -1,4 +1,4 @@
-package main
+package structs
 
 // Action represents a Redux action that is dispatched or received from the store
 // via a websocket connection.
@@ -9,7 +9,7 @@ type Action struct {
 }
 
 const (
-	keepAlive           = "INTERNAL_KEEP_ALIVE"
-	errorNotification   = "ERROR_NOTIFICATION"
-	successNotification = "SUCCESS_NOTIFICATION"
+	KeepAlive           = "INTERNAL_KEEP_ALIVE"
+	ErrorNotification   = "ERROR_NOTIFICATION"
+	SuccessNotification = "SUCCESS_NOTIFICATION"
 )

@@ -1,4 +1,4 @@
-package main
+package nomad
 
 import (
 	"encoding/json"
@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/hashicorp/nomad/api"
 	"github.com/imkira/go-observer"
+	"github.com/jippi/hashi-ui/backend/structs"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -37,8 +38,8 @@ type NomadConnection struct {
 	ID                uuid.UUID
 	shortID           string
 	socket            *websocket.Conn
-	receive           chan *Action
-	send              chan *Action
+	receive           chan *structs.Action
+	send              chan *structs.Action
 	destroyCh         chan struct{}
 	watches           *set.Set
 	hub               *NomadHub
@@ -56,8 +57,8 @@ func NewNomadConnection(hub *NomadHub, socket *websocket.Conn, nomadRegion *Noma
 		watches:           set.New(),
 		hub:               hub,
 		socket:            socket,
-		receive:           make(chan *Action),
-		send:              make(chan *Action),
+		receive:           make(chan *structs.Action),
+		send:              make(chan *structs.Action),
 		destroyCh:         make(chan struct{}),
 		region:            nomadRegion,
 		broadcastChannels: channels,
@@ -123,10 +124,11 @@ func (c *NomadConnection) readPump() {
 	// Register this connection with the hub for broadcast updates
 	c.hub.register <- c
 
-	var action Action
+	var action structs.Action
 	for {
 		err := c.socket.ReadJSON(&action)
 		if err != nil {
+			logger.Errorf("Could not read payload: %s", err)
 			break
 		}
 
@@ -134,7 +136,7 @@ func (c *NomadConnection) readPump() {
 	}
 }
 
-func (c *NomadConnection) process(action Action) {
+func (c *NomadConnection) process(action structs.Action) {
 	c.Debugf("Processing event %s (index %d)", action.Type, action.Index)
 
 	switch action.Type {
@@ -299,12 +301,12 @@ func (c *NomadConnection) keepAlive() {
 			return
 		case <-ticker.C:
 			logger.Debugf("Sending keep-alive packet")
-			c.send <- &Action{Type: keepAlive, Payload: "hello-world", Index: 0}
+			c.send <- &structs.Action{Type: structs.KeepAlive, Payload: "hello-world", Index: 0}
 		}
 	}
 }
 
-func (c *NomadConnection) watchAlloc(action Action) {
+func (c *NomadConnection) watchAlloc(action structs.Action) {
 	allocID := action.Payload.(string)
 
 	defer func() {
@@ -339,14 +341,14 @@ func (c *NomadConnection) watchAlloc(action Action) {
 
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
-				c.send <- &Action{Type: fetchedAlloc, Payload: alloc, Index: remoteWaitIndex}
+				c.send <- &structs.Action{Type: fetchedAlloc, Payload: alloc, Index: remoteWaitIndex}
 				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
 			}
 		}
 	}
 }
 
-func (c *NomadConnection) watchEval(action Action) {
+func (c *NomadConnection) watchEval(action structs.Action) {
 	evalID := action.Payload.(string)
 
 	defer func() {
@@ -379,14 +381,14 @@ func (c *NomadConnection) watchEval(action Action) {
 
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
-				c.send <- &Action{Type: fetchedEval, Payload: eval, Index: remoteWaitIndex}
+				c.send <- &structs.Action{Type: fetchedEval, Payload: eval, Index: remoteWaitIndex}
 				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
 			}
 		}
 	}
 }
 
-func (c *NomadConnection) fetchMember(action Action) {
+func (c *NomadConnection) fetchMember(action structs.Action) {
 	memberID := action.Payload.(string)
 	member, err := c.hub.cluster.MemberWithID(memberID)
 	if err != nil {
@@ -394,10 +396,10 @@ func (c *NomadConnection) fetchMember(action Action) {
 		return
 	}
 
-	c.send <- &Action{Type: fetchedMember, Payload: member}
+	c.send <- &structs.Action{Type: fetchedMember, Payload: member}
 }
 
-func (c *NomadConnection) watchMember(action Action) {
+func (c *NomadConnection) watchMember(action structs.Action) {
 	memberID := action.Payload.(string)
 
 	defer func() {
@@ -425,24 +427,24 @@ func (c *NomadConnection) watchMember(action Action) {
 				return
 			}
 
-			c.send <- &Action{Type: fetchedMember, Payload: member}
+			c.send <- &structs.Action{Type: fetchedMember, Payload: member}
 
 			time.Sleep(10 * time.Second)
 		}
 	}
 }
 
-func (c *NomadConnection) fetchNode(action Action) {
+func (c *NomadConnection) fetchNode(action structs.Action) {
 	nodeID := action.Payload.(string)
 	node, _, err := c.region.Client.Nodes().Info(nodeID, nil)
 	if err != nil {
 		c.Errorf("websocket: unable to fetch node %q: %s", nodeID, err)
 	}
 
-	c.send <- &Action{Type: fetchedNode, Payload: node}
+	c.send <- &structs.Action{Type: fetchedNode, Payload: node}
 }
 
-func (c *NomadConnection) watchNode(action Action) {
+func (c *NomadConnection) watchNode(action structs.Action) {
 	nodeID := action.Payload.(string)
 
 	defer func() {
@@ -476,7 +478,7 @@ func (c *NomadConnection) watchNode(action Action) {
 
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
-				c.send <- &Action{Type: fetchedNode, Payload: node, Index: remoteWaitIndex}
+				c.send <- &structs.Action{Type: fetchedNode, Payload: node, Index: remoteWaitIndex}
 				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
 			}
 		}
@@ -497,7 +499,7 @@ func (c *NomadConnection) watchGenericBroadcast(watchKey string, actionEvent str
 	c.watches.Add(watchKey)
 
 	c.Debugf("Sending our current %s list", watchKey)
-	c.send <- &Action{Type: actionEvent, Payload: initialPayload, Index: 0}
+	c.send <- &structs.Action{Type: actionEvent, Payload: initialPayload, Index: 0}
 
 	stream := prop.Observe()
 
@@ -511,7 +513,7 @@ func (c *NomadConnection) watchGenericBroadcast(watchKey string, actionEvent str
 			// advance to next value
 			stream.Next()
 
-			channelAction := stream.Value().(*Action)
+			channelAction := stream.Value().(*structs.Action)
 			c.Debugf("got new data for %s (WaitIndex: %d)", watchKey, channelAction.Index)
 
 			if !c.watches.Has(watchKey) {
@@ -535,7 +537,7 @@ func (c *NomadConnection) unwatchGenericBroadcast(watchKey string) {
 	c.watches.Remove(watchKey)
 }
 
-func (c *NomadConnection) watchJob(action Action) {
+func (c *NomadConnection) watchJob(action structs.Action) {
 	jobID := action.Payload.(string)
 
 	defer func() {
@@ -580,14 +582,14 @@ func (c *NomadConnection) watchJob(action Action) {
 
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
-				c.send <- &Action{Type: fetchedJob, Payload: job, Index: remoteWaitIndex}
+				c.send <- &structs.Action{Type: fetchedJob, Payload: job, Index: remoteWaitIndex}
 				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
 			}
 		}
 	}
 }
 
-func (c *NomadConnection) fetchClientStats(action Action) {
+func (c *NomadConnection) fetchClientStats(action structs.Action) {
 	nodeID, ok := action.Payload.(string)
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -600,10 +602,10 @@ func (c *NomadConnection) fetchClientStats(action Action) {
 		return
 	}
 
-	c.send <- &Action{Type: fetchedClientStats, Payload: stats, Index: 0}
+	c.send <- &structs.Action{Type: fetchedClientStats, Payload: stats, Index: 0}
 }
 
-func (c *NomadConnection) watchClientStats(action Action) {
+func (c *NomadConnection) watchClientStats(action structs.Action) {
 	nodeID, ok := action.Payload.(string)
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -635,7 +637,7 @@ func (c *NomadConnection) watchClientStats(action Action) {
 			}
 
 			c.Debugf("Sending Client Stats")
-			c.send <- &Action{Type: fetchedClientStats, Payload: stats, Index: 0}
+			c.send <- &structs.Action{Type: fetchedClientStats, Payload: stats, Index: 0}
 			time.Sleep(5 * time.Second)
 		}
 	}
@@ -649,7 +651,7 @@ func nodeUrl(params map[string]interface{}) string {
 	return fmt.Sprintf("http://%s", addr)
 }
 
-func (c *NomadConnection) fetchDir(action Action) {
+func (c *NomadConnection) fetchDir(action structs.Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -678,10 +680,10 @@ func (c *NomadConnection) fetchDir(action Action) {
 		c.Errorf("Unable to fetch directory: %s", err)
 	}
 
-	c.send <- &Action{Type: fetchedDir, Payload: dir, Index: 0}
+	c.send <- &structs.Action{Type: fetchedDir, Payload: dir, Index: 0}
 }
 
-func (c *NomadConnection) watchFile(action Action) {
+func (c *NomadConnection) watchFile(action structs.Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		logger.Error("Could not decode payload")
@@ -726,7 +728,7 @@ func (c *NomadConnection) watchFile(action Action) {
 	cancel := make(chan struct{})
 	frames, err := client.AllocFS().Stream(alloc, path, origin, offset, cancel, nil)
 	if err != nil {
-		c.send <- &Action{
+		c.send <- &structs.Action{
 			Type: fileStreamFailed,
 			Payload: struct {
 				path string
@@ -775,7 +777,7 @@ func (c *NomadConnection) watchFile(action Action) {
 	}()
 
 	c.Infof("Started watching file with path: %s", path)
-	c.send <- &Action{
+	c.send <- &structs.Action{
 		Type: fetchedFile,
 		Payload: struct {
 			File      string
@@ -803,7 +805,7 @@ func (c *NomadConnection) watchFile(action Action) {
 				return
 			}
 
-			c.send <- &Action{
+			c.send <- &structs.Action{
 				Type: fetchedFile,
 				Payload: struct {
 					File      string
@@ -825,7 +827,7 @@ func (c *NomadConnection) watchFile(action Action) {
 	}
 }
 
-func (c *NomadConnection) changeTaskGroupCount(action Action) {
+func (c *NomadConnection) changeTaskGroupCount(action structs.Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -842,7 +844,7 @@ func (c *NomadConnection) changeTaskGroupCount(action Action) {
 	job, _, err := c.region.Client.Jobs().Info(jobID, &api.QueryOptions{AllowStale: c.region.Config.NomadAllowStale})
 	if err != nil {
 		c.Errorf("connection: unable to fetch job info: %s", err)
-		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Could not find job: %s", jobID), Index: index}
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Could not find job: %s", jobID), Index: index}
 		return
 	}
 
@@ -855,7 +857,7 @@ func (c *NomadConnection) changeTaskGroupCount(action Action) {
 	}
 
 	if *foundTaskGroup.Name == "" {
-		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Could not find Task Group: %s", taskGroupID), Index: index}
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Could not find Task Group: %s", taskGroupID), Index: index}
 		return
 	}
 
@@ -884,11 +886,11 @@ func (c *NomadConnection) changeTaskGroupCount(action Action) {
 		restartPayload["scaleAction"] = "set"
 		restartPayload["count"] = foundTaskGroup.Count
 
-		c.changeTaskGroupCount(Action{Payload: stopPayload})
-		c.changeTaskGroupCount(Action{Payload: restartPayload})
+		c.changeTaskGroupCount(structs.Action{Payload: stopPayload})
+		c.changeTaskGroupCount(structs.Action{Payload: restartPayload})
 		return
 	default:
-		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Invalid action: %s", scaleAction), Index: index}
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Invalid action: %s", scaleAction), Index: index}
 		return
 	}
 
@@ -914,19 +916,19 @@ func (c *NomadConnection) changeTaskGroupCount(action Action) {
 	c.send <- updateAction
 }
 
-func (c *NomadConnection) submitJob(action Action) {
+func (c *NomadConnection) submitJob(action structs.Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
 	if c.region.Config.NomadReadOnly {
 		logger.Errorf("Unable to submit job: NomadReadOnly is set to true")
-		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "The backend server is in read-only mode", Index: index}
 		return
 	}
 
 	if c.region.Config.NomadHideEnvData {
 		logger.Errorf("Unable to submit job: HideEnvData is set to true")
-		c.send <- &Action{Type: errorNotification, Payload: "HideEnvData must be false to submit job", Index: index}
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "HideEnvData must be false to submit job", Index: index}
 		return
 	}
 
@@ -939,21 +941,21 @@ func (c *NomadConnection) submitJob(action Action) {
 	_, _, err := c.region.Client.Jobs().Register(&runjob, nil)
 	if err != nil {
 		logger.Errorf("connection: unable to submit job '%s' : %s", *runjob.ID, err)
-		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to submit job : %s", err), Index: index}
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Unable to submit job : %s", err), Index: index}
 		return
 	}
 
 	logger.Infof("connection: successfully submit job '%s'", runjob.ID)
-	c.send <- &Action{Type: successNotification, Payload: "The job has been successfully updated.", Index: index}
+	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "The job has been successfully updated.", Index: index}
 }
 
-func (c *NomadConnection) stopJob(action Action) {
+func (c *NomadConnection) stopJob(action structs.Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
 	if c.region.Config.NomadReadOnly {
 		logger.Errorf("Unable to stop job: NomadReadOnly is set to true")
-		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "The backend server is in read-only mode", Index: index}
 		return
 	}
 
@@ -964,21 +966,21 @@ func (c *NomadConnection) stopJob(action Action) {
 	_, _, err := c.region.Client.Jobs().Deregister(jobID, false, nil)
 	if err != nil {
 		logger.Errorf("connection: unable to stop job '%s' : %s", jobID, err)
-		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to stop job : %s", err), Index: index}
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Unable to stop job : %s", err), Index: index}
 		return
 	}
 
 	logger.Infof("connection: successfully stopped job '%s'", jobID)
-	c.send <- &Action{Type: successNotification, Payload: "The job has been successfully stopped.", Index: index}
+	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "The job has been successfully stopped.", Index: index}
 }
 
-func (c *NomadConnection) evaluateJob(action Action) {
+func (c *NomadConnection) evaluateJob(action structs.Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
 	if c.region.Config.NomadReadOnly {
 		logger.Errorf("Unable to evaluate job: NomadReadOnly is set to true")
-		c.send <- &Action{Type: errorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "The backend server is in read-only mode", Index: index}
 		return
 	}
 
@@ -989,14 +991,14 @@ func (c *NomadConnection) evaluateJob(action Action) {
 	_, _, err := c.region.Client.Jobs().ForceEvaluate(jobID, nil)
 	if err != nil {
 		logger.Errorf("connection: unable to evaluate job '%s' : %s", jobID, err)
-		c.send <- &Action{Type: errorNotification, Payload: fmt.Sprintf("Unable to evaluate job : %s", err), Index: index}
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Unable to evaluate job : %s", err), Index: index}
 		return
 	}
 
 	logger.Infof("connection: successfully re-evaluated job '%s'", jobID)
-	c.send <- &Action{Type: successNotification, Payload: "The job has been successfully re-evaluated.", Index: index}
+	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "The job has been successfully re-evaluated.", Index: index}
 }
 
 func (c *NomadConnection) fetchRegions() {
-	c.send <- &Action{Type: fetchedNomadRegions, Payload: c.hub.regions}
+	c.send <- &structs.Action{Type: fetchedNomadRegions, Payload: c.hub.regions}
 }

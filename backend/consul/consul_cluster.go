@@ -1,4 +1,4 @@
-package main
+package consul
 
 import (
 	"github.com/hashicorp/consul/api"
@@ -10,7 +10,6 @@ type ConsulCluster struct {
 	ClusterClient  *api.Client
 	RegionChannels *ConsulRegionChannels
 	RegionClients  *ConsulRegionClients
-	members        []*AgentMemberWithID
 }
 
 // ConsulClusterBroadcastChannels ...

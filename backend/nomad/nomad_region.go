@@ -1,4 +1,4 @@
-package main
+package nomad
 
 import (
 	"errors"
@@ -8,8 +8,10 @@ import (
 	"time"
 
 	"github.com/hashicorp/nomad/api"
-	"github.com/hashicorp/nomad/nomad/structs"
+	nstructs "github.com/hashicorp/nomad/nomad/structs"
 	observer "github.com/imkira/go-observer"
+	"github.com/jippi/hashi-ui/backend/config"
+	"github.com/jippi/hashi-ui/backend/structs"
 )
 
 const (
@@ -38,7 +40,7 @@ type NomadRegionBroadcastChannels struct {
 // It also exposes an API client for the NomadRegion server.
 type NomadRegion struct {
 	Client             *api.Client
-	Config             *Config
+	Config             *config.Config
 	broadcastChannels  *NomadRegionBroadcastChannels
 	regions            []string
 	allocations        []*api.AllocationListStub
@@ -51,7 +53,7 @@ type NomadRegion struct {
 }
 
 // CreateNomadRegionClient derp
-func CreateNomadRegionClient(c *Config, region string) (*api.Client, error) {
+func CreateNomadRegionClient(c *config.Config, region string) (*api.Client, error) {
 	config := api.DefaultConfig()
 	config.Address = c.NomadAddress
 	config.WaitTime = waitTime
@@ -67,7 +69,7 @@ func CreateNomadRegionClient(c *Config, region string) (*api.Client, error) {
 }
 
 // NewNomadRegion configures the Nomad API client and initializes the internal state.
-func NewNomadRegion(c *Config, client *api.Client, channels *NomadRegionBroadcastChannels) (*NomadRegion, error) {
+func NewNomadRegion(c *config.Config, client *api.Client, channels *NomadRegionBroadcastChannels) (*NomadRegion, error) {
 	return &NomadRegion{
 		Client:             client,
 		Config:             c,
@@ -116,7 +118,7 @@ func (n *NomadRegion) watchAllocs() {
 		logger.Debugf("Allocations index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
 
 		n.allocations = allocations
-		n.broadcastChannels.allocations.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
+		n.broadcastChannels.allocations.Update(&structs.Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
 	}
 }
@@ -148,7 +150,7 @@ func (n *NomadRegion) watchAllocsShallow() {
 		}
 
 		n.allocationsShallow = allocations
-		n.broadcastChannels.allocationsShallow.Update(&Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
+		n.broadcastChannels.allocationsShallow.Update(&structs.Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
 
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
 	}
@@ -186,7 +188,7 @@ func (n *NomadRegion) watchNodes() {
 		sort.Sort(ClientNameSorter(nodes))
 
 		n.nodes = nodes
-		n.broadcastChannels.nodes.Update(&Action{Type: fetchedNodes, Payload: nodes, Index: remoteWaitIndex})
+		n.broadcastChannels.nodes.Update(&structs.Action{Type: fetchedNodes, Payload: nodes, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
 	}
 }
@@ -213,7 +215,7 @@ func (n *NomadRegion) watchEvals() {
 		logger.Debugf("Evaluations index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
 
 		n.evaluations = evaluations
-		n.broadcastChannels.evaluations.Update(&Action{Type: fetchedEvals, Payload: evaluations, Index: remoteWaitIndex})
+		n.broadcastChannels.evaluations.Update(&structs.Action{Type: fetchedEvals, Payload: evaluations, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
 	}
 }
@@ -240,15 +242,15 @@ func (n *NomadRegion) watchJobs() {
 		logger.Debugf("Jobs index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
 
 		n.jobs = jobs
-		n.broadcastChannels.jobs.Update(&Action{Type: fetchedJobs, Payload: jobs, Index: remoteWaitIndex})
+		n.broadcastChannels.jobs.Update(&structs.Action{Type: fetchedJobs, Payload: jobs, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
 	}
 }
 
-func (n *NomadRegion) updateJob(job *api.Job) (*Action, error) {
+func (n *NomadRegion) updateJob(job *api.Job) (*structs.Action, error) {
 	if n.Config.NomadReadOnly {
 		logger.Errorf("Unable to run job: NomadReadOnly is set to true")
-		return &Action{Type: errorNotification, Payload: "The backend server is set to read-only"}, errors.New("Nomad is in read-only mode")
+		return &structs.Action{Type: structs.ErrorNotification, Payload: "The backend server is set to read-only"}, errors.New("Nomad is in read-only mode")
 	}
 
 	logger.Infof("Started run job with id: %s", *job.ID)
@@ -256,10 +258,10 @@ func (n *NomadRegion) updateJob(job *api.Job) (*Action, error) {
 	_, _, err := n.Client.Jobs().Register(job, nil)
 	if err != nil {
 		logger.Errorf("connection: unable to register job : %s", err)
-		return &Action{Type: errorNotification, Payload: fmt.Sprintf("Connection: unable to register job : %s", err)}, err
+		return &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Connection: unable to register job : %s", err)}, err
 	}
 
-	return &Action{Type: successNotification, Payload: "The job has been successfully updated."}, nil
+	return &structs.Action{Type: structs.SuccessNotification, Payload: "The job has been successfully updated."}, nil
 }
 
 // NomadRegionStatisticsTask is meta data about a client when passed into the cluster statistics worker
@@ -360,7 +362,7 @@ func (n *NomadRegion) collectAggregateClusterStatistics() {
 	// put the workers to... work
 	for _, node := range nodes {
 		// Only monitor stats on "ready" nodes
-		if node.Status != structs.NodeStatusReady {
+		if node.Status != nstructs.NodeStatusReady {
 			continue
 		}
 
@@ -399,7 +401,7 @@ func (n *NomadRegion) collectAggregateClusterStatistics() {
 	)
 
 	n.clusterStatistics = aggResult
-	n.broadcastChannels.clusterStatistics.Update(&Action{Type: fetchedClusterStatistics, Payload: aggResult})
+	n.broadcastChannels.clusterStatistics.Update(&structs.Action{Type: fetchedClusterStatistics, Payload: aggResult})
 }
 
 func (n *NomadRegion) watchAggregateClusterStatistics() {

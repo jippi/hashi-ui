@@ -1,10 +1,11 @@
-package main
+package consul
 
 import (
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/jippi/hashi-ui/backend/structs"
 )
 
 // ConsulHub keeps track of all the websocket connections and sends state updates
@@ -17,6 +18,11 @@ type ConsulHub struct {
 	regions     []string
 	register    chan *ConsulConnection
 	unregister  chan *ConsulConnection
+}
+
+var upgrader = websocket.Upgrader{
+	// Allow all requests
+	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
 // NewConsulHub initializes a new hub.
@@ -75,7 +81,7 @@ func (h *ConsulHub) Handler(w http.ResponseWriter, r *http.Request) {
 
 	if _, ok := (*h.channels)[region]; !ok {
 		logger.Errorf("region was not found: %s", region)
-		h.sendAction(socket, &Action{Type: unknownNomadRegion, Payload: ""})
+		h.sendAction(socket, &structs.Action{Type: unknownConsulRegion, Payload: ""})
 		return
 	}
 
@@ -84,15 +90,15 @@ func (h *ConsulHub) Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ConsulHub) requireConsulRegion(socket *websocket.Conn) {
-	var action Action
+	var action structs.Action
 
 	if len(h.regions) == 1 {
-		action = Action{
+		action = structs.Action{
 			Type:    "SET_CONSUL_REGION",
 			Payload: h.regions[0],
 		}
 	} else {
-		action = Action{
+		action = structs.Action{
 			Type:    "FETCHED_CONSUL_REGIONS",
 			Payload: h.regions,
 		}
@@ -100,7 +106,7 @@ func (h *ConsulHub) requireConsulRegion(socket *websocket.Conn) {
 
 	h.sendAction(socket, &action)
 
-	var readAction Action
+	var readAction structs.Action
 	for {
 		err := socket.ReadJSON(&readAction)
 		if err != nil {
@@ -116,7 +122,7 @@ func (h *ConsulHub) requireConsulRegion(socket *websocket.Conn) {
 	}
 }
 
-func (h *ConsulHub) sendAction(socket *websocket.Conn, action *Action) {
+func (h *ConsulHub) sendAction(socket *websocket.Conn, action *structs.Action) {
 	if err := socket.WriteJSON(action); err != nil {
 		logger.Errorf(" %s", err)
 	}

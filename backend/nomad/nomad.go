@@ -1,9 +1,16 @@
-package main
+package nomad
 
-import observer "github.com/imkira/go-observer"
+import (
+	observer "github.com/imkira/go-observer"
+	"github.com/jippi/hashi-ui/backend/config"
+	"github.com/jippi/hashi-ui/backend/structs"
+	logging "github.com/op/go-logging"
+)
+
+var logger = logging.MustGetLogger("hashi-ui")
 
 // InitializeNomad ...
-func InitializeNomad(cfg *Config) (*NomadHub, bool) {
+func InitializeNomad(cfg *config.Config) (*NomadHub, bool) {
 
 	nomadClient, err := CreateNomadRegionClient(cfg, "")
 	if err != nil {
@@ -24,13 +31,13 @@ func InitializeNomad(cfg *Config) (*NomadHub, bool) {
 		logger.Infof("Starting handlers for region: %s", region)
 
 		channels := &NomadRegionBroadcastChannels{}
-		channels.allocations = observer.NewProperty(&Action{})
-		channels.allocationsShallow = observer.NewProperty(&Action{})
-		channels.evaluations = observer.NewProperty(&Action{})
-		channels.jobs = observer.NewProperty(&Action{})
-		channels.members = observer.NewProperty(&Action{})
-		channels.nodes = observer.NewProperty(&Action{})
-		channels.clusterStatistics = observer.NewProperty(&Action{})
+		channels.allocations = observer.NewProperty(&structs.Action{})
+		channels.allocationsShallow = observer.NewProperty(&structs.Action{})
+		channels.evaluations = observer.NewProperty(&structs.Action{})
+		channels.jobs = observer.NewProperty(&structs.Action{})
+		channels.members = observer.NewProperty(&structs.Action{})
+		channels.nodes = observer.NewProperty(&structs.Action{})
+		channels.clusterStatistics = observer.NewProperty(&structs.Action{})
 
 		regionChannels[region] = channels
 

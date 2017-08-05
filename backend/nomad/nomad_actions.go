@@ -1,4 +1,4 @@
-package main
+package nomad
 
 const (
 	watchAllocs          = "WATCH_ALLOCS"

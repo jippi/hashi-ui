@@ -1,10 +1,16 @@
-package main
+package consul
 
 import (
 	"time"
 
 	api "github.com/hashicorp/consul/api"
 	observer "github.com/imkira/go-observer"
+	"github.com/jippi/hashi-ui/backend/config"
+	"github.com/jippi/hashi-ui/backend/structs"
+)
+
+const (
+	waitTime = 1 * time.Minute
 )
 
 // ConsulRegionChannels ...
@@ -33,7 +39,7 @@ type ConsulRegionBroadcastChannels struct {
 // evaluations, jobs and nodes and broadcasts them to all connected websockets.
 // It also exposes an API client for the ConsulRegion server.
 type ConsulRegion struct {
-	Config            *Config
+	Config            *config.Config
 	Client            *api.Client
 	broadcastChannels *ConsulRegionBroadcastChannels
 	regions           []string
@@ -66,7 +72,7 @@ type ConsulInternalNode struct {
 type ConsulInternalNodes []*ConsulInternalNode
 
 // CreateConsulRegionClient ...
-func CreateConsulRegionClient(c *Config, region string) (*api.Client, error) {
+func CreateConsulRegionClient(c *config.Config, region string) (*api.Client, error) {
 	config := api.DefaultConfig()
 	config.Address = c.ConsulAddress
 	config.WaitTime = waitTime
@@ -77,7 +83,7 @@ func CreateConsulRegionClient(c *Config, region string) (*api.Client, error) {
 }
 
 // NewConsulRegion configures the Consul API client and initializes the internal state.
-func NewConsulRegion(c *Config, client *api.Client, channels *ConsulRegionBroadcastChannels) (*ConsulRegion, error) {
+func NewConsulRegion(c *config.Config, client *api.Client, channels *ConsulRegionBroadcastChannels) (*ConsulRegion, error) {
 	return &ConsulRegion{
 		Config:            c,
 		Client:            client,
@@ -124,7 +130,7 @@ func (c *ConsulRegion) watchServices() {
 
 		c.services = &services
 
-		c.broadcastChannels.services.Update(&Action{Type: fetchedConsulServices, Payload: services, Index: remoteWaitIndex})
+		c.broadcastChannels.services.Update(&structs.Action{Type: fetchedConsulServices, Payload: services, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }
@@ -159,7 +165,7 @@ func (c *ConsulRegion) watchNodes() {
 
 		c.nodes = &nodes
 
-		c.broadcastChannels.nodes.Update(&Action{Type: fetchedConsulNodes, Payload: nodes, Index: remoteWaitIndex})
+		c.broadcastChannels.nodes.Update(&structs.Action{Type: fetchedConsulNodes, Payload: nodes, Index: remoteWaitIndex})
 		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
 	}
 }

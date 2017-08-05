@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,12 +8,14 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	"github.com/jippi/hashi-ui/backend/config"
+	"github.com/jippi/hashi-ui/backend/consul"
+	"github.com/jippi/hashi-ui/backend/nomad"
 	"github.com/newrelic/go-agent"
 	"github.com/op/go-logging"
 )
 
 var logger = logging.MustGetLogger("hashi-ui")
-var defaultConfig = DefaultConfig()
 
 func startLogging(logLevel string) {
 	logBackend := logging.NewLogBackend(os.Stderr, "", 0)
@@ -37,24 +38,8 @@ func startLogging(logLevel string) {
 	logging.SetBackend(logBackendFormattedAndLeveled)
 }
 
-// Parse the env and cli flags and store the outcome in a Config struct
-func (c *Config) Parse() {
-	flag.Parse()
-
-	ParseAppFlagConfig(c)
-	ParseAppEnvConfig(c)
-
-	ParseNomadFlagConfig(c)
-	ParseNomadEnvConfig(c)
-
-	ParseConsulFlagConfig(c)
-	ParseConsulEnvConfig(c)
-
-	ParseNewRelicConfig(c)
-}
-
 func main() {
-	cfg := DefaultConfig()
+	cfg := config.DefaultConfig()
 	cfg.Parse()
 
 	newrelicConfig := newrelic.NewConfig(cfg.NewRelicAppName, cfg.NewRelicLicense)
@@ -130,7 +115,7 @@ func main() {
 	router := mux.NewRouter()
 
 	if cfg.NomadEnable {
-		nomadHub, nomadSuccess := InitializeNomad(cfg)
+		nomadHub, nomadSuccess := nomad.InitializeNomad(cfg)
 		if !nomadSuccess {
 			logger.Fatalf("Failed to start Nomad hub, please check your configuration")
 		}
@@ -144,11 +129,11 @@ func main() {
 
 		router.HandleFunc("/ws/nomad", nomadHub.Handler)
 		router.HandleFunc("/ws/nomad/{region}", nomadHub.Handler)
-		router.HandleFunc("/nomad/{region}/download/{path:.*}", nomadHub.downloadFile)
+		router.HandleFunc("/nomad/{region}/download/{path:.*}", nomadHub.DownloadFile)
 	}
 
 	if cfg.ConsulEnable {
-		consulHub, consulSuccess := InitializeConsul(cfg)
+		consulHub, consulSuccess := consul.InitializeConsul(cfg)
 		if !consulSuccess {
 			logger.Fatalf("Failed to start Consul hub, please check your configuration")
 		}

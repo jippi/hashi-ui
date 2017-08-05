@@ -1,4 +1,4 @@
-package main
+package consul
 
 const (
 	fetchConsulRegions   = "FETCH_CONSUL_REGIONS"
@@ -30,4 +30,6 @@ const (
 	watchConsulKVPath    = "WATCH_CONSUL_KV_PATH"
 	deleteConsulKvPair   = "DELETE_CONSUL_KV_PAIR"
 	clearConsulKvPair    = "CLEAR_CONSUL_KV_PAIR"
+
+	unknownConsulRegion = "UNKNOWN_CONSUL_REGION"
 )

@@ -1,4 +1,4 @@
-package main
+package nomad
 
 import (
 	"io"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"github.com/jippi/hashi-ui/backend/structs"
 )
 
 var upgrader = websocket.Upgrader{
@@ -81,7 +82,7 @@ func (h *NomadHub) Handler(w http.ResponseWriter, r *http.Request) {
 
 	if _, ok := (*h.channels)[region]; !ok {
 		logger.Errorf("region was not found: %s", region)
-		h.sendAction(socket, &Action{Type: unknownNomadRegion, Payload: ""})
+		h.sendAction(socket, &structs.Action{Type: unknownNomadRegion, Payload: ""})
 		return
 	}
 
@@ -90,15 +91,15 @@ func (h *NomadHub) Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *NomadHub) requireNomadRegion(socket *websocket.Conn) {
-	var action Action
+	var action structs.Action
 
 	if len(h.regions) == 1 {
-		action = Action{
+		action = structs.Action{
 			Type:    "SET_NOMAD_REGION",
 			Payload: h.regions[0],
 		}
 	} else {
-		action = Action{
+		action = structs.Action{
 			Type:    "FETCHED_NOMAD_REGIONS",
 			Payload: h.regions,
 		}
@@ -106,7 +107,7 @@ func (h *NomadHub) requireNomadRegion(socket *websocket.Conn) {
 
 	h.sendAction(socket, &action)
 
-	var readAction Action
+	var readAction structs.Action
 	for {
 		err := socket.ReadJSON(&readAction)
 		if err != nil {
@@ -122,13 +123,13 @@ func (h *NomadHub) requireNomadRegion(socket *websocket.Conn) {
 	}
 }
 
-func (h *NomadHub) sendAction(socket *websocket.Conn, action *Action) {
+func (h *NomadHub) sendAction(socket *websocket.Conn, action *structs.Action) {
 	if err := socket.WriteJSON(action); err != nil {
 		logger.Errorf(" %s", err)
 	}
 }
 
-func (h *NomadHub) downloadFile(w http.ResponseWriter, r *http.Request) {
+func (h *NomadHub) DownloadFile(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	region := params["region"]
 

@@ -1,4 +1,4 @@
-package main
+package nomad
 
 import (
 	"crypto/sha1"
@@ -9,6 +9,7 @@ import (
 
 	"github.com/cnf/structhash"
 	"github.com/hashicorp/nomad/api"
+	"github.com/jippi/hashi-ui/backend/structs"
 )
 
 // MembersNameSorter sorts planets by name
@@ -54,7 +55,7 @@ func (c *NomadCluster) watchMembers() {
 		c.members = members
 
 		for _, regionChannels := range *c.RegionChannels {
-			regionChannels.members.Update(&Action{Type: fetchedMembers, Payload: members, Index: 0})
+			regionChannels.members.Update(&structs.Action{Type: fetchedMembers, Payload: members, Index: 0})
 		}
 
 		time.Sleep(10 * time.Second)

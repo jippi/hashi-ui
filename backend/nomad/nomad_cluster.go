@@ -1,4 +1,4 @@
-package main
+package nomad
 
 import (
 	"github.com/hashicorp/nomad/api"

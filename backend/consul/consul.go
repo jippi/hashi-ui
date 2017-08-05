@@ -1,11 +1,16 @@
-package main
+package consul
 
 import (
 	observer "github.com/imkira/go-observer"
+	"github.com/jippi/hashi-ui/backend/config"
+	"github.com/jippi/hashi-ui/backend/structs"
+	logging "github.com/op/go-logging"
 )
 
+var logger = logging.MustGetLogger("hashi-ui")
+
 // InitializeConsul ...
-func InitializeConsul(cfg *Config) (*ConsulHub, bool) {
+func InitializeConsul(cfg *config.Config) (*ConsulHub, bool) {
 
 	consulClient, err := CreateConsulRegionClient(cfg, "")
 	if err != nil {
@@ -26,8 +31,8 @@ func InitializeConsul(cfg *Config) (*ConsulHub, bool) {
 		logger.Infof("Starting handlers for Consul DC: %s", region)
 
 		channels := &ConsulRegionBroadcastChannels{}
-		channels.services = observer.NewProperty(&Action{})
-		channels.nodes = observer.NewProperty(&Action{})
+		channels.services = observer.NewProperty(&structs.Action{})
+		channels.nodes = observer.NewProperty(&structs.Action{})
 
 		regionChannels[region] = channels
 
