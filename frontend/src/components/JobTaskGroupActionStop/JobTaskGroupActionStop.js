@@ -3,11 +3,11 @@ import PropTypes from "prop-types"
 import FontIcon from "material-ui/FontIcon"
 import { connect } from "react-redux"
 import { red500 } from "material-ui/styles/colors"
-import { CHANGE_TASK_GROUP_COUNT } from "../../sagas/event"
+import { NOMAD_CHANGE_TASK_GROUP_COUNT } from "../../sagas/event"
 
 const stop = ({ job, taskGroup, dispatch }) => {
   dispatch({
-    type: CHANGE_TASK_GROUP_COUNT,
+    type: NOMAD_CHANGE_TASK_GROUP_COUNT,
     payload: {
       job: job.ID,
       taskGroup: taskGroup.Name,
