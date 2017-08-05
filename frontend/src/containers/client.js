@@ -20,8 +20,8 @@ class Client extends Component {
   }
 
   render() {
-    if (this.props.node == null) {
-      return null
+    if (this.props.node.Name == null) {
+      return <div>Loading ...</div>
     }
 
     return (

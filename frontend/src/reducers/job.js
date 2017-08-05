@@ -6,7 +6,7 @@ import {
   NOMAD_UNWATCH_JOB
 } from "../sagas/event"
 
-export function JobInfoReducer(state = { TaskGroups: [] }, action) {
+export function JobInfoReducer(state = {}, action) {
   switch (action.type) {
     case NOMAD_UNWATCH_JOB:
       return {}

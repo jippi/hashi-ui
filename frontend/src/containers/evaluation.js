@@ -31,8 +31,8 @@ class Evaluation extends Component {
   }
 
   render() {
-    if (this.props.evaluation == null) {
-      return null
+    if (this.props.evaluation.ID == null) {
+      return <div>Loading ...</div>
     }
 
     return (

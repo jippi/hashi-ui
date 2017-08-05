@@ -20,8 +20,8 @@ class Server extends Component {
   }
 
   render() {
-    if (this.props.member == null) {
-      return "Loading ..."
+    if (this.props.member.Name == null) {
+      return <div>Loading ...</div>
     }
 
     return (

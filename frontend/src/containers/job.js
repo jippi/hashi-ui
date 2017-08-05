@@ -40,8 +40,8 @@ class Job extends Component {
   }
 
   render() {
-    if (this.props.job == null) {
-      return null
+    if (this.props.job.ID == null) {
+      return <div>Loading ...</div>
     }
 
     return (
