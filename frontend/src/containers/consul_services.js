@@ -13,12 +13,12 @@ import TextField from "material-ui/TextField"
 import Checkbox from "material-ui/Checkbox"
 import { red500, green500, orange500, grey200 } from "material-ui/styles/colors"
 import {
-  WATCH_CONSUL_SERVICES,
-  UNWATCH_CONSUL_SERVICES,
-  WATCH_CONSUL_SERVICE,
-  UNWATCH_CONSUL_SERVICE,
-  DEREGISTER_CONSUL_SERVICE_CHECK,
-  DEREGISTER_CONSUL_SERVICE
+  CONSUL_WATCH_SERVICES,
+  CONSUL_UNWATCH_SERVICES,
+  CONSUL_WATCH_SERVICE,
+  CONSUL_UNWATCH_SERVICE,
+  CONSUL_DEREGISTER_SERVICE_CHECK,
+  CONSUL_DEREGISTER_SERVICE
 } from "../sagas/event"
 
 class ConsulServices extends Component {
@@ -29,22 +29,22 @@ class ConsulServices extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch({ type: WATCH_CONSUL_SERVICES })
+    this.props.dispatch({ type: CONSUL_WATCH_SERVICES })
 
     if (this.props.routeParams.name) {
       this.props.dispatch({
-        type: WATCH_CONSUL_SERVICE,
+        type: CONSUL_WATCH_SERVICE,
         payload: this.props.routeParams.name
       })
     }
   }
 
   componentWillUnmount() {
-    this.props.dispatch({ type: UNWATCH_CONSUL_SERVICES })
+    this.props.dispatch({ type: CONSUL_UNWATCH_SERVICES })
 
     if (this.props.routeParams.name) {
       this.props.dispatch({
-        type: UNWATCH_CONSUL_SERVICE,
+        type: CONSUL_UNWATCH_SERVICE,
         payload: this.props.routeParams.name
       })
     }
@@ -54,7 +54,7 @@ class ConsulServices extends Component {
     if (!this.props.routeParams.name) {
       if (prevProps.routeParams.name) {
         this.props.dispatch({
-          type: UNWATCH_CONSUL_SERVICE,
+          type: CONSUL_UNWATCH_SERVICE,
           payload: prevProps.routeParams.name
         })
       }
@@ -67,13 +67,13 @@ class ConsulServices extends Component {
 
     if (prevProps.routeParams.name) {
       this.props.dispatch({
-        type: UNWATCH_CONSUL_SERVICE,
+        type: CONSUL_UNWATCH_SERVICE,
         payload: prevProps.routeParams.name
       })
     }
 
     this.props.dispatch({
-      type: WATCH_CONSUL_SERVICE,
+      type: CONSUL_WATCH_SERVICE,
       payload: this.props.routeParams.name
     })
   }
@@ -91,14 +91,14 @@ class ConsulServices extends Component {
 
   deregisterServiceCheck(nodeAddress, checkID) {
     this.props.dispatch({
-      type: DEREGISTER_CONSUL_SERVICE_CHECK,
+      type: CONSUL_DEREGISTER_SERVICE_CHECK,
       payload: { nodeAddress, checkID }
     })
   }
 
   deregisterService(nodeAddress, serviceID) {
     this.props.dispatch({
-      type: DEREGISTER_CONSUL_SERVICE,
+      type: CONSUL_DEREGISTER_SERVICE,
       payload: { nodeAddress, serviceID }
     })
   }
@@ -201,6 +201,7 @@ class ConsulServices extends Component {
 
                   return (
                     <ListItem
+                      key={service.Name}
                       onTouchTap={() => this._onClickService(service.Name)}
                       primaryText={service.Name}
                       secondaryText={secondaryText}
@@ -250,7 +251,7 @@ class ConsulServices extends Component {
                 }
 
                 return (
-                  <Card>
+                  <Card key={`${check.Name}-${check.CheckID}-${check.Status}`}>
                     <CardHeader
                       title={`${check.Name} ${check.Notes ? " | " + check.Notes : ""}`}
                       avatar={icon}
@@ -276,7 +277,7 @@ class ConsulServices extends Component {
 
                       <RaisedButton
                         label="Deregister"
-                        labelColor="white"
+                        labelColor="#fff"
                         backgroundColor={red500}
                         style={{ marginRight: 12 }}
                         onClick={() => {
@@ -301,12 +302,12 @@ class ConsulServices extends Component {
               }
 
               return (
-                <Card style={{ marginTop: index > 0 ? "1em" : 0 }}>
+                <Card key={`${entry.Node.Node} - ${entry.Service.ID}`} style={{ marginTop: index > 0 ? "1em" : 0 }}>
                   <CardHeader title={`${entry.Node.Node} - ${entry.Service.ID}`} subtitle={secondaryText} />
                   <div style={{ float: "right", marginTop: -60 }}>
                     <RaisedButton
                       label="Deregister"
-                      labelColor="white"
+                      labelColor="#fff"
                       backgroundColor={red500}
                       style={{ marginRight: 12 }}
                       onClick={() => {

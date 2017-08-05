@@ -13,13 +13,13 @@ import Subheader from "material-ui/Subheader"
 import Dialog from "material-ui/Dialog"
 import { red500 } from "material-ui/styles/colors"
 import {
-  SET_CONSUL_KV_PAIR,
-  GET_CONSUL_KV_PAIR,
-  WATCH_CONSUL_KV_PATH,
-  UNWATCH_CONSUL_KV_PATH,
-  DELETE_CONSUL_KV_FOLDER,
-  CLEAR_CONSUL_KV_PAIR,
-  DELETE_CONSUL_KV_PAIR
+  CONSUL_SET_KV_PAIR,
+  CONSUL_GET_KV_PAIR,
+  CONSUL_WATCH_KV_PATH,
+  CONSUL_UNWATCH_KV_PATH,
+  CONSUL_DELETE_KV_FOLDER,
+  CONSUL_CLEAR_KV_PAIR,
+  CONSUL_DELETE_KV_PAIR
 } from "../sagas/event"
 
 class ConsulKV extends Component {
@@ -43,17 +43,17 @@ class ConsulKV extends Component {
     // or the root path if no splat is provided
     if (this.props.routeParams.splat) {
       this.props.dispatch({
-        type: WATCH_CONSUL_KV_PATH,
+        type: CONSUL_WATCH_KV_PATH,
         payload: this.getPath(this.props)
       })
     } else {
-      this.props.dispatch({ type: WATCH_CONSUL_KV_PATH, payload: "/" })
+      this.props.dispatch({ type: CONSUL_WATCH_KV_PATH, payload: "/" })
     }
 
     // if we got a file query argument, read that kv pair into props
     if ("file" in this.props.location.query) {
       this.props.dispatch({
-        type: GET_CONSUL_KV_PAIR,
+        type: CONSUL_GET_KV_PAIR,
         payload: this.getPath(this.props) + this.props.location.query.file
       })
     }
@@ -63,7 +63,7 @@ class ConsulKV extends Component {
     // cleanup watches when the component is removed
     if (this.props.routeParams.splat) {
       this.props.dispatch({
-        type: UNWATCH_CONSUL_KV_PATH,
+        type: CONSUL_UNWATCH_KV_PATH,
         payload: this.getPath(this.props)
       })
     }
@@ -105,13 +105,13 @@ class ConsulKV extends Component {
 
     // unwatch the old path
     this.props.dispatch({
-      type: UNWATCH_CONSUL_KV_PATH,
+      type: CONSUL_UNWATCH_KV_PATH,
       payload: this.getPath(prevProps)
     })
 
     // watch the new path
     this.props.dispatch({
-      type: WATCH_CONSUL_KV_PATH,
+      type: CONSUL_WATCH_KV_PATH,
       payload: this.getPath(this.props)
     })
   }
@@ -159,7 +159,7 @@ class ConsulKV extends Component {
   editKey(file, fetch = true) {
     if (fetch) {
       this.props.dispatch({
-        type: GET_CONSUL_KV_PAIR,
+        type: CONSUL_GET_KV_PAIR,
         payload: file
       })
     }
@@ -257,7 +257,7 @@ class ConsulKV extends Component {
     const isDirectory = filePath[filePath.length - 1] === "/"
 
     this.props.dispatch({
-      type: SET_CONSUL_KV_PAIR,
+      type: CONSUL_SET_KV_PAIR,
       payload: {
         path: filePath,
         value: this.state.value,
@@ -284,7 +284,7 @@ class ConsulKV extends Component {
     }
 
     if (clear) {
-      this.props.dispatch({ type: CLEAR_CONSUL_KV_PAIR })
+      this.props.dispatch({ type: CONSUL_CLEAR_KV_PAIR })
     }
 
     this.setState({
@@ -303,7 +303,7 @@ class ConsulKV extends Component {
     }
 
     this.props.dispatch({
-      type: DELETE_CONSUL_KV_PAIR,
+      type: CONSUL_DELETE_KV_PAIR,
       payload: {
         path: this.relativePath(this.getPath(this.props)) + this.state.key,
         index: this.props.consulKVPair.ModifyIndex
@@ -316,7 +316,7 @@ class ConsulKV extends Component {
    */
   deleteKeyTree() {
     this.props.dispatch({
-      type: DELETE_CONSUL_KV_FOLDER,
+      type: CONSUL_DELETE_KV_FOLDER,
       payload: this.props.routeParams.splat
     })
 
@@ -379,14 +379,14 @@ class ConsulKV extends Component {
 
       const to = `${chunks.join("/")}/${chunk}`
       crumbs.push(
-        <a onClick={() => this.changePath(to)} className="breadcrumb" to={to}>
+        <a key={to} onClick={() => this.changePath(to)} className="breadcrumb" to={to}>
           {chunk}
         </a>
       )
     }
 
     crumbs.push(
-      <a onClick={() => this.changePath("/")} className="breadcrumb no-icon">
+      <a key="root" onClick={() => this.changePath("/")} className="breadcrumb no-icon">
         Root
       </a>
     )
@@ -460,6 +460,7 @@ class ConsulKV extends Component {
                 <List>
                   {this.props.routeParams.splat
                     ? <ListItem
+                        key=".."
                         onTouchTap={() => this._onClickPath("..")}
                         leftIcon={<FontIcon className="material-icons">arrow_upward</FontIcon>}
                         primaryText={".."}
@@ -471,6 +472,7 @@ class ConsulKV extends Component {
                     if (path.slice(-1) === "/") {
                       return (
                         <ListItem
+                          key={`folder-${path}`}
                           onTouchTap={() => this._onClickPath(path)}
                           leftIcon={<FontIcon className="material-icons">folder</FontIcon>}
                           primaryText={this.getHumanPathName(path)}
@@ -479,6 +481,7 @@ class ConsulKV extends Component {
                     } else {
                       return (
                         <ListItem
+                          key={`file-${path}`}
                           onTouchTap={() => this._onClickFIle(path)}
                           leftIcon={<FontIcon className="material-icons">insert_drive_file</FontIcon>}
                           primaryText={this.getHumanFileName(path)}

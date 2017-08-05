@@ -1,10 +1,16 @@
-import { FETCHED_JOB, FETCHED_JOBS, JOB_HIDE_DIALOG, JOB_SHOW_DIALOG, UNWATCH_JOB } from "../sagas/event"
+import {
+  NOMAD_FETCHED_JOB,
+  NOMAD_FETCHED_JOBS,
+  NOMAD_JOB_HIDE_DIALOG,
+  NOMAD_JOB_SHOW_DIALOG,
+  NOMAD_UNWATCH_JOB
+} from "../sagas/event"
 
 export function JobInfoReducer(state = { TaskGroups: [] }, action) {
   switch (action.type) {
-    case UNWATCH_JOB:
+    case NOMAD_UNWATCH_JOB:
       return {}
-    case FETCHED_JOB: {
+    case NOMAD_FETCHED_JOB: {
       const job = action.payload
       job.TaskGroups.forEach((group, gidx) => {
         job.TaskGroups[gidx].ID = `${job.ID}.${group.Name}`
@@ -24,9 +30,9 @@ export function JobInfoReducer(state = { TaskGroups: [] }, action) {
 
 export function JobDialogReducer(state = "", action) {
   switch (action.type) {
-    case JOB_SHOW_DIALOG:
+    case NOMAD_JOB_SHOW_DIALOG:
       return action.payload
-    case JOB_HIDE_DIALOG:
+    case NOMAD_JOB_HIDE_DIALOG:
       return ""
   }
   return state
@@ -34,7 +40,7 @@ export function JobDialogReducer(state = "", action) {
 
 export function JobListReducer(state = [], action) {
   switch (action.type) {
-    case FETCHED_JOBS:
+    case NOMAD_FETCHED_JOBS:
       return action.payload
     default:
   }

@@ -8,7 +8,7 @@ import JobStatusFilter from "../components/JobStatusFilter/JobStatusFilter"
 import JobTypeFilter from "../components/JobTypeFilter/JobTypeFilter"
 import JobLink from "../components/JobLink/JobLink"
 import AllocationDistribution from "../components/AllocationDistribution/AllocationDistribution"
-import { WATCH_JOBS, UNWATCH_JOBS } from "../sagas/event"
+import { NOMAD_WATCH_JOBS, NOMAD_UNWATCH_JOBS } from "../sagas/event"
 import { Grid, Row, Col } from "react-flexbox-grid"
 
 const columnFormat = {
@@ -44,11 +44,11 @@ const getJobStatisticsRow = job => {
 
 class Jobs extends Component {
   componentDidMount() {
-    this.props.dispatch({ type: WATCH_JOBS })
+    this.props.dispatch({ type: NOMAD_WATCH_JOBS })
   }
 
   componentWillUnmount() {
-    this.props.dispatch({ type: UNWATCH_JOBS })
+    this.props.dispatch({ type: NOMAD_UNWATCH_JOBS })
   }
 
   filteredJobs() {

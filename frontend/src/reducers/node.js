@@ -1,8 +1,8 @@
-import { FETCHED_NODES, FETCHED_NODE, FETCHED_CLIENT_STATS } from "../sagas/event"
+import { NOMAD_FETCHED_NODES, NOMAD_FETCHED_NODE, NOMAD_FETCHED_CLIENT_STATS } from "../sagas/event"
 
 export function NodeStatsReducer(state = {}, action) {
   switch (action.type) {
-    case FETCHED_CLIENT_STATS:
+    case NOMAD_FETCHED_CLIENT_STATS:
       return action.payload
     default:
   }
@@ -12,7 +12,7 @@ export function NodeStatsReducer(state = {}, action) {
 
 export function NodeInfoReducer(state = {}, action) {
   switch (action.type) {
-    case FETCHED_NODE:
+    case NOMAD_FETCHED_NODE:
       return action.payload
     default:
   }
@@ -21,7 +21,7 @@ export function NodeInfoReducer(state = {}, action) {
 
 export function NodeListReducer(state = [], action) {
   switch (action.type) {
-    case FETCHED_NODES:
+    case NOMAD_FETCHED_NODES:
       return action.payload
     default:
   }

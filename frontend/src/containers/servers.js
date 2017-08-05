@@ -4,17 +4,17 @@ import { connect } from "react-redux"
 import { Card, CardText } from "material-ui/Card"
 import { green500 } from "material-ui/styles/colors"
 import FontIcon from "material-ui/FontIcon"
-import { WATCH_MEMBERS, UNWATCH_MEMBERS } from "../sagas/event"
+import { NOMAD_WATCH_MEMBERS, NOMAD_UNWATCH_MEMBERS } from "../sagas/event"
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "../components/Table"
 import ServerLink from "../components/ServerLink/ServerLink"
 
 class Servers extends Component {
   componentDidMount() {
-    this.props.dispatch({ type: WATCH_MEMBERS })
+    this.props.dispatch({ type: NOMAD_WATCH_MEMBERS })
   }
 
   componentWillUnmount() {
-    this.props.dispatch({ type: UNWATCH_MEMBERS })
+    this.props.dispatch({ type: NOMAD_UNWATCH_MEMBERS })
   }
 
   showLeaderIcon(member) {

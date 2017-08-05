@@ -1,8 +1,8 @@
-import { FETCHED_EVALS, FETCHED_EVAL } from "../sagas/event"
+import { NOMAD_FETCHED_EVALS, NOMAD_FETCHED_EVAL } from "../sagas/event"
 
 export function EvalInfoReducer(state = {}, action) {
   switch (action.type) {
-    case FETCHED_EVAL:
+    case NOMAD_FETCHED_EVAL:
       return action.payload
     default:
   }
@@ -11,7 +11,7 @@ export function EvalInfoReducer(state = {}, action) {
 
 export function EvalListReducer(state = [], action) {
   switch (action.type) {
-    case FETCHED_EVALS:
+    case NOMAD_FETCHED_EVALS:
       return action.payload
     default:
   }

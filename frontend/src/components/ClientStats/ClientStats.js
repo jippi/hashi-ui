@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import { connect } from "react-redux"
-import { WATCH_CLIENT_STATS, UNWATCH_CLIENT_STATS } from "../../sagas/event"
+import { NOMAD_WATCH_CLIENT_STATS, NOMAD_UNWATCH_CLIENT_STATS } from "../../sagas/event"
 import { green500, blue500 } from "material-ui/styles/colors"
 import { Card, CardTitle, CardText } from "material-ui/Card"
 import UtilizationPieChart from "../UtilizationPieChart/UtilizationPieChart"
@@ -25,14 +25,14 @@ class ClientStats extends Component {
 
   componentWillUnmount() {
     this.props.dispatch({
-      type: UNWATCH_CLIENT_STATS,
+      type: NOMAD_UNWATCH_CLIENT_STATS,
       payload: this.props.node.ID
     })
   }
 
   watchForStats(props) {
     this.props.dispatch({
-      type: WATCH_CLIENT_STATS,
+      type: NOMAD_WATCH_CLIENT_STATS,
       payload: props.node.ID
     })
   }

@@ -9,13 +9,13 @@ import IconButton from "material-ui/IconButton"
 import IconMenu from "material-ui/IconMenu"
 import MenuItem from "material-ui/MenuItem"
 import FontIcon from "material-ui/FontIcon"
-import { FETCH_CONSUL_REGIONS, SET_CONSUL_REGION, APP_DRAWER_OPEN } from "../../sagas/event"
+import { CONSUL_FETCH_REGIONS, CONSUL_SET_REGION } from "../../sagas/event"
 import { CONSUL_COLOR } from "../../config.js"
 
 class ConsulTopbar extends PureComponent {
   componentWillMount() {
     this.props.dispatch({
-      type: FETCH_CONSUL_REGIONS
+      type: CONSUL_FETCH_REGIONS
     })
   }
 
@@ -47,7 +47,7 @@ class ConsulTopbar extends PureComponent {
         anchorOrigin={{ horizontal: "right", vertical: "top" }}
       >
         {this.props.consulRegions.map(region => {
-          return <MenuItem primaryText={region} onTouchTap={() => this.onChangeRegion(region)} />
+          return <MenuItem key={region} primaryText={region} onTouchTap={() => this.onChangeRegion(region)} />
         })}
       </IconMenu>
     )

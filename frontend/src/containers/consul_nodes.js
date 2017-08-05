@@ -11,12 +11,12 @@ import Paper from "material-ui/Paper"
 import { red500, green500, orange500 } from "material-ui/styles/colors"
 import RaisedButton from "material-ui/RaisedButton"
 import {
-  WATCH_CONSUL_NODES,
-  UNWATCH_CONSUL_NODES,
-  WATCH_CONSUL_NODE,
-  UNWATCH_CONSUL_NODE,
-  DEREGISTER_CONSUL_SERVICE_CHECK,
-  DEREGISTER_CONSUL_SERVICE
+  CONSUL_WATCH_NODES,
+  CONSUL_UNWATCH_NODES,
+  CONSUL_WATCH_NODE,
+  CONSUL_UNWATCH_NODE,
+  CONSUL_DEREGISTER_SERVICE_CHECK,
+  CONSUL_DEREGISTER_SERVICE
 } from "../sagas/event"
 
 class ConsulNodes extends Component {
@@ -26,22 +26,22 @@ class ConsulNodes extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch({ type: WATCH_CONSUL_NODES })
+    this.props.dispatch({ type: CONSUL_WATCH_NODES })
 
     if (this.props.routeParams.name) {
       this.props.dispatch({
-        type: WATCH_CONSUL_NODE,
+        type: CONSUL_WATCH_NODE,
         payload: this.props.routeParams.name
       })
     }
   }
 
   componentWillUnmount() {
-    this.props.dispatch({ type: UNWATCH_CONSUL_NODES })
+    this.props.dispatch({ type: CONSUL_UNWATCH_NODES })
 
     if (this.props.routeParams.name) {
       this.props.dispatch({
-        type: UNWATCH_CONSUL_NODE,
+        type: CONSUL_UNWATCH_NODE,
         payload: this.props.routeParams.name
       })
     }
@@ -51,7 +51,7 @@ class ConsulNodes extends Component {
     if (!this.props.routeParams.name) {
       if (prevProps.routeParams.name) {
         this.props.dispatch({
-          type: UNWATCH_CONSUL_NODE,
+          type: CONSUL_UNWATCH_NODE,
           payload: prevProps.routeParams.name
         })
       }
@@ -64,13 +64,13 @@ class ConsulNodes extends Component {
 
     if (prevProps.routeParams.name) {
       this.props.dispatch({
-        type: UNWATCH_CONSUL_NODE,
+        type: CONSUL_UNWATCH_NODE,
         payload: prevProps.routeParams.name
       })
     }
 
     this.props.dispatch({
-      type: WATCH_CONSUL_NODE,
+      type: CONSUL_WATCH_NODE,
       payload: this.props.routeParams.name
     })
   }
@@ -84,14 +84,14 @@ class ConsulNodes extends Component {
 
   deregisterServiceCheck(nodeAddress, checkID) {
     this.props.dispatch({
-      type: DEREGISTER_CONSUL_SERVICE_CHECK,
+      type: CONSUL_DEREGISTER_SERVICE_CHECK,
       payload: { nodeAddress, checkID }
     })
   }
 
   deregisterService(nodeAddress, serviceID) {
     this.props.dispatch({
-      type: DEREGISTER_CONSUL_SERVICE,
+      type: CONSUL_DEREGISTER_SERVICE,
       payload: { nodeAddress, serviceID }
     })
   }
@@ -177,6 +177,7 @@ class ConsulNodes extends Component {
 
                   return (
                     <ListItem
+                      key={node.Node}
                       onTouchTap={() => this._onClickNode(node.Node)}
                       primaryText={node.Node}
                       secondaryText={secondaryText}
@@ -227,7 +228,7 @@ class ConsulNodes extends Component {
                 }
 
                 return (
-                  <Card>
+                  <Card key={`${check.Name}-${check.CheckID}-${check.Status}`}>
                     <CardHeader
                       title={`${check.Name} ${check.Notes ? " | " + check.Notes : ""}`}
                       avatar={icon}
@@ -253,7 +254,7 @@ class ConsulNodes extends Component {
 
                       <RaisedButton
                         label="Deregister"
-                        labelColor="white"
+                        labelColor="#fff"
                         backgroundColor={red500}
                         style={{ marginRight: 12 }}
                         onClick={() => {
@@ -279,7 +280,7 @@ class ConsulNodes extends Component {
               }
 
               return (
-                <Card style={{ marginTop: index > 0 ? "1em" : 0 }}>
+                <Card key={secondaryText} style={{ marginTop: index > 0 ? "1em" : 0 }}>
                   <div
                     style={{
                       float: "right",
@@ -331,7 +332,7 @@ class ConsulNodes extends Component {
               }
 
               return (
-                <Card>
+                <Card key={`${check.CheckID}-${check.Name}`}>
                   <CardHeader
                     title={`Check: ${check.Name} ${check.Notes ? " | " + check.Notes : ""}`}
                     avatar={icon}
@@ -357,7 +358,7 @@ class ConsulNodes extends Component {
 
                     <RaisedButton
                       label="Deregister"
-                      labelColor="white"
+                      labelColor="#fff"
                       backgroundColor={red500}
                       style={{ marginRight: 12 }}
                       onClick={() => {

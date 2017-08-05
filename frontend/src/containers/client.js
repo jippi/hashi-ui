@@ -2,19 +2,19 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import ClientTopbar from "../components/ClientTopbar/ClientTopbar"
-import { WATCH_NODE, UNWATCH_NODE } from "../sagas/event"
+import { NOMAD_WATCH_NODE, NOMAD_UNWATCH_NODE } from "../sagas/event"
 
 class Client extends Component {
   componentWillMount() {
     this.props.dispatch({
-      type: WATCH_NODE,
+      type: NOMAD_WATCH_NODE,
       payload: this.props.params.nodeId
     })
   }
 
   componentWillUnmount() {
     this.props.dispatch({
-      type: UNWATCH_NODE,
+      type: NOMAD_UNWATCH_NODE,
       payload: this.props.params.nodeId
     })
   }

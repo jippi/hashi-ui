@@ -6,15 +6,15 @@ import FormatTime from "../FormatTime/FormatTime"
 import TableHelper from "../TableHelper/TableHelper"
 import { TableRow, TableRowColumn } from "../Table"
 import { Card, CardTitle, CardText } from "material-ui/Card"
-import { WATCH_ALLOCS, UNWATCH_ALLOCS } from "../../sagas/event"
+import { NOMAD_WATCH_ALLOCS, NOMAD_UNWATCH_ALLOCS } from "../../sagas/event"
 
 class ClusterEvents extends Component {
   componentWillMount() {
-    this.props.dispatch({ type: WATCH_ALLOCS })
+    this.props.dispatch({ type: NOMAD_WATCH_ALLOCS })
   }
 
   componentWillUnmount() {
-    this.props.dispatch({ type: UNWATCH_ALLOCS })
+    this.props.dispatch({ type: NOMAD_UNWATCH_ALLOCS })
   }
 
   render() {

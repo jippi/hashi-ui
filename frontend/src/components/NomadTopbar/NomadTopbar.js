@@ -7,13 +7,13 @@ import IconMenu from "material-ui/IconMenu"
 import MenuItem from "material-ui/MenuItem"
 import FontIcon from "material-ui/FontIcon"
 import { withRouter } from "react-router"
-import { FETCH_NOMAD_REGIONS, SET_NOMAD_REGION, APP_DRAWER_OPEN } from "../../sagas/event"
+import { NOMAD_FETCH_REGIONS, NOMAD_SET_REGION, APP_DRAWER_OPEN } from "../../sagas/event"
 import { NOMAD_COLOR } from "../../config.js"
 
 class AppTopbar extends PureComponent {
   componentWillMount() {
     this.props.dispatch({
-      type: FETCH_NOMAD_REGIONS
+      type: NOMAD_FETCH_REGIONS
     })
   }
 
@@ -24,7 +24,7 @@ class AppTopbar extends PureComponent {
 
   handleChangeNomadRegion(region) {
     this.props.dispatch({
-      type: SET_NOMAD_REGION,
+      type: NOMAD_SET_REGION,
       payload: region
     })
   }

@@ -3,31 +3,31 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import EvaluationTopbar from "../components/EvaluationTopbar/EvaluationTopbar"
 import {
-  WATCH_EVAL,
-  UNWATCH_EVAL,
-  WATCH_ALLOCS_SHALLOW,
-  UNWATCH_ALLOCS_SHALLOW,
-  WATCH_NODES,
-  UNWATCH_NODES
+  NOMAD_WATCH_EVAL,
+  NOMAD_UNWATCH_EVAL,
+  NOMAD_WATCH_ALLOCS_SHALLOW,
+  NOMAD_UNWATCH_ALLOCS_SHALLOW,
+  NOMAD_WATCH_NODES,
+  NOMAD_UNWATCH_NODES
 } from "../sagas/event"
 
 class Evaluation extends Component {
   componentWillMount() {
     this.props.dispatch({
-      type: WATCH_EVAL,
+      type: NOMAD_WATCH_EVAL,
       payload: this.props.params.evalId
     })
-    this.props.dispatch({ type: WATCH_ALLOCS_SHALLOW })
-    this.props.dispatch({ type: WATCH_NODES })
+    this.props.dispatch({ type: NOMAD_WATCH_ALLOCS_SHALLOW })
+    this.props.dispatch({ type: NOMAD_WATCH_NODES })
   }
 
   componentWillUnmount() {
     this.props.dispatch({
-      type: UNWATCH_EVAL,
+      type: NOMAD_UNWATCH_EVAL,
       payload: this.props.params.evalId
     })
-    this.props.dispatch({ type: UNWATCH_ALLOCS_SHALLOW })
-    this.props.dispatch({ type: UNWATCH_NODES })
+    this.props.dispatch({ type: NOMAD_UNWATCH_ALLOCS_SHALLOW })
+    this.props.dispatch({ type: NOMAD_UNWATCH_NODES })
   }
 
   render() {

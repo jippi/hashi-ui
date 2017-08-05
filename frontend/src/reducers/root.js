@@ -5,7 +5,7 @@ import {
   AppErrorReducer,
   ClusterStatisticsReducer,
   ErrorNotificationReducer,
-  SuccessNotificationReducer,
+  SuccessNotificationReducer
 } from "./app"
 import { MemberInfoReducer, MemberListReducer } from "./member"
 import { JobInfoReducer, JobListReducer, JobDialogReducer } from "./job"
@@ -22,7 +22,7 @@ import {
   ConsulNode,
   ConsulKVPath,
   ConsulKVPair,
-  ChangeConsulRegionReducer,
+  ChangeConsulRegionReducer
 } from "./consul"
 
 const rootReducer = combineReducers({
@@ -54,7 +54,7 @@ const rootReducer = combineReducers({
   nodes: NodeListReducer,
   nodeStats: NodeStatsReducer,
   nomadRegions: NomadRegionsReducer,
-  successNotification: SuccessNotificationReducer,
+  successNotification: SuccessNotificationReducer
 })
 
 export default rootReducer

@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import Dialog from "material-ui/Dialog"
 import FlatButton from "material-ui/FlatButton"
 import { connect } from "react-redux"
-import { SUBMIT_JOB, JOB_HIDE_DIALOG } from "../../sagas/event"
+import { NOMAD_SUBMIT_JOB, NOMAD_JOB_HIDE_DIALOG } from "../../sagas/event"
 import AceEditor from "react-ace"
 import "brace/mode/json"
 import "brace/theme/github"
@@ -35,7 +35,7 @@ class JobEditRawJSON extends Component {
    * @return {void}
    */
   handleCancel = () => {
-    this.props.dispatch({ type: JOB_HIDE_DIALOG })
+    this.props.dispatch({ type: NOMAD_JOB_HIDE_DIALOG })
   }
 
   /**
@@ -51,7 +51,7 @@ class JobEditRawJSON extends Component {
     })
 
     this.props.dispatch({
-      type: SUBMIT_JOB,
+      type: NOMAD_SUBMIT_JOB,
       payload: this.modifiedJob
     })
   }
@@ -74,7 +74,7 @@ class JobEditRawJSON extends Component {
     if (this.state.submittingJob) {
       // on success, close the dialog
       if (nextProps.successNotification.index) {
-        this.props.dispatch({ type: JOB_HIDE_DIALOG })
+        this.props.dispatch({ type: NOMAD_JOB_HIDE_DIALOG })
         return
       }
 

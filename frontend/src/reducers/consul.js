@@ -1,28 +1,28 @@
 import {
-  FETCHED_CONSUL_KV_PAIR,
-  FETCHED_CONSUL_KV_PATH,
-  FETCHED_CONSUL_NODE,
-  FETCHED_CONSUL_NODES,
-  FETCHED_CONSUL_REGIONS,
-  FETCHED_CONSUL_SERVICE,
-  FETCHED_CONSUL_SERVICES,
-  SET_CONSUL_REGION,
-  UNKNOWN_CONSUL_REGION,
-  UNWATCH_CONSUL_KV_PATH,
-  UNWATCH_CONSUL_NODE,
-  UNWATCH_CONSUL_NODES,
-  UNWATCH_CONSUL_SERVICE,
-  UNWATCH_CONSUL_SERVICES,
-  CLEAR_CONSUL_KV_PAIR,
+  CONSUL_FETCHED_KV_PAIR,
+  CONSUL_FETCHED_KV_PATH,
+  CONSUL_FETCHED_NODE,
+  CONSUL_FETCHED_NODES,
+  CONSUL_FETCHED_REGIONS,
+  CONSUL_FETCHED_SERVICE,
+  CONSUL_FETCHED_SERVICES,
+  CONSUL_SET_REGION,
+  CONSUL_UNKNOWN_REGION,
+  CONSUL_UNWATCH_KV_PATH,
+  CONSUL_UNWATCH_NODE,
+  CONSUL_UNWATCH_NODES,
+  CONSUL_UNWATCH_SERVICE,
+  CONSUL_UNWATCH_SERVICES,
+  CONSUL_CLEAR_KV_PAIR
 } from "../sagas/event"
 
 export function ChangeConsulRegionReducer(state = {}, action) {
   switch (action.type) {
-    case SET_CONSUL_REGION:
+    case CONSUL_SET_REGION:
       document.location.href = window.NOMAD_ENDPOINT + "/consul/" + action.payload + "/services"
       return {}
 
-    case UNKNOWN_CONSUL_REGION:
+    case CONSUL_UNKNOWN_REGION:
       document.location.href = window.NOMAD_ENDPOINT + "/consul"
       return {}
   }
@@ -30,9 +30,9 @@ export function ChangeConsulRegionReducer(state = {}, action) {
   return state
 }
 
-export function ConsulRegionsReducer(state = {}, action) {
+export function ConsulRegionsReducer(state = [], action) {
   switch (action.type) {
-    case FETCHED_CONSUL_REGIONS:
+    case CONSUL_FETCHED_REGIONS:
       return action.payload
   }
 
@@ -41,10 +41,10 @@ export function ConsulRegionsReducer(state = {}, action) {
 
 export function ConsulServiceList(state = [], action) {
   switch (action.type) {
-    case FETCHED_CONSUL_SERVICES:
+    case CONSUL_FETCHED_SERVICES:
       return action.payload
 
-    case UNWATCH_CONSUL_SERVICES:
+    case CONSUL_UNWATCH_SERVICES:
       return []
 
     default:
@@ -55,10 +55,10 @@ export function ConsulServiceList(state = [], action) {
 
 export function ConsulService(state = [], action) {
   switch (action.type) {
-    case FETCHED_CONSUL_SERVICE:
+    case CONSUL_FETCHED_SERVICE:
       return action.payload
 
-    case UNWATCH_CONSUL_SERVICE:
+    case CONSUL_UNWATCH_SERVICE:
       return []
 
     default:
@@ -69,10 +69,10 @@ export function ConsulService(state = [], action) {
 
 export function ConsulNodes(state = [], action) {
   switch (action.type) {
-    case FETCHED_CONSUL_NODES:
+    case CONSUL_FETCHED_NODES:
       return action.payload
 
-    case UNWATCH_CONSUL_NODES:
+    case CONSUL_UNWATCH_NODES:
       return []
 
     default:
@@ -83,10 +83,10 @@ export function ConsulNodes(state = [], action) {
 
 export function ConsulNode(state = {}, action) {
   switch (action.type) {
-    case FETCHED_CONSUL_NODE:
+    case CONSUL_FETCHED_NODE:
       return action.payload
 
-    case UNWATCH_CONSUL_NODE:
+    case CONSUL_UNWATCH_NODE:
       return {}
 
     default:
@@ -97,9 +97,9 @@ export function ConsulNode(state = {}, action) {
 
 export function ConsulKVPath(state = [], action) {
   switch (action.type) {
-    case FETCHED_CONSUL_KV_PATH:
+    case CONSUL_FETCHED_KV_PATH:
       return action.payload
-    case UNWATCH_CONSUL_KV_PATH:
+    case CONSUL_UNWATCH_KV_PATH:
       return []
   }
   return state
@@ -107,9 +107,9 @@ export function ConsulKVPath(state = [], action) {
 
 export function ConsulKVPair(state = {}, action) {
   switch (action.type) {
-    case FETCHED_CONSUL_KV_PAIR:
+    case CONSUL_FETCHED_KV_PAIR:
       return action.payload
-    case CLEAR_CONSUL_KV_PAIR:
+    case CONSUL_CLEAR_KV_PAIR:
       return {}
   }
 

@@ -94,12 +94,12 @@ func (h *ConsulHub) requireConsulRegion(socket *websocket.Conn) {
 
 	if len(h.regions) == 1 {
 		action = structs.Action{
-			Type:    "SET_CONSUL_REGION",
+			Type:    "CONSUL_SET_REGION",
 			Payload: h.regions[0],
 		}
 	} else {
 		action = structs.Action{
-			Type:    "FETCHED_CONSUL_REGIONS",
+			Type:    "CONSUL_FETCHED_REGIONS",
 			Payload: h.regions,
 		}
 	}

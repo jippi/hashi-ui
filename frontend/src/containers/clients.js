@@ -3,18 +3,18 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Card, CardText } from "material-ui/Card"
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "../components/Table"
-import { WATCH_NODES, UNWATCH_NODES } from "../sagas/event"
+import { NOMAD_WATCH_NODES, NOMAD_UNWATCH_NODES } from "../sagas/event"
 import ClientLink from "../components/ClientLink/ClientLink"
 import FormatBoolean from "../components/FormatBoolean/FormatBoolean"
 import NodeStatus from "../components/NodeStatus/NodeStatus"
 
 class Clients extends Component {
   componentDidMount() {
-    this.props.dispatch({ type: WATCH_NODES })
+    this.props.dispatch({ type: NOMAD_WATCH_NODES })
   }
 
   componentWillUnmount() {
-    this.props.dispatch({ type: UNWATCH_NODES })
+    this.props.dispatch({ type: NOMAD_UNWATCH_NODES })
   }
 
   render() {

@@ -8,29 +8,29 @@ import UtilizationPieChart from "../components/UtilizationPieChart/UtilizationPi
 import ClusterEvents from "../components/ClusterEvents/ClusterEvents"
 import ClusterStatistics from "../components/ClusterStatistics/ClusterStatistics"
 import {
-  WATCH_JOBS,
-  UNWATCH_JOBS,
-  WATCH_NODES,
-  UNWATCH_NODES,
-  WATCH_MEMBERS,
-  UNWATCH_MEMBERS,
-  WATCH_CLUSTER_STATISTICS,
-  UNWATCH_CLUSTER_STATISTICS
+  NOMAD_WATCH_JOBS,
+  NOMAD_UNWATCH_JOBS,
+  NOMAD_WATCH_NODES,
+  NOMAD_UNWATCH_NODES,
+  NOMAD_WATCH_MEMBERS,
+  NOMAD_UNWATCH_MEMBERS,
+  NOMAD_WATCH_CLUSTER_STATISTICS,
+  NOMAD_UNWATCH_CLUSTER_STATISTICS
 } from "../sagas/event"
 
 class Cluster extends Component {
   componentWillMount() {
-    this.props.dispatch({ type: WATCH_JOBS })
-    this.props.dispatch({ type: WATCH_NODES })
-    this.props.dispatch({ type: WATCH_MEMBERS })
-    this.props.dispatch({ type: WATCH_CLUSTER_STATISTICS })
+    this.props.dispatch({ type: NOMAD_WATCH_JOBS })
+    this.props.dispatch({ type: NOMAD_WATCH_NODES })
+    this.props.dispatch({ type: NOMAD_WATCH_MEMBERS })
+    this.props.dispatch({ type: NOMAD_WATCH_CLUSTER_STATISTICS })
   }
 
   componentWillUnmount() {
-    this.props.dispatch({ type: UNWATCH_JOBS })
-    this.props.dispatch({ type: UNWATCH_NODES })
-    this.props.dispatch({ type: UNWATCH_MEMBERS })
-    this.props.dispatch({ type: UNWATCH_CLUSTER_STATISTICS })
+    this.props.dispatch({ type: NOMAD_UNWATCH_JOBS })
+    this.props.dispatch({ type: NOMAD_UNWATCH_NODES })
+    this.props.dispatch({ type: NOMAD_UNWATCH_MEMBERS })
+    this.props.dispatch({ type: NOMAD_UNWATCH_CLUSTER_STATISTICS })
   }
 
   getChartData() {

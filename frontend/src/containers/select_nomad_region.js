@@ -4,7 +4,7 @@ import { connect } from "react-redux"
 import { List, ListItem } from "material-ui/List"
 import { Card, CardHeader, CardText } from "material-ui/Card"
 import FontIcon from "material-ui/FontIcon"
-import { FETCH_NOMAD_REGIONS, SET_NOMAD_REGION } from "../sagas/event"
+import { NOMAD_FETCH_REGIONS, NOMAD_SET_REGION } from "../sagas/event"
 
 class SelectNomadRegion extends Component {
   constructor(props) {
@@ -13,12 +13,12 @@ class SelectNomadRegion extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch({ type: FETCH_NOMAD_REGIONS })
+    this.props.dispatch({ type: NOMAD_FETCH_REGIONS })
   }
 
   handleChangeNomadRegion(region) {
     this.props.dispatch({
-      type: SET_NOMAD_REGION,
+      type: NOMAD_SET_REGION,
       payload: region
     })
   }

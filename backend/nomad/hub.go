@@ -95,12 +95,12 @@ func (h *NomadHub) requireNomadRegion(socket *websocket.Conn) {
 
 	if len(h.regions) == 1 {
 		action = structs.Action{
-			Type:    "SET_NOMAD_REGION",
+			Type:    "NOMAD_SET_REGION",
 			Payload: h.regions[0],
 		}
 	} else {
 		action = structs.Action{
-			Type:    "FETCHED_NOMAD_REGIONS",
+			Type:    "NOMAD_FETCHED_REGIONS",
 			Payload: h.regions,
 		}
 	}

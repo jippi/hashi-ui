@@ -3,19 +3,19 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import JobTopbar from "../components/JobTopbar/JobTopbar"
 import JobActionMenu from "../components/JobActionMenu/JobActionMenu"
-import { WATCH_JOB, UNWATCH_JOB } from "../sagas/event"
+import { NOMAD_WATCH_JOB, NOMAD_UNWATCH_JOB } from "../sagas/event"
 
 class Job extends Component {
   componentWillMount() {
     this.props.dispatch({
-      type: WATCH_JOB,
+      type: NOMAD_WATCH_JOB,
       payload: this.props.params.jobId
     })
   }
 
   componentWillUnmount() {
     this.props.dispatch({
-      type: UNWATCH_JOB,
+      type: NOMAD_UNWATCH_JOB,
       payload: this.props.params.jobId
     })
   }

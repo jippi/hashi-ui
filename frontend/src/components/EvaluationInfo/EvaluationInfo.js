@@ -6,7 +6,7 @@ import { Card, CardTitle, CardText } from "material-ui/Card"
 import MetaPayload from "../MetaPayload/MetaPayload"
 import EvaluationLink from "../EvaluationLink/EvaluationLink"
 import JobLink from "../JobLink/JobLink"
-import { WATCH_EVAL, UNWATCH_EVAL } from "../../sagas/event"
+import { NOMAD_WATCH_EVAL, NOMAD_UNWATCH_EVAL } from "../../sagas/event"
 
 const evaluationProps = [
   "ID",
@@ -24,11 +24,12 @@ class EvaluationInfo extends Component {
   shouldComponentUpdate(nextProps) {
     if (this.props.params.evalId !== nextProps.routeParams.evalId) {
       this.props.dispatch({
-        type: UNWATCH_EVAL,
+        type: NOMAD_UNWATCH_EVAL,
         payload: this.props.params.evalId
       })
+
       this.props.dispatch({
-        type: WATCH_EVAL,
+        type: NOMAD_WATCH_EVAL,
         payload: nextProps.routeParams.evalId
       })
     }

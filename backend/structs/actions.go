@@ -10,6 +10,6 @@ type Action struct {
 
 const (
 	KeepAlive           = "INTERNAL_KEEP_ALIVE"
-	ErrorNotification   = "ERROR_NOTIFICATION"
-	SuccessNotification = "SUCCESS_NOTIFICATION"
+	ErrorNotification   = "APP_ERROR_NOTIFICATION"
+	SuccessNotification = "APP_SUCCESS_NOTIFICATION"
 )

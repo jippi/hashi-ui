@@ -10,14 +10,14 @@ import MenuItem from "material-ui/MenuItem"
 import FontIcon from "material-ui/FontIcon"
 import Paper from "material-ui/Paper"
 import {
-  FETCH_NODE,
-  FETCH_DIR,
-  CLEAR_RECEIVED_FILE_DATA,
-  CLEAR_FILE_PATH,
-  UNWATCH_FILE,
-  WATCH_FILE,
-  WATCH_NODES,
-  UNWATCH_NODES
+  NOMAD_FETCH_NODE,
+  NOMAD_FETCH_DIR,
+  NOMAD_CLEAR_RECEIVED_FILE_DATA,
+  NOMAD_CLEAR_FILE_PATH,
+  NOMAD_UNWATCH_FILE,
+  NOMAD_WATCH_FILE,
+  NOMAD_WATCH_NODES,
+  NOMAD_UNWATCH_NODES
 } from "../../sagas/event"
 
 class AllocationFiles extends Component {
@@ -82,7 +82,7 @@ class AllocationFiles extends Component {
       stateHaveChanged = true
 
       this.props.dispatch({
-        type: CLEAR_RECEIVED_FILE_DATA,
+        type: NOMAD_CLEAR_RECEIVED_FILE_DATA,
         payload: {
           File: nextProps.file.File
         }
@@ -106,15 +106,15 @@ class AllocationFiles extends Component {
 
   componentDidMount() {
     window.addEventListener("resize", this.resizeHandler)
-    this.props.dispatch({ type: WATCH_NODES })
+    this.props.dispatch({ type: NOMAD_WATCH_NODES })
     this.updateDimensions()
   }
 
   componentWillUnmount() {
     window.removeEventListener("resize", this.resizeHandler)
 
-    this.props.dispatch({ type: UNWATCH_NODES })
-    this.props.dispatch({ type: CLEAR_FILE_PATH })
+    this.props.dispatch({ type: NOMAD_UNWATCH_NODES })
+    this.props.dispatch({ type: NOMAD_CLEAR_FILE_PATH })
 
     if (!this.state.fileWatching) {
       return
@@ -149,7 +149,7 @@ class AllocationFiles extends Component {
     // Fetch the correct node information if the alloc node changed
     if (props.node == null || allocNode.ID !== props.node.ID) {
       this.props.dispatch({
-        type: FETCH_NODE,
+        type: NOMAD_FETCH_NODE,
         payload: allocNode.ID
       })
 
@@ -162,7 +162,7 @@ class AllocationFiles extends Component {
 
   fetchDir(props, dir) {
     this.props.dispatch({
-      type: FETCH_DIR,
+      type: NOMAD_FETCH_DIR,
       payload: {
         addr: props.node.HTTPAddr,
         secure: props.node.TLSEnabled,
@@ -180,7 +180,7 @@ class AllocationFiles extends Component {
     const filePath = props.location.query.path + props.location.query.file
 
     this.props.dispatch({
-      type: WATCH_FILE,
+      type: NOMAD_WATCH_FILE,
       payload: {
         addr: props.node.HTTPAddr,
         secure: props.node.TLSEnabled,
@@ -192,7 +192,7 @@ class AllocationFiles extends Component {
 
   unwatchFile(props) {
     props.dispatch({
-      type: UNWATCH_FILE,
+      type: NOMAD_UNWATCH_FILE,
       payload: props.location.query.path + props.location.query.file
     })
   }

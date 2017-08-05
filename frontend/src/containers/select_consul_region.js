@@ -4,7 +4,7 @@ import { connect } from "react-redux"
 import { List, ListItem } from "material-ui/List"
 import { Card, CardHeader, CardText } from "material-ui/Card"
 import FontIcon from "material-ui/FontIcon"
-import { FETCH_CONSUL_REGIONS, SET_CONSUL_REGION } from "../sagas/event"
+import { CONSUL_FETCH_REGIONS, CONSUL_SET_REGION } from "../sagas/event"
 
 class SelectConsulRegion extends Component {
   constructor(props) {
@@ -13,12 +13,12 @@ class SelectConsulRegion extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch({ type: FETCH_CONSUL_REGIONS })
+    this.props.dispatch({ type: CONSUL_FETCH_REGIONS })
   }
 
   handleChangeRegion(region) {
     this.props.dispatch({
-      type: SET_CONSUL_REGION,
+      type: CONSUL_SET_REGION,
       payload: region
     })
   }

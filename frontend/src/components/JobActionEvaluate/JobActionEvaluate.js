@@ -1,23 +1,23 @@
 import React from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
-import { EVALUATE_JOB, JOB_HIDE_DIALOG } from "../../sagas/event"
+import { NOMAD_EVALUATE_JOB, NOMAD_JOB_HIDE_DIALOG } from "../../sagas/event"
 
 class JobActionEvaluate extends React.Component {
   handleSubmit = () => {
-    this.props.dispatch({ type: JOB_HIDE_DIALOG })
-    this.props.dispatch({ type: EVALUATE_JOB, payload: this.props.job.ID })
+    this.props.dispatch({ type: NOMAD_JOB_HIDE_DIALOG })
+    this.props.dispatch({ type: NOMAD_EVALUATE_JOB, payload: this.props.job.ID })
   }
 
   componentWillUpdate(nextProps) {
     if (nextProps.jobDialog === "evaluate") {
-      this.props.dispatch({ type: JOB_HIDE_DIALOG })
-      this.props.dispatch({ type: EVALUATE_JOB, payload: this.props.job.ID })
+      this.props.dispatch({ type: NOMAD_JOB_HIDE_DIALOG })
+      this.props.dispatch({ type: NOMAD_EVALUATE_JOB, payload: this.props.job.ID })
     }
   }
 
   handleCancel = () => {
-    this.props.dispatch({ type: JOB_HIDE_DIALOG })
+    this.props.dispatch({ type: NOMAD_JOB_HIDE_DIALOG })
   }
 
   render() {

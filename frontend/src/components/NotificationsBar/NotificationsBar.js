@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import Snackbar from "material-ui/Snackbar"
 import { green500, red500 } from "material-ui/styles/colors"
-import { CLEAR_ERROR_NOTIFICATION, CLEAR_SUCCESS_NOTIFICATION } from "../../sagas/event"
+import { APP_CLEAR_ERROR_NOTIFICATION, APP_CLEAR_SUCCESS_NOTIFICATION } from "../../sagas/event"
 
 class NotificationsBar extends Component {
   constructor(props) {
@@ -37,7 +37,7 @@ class NotificationsBar extends Component {
   }
 
   resetSuccessMessage() {
-    this.props.dispatch({ type: CLEAR_SUCCESS_NOTIFICATION })
+    this.props.dispatch({ type: APP_CLEAR_SUCCESS_NOTIFICATION })
 
     this.setState({
       ...this.state,
@@ -47,7 +47,7 @@ class NotificationsBar extends Component {
   }
 
   resetErrorMessage() {
-    this.props.dispatch({ type: CLEAR_ERROR_NOTIFICATION })
+    this.props.dispatch({ type: APP_CLEAR_ERROR_NOTIFICATION })
 
     this.setState({
       ...this.state,

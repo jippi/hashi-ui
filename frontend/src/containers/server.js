@@ -2,19 +2,19 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import ServerTopbar from "../components/ServerTopbar/ServerTopbar"
-import { WATCH_MEMBER, UNWATCH_MEMBER } from "../sagas/event"
+import { NOMAD_WATCH_MEMBER, NOMAD_UNWATCH_MEMBER } from "../sagas/event"
 
 class Server extends Component {
   componentWillMount() {
     this.props.dispatch({
-      type: WATCH_MEMBER,
+      type: NOMAD_WATCH_MEMBER,
       payload: this.props.params.memberId
     })
   }
 
   componentWillUnmount() {
     this.props.dispatch({
-      type: UNWATCH_MEMBER,
+      type: NOMAD_UNWATCH_MEMBER,
       payload: this.props.params.memberId
     })
   }

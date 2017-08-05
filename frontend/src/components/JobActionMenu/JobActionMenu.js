@@ -9,12 +9,12 @@ import { green500 } from "material-ui/styles/colors"
 import JobEditRawJSON from "../JobEditRawJSON/JobEditRawJSON"
 import JobActionStop from "../JobActionStop/JobActionStop"
 import JobActionEvaluate from "../JobActionEvaluate/JobActionEvaluate"
-import { JOB_SHOW_DIALOG } from "../../sagas/event"
+import { NOMAD_JOB_SHOW_DIALOG } from "../../sagas/event"
 
 class JobActionMenu extends Component {
   handleClick = key => {
     return () => {
-      this.props.dispatch({ type: JOB_SHOW_DIALOG, payload: key })
+      this.props.dispatch({ type: NOMAD_JOB_SHOW_DIALOG, payload: key })
     }
   }
 

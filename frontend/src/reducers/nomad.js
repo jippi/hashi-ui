@@ -1,12 +1,12 @@
-import { SET_NOMAD_REGION, FETCHED_NOMAD_REGIONS, UNKNOWN_NOMAD_REGION } from "../sagas/event"
+import { NOMAD_SET_REGION, NOMAD_FETCHED_REGIONS, NOMAD_UNKNOWN_REGION } from "../sagas/event"
 
 export function ChangeNomadRegionReducer(state = {}, action) {
   switch (action.type) {
-    case SET_NOMAD_REGION:
+    case NOMAD_SET_REGION:
       document.location.href = window.NOMAD_ENDPOINT + "/nomad/" + action.payload + "/cluster"
       return {}
 
-    case UNKNOWN_NOMAD_REGION:
+    case NOMAD_UNKNOWN_REGION:
       document.location.href = window.NOMAD_ENDPOINT + "/nomad"
       return {}
   }
@@ -16,7 +16,7 @@ export function ChangeNomadRegionReducer(state = {}, action) {
 
 export function NomadRegionsReducer(state = [], action) {
   switch (action.type) {
-    case FETCHED_NOMAD_REGIONS:
+    case NOMAD_FETCHED_REGIONS:
       return action.payload
   }
 

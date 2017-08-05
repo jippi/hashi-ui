@@ -7,33 +7,33 @@ import AllocationTopbar from "../components/AllocationTopbar/AllocationTopbar"
 import JobLink from "../components/JobLink/JobLink"
 import AllocationLink from "../components/AllocationLink/AllocationLink"
 import ClientLink from "../components/ClientLink/ClientLink"
-import { WATCH_ALLOC, UNWATCH_ALLOC, WATCH_ALLOCS, UNWATCH_ALLOCS } from "../sagas/event"
+import { NOMAD_WATCH_ALLOC, NOMAD_UNWATCH_ALLOC, NOMAD_WATCH_ALLOCS, NOMAD_UNWATCH_ALLOCS } from "../sagas/event"
 
 class Allocation extends Component {
   componentWillMount() {
     this.props.dispatch({
-      type: WATCH_ALLOC,
+      type: NOMAD_WATCH_ALLOC,
       payload: this.props.params.allocId
     })
   }
 
   componentWillUnmount() {
     this.props.dispatch({
-      type: UNWATCH_ALLOC,
+      type: NOMAD_UNWATCH_ALLOC,
       payload: this.props.params.allocId
     })
 
     this.props.dispatch({
-      type: UNWATCH_ALLOCS
+      type: NOMAD_UNWATCH_ALLOCS
     })
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.allocation.DesiredStatus && this.props.allocation.DesiredStatus != "run") {
       if (this.props.allocations.length === 0) {
-        this.props.dispatch({ type: WATCH_ALLOCS })
+        this.props.dispatch({ type: NOMAD_WATCH_ALLOCS })
       } else {
-        this.props.dispatch({ type: UNWATCH_ALLOCS })
+        this.props.dispatch({ type: NOMAD_UNWATCH_ALLOCS })
       }
     }
 
@@ -43,13 +43,13 @@ class Allocation extends Component {
 
     if (prevProps.params.allocId) {
       this.props.dispatch({
-        type: UNWATCH_ALLOC,
+        type: NOMAD_UNWATCH_ALLOC,
         payload: prevProps.params.allocId
       })
     }
 
     this.props.dispatch({
-      type: WATCH_ALLOC,
+      type: NOMAD_WATCH_ALLOC,
       payload: this.props.params.allocId
     })
   }

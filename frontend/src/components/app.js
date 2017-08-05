@@ -16,7 +16,7 @@ import ConsulMainNav from "./ConsulMainNav/ConsulMainNav"
 import ConsulTopbar from "./ConsulTopbar/ConsulTopbar"
 import NotificationsBar from "./NotificationsBar/NotificationsBar"
 import { NOMAD_COLOR, CONSUL_COLOR } from "../config.js"
-import { APP_DRAWER_OPEN, APP_DRAWER_CLOSE, UNKNOWN_CONSUL_REGION, UNKNOWN_NOMAD_REGION } from "../sagas/event"
+import { APP_DRAWER_OPEN, APP_DRAWER_CLOSE, CONSUL_UNKNOWN_REGION, NOMAD_UNKNOWN_REGION } from "../sagas/event"
 
 class App extends Component {
   constructor() {
@@ -47,10 +47,10 @@ class App extends Component {
 
     switch (app) {
       case "consul":
-        this.props.dispatch({ type: UNKNOWN_CONSUL_REGION })
+        this.props.dispatch({ type: CONSUL_UNKNOWN_REGION })
         break
       case "nomad":
-        this.props.dispatch({ type: UNKNOWN_NOMAD_REGION })
+        this.props.dispatch({ type: NOMAD_UNKNOWN_REGION })
         break
     }
   }
