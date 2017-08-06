@@ -5,22 +5,22 @@ import (
 	observer "github.com/imkira/go-observer"
 )
 
-// NomadCluster derp
-type NomadCluster struct {
+// Cluster derp
+type Cluster struct {
 	ClusterClient  *api.Client
-	RegionChannels *NomadRegionChannels
-	RegionClients  *NomadRegionClients
+	RegionChannels *RegionChannels
+	RegionClients  *RegionClients
 	members        []*AgentMemberWithID
 }
 
-// NomadClusterBroadcastChannels ...
-type NomadClusterBroadcastChannels struct {
+// ClusterBroadcastChannels ...
+type ClusterBroadcastChannels struct {
 	members observer.Property
 }
 
-// NewNomadCluster ...
-func NewNomadCluster(clusterClient *api.Client, clients *NomadRegionClients, channels *NomadRegionChannels) *NomadCluster {
-	return &NomadCluster{
+// NewCluster ...
+func NewCluster(clusterClient *api.Client, clients *RegionClients, channels *RegionChannels) *Cluster {
+	return &Cluster{
 		ClusterClient:  clusterClient,
 		RegionClients:  clients,
 		RegionChannels: channels,
@@ -28,6 +28,6 @@ func NewNomadCluster(clusterClient *api.Client, clients *NomadRegionClients, cha
 }
 
 // StartWatchers ...
-func (c *NomadCluster) StartWatchers() {
+func (c *Cluster) StartWatchers() {
 	go c.watchMembers()
 }

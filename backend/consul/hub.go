@@ -8,16 +8,16 @@ import (
 	"github.com/jippi/hashi-ui/backend/structs"
 )
 
-// ConsulHub keeps track of all the websocket connections and sends state updates
+// Hub keeps track of all the websocket connections and sends state updates
 // from Nomad to all connections.
-type ConsulHub struct {
-	connections map[*ConsulConnection]bool
-	cluster     *ConsulCluster
-	channels    *ConsulRegionChannels
-	clients     *ConsulRegionClients
+type Hub struct {
+	connections map[*Connection]bool
+	cluster     *Cluster
+	channels    *RegionChannels
+	clients     *RegionClients
 	regions     []string
-	register    chan *ConsulConnection
-	unregister  chan *ConsulConnection
+	register    chan *Connection
+	unregister  chan *Connection
 }
 
 var upgrader = websocket.Upgrader{
@@ -25,28 +25,28 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
-// NewConsulHub initializes a new hub.
-func NewConsulHub(cluster *ConsulCluster) *ConsulHub {
+// NewHub initializes a new hub.
+func NewHub(cluster *Cluster) *Hub {
 	regions := make([]string, 0)
 
 	for region := range *cluster.RegionChannels {
 		regions = append(regions, region)
 	}
 
-	return &ConsulHub{
+	return &Hub{
 		cluster:     cluster,
 		clients:     cluster.RegionClients,
 		channels:    cluster.RegionChannels,
 		regions:     regions,
-		connections: make(map[*ConsulConnection]bool),
-		register:    make(chan *ConsulConnection),
-		unregister:  make(chan *ConsulConnection),
+		connections: make(map[*Connection]bool),
+		register:    make(chan *Connection),
+		unregister:  make(chan *Connection),
 	}
 }
 
 // Run (un)registers websocket connections and broadcasts Nomad state updates
 // to all connections.
-func (h *ConsulHub) Run() {
+func (h *Hub) Run() {
 	for {
 		select {
 
@@ -63,7 +63,7 @@ func (h *ConsulHub) Run() {
 }
 
 // Handler establishes the websocket connection and calls the connection handler.
-func (h *ConsulHub) Handler(w http.ResponseWriter, r *http.Request) {
+func (h *Hub) Handler(w http.ResponseWriter, r *http.Request) {
 	socket, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		logger.Errorf("transport: websocket upgrade failed: %s", err)
@@ -75,7 +75,7 @@ func (h *ConsulHub) Handler(w http.ResponseWriter, r *http.Request) {
 	region, ok := params["region"]
 	if !ok {
 		logger.Errorf("No region provided")
-		h.requireConsulRegion(socket)
+		h.requireRegion(socket)
 		return
 	}
 
@@ -85,11 +85,11 @@ func (h *ConsulHub) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := NewConsulConnection(h, socket, (*h.clients)[region], (*h.channels)[region])
+	c := NewConnection(h, socket, (*h.clients)[region], (*h.channels)[region])
 	c.Handle()
 }
 
-func (h *ConsulHub) requireConsulRegion(socket *websocket.Conn) {
+func (h *Hub) requireRegion(socket *websocket.Conn) {
 	var action structs.Action
 
 	if len(h.regions) == 1 {
@@ -122,7 +122,7 @@ func (h *ConsulHub) requireConsulRegion(socket *websocket.Conn) {
 	}
 }
 
-func (h *ConsulHub) sendAction(socket *websocket.Conn, action *structs.Action) {
+func (h *Hub) sendAction(socket *websocket.Conn, action *structs.Action) {
 	if err := socket.WriteJSON(action); err != nil {
 		logger.Errorf(" %s", err)
 	}

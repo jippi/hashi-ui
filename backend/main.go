@@ -115,7 +115,7 @@ func main() {
 	router := mux.NewRouter()
 
 	if cfg.NomadEnable {
-		nomadHub, nomadSuccess := nomad.InitializeNomad(cfg)
+		nomadHub, nomadSuccess := nomad.Initialize(cfg)
 		if !nomadSuccess {
 			logger.Fatalf("Failed to start Nomad hub, please check your configuration")
 		}
@@ -133,7 +133,7 @@ func main() {
 	}
 
 	if cfg.ConsulEnable {
-		consulHub, consulSuccess := consul.InitializeConsul(cfg)
+		consulHub, consulSuccess := consul.Initialize(cfg)
 		if !consulSuccess {
 			logger.Fatalf("Failed to start Consul hub, please check your configuration")
 		}

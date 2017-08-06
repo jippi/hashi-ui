@@ -13,42 +13,42 @@ const (
 	waitTime = 1 * time.Minute
 )
 
-// ConsulRegionChannels ...
-type ConsulRegionChannels map[string]*ConsulRegionBroadcastChannels
+// RegionChannels ...
+type RegionChannels map[string]*RegionBroadcastChannels
 
-// ConsulRegionClients ...
-type ConsulRegionClients map[string]*ConsulRegion
+// RegionClients ...
+type RegionClients map[string]*Region
 
-// ConsulService ...
-type ConsulService struct {
+// Service ...
+type Service struct {
 	Name  string
 	Nodes []string
 	Tags  []string
 }
 
-// ConsulServices ...
-type ConsulServices map[string]*ConsulService
+// Services ...
+type Services map[string]*Service
 
-// ConsulRegionBroadcastChannels contains all the channels for resources hashi-ui automatically maintain active lists of
-type ConsulRegionBroadcastChannels struct {
+// RegionBroadcastChannels contains all the channels for resources hashi-ui automatically maintain active lists of
+type RegionBroadcastChannels struct {
 	services observer.Property
 	nodes    observer.Property
 }
 
-// ConsulRegion keeps track of the ConsulRegion state. It monitors changes to allocations,
+// Region keeps track of the Region state. It monitors changes to allocations,
 // evaluations, jobs and nodes and broadcasts them to all connected websockets.
-// It also exposes an API client for the ConsulRegion server.
-type ConsulRegion struct {
+// It also exposes an API client for the Region server.
+type Region struct {
 	Config            *config.Config
 	Client            *api.Client
-	broadcastChannels *ConsulRegionBroadcastChannels
+	broadcastChannels *RegionBroadcastChannels
 	regions           []string
-	services          *ConsulInternalServices
-	nodes             *ConsulInternalNodes
+	services          *InternalServices
+	nodes             *InternalNodes
 }
 
-// ConsulInternalService ...
-type ConsulInternalService struct {
+// InternalService ...
+type InternalService struct {
 	Name           string
 	Nodes          []string
 	ChecksPassing  int64
@@ -56,11 +56,11 @@ type ConsulInternalService struct {
 	ChecksCritical int64
 }
 
-// ConsulInternalServices ...
-type ConsulInternalServices []*ConsulInternalService
+// InternalServices ...
+type InternalServices []*InternalService
 
-// ConsulInternalNode ...
-type ConsulInternalNode struct {
+// InternalNode ...
+type InternalNode struct {
 	Node            string
 	Address         string
 	TaggedAddresses map[string]string
@@ -68,11 +68,11 @@ type ConsulInternalNode struct {
 	Checks          []*api.AgentCheck
 }
 
-// ConsulInternalNodes ...
-type ConsulInternalNodes []*ConsulInternalNode
+// InternalNodes ...
+type InternalNodes []*InternalNode
 
-// CreateConsulRegionClient ...
-func CreateConsulRegionClient(c *config.Config, region string) (*api.Client, error) {
+// CreateRegionClient ...
+func CreateRegionClient(c *config.Config, region string) (*api.Client, error) {
 	config := api.DefaultConfig()
 	config.Address = c.ConsulAddress
 	config.WaitTime = waitTime
@@ -82,33 +82,33 @@ func CreateConsulRegionClient(c *config.Config, region string) (*api.Client, err
 	return api.NewClient(config)
 }
 
-// NewConsulRegion configures the Consul API client and initializes the internal state.
-func NewConsulRegion(c *config.Config, client *api.Client, channels *ConsulRegionBroadcastChannels) (*ConsulRegion, error) {
-	return &ConsulRegion{
+// NewRegion configures the Consul API client and initializes the internal state.
+func NewRegion(c *config.Config, client *api.Client, channels *RegionBroadcastChannels) (*Region, error) {
+	return &Region{
 		Config:            c,
 		Client:            client,
 		broadcastChannels: channels,
 		regions:           make([]string, 0),
-		services:          &ConsulInternalServices{},
-		nodes:             &ConsulInternalNodes{},
+		services:          &InternalServices{},
+		nodes:             &InternalNodes{},
 	}, nil
 }
 
 // StartWatchers derp
-func (c *ConsulRegion) StartWatchers() {
+func (c *Region) StartWatchers() {
 	go c.watchServices()
 	go c.watchNodes()
 }
 
 // watchServices ...
-func (c *ConsulRegion) watchServices() {
+func (c *Region) watchServices() {
 	q := &api.QueryOptions{WaitIndex: 0}
 	q.Token = c.Config.ConsulACLToken
 
 	raw := c.Client.Raw()
 
 	for {
-		var services ConsulInternalServices
+		var services InternalServices
 
 		meta, err := raw.Query("/v1/internal/ui/services", &services, q)
 		if err != nil {
@@ -136,14 +136,14 @@ func (c *ConsulRegion) watchServices() {
 }
 
 // watchNodes ...
-func (c *ConsulRegion) watchNodes() {
+func (c *Region) watchNodes() {
 	q := &api.QueryOptions{WaitIndex: 0}
 	q.Token = c.Config.ConsulACLToken
 
 	raw := c.Client.Raw()
 
 	for {
-		var nodes ConsulInternalNodes
+		var nodes InternalNodes
 
 		meta, err := raw.Query("/v1/internal/ui/nodes", &nodes, q)
 		if err != nil {

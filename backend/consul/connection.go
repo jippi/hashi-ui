@@ -13,10 +13,10 @@ import (
 	"gopkg.in/fatih/set.v0"
 )
 
-// ConsulConnection monitors the websocket connection. It processes any action
+// Connection monitors the websocket connection. It processes any action
 // received on the websocket and sends out actions on Consul state changes. It
 // maintains a set to keep track of the running watches.
-type ConsulConnection struct {
+type Connection struct {
 	ID                uuid.UUID
 	shortID           string
 	socket            *websocket.Conn
@@ -24,16 +24,16 @@ type ConsulConnection struct {
 	send              chan *structs.Action
 	destroyCh         chan struct{}
 	watches           *set.Set
-	hub               *ConsulHub
-	region            *ConsulRegion
-	broadcastChannels *ConsulRegionBroadcastChannels
+	hub               *Hub
+	region            *Region
+	broadcastChannels *RegionBroadcastChannels
 }
 
-// NewConsulConnection creates a new connection.
-func NewConsulConnection(hub *ConsulHub, socket *websocket.Conn, consulRegion *ConsulRegion, channels *ConsulRegionBroadcastChannels) *ConsulConnection {
+// NewConnection creates a new connection.
+func NewConnection(hub *Hub, socket *websocket.Conn, consulRegion *Region, channels *RegionBroadcastChannels) *Connection {
 	connectionID := uuid.NewV4()
 
-	return &ConsulConnection{
+	return &Connection{
 		ID:                connectionID,
 		shortID:           fmt.Sprintf("%s", connectionID)[0:8],
 		watches:           set.New(),
@@ -48,30 +48,30 @@ func NewConsulConnection(hub *ConsulHub, socket *websocket.Conn, consulRegion *C
 }
 
 // Warningf is a stupid wrapper for logger.Warningf
-func (c *ConsulConnection) Warningf(format string, args ...interface{}) {
+func (c *Connection) Warningf(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Warningf(message, args...)
 }
 
 // Errorf is a stupid wrapper for logger.Errorf
-func (c *ConsulConnection) Errorf(format string, args ...interface{}) {
+func (c *Connection) Errorf(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Errorf(message, args...)
 }
 
 // Infof is a stupid wrapper for logger.Infof
-func (c *ConsulConnection) Infof(format string, args ...interface{}) {
+func (c *Connection) Infof(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Infof(message, args...)
 }
 
 // Debugf is a stupid wrapper for logger.Debugf
-func (c *ConsulConnection) Debugf(format string, args ...interface{}) {
+func (c *Connection) Debugf(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Debugf(message, args...)
 }
 
-func (c *ConsulConnection) writePump() {
+func (c *Connection) writePump() {
 	defer func() {
 		c.socket.Close()
 	}()
@@ -97,7 +97,7 @@ func (c *ConsulConnection) writePump() {
 	}
 }
 
-func (c *ConsulConnection) readPump() {
+func (c *Connection) readPump() {
 	defer func() {
 		c.watches.Clear()
 		c.hub.unregister <- c
@@ -118,7 +118,7 @@ func (c *ConsulConnection) readPump() {
 	}
 }
 
-func (c *ConsulConnection) process(action structs.Action) {
+func (c *Connection) process(action structs.Action) {
 	c.Debugf("Processing event %s (index %d)", action.Type, action.Index)
 
 	switch action.Type {
@@ -191,7 +191,7 @@ func (c *ConsulConnection) process(action structs.Action) {
 
 // Handle monitors the websocket connection for incoming actions. It sends
 // out actions on state changes.
-func (c *ConsulConnection) Handle() {
+func (c *Connection) Handle() {
 	go c.keepAlive()
 	go c.writePump()
 	c.readPump()
@@ -204,7 +204,7 @@ func (c *ConsulConnection) Handle() {
 	close(c.destroyCh)
 }
 
-func (c *ConsulConnection) keepAlive() {
+func (c *Connection) keepAlive() {
 	logger.Debugf("Starting keep-alive packer sender")
 	ticker := time.NewTicker(10 * time.Second)
 	defer func() {
@@ -222,11 +222,11 @@ func (c *ConsulConnection) keepAlive() {
 	}
 }
 
-func (c *ConsulConnection) fetchRegions() {
+func (c *Connection) fetchRegions() {
 	c.send <- &structs.Action{Type: fetchedConsulRegions, Payload: c.hub.regions}
 }
 
-func (c *ConsulConnection) watchGenericBroadcast(watchKey string, actionEvent string, prop observer.Property, initialPayload interface{}) {
+func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, prop observer.Property, initialPayload interface{}) {
 	if c.watches.Has(watchKey) {
 		c.Warningf("Connection is already subscribed to %s", actionEvent)
 		return
@@ -278,12 +278,12 @@ func (c *ConsulConnection) watchGenericBroadcast(watchKey string, actionEvent st
 	}
 }
 
-func (c *ConsulConnection) unwatchGenericBroadcast(watchKey string) {
+func (c *Connection) unwatchGenericBroadcast(watchKey string) {
 	c.Debugf("Removing subscription for %s", watchKey)
 	c.watches.Remove(watchKey)
 }
 
-func (c *ConsulConnection) watchConsulService(action structs.Action) {
+func (c *Connection) watchConsulService(action structs.Action) {
 	serviceID := action.Payload.(string)
 
 	if c.watches.Has(serviceID) {
@@ -332,7 +332,7 @@ func (c *ConsulConnection) watchConsulService(action structs.Action) {
 	}
 }
 
-func (c *ConsulConnection) watchConsulNode(action structs.Action) {
+func (c *Connection) watchConsulNode(action structs.Action) {
 	nodeID := action.Payload.(string)
 	key := "consul/node/" + nodeID
 
@@ -353,7 +353,7 @@ func (c *ConsulConnection) watchConsulNode(action structs.Action) {
 	q := &api.QueryOptions{WaitIndex: 0}
 
 	for {
-		var node ConsulInternalNode
+		var node InternalNode
 
 		meta, err := raw.Query(fmt.Sprintf("/v1/internal/ui/node/%s", nodeID), &node, q)
 		if err != nil {
@@ -383,7 +383,7 @@ func (c *ConsulConnection) watchConsulNode(action structs.Action) {
 	}
 }
 
-func (c *ConsulConnection) watchConsulKVPath(action structs.Action) {
+func (c *Connection) watchConsulKVPath(action structs.Action) {
 	path := action.Payload.(string)
 	key := "consul/kv/path?" + path
 
@@ -434,7 +434,7 @@ func (c *ConsulConnection) watchConsulKVPath(action structs.Action) {
 	}
 }
 
-func (c *ConsulConnection) writeConsulKV(action structs.Action) {
+func (c *Connection) writeConsulKV(action structs.Action) {
 	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to write Consul KV: ConsulReadOnly is set to true")
 		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Unable to write Consul KV - the Consul backend is set to read-only"}
@@ -478,7 +478,7 @@ func (c *ConsulConnection) writeConsulKV(action structs.Action) {
 	}
 }
 
-func (c *ConsulConnection) deleteConsulKV(action structs.Action) {
+func (c *Connection) deleteConsulKV(action structs.Action) {
 	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to delete Consul KV: ConsulReadOnly is set to true")
 		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Unable to delete Consul KV - the Consul backend is set to read-only"}
@@ -497,7 +497,7 @@ func (c *ConsulConnection) deleteConsulKV(action structs.Action) {
 	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: fmt.Sprintf("The key was successfully deleted: %s.", key)}
 }
 
-func (c *ConsulConnection) getConsulKVPair(action structs.Action) {
+func (c *Connection) getConsulKVPair(action structs.Action) {
 	key := action.Payload.(string)
 
 	pair, _, err := c.region.Client.KV().Get(key, &api.QueryOptions{})
@@ -515,7 +515,7 @@ func (c *ConsulConnection) getConsulKVPair(action structs.Action) {
 	c.send <- &structs.Action{Type: fetchedConsulKVPair, Payload: pair, Index: pair.ModifyIndex}
 }
 
-func (c *ConsulConnection) deleteConsulKvPair(action structs.Action) {
+func (c *Connection) deleteConsulKvPair(action structs.Action) {
 	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to delete Consul KV: ConsulReadOnly is set to true")
 		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Unable to delete Consul KV - the Consul backend is set to read-only"}
@@ -553,7 +553,7 @@ func (c *ConsulConnection) deleteConsulKvPair(action structs.Action) {
 	c.send <- &structs.Action{Type: clearConsulKvPair}
 }
 
-func (c *ConsulConnection) dereigsterConsulService(action structs.Action) {
+func (c *Connection) dereigsterConsulService(action structs.Action) {
 	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to deregister Consul Service: ConsulReadOnly is set to true")
 		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Unable to deresiger Consul Service - the Consul backend is set to read-only"}
@@ -595,7 +595,7 @@ func (c *ConsulConnection) dereigsterConsulService(action structs.Action) {
 	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "The service has been successfully deregistered."}
 }
 
-func (c *ConsulConnection) dereigsterConsulServiceCheck(action structs.Action) {
+func (c *Connection) dereigsterConsulServiceCheck(action structs.Action) {
 	if c.region.Config.ConsulReadOnly {
 		logger.Warningf("Unable to deregister Consul Service Check: ConsulReadOnly is set to true")
 		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Unable to deresiger Consul Service Check - the Consul backend is set to read-only"}

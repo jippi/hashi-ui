@@ -18,14 +18,14 @@ const (
 	waitTime = 1 * time.Minute
 )
 
-// NomadRegionChannels ...
-type NomadRegionChannels map[string]*NomadRegionBroadcastChannels
+// RegionChannels ...
+type RegionChannels map[string]*RegionBroadcastChannels
 
-// NomadRegionClients ...
-type NomadRegionClients map[string]*NomadRegion
+// RegionClients ...
+type RegionClients map[string]*Region
 
-// NomadRegionBroadcastChannels contains all the channels for resources hashi-ui automatically maintain active lists of
-type NomadRegionBroadcastChannels struct {
+// RegionBroadcastChannels contains all the channels for resources hashi-ui automatically maintain active lists of
+type RegionBroadcastChannels struct {
 	allocations        observer.Property
 	allocationsShallow observer.Property
 	evaluations        observer.Property
@@ -35,13 +35,13 @@ type NomadRegionBroadcastChannels struct {
 	clusterStatistics  observer.Property
 }
 
-// NomadRegion keeps track of the NomadRegion state. It monitors changes to allocations,
+// Region keeps track of the Region state. It monitors changes to allocations,
 // evaluations, jobs and nodes and broadcasts them to all connected websockets.
-// It also exposes an API client for the NomadRegion server.
-type NomadRegion struct {
+// It also exposes an API client for the Region server.
+type Region struct {
 	Client             *api.Client
 	Config             *config.Config
-	broadcastChannels  *NomadRegionBroadcastChannels
+	broadcastChannels  *RegionBroadcastChannels
 	regions            []string
 	allocations        []*api.AllocationListStub
 	allocationsShallow []*api.AllocationListStub // with TaskStates removed
@@ -52,8 +52,8 @@ type NomadRegion struct {
 	nodes              []*api.NodeListStub
 }
 
-// CreateNomadRegionClient derp
-func CreateNomadRegionClient(c *config.Config, region string) (*api.Client, error) {
+// CreateRegionClient derp
+func CreateRegionClient(c *config.Config, region string) (*api.Client, error) {
 	config := api.DefaultConfig()
 	config.Address = c.NomadAddress
 	config.WaitTime = waitTime
@@ -68,9 +68,9 @@ func CreateNomadRegionClient(c *config.Config, region string) (*api.Client, erro
 	return api.NewClient(config)
 }
 
-// NewNomadRegion configures the Nomad API client and initializes the internal state.
-func NewNomadRegion(c *config.Config, client *api.Client, channels *NomadRegionBroadcastChannels) (*NomadRegion, error) {
-	return &NomadRegion{
+// NewRegion configures the Nomad API client and initializes the internal state.
+func NewRegion(c *config.Config, client *api.Client, channels *RegionBroadcastChannels) (*Region, error) {
+	return &Region{
 		Client:             client,
 		Config:             c,
 		broadcastChannels:  channels,
@@ -86,7 +86,7 @@ func NewNomadRegion(c *config.Config, client *api.Client, channels *NomadRegionB
 }
 
 // StartWatchers derp
-func (n *NomadRegion) StartWatchers() {
+func (n *Region) StartWatchers() {
 	go n.watchAllocs()
 	go n.watchAllocsShallow()
 	go n.watchEvals()
@@ -95,7 +95,7 @@ func (n *NomadRegion) StartWatchers() {
 	go n.watchAggregateClusterStatistics()
 }
 
-func (n *NomadRegion) watchAllocs() {
+func (n *Region) watchAllocs() {
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
 
 	for {
@@ -123,7 +123,7 @@ func (n *NomadRegion) watchAllocs() {
 	}
 }
 
-func (n *NomadRegion) watchAllocsShallow() {
+func (n *Region) watchAllocsShallow() {
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
 
 	for {
@@ -163,7 +163,7 @@ func (a ClientNameSorter) Len() int           { return len(a) }
 func (a ClientNameSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ClientNameSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
 
-func (n *NomadRegion) watchNodes() {
+func (n *Region) watchNodes() {
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
 	for {
 		nodes, meta, err := n.Client.Nodes().List(q)
@@ -193,7 +193,7 @@ func (n *NomadRegion) watchNodes() {
 	}
 }
 
-func (n *NomadRegion) watchEvals() {
+func (n *Region) watchEvals() {
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
 	for {
 		evaluations, meta, err := n.Client.Evaluations().List(q)
@@ -220,7 +220,7 @@ func (n *NomadRegion) watchEvals() {
 	}
 }
 
-func (n *NomadRegion) watchJobs() {
+func (n *Region) watchJobs() {
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
 	for {
 		jobs, meta, err := n.Client.Jobs().List(q)
@@ -247,7 +247,7 @@ func (n *NomadRegion) watchJobs() {
 	}
 }
 
-func (n *NomadRegion) updateJob(job *api.Job) (*structs.Action, error) {
+func (n *Region) updateJob(job *api.Job) (*structs.Action, error) {
 	if n.Config.NomadReadOnly {
 		logger.Errorf("Unable to run job: NomadReadOnly is set to true")
 		return &structs.Action{Type: structs.ErrorNotification, Payload: "The backend server is set to read-only"}, errors.New("Nomad is in read-only mode")
@@ -283,7 +283,7 @@ type NomadRegionStatisticsWorkerPayload struct {
 	quit    <-chan bool
 	tasks   <-chan *NomadRegionStatisticsTask
 	results chan *NomadRegionStatisticsResult
-	n       *NomadRegion
+	n       *Region
 	wg      *sync.WaitGroup
 }
 
@@ -336,7 +336,7 @@ func worker(payload *NomadRegionStatisticsWorkerPayload) {
 	}
 }
 
-func (n *NomadRegion) collectAggregateClusterStatistics() {
+func (n *Region) collectAggregateClusterStatistics() {
 	nodes := n.nodes
 
 	quit := make(chan bool)
@@ -404,7 +404,7 @@ func (n *NomadRegion) collectAggregateClusterStatistics() {
 	n.broadcastChannels.clusterStatistics.Update(&structs.Action{Type: fetchedClusterStatistics, Payload: aggResult})
 }
 
-func (n *NomadRegion) watchAggregateClusterStatistics() {
+func (n *Region) watchAggregateClusterStatistics() {
 	ticker := time.NewTicker(5 * time.Second)
 	quit := make(chan struct{})
 

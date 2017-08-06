@@ -5,21 +5,21 @@ import (
 	observer "github.com/imkira/go-observer"
 )
 
-// ConsulCluster derp
-type ConsulCluster struct {
+// Cluster derp
+type Cluster struct {
 	ClusterClient  *api.Client
-	RegionChannels *ConsulRegionChannels
-	RegionClients  *ConsulRegionClients
+	RegionChannels *RegionChannels
+	RegionClients  *RegionClients
 }
 
-// ConsulClusterBroadcastChannels ...
-type ConsulClusterBroadcastChannels struct {
+// ClusterBroadcastChannels ...
+type ClusterBroadcastChannels struct {
 	members observer.Property
 }
 
-// NewConsulCluster ...
-func NewConsulCluster(clusterClient *api.Client, clients *ConsulRegionClients, channels *ConsulRegionChannels) *ConsulCluster {
-	return &ConsulCluster{
+// NewCluster ...
+func NewCluster(clusterClient *api.Client, clients *RegionClients, channels *RegionChannels) *Cluster {
+	return &Cluster{
 		ClusterClient:  clusterClient,
 		RegionClients:  clients,
 		RegionChannels: channels,
@@ -27,6 +27,6 @@ func NewConsulCluster(clusterClient *api.Client, clients *ConsulRegionClients, c
 }
 
 // StartWatchers ...
-func (c *ConsulCluster) StartWatchers() {
+func (c *Cluster) StartWatchers() {
 
 }

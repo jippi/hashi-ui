@@ -31,10 +31,10 @@ const (
 	maxFileSize int64 = defaultTailLines * bytesToLines
 )
 
-// NomadConnection monitors the websocket connection. It processes any action
+// Connection monitors the websocket connection. It processes any action
 // received on the websocket and sends out actions on Nomad state changes. It
 // maintains a set to keep track of the running watches.
-type NomadConnection struct {
+type Connection struct {
 	ID                uuid.UUID
 	shortID           string
 	socket            *websocket.Conn
@@ -42,16 +42,16 @@ type NomadConnection struct {
 	send              chan *structs.Action
 	destroyCh         chan struct{}
 	watches           *set.Set
-	hub               *NomadHub
-	region            *NomadRegion
-	broadcastChannels *NomadRegionBroadcastChannels
+	hub               *Hub
+	region            *Region
+	broadcastChannels *RegionBroadcastChannels
 }
 
-// NewNomadConnection creates a new connection.
-func NewNomadConnection(hub *NomadHub, socket *websocket.Conn, nomadRegion *NomadRegion, channels *NomadRegionBroadcastChannels) *NomadConnection {
+// NewConnection creates a new connection.
+func NewConnection(hub *Hub, socket *websocket.Conn, nomadRegion *Region, channels *RegionBroadcastChannels) *Connection {
 	connectionID := uuid.NewV4()
 
-	return &NomadConnection{
+	return &Connection{
 		ID:                connectionID,
 		shortID:           fmt.Sprintf("%s", connectionID)[0:8],
 		watches:           set.New(),
@@ -66,30 +66,30 @@ func NewNomadConnection(hub *NomadHub, socket *websocket.Conn, nomadRegion *Noma
 }
 
 // Warningf is a stupid wrapper for logger.Warningf
-func (c *NomadConnection) Warningf(format string, args ...interface{}) {
+func (c *Connection) Warningf(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Warningf(message, args...)
 }
 
 // Errorf is a stupid wrapper for logger.Errorf
-func (c *NomadConnection) Errorf(format string, args ...interface{}) {
+func (c *Connection) Errorf(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Errorf(message, args...)
 }
 
 // Infof is a stupid wrapper for logger.Infof
-func (c *NomadConnection) Infof(format string, args ...interface{}) {
+func (c *Connection) Infof(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Infof(message, args...)
 }
 
 // Debugf is a stupid wrapper for logger.Debugf
-func (c *NomadConnection) Debugf(format string, args ...interface{}) {
+func (c *Connection) Debugf(format string, args ...interface{}) {
 	message := fmt.Sprintf("[%s] ", c.shortID) + format
 	logger.Debugf(message, args...)
 }
 
-func (c *NomadConnection) writePump() {
+func (c *Connection) writePump() {
 	defer func() {
 		c.socket.Close()
 	}()
@@ -114,7 +114,7 @@ func (c *NomadConnection) writePump() {
 	}
 }
 
-func (c *NomadConnection) readPump() {
+func (c *Connection) readPump() {
 	defer func() {
 		c.watches.Clear()
 		c.hub.unregister <- c
@@ -136,7 +136,7 @@ func (c *NomadConnection) readPump() {
 	}
 }
 
-func (c *NomadConnection) process(action structs.Action) {
+func (c *Connection) process(action structs.Action) {
 	c.Debugf("Processing event %s (index %d)", action.Type, action.Index)
 
 	switch action.Type {
@@ -277,7 +277,7 @@ func (c *NomadConnection) process(action structs.Action) {
 
 // Handle monitors the websocket connection for incoming actions. It sends
 // out actions on state changes.
-func (c *NomadConnection) Handle() {
+func (c *Connection) Handle() {
 	go c.keepAlive()
 	go c.writePump()
 	c.readPump()
@@ -288,7 +288,7 @@ func (c *NomadConnection) Handle() {
 	close(c.destroyCh)
 }
 
-func (c *NomadConnection) keepAlive() {
+func (c *Connection) keepAlive() {
 	logger.Debugf("Starting keep-alive packer sender")
 	ticker := time.NewTicker(10 * time.Second)
 	defer func() {
@@ -306,7 +306,7 @@ func (c *NomadConnection) keepAlive() {
 	}
 }
 
-func (c *NomadConnection) watchAlloc(action structs.Action) {
+func (c *Connection) watchAlloc(action structs.Action) {
 	allocID := action.Payload.(string)
 
 	defer func() {
@@ -348,7 +348,7 @@ func (c *NomadConnection) watchAlloc(action structs.Action) {
 	}
 }
 
-func (c *NomadConnection) watchEval(action structs.Action) {
+func (c *Connection) watchEval(action structs.Action) {
 	evalID := action.Payload.(string)
 
 	defer func() {
@@ -388,7 +388,7 @@ func (c *NomadConnection) watchEval(action structs.Action) {
 	}
 }
 
-func (c *NomadConnection) fetchMember(action structs.Action) {
+func (c *Connection) fetchMember(action structs.Action) {
 	memberID := action.Payload.(string)
 	member, err := c.hub.cluster.MemberWithID(memberID)
 	if err != nil {
@@ -399,7 +399,7 @@ func (c *NomadConnection) fetchMember(action structs.Action) {
 	c.send <- &structs.Action{Type: fetchedMember, Payload: member}
 }
 
-func (c *NomadConnection) watchMember(action structs.Action) {
+func (c *Connection) watchMember(action structs.Action) {
 	memberID := action.Payload.(string)
 
 	defer func() {
@@ -434,7 +434,7 @@ func (c *NomadConnection) watchMember(action structs.Action) {
 	}
 }
 
-func (c *NomadConnection) fetchNode(action structs.Action) {
+func (c *Connection) fetchNode(action structs.Action) {
 	nodeID := action.Payload.(string)
 	node, _, err := c.region.Client.Nodes().Info(nodeID, nil)
 	if err != nil {
@@ -444,7 +444,7 @@ func (c *NomadConnection) fetchNode(action structs.Action) {
 	c.send <- &structs.Action{Type: fetchedNode, Payload: node}
 }
 
-func (c *NomadConnection) watchNode(action structs.Action) {
+func (c *Connection) watchNode(action structs.Action) {
 	nodeID := action.Payload.(string)
 
 	defer func() {
@@ -485,7 +485,7 @@ func (c *NomadConnection) watchNode(action structs.Action) {
 	}
 }
 
-func (c *NomadConnection) watchGenericBroadcast(watchKey string, actionEvent string, prop observer.Property, initialPayload interface{}) {
+func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, prop observer.Property, initialPayload interface{}) {
 	defer func() {
 		c.watches.Remove(watchKey)
 		c.Infof("Stopped watching %s", watchKey)
@@ -532,12 +532,12 @@ func (c *NomadConnection) watchGenericBroadcast(watchKey string, actionEvent str
 	}
 }
 
-func (c *NomadConnection) unwatchGenericBroadcast(watchKey string) {
+func (c *Connection) unwatchGenericBroadcast(watchKey string) {
 	c.Debugf("Removing subscription for %s", watchKey)
 	c.watches.Remove(watchKey)
 }
 
-func (c *NomadConnection) watchJob(action structs.Action) {
+func (c *Connection) watchJob(action structs.Action) {
 	jobID := action.Payload.(string)
 
 	defer func() {
@@ -589,7 +589,7 @@ func (c *NomadConnection) watchJob(action structs.Action) {
 	}
 }
 
-func (c *NomadConnection) fetchClientStats(action structs.Action) {
+func (c *Connection) fetchClientStats(action structs.Action) {
 	nodeID, ok := action.Payload.(string)
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -605,7 +605,7 @@ func (c *NomadConnection) fetchClientStats(action structs.Action) {
 	c.send <- &structs.Action{Type: fetchedClientStats, Payload: stats, Index: 0}
 }
 
-func (c *NomadConnection) watchClientStats(action structs.Action) {
+func (c *Connection) watchClientStats(action structs.Action) {
 	nodeID, ok := action.Payload.(string)
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -651,7 +651,7 @@ func nodeUrl(params map[string]interface{}) string {
 	return fmt.Sprintf("http://%s", addr)
 }
 
-func (c *NomadConnection) fetchDir(action structs.Action) {
+func (c *Connection) fetchDir(action structs.Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -683,7 +683,7 @@ func (c *NomadConnection) fetchDir(action structs.Action) {
 	c.send <- &structs.Action{Type: fetchedDir, Payload: dir, Index: 0}
 }
 
-func (c *NomadConnection) watchFile(action structs.Action) {
+func (c *Connection) watchFile(action structs.Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		logger.Error("Could not decode payload")
@@ -827,7 +827,7 @@ func (c *NomadConnection) watchFile(action structs.Action) {
 	}
 }
 
-func (c *NomadConnection) changeTaskGroupCount(action structs.Action) {
+func (c *Connection) changeTaskGroupCount(action structs.Action) {
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -916,7 +916,7 @@ func (c *NomadConnection) changeTaskGroupCount(action structs.Action) {
 	c.send <- updateAction
 }
 
-func (c *NomadConnection) submitJob(action structs.Action) {
+func (c *Connection) submitJob(action structs.Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
@@ -949,7 +949,7 @@ func (c *NomadConnection) submitJob(action structs.Action) {
 	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "The job has been successfully updated.", Index: index}
 }
 
-func (c *NomadConnection) stopJob(action structs.Action) {
+func (c *Connection) stopJob(action structs.Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
@@ -974,7 +974,7 @@ func (c *NomadConnection) stopJob(action structs.Action) {
 	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "The job has been successfully stopped.", Index: index}
 }
 
-func (c *NomadConnection) evaluateJob(action structs.Action) {
+func (c *Connection) evaluateJob(action structs.Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
@@ -999,6 +999,6 @@ func (c *NomadConnection) evaluateJob(action structs.Action) {
 	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "The job has been successfully re-evaluated.", Index: index}
 }
 
-func (c *NomadConnection) fetchRegions() {
+func (c *Connection) fetchRegions() {
 	c.send <- &structs.Action{Type: fetchedNomadRegions, Payload: c.hub.regions}
 }

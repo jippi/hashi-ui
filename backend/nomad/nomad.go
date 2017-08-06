@@ -9,28 +9,28 @@ import (
 
 var logger = logging.MustGetLogger("hashi-ui")
 
-// InitializeNomad ...
-func InitializeNomad(cfg *config.Config) (*NomadHub, bool) {
+// Initialize ...
+func Initialize(cfg *config.Config) (*Hub, bool) {
 
-	nomadClient, err := CreateNomadRegionClient(cfg, "")
+	client, err := CreateRegionClient(cfg, "")
 	if err != nil {
 		logger.Errorf("Could not create Nomad API Client: %s", err)
 		return nil, false
 	}
 
-	regions, err := nomadClient.Regions().List()
+	regions, err := client.Regions().List()
 	if err != nil {
 		logger.Errorf("Could not fetch nomad regions from API: %s", err)
 		return nil, false
 	}
 
-	regionChannels := NomadRegionChannels{}
-	regionClients := NomadRegionClients{}
+	regionChannels := RegionChannels{}
+	regionClients := RegionClients{}
 
 	for _, region := range regions {
 		logger.Infof("Starting handlers for region: %s", region)
 
-		channels := &NomadRegionBroadcastChannels{}
+		channels := &RegionBroadcastChannels{}
 		channels.allocations = observer.NewProperty(&structs.Action{})
 		channels.allocationsShallow = observer.NewProperty(&structs.Action{})
 		channels.evaluations = observer.NewProperty(&structs.Action{})
@@ -41,14 +41,14 @@ func InitializeNomad(cfg *config.Config) (*NomadHub, bool) {
 
 		regionChannels[region] = channels
 
-		regionClient, clientErr := CreateNomadRegionClient(cfg, region)
+		regionClient, clientErr := CreateRegionClient(cfg, region)
 		if clientErr != nil {
 			logger.Errorf("  -> Could not create client: %s", clientErr)
 			return nil, false
 		}
 
 		logger.Infof("  -> Connecting to nomad")
-		nomad, nomadErr := NewNomadRegion(cfg, regionClient, channels)
+		nomad, nomadErr := NewRegion(cfg, regionClient, channels)
 		if nomadErr != nil {
 			logger.Errorf("    -> Could not create client: %s", nomadErr)
 			return nil, false
@@ -60,10 +60,10 @@ func InitializeNomad(cfg *config.Config) (*NomadHub, bool) {
 		nomad.StartWatchers()
 	}
 
-	cluster := NewNomadCluster(nomadClient, &regionClients, &regionChannels)
+	cluster := NewCluster(client, &regionClients, &regionChannels)
 	cluster.StartWatchers()
 
-	hub := NewNomadHub(cluster)
+	hub := NewHub(cluster)
 	go hub.Run()
 
 	return hub, true

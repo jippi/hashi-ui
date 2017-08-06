@@ -15,40 +15,40 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
-// NomadHub keeps track of all the websocket connections and sends state updates
+// Hub keeps track of all the websocket connections and sends state updates
 // from Nomad to all connections.
-type NomadHub struct {
-	connections map[*NomadConnection]bool
-	cluster     *NomadCluster
-	channels    *NomadRegionChannels
-	clients     *NomadRegionClients
+type Hub struct {
+	connections map[*Connection]bool
+	cluster     *Cluster
+	channels    *RegionChannels
+	clients     *RegionClients
 	regions     []string
-	register    chan *NomadConnection
-	unregister  chan *NomadConnection
+	register    chan *Connection
+	unregister  chan *Connection
 }
 
-// NewNomadHub initializes a new hub.
-func NewNomadHub(cluster *NomadCluster) *NomadHub {
+// NewHub initializes a new hub.
+func NewHub(cluster *Cluster) *Hub {
 	regions := make([]string, 0)
 
 	for region := range *cluster.RegionChannels {
 		regions = append(regions, region)
 	}
 
-	return &NomadHub{
+	return &Hub{
 		cluster:     cluster,
 		clients:     cluster.RegionClients,
 		channels:    cluster.RegionChannels,
 		regions:     regions,
-		connections: make(map[*NomadConnection]bool),
-		register:    make(chan *NomadConnection),
-		unregister:  make(chan *NomadConnection),
+		connections: make(map[*Connection]bool),
+		register:    make(chan *Connection),
+		unregister:  make(chan *Connection),
 	}
 }
 
 // Run (un)registers websocket connections and broadcasts Nomad state updates
 // to all connections.
-func (h *NomadHub) Run() {
+func (h *Hub) Run() {
 	for {
 		select {
 		case c := <-h.register:
@@ -64,7 +64,7 @@ func (h *NomadHub) Run() {
 }
 
 // Handler establishes the websocket connection and calls the connection handler.
-func (h *NomadHub) Handler(w http.ResponseWriter, r *http.Request) {
+func (h *Hub) Handler(w http.ResponseWriter, r *http.Request) {
 	socket, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		logger.Errorf("transport: websocket upgrade failed: %s", err)
@@ -86,11 +86,11 @@ func (h *NomadHub) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := NewNomadConnection(h, socket, (*h.clients)[region], (*h.channels)[region])
+	c := NewConnection(h, socket, (*h.clients)[region], (*h.channels)[region])
 	c.Handle()
 }
 
-func (h *NomadHub) requireNomadRegion(socket *websocket.Conn) {
+func (h *Hub) requireNomadRegion(socket *websocket.Conn) {
 	var action structs.Action
 
 	if len(h.regions) == 1 {
@@ -123,13 +123,14 @@ func (h *NomadHub) requireNomadRegion(socket *websocket.Conn) {
 	}
 }
 
-func (h *NomadHub) sendAction(socket *websocket.Conn, action *structs.Action) {
+func (h *Hub) sendAction(socket *websocket.Conn, action *structs.Action) {
 	if err := socket.WriteJSON(action); err != nil {
 		logger.Errorf(" %s", err)
 	}
 }
 
-func (h *NomadHub) DownloadFile(w http.ResponseWriter, r *http.Request) {
+// DownloadFile ...
+func (h *Hub) DownloadFile(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	region := params["region"]
 
