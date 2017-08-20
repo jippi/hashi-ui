@@ -133,7 +133,7 @@ class Jobs extends Component {
                   return (
                     <TableRow key={job.ID}>
                       <TableRowColumn style={flexibleWidth}>
-                        <JobLink jobId={job.Name} />
+                        <JobLink jobId={job.ID} />
                       </TableRowColumn>
                       <TableRowColumn style={columnFormat}>
                         {job.Type}
