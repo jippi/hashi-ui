@@ -25,6 +25,10 @@ class NomadMainNav extends PureComponent {
         route = `${prefix}/jobs`
         break
 
+      case "deployments":
+        route = `${prefix}/deployments`
+        break
+
       case "allocations":
         route = `${prefix}/allocations`
         break
@@ -63,6 +67,10 @@ class NomadMainNav extends PureComponent {
 
     if (location.pathname.startsWith(prefix + "/jobs")) {
       return "jobs"
+    }
+
+    if (location.pathname.startsWith(prefix + "/deployments")) {
+      return "deployments"
     }
 
     if (location.pathname.startsWith(prefix + "/allocations")) {
@@ -122,6 +130,13 @@ class NomadMainNav extends PureComponent {
           value="jobs"
           href={this.getRoute("jobs")}
           onClick={clickHandler("jobs")}
+        />
+        <ListItem
+          key="deployments"
+          primaryText="Deployments"
+          value="deployments"
+          href={this.getRoute("deployments")}
+          onClick={clickHandler("deployments")}
         />
         <ListItem
           key="allocations"

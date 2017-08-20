@@ -1,9 +1,11 @@
 import {
+  NOMAD_FETCHED_JOB_DEPLOYMENTS,
   NOMAD_FETCHED_JOB,
   NOMAD_FETCHED_JOBS,
   NOMAD_JOB_HIDE_DIALOG,
   NOMAD_JOB_SHOW_DIALOG,
-  NOMAD_UNWATCH_JOB
+  NOMAD_UNWATCH_JOB,
+  NOMAD_UNWATCH_JOB_DEPLOYMENTS
 } from "../sagas/event"
 
 export function JobInfoReducer(state = {}, action) {
@@ -25,6 +27,17 @@ export function JobInfoReducer(state = {}, action) {
     default:
   }
 
+  return state
+}
+
+export function JobDeploymentsReducer(state = [], action) {
+  switch (action.type) {
+    case NOMAD_FETCHED_JOB_DEPLOYMENTS:
+      return action.payload
+    case NOMAD_UNWATCH_JOB_DEPLOYMENTS:
+      return []
+    default:
+  }
   return state
 }
 

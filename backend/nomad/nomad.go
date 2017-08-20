@@ -33,11 +33,12 @@ func Initialize(cfg *config.Config) (*Hub, bool) {
 		channels := &RegionBroadcastChannels{}
 		channels.allocations = observer.NewProperty(&structs.Action{})
 		channels.allocationsShallow = observer.NewProperty(&structs.Action{})
+		channels.clusterStatistics = observer.NewProperty(&structs.Action{})
+		channels.deployments = observer.NewProperty(&structs.Action{})
 		channels.evaluations = observer.NewProperty(&structs.Action{})
 		channels.jobs = observer.NewProperty(&structs.Action{})
 		channels.members = observer.NewProperty(&structs.Action{})
 		channels.nodes = observer.NewProperty(&structs.Action{})
-		channels.clusterStatistics = observer.NewProperty(&structs.Action{})
 
 		regionChannels[region] = channels
 

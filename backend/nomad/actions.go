@@ -7,6 +7,18 @@ const (
 	unwatchAllocsShallow = "NOMAD_UNWATCH_ALLOCS_SHALLOW"
 	fetchedAllocs        = "NOMAD_FETCHED_ALLOCS"
 
+	watchDeployments   = "NOMAD_WATCH_DEPLOYMENTS"
+	unwatchDeployments = "NOMAD_UNWATCH_DEPLOYMENTS"
+	fetchedDeployments = "NOMAD_FETCHED_DEPLOYMENTS"
+
+	watchJobDeployments   = "NOMAD_WATCH_JOB_DEPLOYMENTS"
+	unwatchJobDeployments = "NOMAD_UNWATCH_JOB_DEPLOYMENTS"
+	fetchedJobDeployments = "NOMAD_FETCHED_JOB_DEPLOYMENTS"
+
+	watchDeployment   = "NOMAD_WATCH_DEPLOYMENT"
+	unwatchDeployment = "NOMAD_UNWATCH_DEPLOYMENT"
+	fetchedDeployment = "NOMAD_FETCHED_DEPLOYMENT"
+
 	fetchClientStats   = "NOMAD_FETCH_CLIENT_STATS"
 	fetchedClientStats = "NOMAD_FETCHED_CLIENT_STATS"
 	watchClientStats   = "NOMAD_WATCH_CLIENT_STATS"

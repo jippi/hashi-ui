@@ -6,14 +6,13 @@ import { withRouter } from "react-router"
 
 const infoIcon = <FontIcon className="material-icons">info_outline</FontIcon>
 const allocationIcon = <FontIcon className="material-icons">apps</FontIcon>
-const deploymentIcon = <FontIcon className="material-icons">device_hub</FontIcon>
 const evaluationIcon = <FontIcon className="material-icons">share</FontIcon>
 const taskGroupIcon = <FontIcon className="material-icons">layers</FontIcon>
 const rawIcon = <FontIcon className="material-icons">code</FontIcon>
 
-class _JobTopbar extends PureComponent {
+class _DeploymentTopbar extends PureComponent {
   handleActive(tab) {
-    const path = ["", "nomad", this.props.router.params.region, "jobs", this.props.job.ID, tab]
+    const path = ["", "nomad", this.props.router.params.region, "deployments", this.props.deployment.ID, tab]
     this.props.router.push(path.map(encodeURIComponent).join("/"))
   }
 
@@ -29,20 +28,16 @@ class _JobTopbar extends PureComponent {
       return 1
     }
 
-    if (end.startsWith("deployments")) {
+    if (end.startsWith("allocations")) {
       return 2
     }
 
-    if (end.startsWith("allocations")) {
+    if (end.startsWith("evaluations")) {
       return 3
     }
 
-    if (end.startsWith("evaluations")) {
-      return 4
-    }
-
     if (end.startsWith("raw")) {
-      return 5
+      return 4
     }
 
     return 0
@@ -59,34 +54,18 @@ class _JobTopbar extends PureComponent {
     return (
       <BottomNavigation selectedIndex={this.getActiveTab()} style={this.getStyle()}>
         <BottomNavigationItem label="Info" icon={infoIcon} onTouchTap={() => this.handleActive("info")} />
-        <BottomNavigationItem label="Groups" icon={taskGroupIcon} onTouchTap={() => this.handleActive("groups")} />
-        <BottomNavigationItem
-          label="Deployments"
-          icon={deploymentIcon}
-          onTouchTap={() => this.handleActive("deployments")}
-        />
-        <BottomNavigationItem
-          label="Allocations"
-          icon={allocationIcon}
-          onTouchTap={() => this.handleActive("allocations")}
-        />
-        <BottomNavigationItem
-          label="Evaluations"
-          icon={evaluationIcon}
-          onTouchTap={() => this.handleActive("evaluations")}
-        />
         <BottomNavigationItem label="Raw" icon={rawIcon} onTouchTap={() => this.handleActive("raw")} />
       </BottomNavigation>
     )
   }
 }
 
-_JobTopbar.propTypes = {
+_DeploymentTopbar.propTypes = {
   router: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  job: PropTypes.object.isRequired
+  deployment: PropTypes.object.isRequired
 }
 
-const ViewJobTopbar = withRouter(_JobTopbar)
+const ViewDeploymentTopbar = withRouter(_DeploymentTopbar)
 
-export default ViewJobTopbar
+export default ViewDeploymentTopbar
