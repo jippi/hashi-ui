@@ -11,7 +11,7 @@ import { MemberInfoReducer, MemberListReducer } from "./member"
 import { JobInfoReducer, JobListReducer, JobDeploymentsReducer, JobDialogReducer } from "./job"
 import { AllocInfoReducer, AllocListReducer } from "./allocation"
 import { EvalInfoReducer, EvalListReducer } from "./evaluation"
-import { DeploymentListReducer, DeploymentInfoReducer } from "./deployment"
+import { DeploymentListReducer, DeploymentInfoReducer, DeploymentAllocsReducer } from "./deployment"
 import { NodeInfoReducer, NodeStatsReducer, NodeListReducer } from "./node"
 import { DirectoryReducer, FileReducer } from "./filesystem"
 import { ChangeNomadRegionReducer, NomadRegionsReducer } from "./nomad"
@@ -41,8 +41,9 @@ const rootReducer = combineReducers({
   consulRegions: ConsulRegionsReducer,
   consulService: ConsulService,
   consulServices: ConsulServiceList,
-  deployments: DeploymentListReducer,
   deployment: DeploymentInfoReducer,
+  deploymentAllocations: DeploymentAllocsReducer,
+  deployments: DeploymentListReducer,
   directory: DirectoryReducer,
   errorNotification: ErrorNotificationReducer,
   evaluation: EvalInfoReducer,

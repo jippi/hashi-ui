@@ -29,6 +29,7 @@ import EvalRaw from "./components/EvaluationRaw/EvaluationRaw"
 import Deployments from "./containers/deployments"
 import Deployment from "./containers/deployment"
 import DeploymentInfo from "./components/DeploymentInfo/DeploymentInfo"
+import DeploymentAllocations from "./components/DeploymentAllocations/DeploymentAllocations"
 import DeploymentRaw from "./components/DeploymentRaw/DeploymentRaw"
 
 import Clients from "./containers/clients"
@@ -113,6 +114,7 @@ const AppRouter = ({ history }) =>
       <Route path="/nomad/:region/deployments/:id" component={Deployment}>
         <IndexRedirect to="/nomad/:region/deployments/:id/info" />
         <Route path="/nomad/:region/deployments/:id/info" component={DeploymentInfo} />
+        <Route path="/nomad/:region/deployments/:id/allocations" component={DeploymentAllocations} />
         <Route path="/nomad/:region/deployments/:id/raw" component={DeploymentRaw} />
       </Route>
       /* allocations */

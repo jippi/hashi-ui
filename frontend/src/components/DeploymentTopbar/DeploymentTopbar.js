@@ -24,20 +24,12 @@ class _DeploymentTopbar extends PureComponent {
       return 0
     }
 
-    if (end.startsWith("groups")) {
+    if (end.startsWith("allocations")) {
       return 1
     }
 
-    if (end.startsWith("allocations")) {
-      return 2
-    }
-
-    if (end.startsWith("evaluations")) {
-      return 3
-    }
-
     if (end.startsWith("raw")) {
-      return 4
+      return 2
     }
 
     return 0
@@ -54,6 +46,11 @@ class _DeploymentTopbar extends PureComponent {
     return (
       <BottomNavigation selectedIndex={this.getActiveTab()} style={this.getStyle()}>
         <BottomNavigationItem label="Info" icon={infoIcon} onTouchTap={() => this.handleActive("info")} />
+        <BottomNavigationItem
+          label="Allocations"
+          icon={allocationIcon}
+          onTouchTap={() => this.handleActive("allocations")}
+        />
         <BottomNavigationItem label="Raw" icon={rawIcon} onTouchTap={() => this.handleActive("raw")} />
       </BottomNavigation>
     )

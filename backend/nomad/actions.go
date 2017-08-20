@@ -19,6 +19,10 @@ const (
 	unwatchDeployment = "NOMAD_UNWATCH_DEPLOYMENT"
 	fetchedDeployment = "NOMAD_FETCHED_DEPLOYMENT"
 
+	watchDeploymentAllocs   = "NOMAD_WATCH_DEPLOYMENT_ALLOCATIONS"
+	unwatchDeploymentAllocs = "NOMAD_UNWATCH_DEPLOYMENT_ALLOCATIONS"
+	fetchedDeploymentAllocs = "NOMAD_FETCHED_DEPLOYMENT_ALLOCATIONS"
+
 	fetchClientStats   = "NOMAD_FETCH_CLIENT_STATS"
 	fetchedClientStats = "NOMAD_FETCHED_CLIENT_STATS"
 	watchClientStats   = "NOMAD_WATCH_CLIENT_STATS"

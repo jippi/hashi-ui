@@ -35,7 +35,7 @@ class Deployment extends Component {
           <h3>
             Deployment: &nbsp;
             <JobLink jobId={this.props.deployment.JobID} />
-            &nbsp; v{this.props.deployment.JobVersion}
+            &nbsp; v{this.props.deployment.JobVersion} ({this.props.deployment.Status})
           </h3>
 
           <br />

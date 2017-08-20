@@ -218,6 +218,12 @@ func (c *Connection) process(action structs.Action) {
 	case unwatchJob:
 		c.watches.Remove(action.Payload.(string))
 
+	// Deployments for a specific job
+	case watchJobDeployments:
+		go c.watchJobDeployments(action)
+	case unwatchJobDeployments:
+		c.watches.Remove(action.Payload.(string))
+
 	//
 	// Actions for a single allocation
 	//
@@ -233,10 +239,14 @@ func (c *Connection) process(action structs.Action) {
 		go c.watchDeployment(action)
 	case unwatchDeployment:
 		c.watches.Remove(action.Payload.(string))
-	case watchJobDeployments:
-		go c.watchJobDeployments(action)
-	case unwatchJobDeployments:
-		c.watches.Remove(action.Payload.(string))
+
+	//
+	// Allocations for a single deployment
+	//
+	case watchDeploymentAllocs:
+		go c.watchDeploymentAllocs(action)
+	case unwatchDeploymentAllocs:
+		c.watches.Remove(action.Payload.(string) + "-allocs")
 
 	//
 	// Actions for allocation FS
@@ -404,6 +414,48 @@ func (c *Connection) watchDeployment(action structs.Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &structs.Action{Type: fetchedDeployment, Payload: deployment, Index: remoteWaitIndex}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+			}
+		}
+	}
+}
+
+func (c *Connection) watchDeploymentAllocs(action structs.Action) {
+	deploymentID := action.Payload.(string)
+
+	defer func() {
+		c.watches.Remove(deploymentID + "-allocs")
+		c.Infof("Stopped watching allocations for deployment with id: %s", deploymentID)
+	}()
+	c.watches.Add(deploymentID + "-allocs")
+
+	c.Infof("Started watching allocations for deployment with id: %s", deploymentID)
+
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
+
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		default:
+			allocs, meta, err := c.region.Client.Deployments().Allocations(deploymentID, q)
+			if err != nil {
+				c.Errorf("connection: unable to fetch deployment info: %s", err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			if !c.watches.Has(deploymentID + "-allocs") {
+				return
+			}
+
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				c.send <- &structs.Action{Type: fetchedDeploymentAllocs, Payload: allocs, Index: remoteWaitIndex}
 				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
 			}
 		}
