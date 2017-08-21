@@ -70,7 +70,7 @@ class DeploymentDistribution extends Component {
             label: "Placed",
             value: progress,
             className: "complete",
-            tooltip: counter.PlacedAllocs + "(" + parseInt(progress) + "% complete)"
+            tooltip: counter.PlacedAllocs + " (" + parseInt(progress) + "% complete)"
           }
         ]
         break
