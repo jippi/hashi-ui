@@ -97,7 +97,7 @@ class Job extends Component {
         }
 
         this.props.router.push({
-          pathname: this.props.location.pathname,
+          pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/info`,
           query: query
         })
       }
@@ -222,7 +222,7 @@ class Job extends Component {
     }
 
     if (query.taskGroupId) {
-      out.push("> ")
+      out.push(" > ")
       out.push(query.taskGroupId.split(".")[1])
     }
 
