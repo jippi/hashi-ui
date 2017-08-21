@@ -74,8 +74,8 @@ class DeploymentList extends Component {
             touchScrollEnabled
             {...this.props}
           >
-            <Column header={<Cell>ID</Cell>} cell={<DeploymentLinkCell data={deployments} col="ID" />} width={150} />
-            <Column header={<Cell>Job</Cell>} cell={<JobLinkCell data={deployments} />} flexGrow={2} width={200} />
+            <Column header={<Cell>ID</Cell>} cell={<DeploymentLinkCell data={deployments} col="ID" />} width={100} />
+            <Column header={<Cell>Job</Cell>} cell={<JobLinkCell data={deployments} />} flexGrow={2} width={100} />
             <Column header={<Cell>Version</Cell>} cell={<TextCell data={deployments} col="JobVersion" />} width={100} />
             <Column header={<Cell>Status</Cell>} cell={<TextCell data={deployments} col="Status" />} width={150} />
             <Column
@@ -97,7 +97,7 @@ class DeploymentList extends Component {
               header={<Cell>Description</Cell>}
               cell={<TextCell data={deployments} col="StatusDescription" />}
               flexGrow={2}
-              width={150}
+              width={250}
             />
           </Table>
         </CardText>
