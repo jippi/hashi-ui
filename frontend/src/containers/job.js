@@ -156,14 +156,19 @@ class Job extends Component {
     if (end.startsWith("info")) {
       out.push(" > ")
       out.push(
-        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/info` }}>Info</Link>
+        <Link key="info" to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/info` }}>
+          Info
+        </Link>
       )
     }
 
     if (end.startsWith("groups")) {
       out.push(" > ")
       out.push(
-        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/groups` }}>
+        <Link
+          key="groups"
+          to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/groups` }}
+        >
           Groups
         </Link>
       )
@@ -172,7 +177,10 @@ class Job extends Component {
     if (end.startsWith("deployments")) {
       out.push(" > ")
       out.push(
-        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/deployments` }}>
+        <Link
+          key="deployments"
+          to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/deployments` }}
+        >
           Deployments
         </Link>
       )
@@ -181,7 +189,10 @@ class Job extends Component {
     if (end.startsWith("allocations")) {
       out.push(" > ")
       out.push(
-        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/allocations` }}>
+        <Link
+          key="allocations"
+          to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/allocations` }}
+        >
           Allocations
         </Link>
       )
@@ -190,7 +201,10 @@ class Job extends Component {
     if (end.startsWith("evaluations")) {
       out.push(" > ")
       out.push(
-        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/evaluations` }}>
+        <Link
+          key="evaluations"
+          to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/evaluations` }}
+        >
           Evaluations
         </Link>
       )
@@ -199,7 +213,9 @@ class Job extends Component {
     if (end.startsWith("raw")) {
       out.push(" > ")
       out.push(
-        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/raw` }}>Raw</Link>
+        <Link key="raw" to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/raw` }}>
+          Raw
+        </Link>
       )
     }
 

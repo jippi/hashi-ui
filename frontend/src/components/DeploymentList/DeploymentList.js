@@ -1,9 +1,10 @@
-import React, { PureComponent } from "react"
+import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { Table, Column, Cell } from "fixed-data-table-2"
 import { Card, CardText } from "material-ui/Card"
 import DeploymentLink from "../DeploymentLink/DeploymentLink"
 import JobLink from "../JobLink/JobLink"
+import DeploymentDistribution from "../DeploymentDistribution/DeploymentDistribution"
 
 /* eslint-disable react/prop-types */
 
@@ -22,9 +23,12 @@ const DeploymentLinkCell = ({ rowIndex, data, col, ...props }) =>
     <DeploymentLink deploymentId={data[rowIndex][col]} />
   </Cell>
 
-/* eslint-disable react/prop-types */
+const DeploymentDistributionCell = ({ rowIndex, data, type, ...props }) =>
+  <Cell {...props}>
+    <DeploymentDistribution deployment={data[rowIndex]} type={type} />
+  </Cell>
 
-class DeploymentList extends PureComponent {
+class DeploymentList extends Component {
   updateDimensions() {
     this.setState({
       ...this.state,
@@ -75,7 +79,22 @@ class DeploymentList extends PureComponent {
             <Column header={<Cell>Version</Cell>} cell={<TextCell data={deployments} col="JobVersion" />} width={100} />
             <Column header={<Cell>Status</Cell>} cell={<TextCell data={deployments} col="Status" />} width={150} />
             <Column
-              header={<Cell>StatusDescription</Cell>}
+              header={<Cell>Canary</Cell>}
+              cell={<DeploymentDistributionCell data={deployments} type="canary" />}
+              width={150}
+            />
+            <Column
+              header={<Cell>Healthy</Cell>}
+              cell={<DeploymentDistributionCell data={deployments} type="healthy" />}
+              width={150}
+            />
+            <Column
+              header={<Cell>Total</Cell>}
+              cell={<DeploymentDistributionCell data={deployments} type="total" />}
+              width={150}
+            />
+            <Column
+              header={<Cell>Description</Cell>}
               cell={<TextCell data={deployments} col="StatusDescription" />}
               flexGrow={2}
               width={150}
