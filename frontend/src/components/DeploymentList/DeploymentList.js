@@ -84,12 +84,12 @@ class DeploymentList extends Component {
               width={150}
             />
             <Column
-              header={<Cell>Healthy</Cell>}
+              header={<Cell>Roll out</Cell>}
               cell={<DeploymentDistributionCell data={deployments} type="healthy" />}
               width={150}
             />
             <Column
-              header={<Cell>Total</Cell>}
+              header={<Cell>Placement</Cell>}
               cell={<DeploymentDistributionCell data={deployments} type="total" />}
               width={150}
             />
