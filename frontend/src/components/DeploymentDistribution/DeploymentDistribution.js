@@ -47,11 +47,12 @@ class DeploymentDistribution extends Component {
         break
 
       case "healthy":
-        sum = counter.HealthyAllocs + counter.UnhealthyAllocs
+        sum = counter.DesiredTotal
 
         data = [
+          { label: "Healthy", value: counter.HealthyAllocs, className: "complete" },
           { label: "Unhealthy", value: counter.UnhealthyAllocs, className: "failed" },
-          { label: "Healthy", value: counter.HealthyAllocs, className: "complete" }
+          { label: "Pending", value: sum - (counter.UnhealthyAllocs + counter.HealthyAllocs), className: "running" }
         ]
         break
 
@@ -61,16 +62,16 @@ class DeploymentDistribution extends Component {
 
         data = [
           {
-            label: "Desired",
-            value: 100 - progress,
-            className: "running",
-            tooltip: counter.DesiredTotal + " (" + parseInt(100 - progress) + "% remaining)"
-          },
-          {
             label: "Placed",
             value: progress,
             className: "complete",
             tooltip: counter.PlacedAllocs + " (" + parseInt(progress) + "% complete)"
+          },
+          {
+            label: "Desired",
+            value: 100 - progress,
+            className: "running",
+            tooltip: counter.DesiredTotal + " (" + parseInt(100 - progress) + "% remaining)"
           }
         ]
         break
