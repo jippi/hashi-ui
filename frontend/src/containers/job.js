@@ -148,6 +148,8 @@ class Job extends Component {
           {versions}
         </DropDownMenu>
       )
+
+      out.push("  ")
     }
 
     const location = this.props.location

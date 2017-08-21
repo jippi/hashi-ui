@@ -64,13 +64,13 @@ class DeploymentDistribution extends Component {
             label: "Desired",
             value: 100 - progress,
             className: "queued",
-            tooltip: counter.DesiredTotal + " (" + (100 - progress) + "% remaining)"
+            tooltip: counter.DesiredTotal + " (" + parseInt(100 - progress) + "% remaining)"
           },
           {
             label: "Placed",
             value: progress,
             className: "complete",
-            tooltip: counter.PlacedAllocs + "(" + progress + "%) complete"
+            tooltip: counter.PlacedAllocs + "(" + parseInt(progress) + "% complete)"
           }
         ]
         break
