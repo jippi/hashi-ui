@@ -74,8 +74,17 @@ class Job extends Component {
     let out = []
 
     out.push(
+      <span key="jobs">
+        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs` }}>Jobs</Link>
+      </span>
+    )
+    out.push(" > ")
+
+    out.push(
       <span key="job-name">
-        {this.props.job.Name}
+        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/info` }}>
+          {this.props.job.Name}
+        </Link>
       </span>
     )
 
@@ -94,36 +103,103 @@ class Job extends Component {
       }
 
       const style = {
-        height: "25px",
+        height: "26px",
         fontSize: "inherit"
       }
 
       const labelStyle = {
-        height: "20px",
-        lineHeight: "inherit"
+        height: "26px",
+        lineHeight: "inherit",
+        paddingRight: "15px",
+        paddingLeft: 0,
+        overflow: "initial"
       }
 
       const iconStyle = {
         top: "-12px",
-        right: "10px"
+        right: "-20px",
+        padding: "0px"
+      }
+
+      const underlineStyle = {
+        margin: "-1px"
       }
 
       let versions = []
       this.props.jobVersions.forEach(element => {
-        versions.push(<MenuItem key={element} value={element} primaryText={`v${element}`} />)
+        let extra = ""
+        if (element == this.props.jobVersions[0]) {
+          extra = " (current)"
+        }
+        versions.push(<MenuItem key={element} value={element} primaryText={`v${element}${extra}`} />)
       }, this)
 
+      out.push(" > ")
       out.push(
         <DropDownMenu
           style={style}
           labelStyle={labelStyle}
           iconStyle={iconStyle}
+          underlineStyle={underlineStyle}
           key="job-version"
           value={this.props.job.Version}
           onChange={handleChange}
         >
           {versions}
         </DropDownMenu>
+      )
+    }
+
+    const location = this.props.location
+    const end = location.pathname.split("/").pop()
+
+    if (end.startsWith("info")) {
+      out.push(" > ")
+      out.push(
+        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/info` }}>Info</Link>
+      )
+    }
+
+    if (end.startsWith("groups")) {
+      out.push(" > ")
+      out.push(
+        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/groups` }}>
+          Groups
+        </Link>
+      )
+    }
+
+    if (end.startsWith("deployments")) {
+      out.push(" > ")
+      out.push(
+        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/deployments` }}>
+          Deployments
+        </Link>
+      )
+    }
+
+    if (end.startsWith("allocations")) {
+      out.push(" > ")
+      out.push(
+        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/allocations` }}>
+          Allocations
+        </Link>
+      )
+    }
+
+    if (end.startsWith("evaluations")) {
+      out.push(" > ")
+      out.push(
+        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/evaluations` }}>
+          Evaluations
+        </Link>
+      )
+    }
+
+    if (end.startsWith("raw")) {
+      out.push(" > ")
+      out.push(
+        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/raw` }}>Raw</Link>
       )
     }
 
@@ -147,10 +223,10 @@ class Job extends Component {
 
     return (
       <div>
-        <div style={{ float: "left", paddingTop: 11 }}>
-          <h2>
-            Job: {this.breadcrumb()}
-          </h2>
+        <div style={{ float: "left" }}>
+          <h3 style={{ marginTop: "10px" }}>
+            {this.breadcrumb()}
+          </h3>
         </div>
 
         <div style={{ float: "right", width: 50 }}>

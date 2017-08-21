@@ -69,6 +69,7 @@ class _JobTopbar extends PureComponent {
     options.push(
       <BottomNavigationItem key="info" label="Info" icon={infoIcon} onTouchTap={() => this.handleActive("info")} />
     )
+
     options.push(
       <BottomNavigationItem
         key="groups"
@@ -87,6 +88,7 @@ class _JobTopbar extends PureComponent {
           onTouchTap={() => this.handleActive("deployments")}
         />
       )
+
       options.push(
         <BottomNavigationItem
           key="allocations"
@@ -95,6 +97,7 @@ class _JobTopbar extends PureComponent {
           onTouchTap={() => this.handleActive("allocations")}
         />
       )
+
       options.push(
         <BottomNavigationItem
           key="evaluations"
