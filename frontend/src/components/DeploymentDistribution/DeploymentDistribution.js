@@ -50,7 +50,7 @@ class DeploymentDistribution extends Component {
         sum = counter.HealthyAllocs + counter.UnhealthyAllocs
 
         data = [
-          { label: "Unhealthy", value: counter.UnhealthyAllocs, className: "queued" },
+          { label: "Unhealthy", value: counter.UnhealthyAllocs, className: "failed" },
           { label: "Healthy", value: counter.HealthyAllocs, className: "complete" }
         ]
         break
@@ -63,7 +63,7 @@ class DeploymentDistribution extends Component {
           {
             label: "Desired",
             value: 100 - progress,
-            className: "queued",
+            className: "running",
             tooltip: counter.DesiredTotal + " (" + parseInt(100 - progress) + "% remaining)"
           },
           {
