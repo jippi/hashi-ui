@@ -20,6 +20,16 @@ const JobTaskGroups = ({ job, location }) => {
   const tasks = {}
 
   job.TaskGroups.forEach(taskGroup => {
+    let actions = []
+
+    if (!("version" in location.query)) {
+      actions.push(<JobTaskGroupActionScale key="scale" job={job} taskGroup={taskGroup} />)
+      actions.push(<JobTaskGroupActionRestart key="restart" job={job} taskGroup={taskGroup} />)
+      actions.push(<JobTaskGroupActionStop key="stop" job={job} taskGroup={taskGroup} />)
+    } else {
+      actions.push(<span key="na">N/A</span>)
+    }
+
     taskGroups.push(
       <TableRow key={taskGroup.ID}>
         <TableRowColumn>
@@ -31,9 +41,7 @@ const JobTaskGroups = ({ job, location }) => {
           {taskGroup.Count}
         </TableRowColumn>
         <TableRowColumn>
-          <JobTaskGroupActionScale job={job} taskGroup={taskGroup} />
-          <JobTaskGroupActionRestart job={job} taskGroup={taskGroup} />
-          <JobTaskGroupActionStop job={job} taskGroup={taskGroup} />
+          {actions}
         </TableRowColumn>
       </TableRow>
     )

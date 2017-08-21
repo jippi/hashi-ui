@@ -8,7 +8,7 @@ import {
   SuccessNotificationReducer
 } from "./app"
 import { MemberInfoReducer, MemberListReducer } from "./member"
-import { JobInfoReducer, JobListReducer, JobDeploymentsReducer, JobDialogReducer } from "./job"
+import { JobInfoReducer, JobListReducer, JobDeploymentsReducer, JobVersionsReducer, JobDialogReducer } from "./job"
 import { AllocInfoReducer, AllocListReducer } from "./allocation"
 import { EvalInfoReducer, EvalListReducer } from "./evaluation"
 import { DeploymentListReducer, DeploymentInfoReducer, DeploymentAllocsReducer } from "./deployment"
@@ -51,6 +51,7 @@ const rootReducer = combineReducers({
   file: FileReducer,
   job: JobInfoReducer,
   jobDeployments: JobDeploymentsReducer,
+  jobVersions: JobVersionsReducer,
   jobDialog: JobDialogReducer,
   jobs: JobListReducer,
   member: MemberInfoReducer,

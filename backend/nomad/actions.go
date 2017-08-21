@@ -15,6 +15,10 @@ const (
 	unwatchJobDeployments = "NOMAD_UNWATCH_JOB_DEPLOYMENTS"
 	fetchedJobDeployments = "NOMAD_FETCHED_JOB_DEPLOYMENTS"
 
+	watchJobVersions   = "NOMAD_WATCH_JOB_VERSIONS"
+	unwatchJobVersions = "NOMAD_UNWATCH_JOB_VERSIONS"
+	fetchedJobVersions = "NOMAD_FETCHED_JOB_VERSIONS"
+
 	watchDeployment   = "NOMAD_WATCH_DEPLOYMENT"
 	unwatchDeployment = "NOMAD_UNWATCH_DEPLOYMENT"
 	fetchedDeployment = "NOMAD_FETCHED_DEPLOYMENT"

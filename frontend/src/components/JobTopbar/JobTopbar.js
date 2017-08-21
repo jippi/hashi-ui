@@ -13,8 +13,17 @@ const rawIcon = <FontIcon className="material-icons">code</FontIcon>
 
 class _JobTopbar extends PureComponent {
   handleActive(tab) {
-    const path = ["", "nomad", this.props.router.params.region, "jobs", this.props.job.ID, tab]
-    this.props.router.push(path.map(encodeURIComponent).join("/"))
+    let path = ["", "nomad", this.props.router.params.region, "jobs", this.props.job.ID, tab]
+    let query = {}
+
+    if (this.props.location.query && this.props.location.query.version) {
+      query["version"] = this.props.location.query.version
+    }
+
+    this.props.router.push({
+      pathname: path.map(encodeURIComponent).join("/"),
+      query: query
+    })
   }
 
   getActiveTab() {
@@ -56,26 +65,53 @@ class _JobTopbar extends PureComponent {
   }
 
   render() {
-    return (
-      <BottomNavigation selectedIndex={this.getActiveTab()} style={this.getStyle()}>
-        <BottomNavigationItem label="Info" icon={infoIcon} onTouchTap={() => this.handleActive("info")} />
-        <BottomNavigationItem label="Groups" icon={taskGroupIcon} onTouchTap={() => this.handleActive("groups")} />
+    let options = []
+    options.push(
+      <BottomNavigationItem key="info" label="Info" icon={infoIcon} onTouchTap={() => this.handleActive("info")} />
+    )
+    options.push(
+      <BottomNavigationItem
+        key="groups"
+        label="Groups"
+        icon={taskGroupIcon}
+        onTouchTap={() => this.handleActive("groups")}
+      />
+    )
+
+    if (!("version" in this.props.location.query)) {
+      options.push(
         <BottomNavigationItem
+          key="deployments"
           label="Deployments"
           icon={deploymentIcon}
           onTouchTap={() => this.handleActive("deployments")}
         />
+      )
+      options.push(
         <BottomNavigationItem
+          key="allocations"
           label="Allocations"
           icon={allocationIcon}
           onTouchTap={() => this.handleActive("allocations")}
         />
+      )
+      options.push(
         <BottomNavigationItem
+          key="evaluations"
           label="Evaluations"
           icon={evaluationIcon}
           onTouchTap={() => this.handleActive("evaluations")}
         />
-        <BottomNavigationItem label="Raw" icon={rawIcon} onTouchTap={() => this.handleActive("raw")} />
+      )
+    }
+
+    options.push(
+      <BottomNavigationItem key="raw" label="Raw" icon={rawIcon} onTouchTap={() => this.handleActive("raw")} />
+    )
+
+    return (
+      <BottomNavigation selectedIndex={this.getActiveTab()} style={this.getStyle()}>
+        {options}
       </BottomNavigation>
     )
   }

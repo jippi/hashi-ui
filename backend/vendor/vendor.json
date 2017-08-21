@@ -15,6 +15,12 @@
 			"revisionTime": "2017-07-02T19:45:20Z"
 		},
 		{
+			"checksumSHA1": "mrz/kicZiUaHxkyfvC/DyQcr8Do=",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "adab96458c51a58dc1783b3335dcce5461522e75",
+			"revisionTime": "2017-07-11T18:34:51Z"
+		},
+		{
 			"checksumSHA1": "5DBIm/bJOKLR3CbQH6wIELQDLlQ=",
 			"path": "github.com/gorhill/cronexpr",
 			"revision": "d520615e531a6bf3fb69406b9eba718261285ec8",

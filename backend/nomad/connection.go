@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"gopkg.in/fatih/set.v0"
@@ -216,13 +217,19 @@ func (c *Connection) process(action structs.Action) {
 	case watchJob:
 		go c.watchJob(action)
 	case unwatchJob:
-		c.watches.Remove(action.Payload.(string))
+		c.unwatchJob(action)
 
 	// Deployments for a specific job
 	case watchJobDeployments:
 		go c.watchJobDeployments(action)
 	case unwatchJobDeployments:
 		c.watches.Remove(action.Payload.(string))
+
+	// Versions for a specific job
+	case watchJobVersions:
+		go c.watchJobVersions(action)
+	case unwatchJobVersions:
+		c.watches.Remove(action.Payload.(string) + "-versions")
 
 	//
 	// Actions for a single allocation
@@ -693,16 +700,16 @@ func (c *Connection) unwatchGenericBroadcast(watchKey string) {
 	c.watches.Remove(watchKey)
 }
 
-func (c *Connection) watchJob(action structs.Action) {
+func (c *Connection) watchJobVersions(action structs.Action) {
 	jobID := action.Payload.(string)
 
 	defer func() {
-		c.watches.Remove(jobID)
-		c.Infof("Stopped watching job with id: %s", jobID)
+		c.watches.Remove(jobID + "-versions")
+		c.Infof("Stopped watching job versions with id: %s", jobID)
 	}()
-	c.watches.Add(jobID)
+	c.watches.Add(jobID + "-versions")
 
-	c.Infof("Started watching job with id: %s", jobID)
+	c.Infof("Started watching job versions with id: %s", jobID)
 
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 	for {
@@ -711,7 +718,95 @@ func (c *Connection) watchJob(action structs.Action) {
 			return
 
 		default:
-			job, meta, err := c.region.Client.Jobs().Info(jobID, q)
+			jobs, _, meta, err := c.region.Client.Jobs().Versions(jobID, false, q)
+
+			response := make([]*uint64, 0)
+			for _, version := range jobs {
+				response = append(response, version.Version)
+			}
+
+			if err != nil {
+				c.Errorf("connection: unable to fetch job versions: %s", err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			if !c.watches.Has(jobID + "-versions") {
+				return
+			}
+
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				c.send <- &structs.Action{Type: fetchedJobVersions, Payload: response, Index: remoteWaitIndex}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+			}
+		}
+	}
+}
+
+func (c *Connection) unwatchJob(action structs.Action) {
+	payload := action.Payload.(map[string]interface{})
+	jobID := payload["id"].(string)
+
+	// optional job version
+	var jobVersion uint64
+	if v, ok := payload["version"]; ok {
+		x, _ := strconv.Atoi(v.(string))
+		jobVersion = uint64(x)
+	}
+
+	c.watches.Remove(jobID + "/" + string(jobVersion))
+	c.Infof("Unwatching job with id: %s @ v%d", jobID, jobVersion)
+}
+
+func (c *Connection) watchJob(action structs.Action) {
+	payload := action.Payload.(map[string]interface{})
+	jobID := payload["id"].(string)
+
+	// optional job version
+	var jobVersion uint64
+	var v interface{}
+	var getJobVersion bool
+	if v, getJobVersion = payload["version"]; getJobVersion {
+		x, _ := strconv.Atoi(v.(string))
+		jobVersion = uint64(x)
+	}
+
+	defer func() {
+		c.watches.Remove(jobID + "/" + string(jobVersion))
+		c.Infof("Stopped watching job with id: %s @ v%d", jobID, jobVersion)
+	}()
+	c.watches.Add(jobID + "/" + string(jobVersion))
+
+	c.Infof("Started watching job with id: %s @ v%d", jobID, jobVersion)
+
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		default:
+			var job *api.Job
+			var jobs []*api.Job
+			var meta *api.QueryMeta
+			var err error
+
+			if !getJobVersion {
+				job, meta, err = c.region.Client.Jobs().Info(jobID, q)
+			} else {
+				jobs, _, meta, err = c.region.Client.Jobs().Versions(jobID, false, q)
+
+				for _, version := range jobs {
+					if *version.Version == jobVersion {
+						job = version
+						break
+					}
+				}
+			}
 
 			if c.region.Config.NomadHideEnvData {
 				for _, taskGroup := range job.TaskGroups {
@@ -729,7 +824,7 @@ func (c *Connection) watchJob(action structs.Action) {
 				continue
 			}
 
-			if !c.watches.Has(jobID) {
+			if !c.watches.Has(jobID + "/" + string(jobVersion)) {
 				return
 			}
 
