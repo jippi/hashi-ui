@@ -25,6 +25,7 @@ class DeploymentDistribution extends Component {
     }
 
     const summary = this.props.deployment.TaskGroups
+
     Object.keys(summary).forEach(taskGroupID => {
       counter.DesiredCanaries += summary[taskGroupID].DesiredCanaries
       counter.PlacedCanaries += summary[taskGroupID].PlacedCanaries

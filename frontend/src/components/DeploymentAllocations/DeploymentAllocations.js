@@ -21,7 +21,6 @@ class DeploymentAllocations extends Component {
   }
 
   render() {
-    console.log(this.props.deploymentAllocations)
     return (
       <AllocationList
         showJobColumn={false}
