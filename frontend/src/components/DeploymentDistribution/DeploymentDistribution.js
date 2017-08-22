@@ -146,6 +146,7 @@ class DeploymentDistribution extends Component {
                   <rect
                     key={x.label}
                     width={x.percent + "%"}
+                    height={20}
                     x={percentSum + "%"}
                     className={className}
                     onMouseEnter={mouseenter}
