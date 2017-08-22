@@ -53,6 +53,10 @@ class DeploymentDistribution extends Component {
         } else if (progress < 0) {
           progress = 0
           remaining = 100
+        } else if (Number.isNaN(progress)) {
+          progress = 0
+          remaining = 0
+          sum = 0
         }
 
         data = [
