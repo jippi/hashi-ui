@@ -7,7 +7,9 @@ import AllocationTopbar from "../components/AllocationTopbar/AllocationTopbar"
 import JobLink from "../components/JobLink/JobLink"
 import AllocationLink from "../components/AllocationLink/AllocationLink"
 import ClientLink from "../components/ClientLink/ClientLink"
+import { Link, withRouter } from "react-router"
 import { NOMAD_WATCH_ALLOC, NOMAD_UNWATCH_ALLOC, NOMAD_WATCH_ALLOCS, NOMAD_UNWATCH_ALLOCS } from "../sagas/event"
+import { default as shortenUUID } from "../helpers/uuid"
 
 class Allocation extends Component {
   componentWillMount() {
@@ -90,6 +92,105 @@ class Allocation extends Component {
     )
   }
 
+  breadcrumb() {
+    const query = this.props.location.query || {}
+    const location = this.props.location
+    const end = location.pathname.split("/").pop()
+    let out = []
+
+    out.push(
+      <span key="jobs">
+        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs` }}>Jobs</Link>
+      </span>
+    )
+    out.push(" > ")
+
+    out.push(
+      <span key="job">
+        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.allocation.JobID}/info` }}>
+          {this.props.allocation.JobID}
+        </Link>
+      </span>
+    )
+    out.push(" > ")
+
+    out.push(
+      <span key="allocations">
+        <Link
+          to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.allocation.JobID}/allocations` }}
+        >
+          Allocations
+        </Link>
+      </span>
+    )
+    out.push(" > ")
+
+    out.push(
+      <span key="allocation">
+        <Link
+          to={{ pathname: `/nomad/${this.props.router.params.region}/allocations/${this.props.allocation.ID}/info` }}
+        >
+          {this.props.allocation.TaskGroup}[{this.getName()}] ({shortenUUID(this.props.allocation.ID)})
+        </Link>
+      </span>
+    )
+    out.push(" > ")
+
+    if (end.startsWith("info")) {
+      out.push(
+        <Link
+          key="info"
+          to={{ pathname: `/nomad/${this.props.router.params.region}/allocations/${this.props.allocation.ID}/info` }}
+        >
+          Info
+        </Link>
+      )
+    }
+
+    if ("path" in query && query["path"].startsWith("/alloc/logs")) {
+      out.push(
+        <Link
+          key="logs"
+          to={{
+            pathname: `/nomad/${this.props.router.params.region}/allocations/${this.props.allocation.ID}/files`,
+            query: {
+              path: query.path
+            }
+          }}
+        >
+          Logs
+        </Link>
+      )
+    } else if (end.startsWith("files")) {
+      out.push(
+        <Link
+          key="files"
+          to={{
+            pathname: `/nomad/${this.props.router.params.region}/allocations/${this.props.allocation.ID}/files`
+          }}
+        >
+          Files
+        </Link>
+      )
+    }
+
+    if (end.startsWith("raw")) {
+      out.push(
+        <Link
+          key="raw"
+          to={{ pathname: `/nomad/${this.props.router.params.region}/allocations/${this.props.allocation.ID}/raw` }}
+        >
+          Raw
+        </Link>
+      )
+    }
+
+    out.push(" @ ")
+    out.push(<ClientLink key="client" clientId={this.props.allocation.NodeID} clients={this.props.nodes} />)
+
+    return out
+  }
+
   render() {
     if (this.props.allocation.ID == null) {
       return <div>Loading allocation ...</div>
@@ -98,28 +199,13 @@ class Allocation extends Component {
     return (
       <div>
         <div style={{ padding: 10, paddingBottom: 0 }}>
-          <h3>
-            Allocation: &nbsp;
-            <JobLink jobId={this.props.allocation.JobID} />
-            &nbsp; > &nbsp;
-            <JobLink jobId={this.props.allocation.JobID} taskGroupId={this.props.allocation.TaskGroupId}>
-              {this.props.allocation.TaskGroup}
-            </JobLink>
-            &nbsp; > &nbsp;
-            <JobLink jobId={this.props.allocation.JobID} linkAppend="/allocations">
-              allocations
-            </JobLink>
-            &nbsp; #{this.getName()}
-            &nbsp; @ <ClientLink clientId={this.props.allocation.NodeID} clients={this.props.nodes} />
+          <h3 style={{ marginTop: "10px", marginBottom: "15px" }}>
+            {this.breadcrumb()}
           </h3>
 
           {this.derp()}
 
-          <br />
-
           <AllocationTopbar {...this.props} />
-
-          <br />
 
           {this.props.children}
         </div>
@@ -142,4 +228,4 @@ Allocation.propTypes = {
   children: PropTypes.object.isRequired
 }
 
-export default connect(mapStateToProps)(Allocation)
+export default connect(mapStateToProps)(withRouter(Allocation))
