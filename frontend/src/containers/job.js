@@ -9,9 +9,12 @@ import {
   NOMAD_WATCH_JOB,
   NOMAD_UNWATCH_JOB,
   NOMAD_WATCH_JOB_VERSIONS,
-  NOMAD_UNWATCH_JOB_VERSIONS
+  NOMAD_UNWATCH_JOB_VERSIONS,
+  NOMAD_FORCE_PERIODIC_RUN
 } from "../sagas/event"
 import { Link, withRouter } from "react-router"
+import FloatingActionButton from "material-ui/FloatingActionButton"
+import FontIcon from "material-ui/FontIcon"
 
 class Job extends Component {
   componentWillMount() {
@@ -32,6 +35,37 @@ class Job extends Component {
   componentWillUpdate(nextProps, nextState) {
     const curQuery = this.props.location.query || {}
     const newQuery = nextProps.location.query || {}
+
+    if (this.props.params.jobId != nextProps.params.jobId) {
+      // Watch new job verions
+      if (this.props.params.jobId) {
+        this.props.dispatch({
+          type: NOMAD_UNWATCH_JOB_VERSIONS,
+          payload: this.props.params.jobId
+        })
+
+        this.props.dispatch({
+          type: NOMAD_UNWATCH_JOB,
+          payload: {
+            id: this.props.params.jobId
+          }
+        })
+      }
+
+      this.props.dispatch({
+        type: NOMAD_WATCH_JOB_VERSIONS,
+        payload: nextProps.params.jobId
+      })
+
+      this.props.dispatch({
+        type: NOMAD_WATCH_JOB,
+        payload: {
+          id: nextProps.params.jobId
+        }
+      })
+
+      return
+    }
 
     if (curQuery["version"] != newQuery["version"]) {
       let version = newQuery.version || undefined
@@ -80,10 +114,21 @@ class Job extends Component {
     )
     out.push(" > ")
 
+    if (this.props.job.ParentID) {
+      out.push(
+        <span key="parent-job">
+          <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ParentID}/info` }}>
+            {this.props.job.ParentID}
+          </Link>
+        </span>
+      )
+      out.push(" > ")
+    }
+
     out.push(
       <span key="job-name">
         <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/info` }}>
-          {this.props.job.Name}
+          {this.props.job.Name.replace(this.props.job.ParentID + "/", "")}
         </Link>
       </span>
     )
@@ -200,6 +245,18 @@ class Job extends Component {
       )
     }
 
+    if (end.startsWith("children")) {
+      out.push(" > ")
+      out.push(
+        <Link
+          key="children"
+          to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ID}/children` }}
+        >
+          Children
+        </Link>
+      )
+    }
+
     if (end.startsWith("evaluations")) {
       out.push(" > ")
       out.push(
@@ -234,6 +291,57 @@ class Job extends Component {
     return out
   }
 
+  forceRunPeriodicJobButton() {
+    if (!this.props.job.Periodic) {
+      return
+    }
+
+    const onClick = e => {
+      this.props.dispatch({
+        type: NOMAD_FORCE_PERIODIC_RUN,
+        payload: this.props.params.jobId
+      })
+    }
+
+    return (
+      <FloatingActionButton
+        mini
+        style={{ display: "inline-block", borderRadius: "50%", marginRight: "10px" }}
+        title="Force run periodic job"
+        onClick={onClick}
+      >
+        <FontIcon className="material-icons" color="white">
+          play_arrow
+        </FontIcon>
+      </FloatingActionButton>
+    )
+  }
+
+  parentJobButton() {
+    if (!this.props.job.ParentID) {
+      return
+    }
+
+    const onClick = e => {
+      this.props.router.push({
+        pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.job.ParentID}/info`
+      })
+    }
+
+    return (
+      <FloatingActionButton
+        mini
+        style={{ display: "inline-block", borderRadius: "50%", marginRight: "10px" }}
+        title="Go to parent job"
+        onClick={onClick}
+      >
+        <FontIcon className="material-icons" color="white">
+          arrow_upward
+        </FontIcon>
+      </FloatingActionButton>
+    )
+  }
+
   render() {
     if (this.props.job.ID == null) {
       return <div>Loading ...</div>
@@ -247,9 +355,11 @@ class Job extends Component {
           </h3>
         </div>
 
-        <div style={{ float: "right", width: 50 }}>
+        <span style={{ float: "right" }}>
+          {this.parentJobButton()}
+          {this.forceRunPeriodicJobButton()}
           <JobActionMenu {...this.props} />
-        </div>
+        </span>
 
         <JobTopbar {...this.props} />
 

@@ -48,6 +48,10 @@ const (
 	unwatchJobs = "NOMAD_UNWATCH_JOBS"
 	fetchedJobs = "NOMAD_FETCHED_JOBS"
 
+	watchJobsFiltered   = "NOMAD_WATCH_JOBS_FILTERED"
+	unwatchJobsFiltered = "NOMAD_UNWATCH_JOBS_FILTERED"
+	fetchedJobsFiltered = "NOMAD_FETCHED_JOBS_FILTERED"
+
 	fetchedJob = "NOMAD_FETCHED_JOB"
 	watchJob   = "NOMAD_WATCH_JOB"
 	unwatchJob = "NOMAD_UNWATCH_JOB"
@@ -89,5 +93,6 @@ const (
 	submitJob            = "NOMAD_SUBMIT_JOB"
 	stopJob              = "NOMAD_STOP_JOB"
 
-	evaluateJob = "NOMAD_EVALUATE_JOB"
+	evaluateJob      = "NOMAD_EVALUATE_JOB"
+	forcePeriodicRun = "NOMAD_FORCE_PERIODIC_RUN"
 )

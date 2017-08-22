@@ -93,6 +93,18 @@ class DeploymentInfo extends Component {
               </CardText>
             </Card>
           </Col>
+          <Col key="action-pane" xs={12} sm={12} md={6} lg={6}>
+            <Card>
+              <CardTitle title="Actions" />
+              <CardText>
+                <ul>
+                  <li>Promote</li>
+                  <li>Pause</li>
+                  <li>Fail</li>
+                </ul>
+              </CardText>
+            </Card>
+          </Col>
         </Row>
 
         <Row key="status" style={{ marginTop: "1rem" }}>

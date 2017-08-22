@@ -6,6 +6,7 @@ import { withRouter } from "react-router"
 
 const infoIcon = <FontIcon className="material-icons">info_outline</FontIcon>
 const allocationIcon = <FontIcon className="material-icons">apps</FontIcon>
+const executionIcon = <FontIcon className="material-icons">alarm</FontIcon>
 const deploymentIcon = <FontIcon className="material-icons">device_hub</FontIcon>
 const evaluationIcon = <FontIcon className="material-icons">share</FontIcon>
 const taskGroupIcon = <FontIcon className="material-icons">layers</FontIcon>
@@ -50,7 +51,16 @@ class _JobTopbar extends PureComponent {
       return 4
     }
 
+    // only for periodic jobs
+    if (end.startsWith("children")) {
+      return 2
+    }
+
     if (end.startsWith("raw")) {
+      if (this.props.job.Periodic || this.props.job.ParameterizedJob) {
+        return 3
+      }
+
       return 5
     }
 
@@ -79,7 +89,18 @@ class _JobTopbar extends PureComponent {
       />
     )
 
-    if (!("version" in this.props.location.query)) {
+    if (this.props.job.Periodic || this.props.job.ParameterizedJob) {
+      options.push(
+        <BottomNavigationItem
+          key="children"
+          label="Children"
+          icon={executionIcon}
+          onTouchTap={() => this.handleActive("children")}
+        />
+      )
+    }
+
+    if (!("version" in this.props.location.query) && !this.props.job.Periodic && !this.props.job.ParameterizedJob) {
       options.push(
         <BottomNavigationItem
           key="deployments"
@@ -89,23 +110,25 @@ class _JobTopbar extends PureComponent {
         />
       )
 
-      options.push(
-        <BottomNavigationItem
-          key="allocations"
-          label="Allocations"
-          icon={allocationIcon}
-          onTouchTap={() => this.handleActive("allocations")}
-        />
-      )
+      if (!this.props.job.Periodic && !this.props.job.ParameterizedJob) {
+        options.push(
+          <BottomNavigationItem
+            key="allocations"
+            label="Allocations"
+            icon={allocationIcon}
+            onTouchTap={() => this.handleActive("allocations")}
+          />
+        )
 
-      options.push(
-        <BottomNavigationItem
-          key="evaluations"
-          label="Evaluations"
-          icon={evaluationIcon}
-          onTouchTap={() => this.handleActive("evaluations")}
-        />
-      )
+        options.push(
+          <BottomNavigationItem
+            key="evaluations"
+            label="Evaluations"
+            icon={evaluationIcon}
+            onTouchTap={() => this.handleActive("evaluations")}
+          />
+        )
+      }
     }
 
     options.push(

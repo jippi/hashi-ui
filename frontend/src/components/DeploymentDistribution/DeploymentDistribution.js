@@ -28,7 +28,7 @@ class DeploymentDistribution extends Component {
 
     Object.keys(summary).forEach(taskGroupID => {
       counter.DesiredCanaries += summary[taskGroupID].DesiredCanaries
-      counter.PlacedCanaries += summary[taskGroupID].PlacedCanaries
+      counter.PlacedCanaries += (summary[taskGroupID].PlacedCanaries || []).length
       counter.DesiredTotal += summary[taskGroupID].DesiredTotal
       counter.PlacedAllocs += summary[taskGroupID].PlacedAllocs
       counter.HealthyAllocs += summary[taskGroupID].HealthyAllocs
@@ -37,13 +37,37 @@ class DeploymentDistribution extends Component {
 
     let sum = 0
     let data = []
+    let progress = 0
+    let remaining = 0
+
     switch (this.props.type) {
       case "canary":
-        sum = counter.DesiredCanaries
+        sum = 100
+
+        progress = counter.PlacedCanaries / counter.DesiredCanaries * 100
+        remaining = 100 - progress
+
+        if (progress > 100) {
+          progress = 100
+          remaining = 0
+        } else if (progress < 0) {
+          progress = 0
+          remaining = 100
+        }
 
         data = [
-          { label: "Desired", value: counter.DesiredCanaries, className: "queued" },
-          { label: "Placed", value: counter.PlacedCanaries, className: "complete" }
+          {
+            label: "Placed",
+            value: progress,
+            className: "complete",
+            tooltip: counter.PlacedCanaries + " (" + parseInt(progress) + "% complete)"
+          },
+          {
+            label: "Desired",
+            value: remaining,
+            className: "running",
+            tooltip: counter.DesiredCanaries + " (" + parseInt(100 - progress) + "% remaining)"
+          }
         ]
         break
 
@@ -60,8 +84,8 @@ class DeploymentDistribution extends Component {
       case "total":
         sum = 100
 
-        let progress = counter.PlacedAllocs / counter.DesiredTotal * 100
-        let remaining = 100 - progress
+        progress = counter.PlacedAllocs / counter.DesiredTotal * 100
+        remaining = 100 - progress
 
         if (progress > 100) {
           progress = 100

@@ -166,6 +166,14 @@ func (c *Connection) process(action structs.Action) {
 		c.unwatchGenericBroadcast("jobs")
 
 	//
+	// Actions for filtered job lists
+	//
+	case watchJobsFiltered:
+		go c.watchJobsFiltered(action)
+	case unwatchJobsFiltered:
+		c.unwatchJobsFiltered(action)
+
+	//
 	// Actions for a list of allocations
 	//
 	case watchAllocs:
@@ -296,6 +304,10 @@ func (c *Connection) process(action structs.Action) {
 	case submitJob:
 		go c.submitJob(action)
 
+	// Force a periodic run of a job
+	case forcePeriodicRun:
+		go c.forcePeriodicRun(action)
+
 	// Stop a job
 	case stopJob:
 		go c.stopJob(action)
@@ -339,6 +351,71 @@ func (c *Connection) keepAlive() {
 		case <-ticker.C:
 			logger.Debugf("Sending keep-alive packet")
 			c.send <- &structs.Action{Type: structs.KeepAlive, Payload: "hello-world", Index: 0}
+		}
+	}
+}
+
+func (c *Connection) unwatchJobsFiltered(action structs.Action) {
+	payload := action.Payload.(map[string]interface{})
+	subKey := "jobs-filtered-"
+
+	if prefix, ok := payload["prefix"]; ok {
+		subKey = subKey + prefix.(string)
+	}
+
+	c.watches.Remove(subKey)
+	c.Infof("Stopped subscribing to jobs filtered")
+}
+
+func (c *Connection) watchJobsFiltered(action structs.Action) {
+	payload := action.Payload.(map[string]interface{})
+
+	q := &api.QueryOptions{
+		WaitIndex:  1,
+		WaitTime:   10 * time.Second,
+		AllowStale: c.region.Config.NomadAllowStale,
+	}
+
+	if prefix, ok := payload["prefix"]; ok {
+		q.Prefix = prefix.(string)
+	}
+
+	subKey := "jobs-filtered-" + q.Prefix
+
+	defer func() {
+		c.watches.Remove(subKey)
+		c.Infof("Stopped watching filtered jobs: %s", q.Prefix)
+	}()
+	c.watches.Add(subKey)
+
+	c.Infof("Started watching jobs filtered: %s", q.Prefix)
+
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		default:
+
+			alloc, meta, err := c.region.Client.Jobs().List(q)
+			if err != nil {
+				c.Errorf("connection: unable to fetch filtered jobs (%s): %s", q.Prefix, err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			if !c.watches.Has(subKey) {
+				return
+			}
+
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				c.send <- &structs.Action{Type: fetchedJobsFiltered, Payload: alloc, Index: remoteWaitIndex}
+				q.WaitIndex = remoteWaitIndex
+			}
 		}
 	}
 }
@@ -1248,6 +1325,31 @@ func (c *Connection) evaluateJob(action structs.Action) {
 
 	logger.Infof("connection: successfully re-evaluated job '%s'", jobID)
 	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "The job has been successfully re-evaluated.", Index: index}
+}
+
+func (c *Connection) forcePeriodicRun(action structs.Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	if c.region.Config.NomadReadOnly {
+		logger.Errorf("Unable to evaluate job: NomadReadOnly is set to true")
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		return
+	}
+
+	jobID := action.Payload.(string)
+
+	logger.Infof("Begin force-run of job with id: %s", jobID)
+
+	allocID, _, err := c.region.Client.Jobs().PeriodicForce(jobID, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to periodic force run job '%s' : %s", jobID, err)
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Unable to periodic force run job : %s", err), Index: index}
+		return
+	}
+
+	logger.Infof("connection: successfully forced periodic job to run '%s' as allocation %s", jobID, allocID)
+	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: fmt.Sprintf("The job has been successfully re-run as allocation id %s.", allocID), Index: index}
 }
 
 func (c *Connection) fetchRegions() {

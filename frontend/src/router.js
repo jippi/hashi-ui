@@ -9,6 +9,7 @@ import Jobs from "./containers/jobs"
 import Job from "./containers/job"
 import JobInfo from "./components/JobInfo/JobInfo"
 import JobAllocs from "./components/JobAllocations/JobAllocations"
+import JobChildren from "./components/JobChildren/JobChildren"
 import JobDeployments from "./components/JobDeployments/JobDeployments"
 import JobEvals from "./components/JobEvaluations/JobEvaluations"
 import JobTaskGroups from "./components/JobTaskGroups/JobTaskGroups"
@@ -94,6 +95,7 @@ const AppRouter = ({ history }) =>
         <IndexRedirect to="/nomad/:region/jobs/:jobId/info" />
         <Route path="/nomad/:region/jobs/:jobId/info" component={JobInfo} />
         <Route path="/nomad/:region/jobs/:jobId/allocations" component={JobAllocs} />
+        <Route path="/nomad/:region/jobs/:jobId/children" component={JobChildren} />
         <Route path="/nomad/:region/jobs/:jobId/deployments" component={JobDeployments} />
         <Route path="/nomad/:region/jobs/:jobId/evaluations" component={JobEvals} />
         <Route path="/nomad/:region/jobs/:jobId/groups" component={JobTaskGroups} />
