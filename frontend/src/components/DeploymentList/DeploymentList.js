@@ -3,8 +3,11 @@ import PropTypes from "prop-types"
 import { Table, Column, Cell } from "fixed-data-table-2"
 import { Card, CardText } from "material-ui/Card"
 import DeploymentLink from "../DeploymentLink/DeploymentLink"
+import FilterFreetext from "../FilterFreetext/FilterFreetext"
+import DeploymentStatusFilter from "../DeploymentStatusFilter/DeploymentStatusFilter"
 import JobLink from "../JobLink/JobLink"
 import DeploymentDistribution from "../DeploymentDistribution/DeploymentDistribution"
+import { Grid, Row, Col } from "react-flexbox-grid"
 
 /* eslint-disable react/prop-types */
 
@@ -49,8 +52,43 @@ class DeploymentList extends Component {
     window.removeEventListener("resize", () => this.updateDimensions())
   }
 
+  filteredDeployments() {
+    const query = this.props.location.query || {}
+    let deployments = this.props.deployments
+
+    if ("id" in query) {
+      deployments = deployments.filter(deployment => deployment.ID.startsWith(query.id))
+    }
+
+    if ("job" in query) {
+      deployments = deployments.filter(deployment => deployment.JobID.indexOf(query.job) != -1)
+    }
+
+    if ("status" in query) {
+      deployments = deployments.filter(deployment => deployment.Status === query.status)
+    }
+
+    return deployments
+  }
+
+  jobFilter() {
+    if (this.props.showJob) {
+      return (
+        <Col key="job-filter-pane" xs={6} sm={3} md={3} lg={3}>
+          <FilterFreetext query="job" label="Job" />
+        </Col>
+      )
+    }
+  }
+
+  jobColumn(deployments) {
+    if (this.props.showJob) {
+      return <Column header={<Cell>Job</Cell>} cell={<JobLinkCell data={deployments} />} flexGrow={2} width={100} />
+    }
+  }
+
   render() {
-    const deployments = this.props.deployments
+    const deployments = this.filteredDeployments()
     const width = this.state.width - 240
     let height = this.state.height - 90
 
@@ -63,57 +101,80 @@ class DeploymentList extends Component {
     }
 
     return (
-      <Card>
-        <CardText>
-          <Table
-            rowHeight={35}
-            headerHeight={35}
-            rowsCount={deployments.length}
-            height={height}
-            width={width}
-            touchScrollEnabled
-            {...this.props}
-          >
-            <Column header={<Cell>ID</Cell>} cell={<DeploymentLinkCell data={deployments} col="ID" />} width={100} />
-            <Column header={<Cell>Job</Cell>} cell={<JobLinkCell data={deployments} />} flexGrow={2} width={100} />
-            <Column header={<Cell>Version</Cell>} cell={<TextCell data={deployments} col="JobVersion" />} width={100} />
-            <Column header={<Cell>Status</Cell>} cell={<TextCell data={deployments} col="Status" />} width={150} />
-            <Column
-              header={<Cell>Canary</Cell>}
-              cell={<DeploymentDistributionCell data={deployments} type="canary" />}
-              width={150}
-            />
-            <Column
-              header={<Cell>Roll out</Cell>}
-              cell={<DeploymentDistributionCell data={deployments} type="healthy" />}
-              width={150}
-            />
-            <Column
-              header={<Cell>Placement</Cell>}
-              cell={<DeploymentDistributionCell data={deployments} type="total" />}
-              width={150}
-            />
-            <Column
-              header={<Cell>Description</Cell>}
-              cell={<TextCell data={deployments} col="StatusDescription" />}
-              flexGrow={2}
-              width={250}
-            />
-          </Table>
-        </CardText>
-      </Card>
+      <div>
+        <Card>
+          <CardText>
+            <Grid fluid style={{ padding: 0, margin: 0 }}>
+              <Row>
+                <Col key="id-filter-pane" xs={6} sm={3} md={3} lg={3}>
+                  <FilterFreetext query="id" label="ID" />
+                </Col>
+                {this.jobFilter()}
+                <Col key="deployment-status-filter-pane" xs={6} sm={3} md={3} lg={3}>
+                  <DeploymentStatusFilter />
+                </Col>
+              </Row>
+            </Grid>
+          </CardText>
+        </Card>
+        <Card style={{ marginTop: "1rem" }}>
+          <CardText>
+            <Table
+              rowHeight={35}
+              headerHeight={35}
+              rowsCount={deployments.length}
+              height={height}
+              width={width}
+              touchScrollEnabled
+              {...this.props}
+            >
+              <Column header={<Cell>ID</Cell>} cell={<DeploymentLinkCell data={deployments} col="ID" />} width={100} />
+              {this.jobColumn(deployments)}
+              <Column
+                header={<Cell>Version</Cell>}
+                cell={<TextCell data={deployments} col="JobVersion" />}
+                width={100}
+              />
+              <Column header={<Cell>Status</Cell>} cell={<TextCell data={deployments} col="Status" />} width={150} />
+              <Column
+                header={<Cell>Canary</Cell>}
+                cell={<DeploymentDistributionCell data={deployments} type="canary" />}
+                width={150}
+              />
+              <Column
+                header={<Cell>Roll out</Cell>}
+                cell={<DeploymentDistributionCell data={deployments} type="healthy" />}
+                width={150}
+              />
+              <Column
+                header={<Cell>Placement</Cell>}
+                cell={<DeploymentDistributionCell data={deployments} type="total" />}
+                width={150}
+              />
+              <Column
+                header={<Cell>Description</Cell>}
+                cell={<TextCell data={deployments} col="StatusDescription" />}
+                flexGrow={2}
+                width={250}
+              />
+            </Table>
+          </CardText>
+        </Card>
+      </div>
     )
   }
 }
 
 DeploymentList.defaultProps = {
   deployments: [],
-  nested: false
+  nested: false,
+  showJob: true
 }
 
 DeploymentList.propTypes = {
   deployments: PropTypes.array.isRequired,
-  nested: PropTypes.bool.isRequired
+  nested: PropTypes.bool.isRequired,
+  showJob: PropTypes.bool
 }
 
 export default DeploymentList

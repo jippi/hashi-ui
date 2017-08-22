@@ -14,7 +14,7 @@ class JobDeployments extends Component {
   }
 
   render() {
-    return <DeploymentList deployments={this.props.jobDeployments} {...this.props} />
+    return <DeploymentList deployments={this.props.jobDeployments} showJob={false} {...this.props} />
   }
 }
 

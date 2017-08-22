@@ -58,7 +58,17 @@ class DeploymentDistribution extends Component {
 
       case "total":
         sum = 100
+
         let progress = counter.PlacedAllocs / counter.DesiredTotal * 100
+        let remaining = 100 - progress
+
+        if (progress > 100) {
+          progress = 100
+          remaining = 0
+        } else if (progress < 0) {
+          progress = 0
+          remaining = 100
+        }
 
         data = [
           {
@@ -69,7 +79,7 @@ class DeploymentDistribution extends Component {
           },
           {
             label: "Desired",
-            value: 100 - progress,
+            value: remaining,
             className: "running",
             tooltip: counter.DesiredTotal + " (" + parseInt(100 - progress) + "% remaining)"
           }
