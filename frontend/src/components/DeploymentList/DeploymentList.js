@@ -165,7 +165,7 @@ class DeploymentList extends Component {
                 width={100}
               />
               <Column header={<Cell>Status</Cell>} cell={<TextCell data={deployments} col="Status" />} width={150} />
-              <Column header={<Cell>Action</Cell>} cell={<ActionsCell data={deployments} />} width={100} />
+              <Column header={<Cell>Action</Cell>} cell={<ActionsCell data={deployments} />} width={150} />
               <Column
                 header={<Cell>Canary</Cell>}
                 cell={<DeploymentDistributionCell data={deployments} type="canary" />}
