@@ -162,10 +162,10 @@ class DeploymentList extends Component {
               <Column
                 header={<Cell>Version</Cell>}
                 cell={<TextCell data={deployments} col="JobVersion" />}
-                width={100}
+                width={80}
               />
-              <Column header={<Cell>Status</Cell>} cell={<TextCell data={deployments} col="Status" />} width={150} />
-              <Column header={<Cell>Action</Cell>} cell={<ActionsCell data={deployments} />} width={150} />
+              <Column header={<Cell>Status</Cell>} cell={<TextCell data={deployments} col="Status" />} width={130} />
+              <Column header={<Cell>Action</Cell>} cell={<ActionsCell data={deployments} />} width={110} />
               <Column
                 header={<Cell>Canary</Cell>}
                 cell={<DeploymentDistributionCell data={deployments} type="canary" />}
