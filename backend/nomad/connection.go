@@ -1359,13 +1359,18 @@ func (c *Connection) changeDeploymentStatus(action structs.Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
+	if c.region.Config.NomadReadOnly {
+		logger.Errorf("Unable to update deployment: NomadReadOnly is set to true")
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		return
+	}
+
 	payload := action.Payload.(map[string]interface{})
 
 	var ID, actionType string
 	var x interface{}
 	var ok bool
 	var err error
-	// var response *api.DeploymentUpdateResponse
 
 	if x, ok = payload["id"]; !ok {
 		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Missing deployment id", Index: index}
