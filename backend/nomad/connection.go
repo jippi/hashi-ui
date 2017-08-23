@@ -318,6 +318,9 @@ func (c *Connection) process(action structs.Action) {
 	case evaluateJob:
 		go c.evaluateJob(action)
 
+	case changeDeploymentStatus:
+		go c.changeDeploymentStatus(action)
+
 	// Nice in debug
 	default:
 		logger.Errorf("Unknown action: %s", action.Type)
@@ -1350,6 +1353,54 @@ func (c *Connection) forcePeriodicRun(action structs.Action) {
 
 	logger.Infof("connection: successfully forced periodic job to run '%s' as allocation %s", jobID, allocID)
 	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: fmt.Sprintf("The job has been successfully re-run as allocation id %s.", allocID), Index: index}
+}
+
+func (c *Connection) changeDeploymentStatus(action structs.Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	payload := action.Payload.(map[string]interface{})
+
+	var ID, actionType string
+	var x interface{}
+	var ok bool
+	var err error
+	// var response *api.DeploymentUpdateResponse
+
+	if x, ok = payload["id"]; !ok {
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Missing deployment id", Index: index}
+		return
+	}
+	ID = x.(string)
+
+	if x, ok = payload["action"]; !ok {
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Missing action", Index: index}
+		return
+	}
+	actionType = x.(string)
+
+	switch actionType {
+	case "promote":
+		if x, ok = payload["group"]; ok {
+			_, _, err = c.region.Client.Deployments().PromoteGroups(ID, []string{x.(string)}, nil)
+		} else {
+			_, _, err = c.region.Client.Deployments().PromoteAll(ID, nil)
+		}
+	case "fail":
+		_, _, err = c.region.Client.Deployments().Fail(ID, nil)
+	case "pause":
+		_, _, err = c.region.Client.Deployments().Pause(ID, true, nil)
+	case "resume":
+		_, _, err = c.region.Client.Deployments().Pause(ID, false, nil)
+	}
+
+	if err != nil {
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Failed to update deployment: %s", err), Index: index}
+		return
+	}
+
+	logger.Infof("connection: successfully updated deployment '%s'", ID)
+	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully updated deployment.", Index: index}
 }
 
 func (c *Connection) fetchRegions() {

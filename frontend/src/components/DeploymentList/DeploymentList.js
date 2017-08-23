@@ -1,13 +1,14 @@
-import React, { Component } from "react"
-import PropTypes from "prop-types"
-import { Table, Column, Cell } from "fixed-data-table-2"
 import { Card, CardText } from "material-ui/Card"
-import DeploymentLink from "../DeploymentLink/DeploymentLink"
-import FilterFreetext from "../FilterFreetext/FilterFreetext"
-import DeploymentStatusFilter from "../DeploymentStatusFilter/DeploymentStatusFilter"
-import JobLink from "../JobLink/JobLink"
-import DeploymentDistribution from "../DeploymentDistribution/DeploymentDistribution"
 import { Grid, Row, Col } from "react-flexbox-grid"
+import { Table, Column, Cell } from "fixed-data-table-2"
+import DeploymentAction from "../DeploymentAction/DeploymentAction"
+import DeploymentDistribution from "../DeploymentDistribution/DeploymentDistribution"
+import DeploymentLink from "../DeploymentLink/DeploymentLink"
+import DeploymentStatusFilter from "../DeploymentStatusFilter/DeploymentStatusFilter"
+import FilterFreetext from "../FilterFreetext/FilterFreetext"
+import JobLink from "../JobLink/JobLink"
+import PropTypes from "prop-types"
+import React, { Component } from "react"
 
 /* eslint-disable react/prop-types */
 
@@ -30,6 +31,34 @@ const DeploymentDistributionCell = ({ rowIndex, data, type, ...props }) =>
   <Cell {...props}>
     <DeploymentDistribution deployment={data[rowIndex]} type={type} />
   </Cell>
+
+const ActionsCell = ({ id, action, rowIndex, data, ...props }) => {
+  return (
+    <Cell {...props}>
+      <DeploymentAction
+        key="promote"
+        action="promote"
+        showText={false}
+        id={data[rowIndex].ID}
+        status={data[rowIndex].Status}
+      />
+      <DeploymentAction
+        key="fail"
+        action="fail"
+        showText={false}
+        id={data[rowIndex].ID}
+        status={data[rowIndex].Status}
+      />
+      <DeploymentAction
+        key="pause"
+        action="pause"
+        showText={false}
+        id={data[rowIndex].ID}
+        status={data[rowIndex].Status}
+      />
+    </Cell>
+  )
+}
 
 class DeploymentList extends Component {
   updateDimensions() {
@@ -136,6 +165,7 @@ class DeploymentList extends Component {
                 width={100}
               />
               <Column header={<Cell>Status</Cell>} cell={<TextCell data={deployments} col="Status" />} width={150} />
+              <Column header={<Cell>Action</Cell>} cell={<ActionsCell data={deployments} />} width={100} />
               <Column
                 header={<Cell>Canary</Cell>}
                 cell={<DeploymentDistributionCell data={deployments} type="canary" />}

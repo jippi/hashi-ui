@@ -12,6 +12,7 @@ import JobTaskGroupActionScale from "../JobTaskGroupActionScale/JobTaskGroupActi
 import JobTaskGroupActionStop from "../JobTaskGroupActionStop/JobTaskGroupActionStop"
 import { TableRow, TableRowColumn } from "../Table"
 import DeploymentDistribution from "../DeploymentDistribution/DeploymentDistribution"
+import DeploymentAction from "../DeploymentAction/DeploymentAction"
 
 const deploymentProps = ["ID", "JobVersion", "Status", "StatusDescription"]
 
@@ -19,6 +20,14 @@ const TextCell = ({ rowIndex, data, col, ...props }) =>
   <Cell {...props}>
     {data[rowIndex][col]}
   </Cell>
+
+const ActionsCell = ({ id, action, status, rowIndex, data, ...props }) => {
+  return (
+    <Cell {...props}>
+      <DeploymentAction id={id} action={action} group={data[rowIndex].Name} status={status} />
+    </Cell>
+  )
+}
 
 const DeploymentDistributionCell = ({ rowIndex, data, type, ...props }) =>
   <Cell {...props}>
@@ -44,6 +53,34 @@ class DeploymentInfo extends Component {
 
   componentWillUnmount() {
     window.removeEventListener("resize", () => this.updateDimensions())
+  }
+
+  actions() {
+    if (this.props.deployment.Status == "successful") {
+      return <span>Deployment has already succeeded, can't modify it further</span>
+    }
+
+    if (this.props.deployment.Status == "failed") {
+      return <span>Deployment has already failed, can't modify it further</span>
+    }
+
+    if (this.props.deployment.Status == "cancelled") {
+      return <span>Deployment was cancelled, can't modify it further</span>
+    }
+
+    return (
+      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        <li>
+          <DeploymentAction id={this.props.deployment.ID} status={this.props.deployment.Status} action="promote" />
+        </li>
+        <li>
+          <DeploymentAction id={this.props.deployment.ID} status={this.props.deployment.Status} action="fail" />
+        </li>
+        <li>
+          <DeploymentAction id={this.props.deployment.ID} status={this.props.deployment.Status} action="pause" />
+        </li>
+      </ul>
+    )
   }
 
   render() {
@@ -97,11 +134,7 @@ class DeploymentInfo extends Component {
             <Card>
               <CardTitle title="Actions" />
               <CardText>
-                <ul>
-                  <li>Promote</li>
-                  <li>Pause</li>
-                  <li>Fail</li>
-                </ul>
+                {this.actions()}
               </CardText>
             </Card>
           </Col>
@@ -142,6 +175,19 @@ class DeploymentInfo extends Component {
                     header={<Cell>Placement</Cell>}
                     cell={<DeploymentDistributionCell data={groups} type="total" />}
                     width={150}
+                    flexGrow={2}
+                  />
+                  <Column
+                    header={<Cell>Actions</Cell>}
+                    cell={
+                      <ActionsCell
+                        data={groups}
+                        id={this.props.deployment.ID}
+                        status={this.props.deployment.Status}
+                        action="promote"
+                      />
+                    }
+                    width={100}
                     flexGrow={2}
                   />
                 </Table>

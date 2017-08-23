@@ -95,4 +95,6 @@ const (
 
 	evaluateJob      = "NOMAD_EVALUATE_JOB"
 	forcePeriodicRun = "NOMAD_FORCE_PERIODIC_RUN"
+
+	changeDeploymentStatus = "NOMAD_CHANGE_DEPLOYMENT_STATUS"
 )
