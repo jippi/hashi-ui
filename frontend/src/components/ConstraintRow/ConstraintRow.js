@@ -6,9 +6,27 @@ const ConstraintRow = ({ constraint }) => {
   if (constraint.Operand === "distinct_hosts") {
     return (
       <tr>
-        <td colSpan={3}>
+        <td />
+        <td>
           <code>Distinct Hosts</code>
         </td>
+        <td />
+      </tr>
+    )
+  }
+
+  if (constraint.Operand === "distinct_property") {
+    return (
+      <tr>
+        <td>
+          <code>
+            {constraint.LTarget}
+          </code>
+        </td>
+        <td>
+          <code>Distinct Property</code>
+        </td>
+        <td />
       </tr>
     )
   }

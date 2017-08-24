@@ -28,7 +28,7 @@ class JobActionMenu extends Component {
     )
 
     return (
-      <div>
+      <span>
         <JobEditRawJSON />
         <JobActionStop />
         <JobActionEvaluate />
@@ -55,7 +55,7 @@ class JobActionMenu extends Component {
             onTouchTap={this.handleClick("stop")}
           />
         </IconMenu>
-      </div>
+      </span>
     )
   }
 }

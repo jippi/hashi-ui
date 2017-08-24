@@ -28,28 +28,30 @@ type RegionClients map[string]*Region
 type RegionBroadcastChannels struct {
 	allocations        observer.Property
 	allocationsShallow observer.Property
+	clusterStatistics  observer.Property
+	deployments        observer.Property
 	evaluations        observer.Property
 	jobs               observer.Property
 	members            observer.Property
 	nodes              observer.Property
-	clusterStatistics  observer.Property
 }
 
 // Region keeps track of the Region state. It monitors changes to allocations,
 // evaluations, jobs and nodes and broadcasts them to all connected websockets.
 // It also exposes an API client for the Region server.
 type Region struct {
-	Client             *api.Client
-	Config             *config.Config
-	broadcastChannels  *RegionBroadcastChannels
-	regions            []string
 	allocations        []*api.AllocationListStub
 	allocationsShallow []*api.AllocationListStub // with TaskStates removed
+	broadcastChannels  *RegionBroadcastChannels
+	Client             *api.Client
 	clusterStatistics  *NomadRegionStatisticsAggregatedResult
+	deployments        []*api.Deployment
+	Config             *config.Config
 	evaluations        []*api.Evaluation
 	jobs               []*api.JobListStub
 	members            []*AgentMemberWithID
 	nodes              []*api.NodeListStub
+	regions            []string
 }
 
 // CreateRegionClient derp
@@ -71,28 +73,58 @@ func CreateRegionClient(c *config.Config, region string) (*api.Client, error) {
 // NewRegion configures the Nomad API client and initializes the internal state.
 func NewRegion(c *config.Config, client *api.Client, channels *RegionBroadcastChannels) (*Region, error) {
 	return &Region{
-		Client:             client,
-		Config:             c,
-		broadcastChannels:  channels,
-		regions:            make([]string, 0),
 		allocations:        make([]*api.AllocationListStub, 0),
 		allocationsShallow: make([]*api.AllocationListStub, 0),
+		broadcastChannels:  channels,
+		Client:             client,
 		clusterStatistics:  &NomadRegionStatisticsAggregatedResult{},
+		Config:             c,
+		deployments:        make([]*api.Deployment, 0),
 		evaluations:        make([]*api.Evaluation, 0),
 		jobs:               make([]*api.JobListStub, 0),
 		members:            make([]*AgentMemberWithID, 0),
 		nodes:              make([]*api.NodeListStub, 0),
+		regions:            make([]string, 0),
 	}, nil
 }
 
 // StartWatchers derp
 func (n *Region) StartWatchers() {
+	go n.watchAggregateClusterStatistics()
 	go n.watchAllocs()
 	go n.watchAllocsShallow()
+	go n.watchDeployments()
 	go n.watchEvals()
 	go n.watchJobs()
 	go n.watchNodes()
-	go n.watchAggregateClusterStatistics()
+}
+
+func (n *Region) watchDeployments() {
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
+
+	for {
+		deployments, meta, err := n.Client.Deployments().List(q)
+		if err != nil {
+			logger.Errorf("watch: unable to fetch deployments: %s", err)
+			time.Sleep(10 * time.Second)
+			continue
+		}
+
+		remoteWaitIndex := meta.LastIndex
+		localWaitIndex := q.WaitIndex
+
+		// only work if the WaitIndex have changed
+		if remoteWaitIndex <= localWaitIndex {
+			logger.Debugf("deployments index is unchanged (%d <= %d)", remoteWaitIndex, localWaitIndex)
+			continue
+		}
+
+		logger.Debugf("deployments index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
+
+		n.deployments = deployments
+		n.broadcastChannels.deployments.Update(&structs.Action{Type: fetchedDeployments, Payload: deployments, Index: remoteWaitIndex})
+		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
+	}
 }
 
 func (n *Region) watchAllocs() {

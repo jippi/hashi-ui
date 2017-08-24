@@ -9,6 +9,8 @@ import Jobs from "./containers/jobs"
 import Job from "./containers/job"
 import JobInfo from "./components/JobInfo/JobInfo"
 import JobAllocs from "./components/JobAllocations/JobAllocations"
+import JobChildren from "./components/JobChildren/JobChildren"
+import JobDeployments from "./components/JobDeployments/JobDeployments"
 import JobEvals from "./components/JobEvaluations/JobEvaluations"
 import JobTaskGroups from "./components/JobTaskGroups/JobTaskGroups"
 import JobRaw from "./components/JobRaw/JobRaw"
@@ -24,6 +26,12 @@ import Evaluation from "./containers/evaluation"
 import EvalInfo from "./components/EvaluationInfo/EvaluationInfo"
 import EvalAllocations from "./components/EvaluationAllocations/EvaluationAllocations"
 import EvalRaw from "./components/EvaluationRaw/EvaluationRaw"
+
+import Deployments from "./containers/deployments"
+import Deployment from "./containers/deployment"
+import DeploymentInfo from "./components/DeploymentInfo/DeploymentInfo"
+import DeploymentAllocations from "./components/DeploymentAllocations/DeploymentAllocations"
+import DeploymentRaw from "./components/DeploymentRaw/DeploymentRaw"
 
 import Clients from "./containers/clients"
 import Client from "./containers/client"
@@ -74,21 +82,26 @@ const AppRouter = ({ history }) =>
       <Route path="/nomad" component={SelectNomadRegion} />
       <Redirect from="/nomad/:region" to="/nomad/:region/cluster" />
       <Route path="/nomad/:region/cluster" component={Cluster} />
+      /* servers */
       <Route path="/nomad/:region/servers" component={Servers} />
       <Route path="/nomad/:region/servers/:memberId" component={Server}>
         <IndexRedirect to="/nomad/:region/servers/:memberId/info" />
         <Route path="/nomad/:region/servers/:memberId/info" component={ServerInfo} />
         <Route path="/nomad/:region/servers/:memberId/raw" component={ServerRaw} />
       </Route>
+      /* jobs */
       <Route path="/nomad/:region/jobs" component={Jobs} />
       <Route path="/nomad/:region/jobs/:jobId" component={Job}>
         <IndexRedirect to="/nomad/:region/jobs/:jobId/info" />
         <Route path="/nomad/:region/jobs/:jobId/info" component={JobInfo} />
         <Route path="/nomad/:region/jobs/:jobId/allocations" component={JobAllocs} />
+        <Route path="/nomad/:region/jobs/:jobId/children" component={JobChildren} />
+        <Route path="/nomad/:region/jobs/:jobId/deployments" component={JobDeployments} />
         <Route path="/nomad/:region/jobs/:jobId/evaluations" component={JobEvals} />
         <Route path="/nomad/:region/jobs/:jobId/groups" component={JobTaskGroups} />
         <Route path="/nomad/:region/jobs/:jobId/raw" component={JobRaw} />
       </Route>
+      /* clients */
       <Route path="/nomad/:region/clients" component={Clients} />
       <Route path="/nomad/:region/clients/:nodeId" component={Client}>
         <IndexRedirect to="/nomad/:region/clients/:nodeId/info" />
@@ -98,6 +111,15 @@ const AppRouter = ({ history }) =>
         <Route path="/nomad/:region/clients/:nodeId/evaluations" component={ClientEvaluations} />
         <Route path="/nomad/:region/clients/:nodeId/raw" component={ClientRaw} />
       </Route>
+      /* deployments */
+      <Route path="/nomad/:region/deployments" component={Deployments} />
+      <Route path="/nomad/:region/deployments/:id" component={Deployment}>
+        <IndexRedirect to="/nomad/:region/deployments/:id/info" />
+        <Route path="/nomad/:region/deployments/:id/info" component={DeploymentInfo} />
+        <Route path="/nomad/:region/deployments/:id/allocations" component={DeploymentAllocations} />
+        <Route path="/nomad/:region/deployments/:id/raw" component={DeploymentRaw} />
+      </Route>
+      /* allocations */
       <Route path="/nomad/:region/allocations" component={Allocations} />
       <Route path="/nomad/:region/allocations/:allocId" component={Allocation}>
         <IndexRedirect to="/nomad/:region/allocations/:allocId/info" />
@@ -110,6 +132,7 @@ const AppRouter = ({ history }) =>
         <Route path="/nomad/:region/allocations/:allocId/files" component={AllocFiles} query={{ path: "" }} />
         <Route path="/nomad/:region/allocations/:allocId/raw" component={AllocRaw} />
       </Route>
+      /* evaluations */
       <Route path="/nomad/:region/evaluations" component={Evaluations} />
       <Route path="/nomad/:region/evaluations/:evalId" component={Evaluation}>
         <IndexRedirect to="/nomad/:region/evaluations/:evalId/info" />

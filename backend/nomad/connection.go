@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"gopkg.in/fatih/set.v0"
@@ -149,12 +150,28 @@ func (c *Connection) process(action structs.Action) {
 		c.unwatchGenericBroadcast("members")
 
 	//
+	// Actions for a list of deployments
+	//
+	case watchDeployments:
+		go c.watchGenericBroadcast("deployments", fetchedDeployments, c.region.broadcastChannels.deployments, c.region.deployments)
+	case unwatchDeployments:
+		c.unwatchGenericBroadcast("deployments")
+
+	//
 	// Actions for a list of jobs
 	//
 	case watchJobs:
 		go c.watchGenericBroadcast("jobs", fetchedJobs, c.region.broadcastChannels.jobs, c.region.jobs)
 	case unwatchJobs:
 		c.unwatchGenericBroadcast("jobs")
+
+	//
+	// Actions for filtered job lists
+	//
+	case watchJobsFiltered:
+		go c.watchJobsFiltered(action)
+	case unwatchJobsFiltered:
+		c.unwatchJobsFiltered(action)
 
 	//
 	// Actions for a list of allocations
@@ -208,7 +225,19 @@ func (c *Connection) process(action structs.Action) {
 	case watchJob:
 		go c.watchJob(action)
 	case unwatchJob:
+		c.unwatchJob(action)
+
+	// Deployments for a specific job
+	case watchJobDeployments:
+		go c.watchJobDeployments(action)
+	case unwatchJobDeployments:
 		c.watches.Remove(action.Payload.(string))
+
+	// Versions for a specific job
+	case watchJobVersions:
+		go c.watchJobVersions(action)
+	case unwatchJobVersions:
+		c.watches.Remove(action.Payload.(string) + "-versions")
 
 	//
 	// Actions for a single allocation
@@ -217,6 +246,22 @@ func (c *Connection) process(action structs.Action) {
 		go c.watchAlloc(action)
 	case unwatchAlloc:
 		c.watches.Remove(action.Payload.(string))
+
+	//
+	// Actions for a single deployment
+	//
+	case watchDeployment:
+		go c.watchDeployment(action)
+	case unwatchDeployment:
+		c.watches.Remove(action.Payload.(string))
+
+	//
+	// Allocations for a single deployment
+	//
+	case watchDeploymentAllocs:
+		go c.watchDeploymentAllocs(action)
+	case unwatchDeploymentAllocs:
+		c.watches.Remove(action.Payload.(string) + "-allocs")
 
 	//
 	// Actions for allocation FS
@@ -259,6 +304,10 @@ func (c *Connection) process(action structs.Action) {
 	case submitJob:
 		go c.submitJob(action)
 
+	// Force a periodic run of a job
+	case forcePeriodicRun:
+		go c.forcePeriodicRun(action)
+
 	// Stop a job
 	case stopJob:
 		go c.stopJob(action)
@@ -268,6 +317,9 @@ func (c *Connection) process(action structs.Action) {
 
 	case evaluateJob:
 		go c.evaluateJob(action)
+
+	case changeDeploymentStatus:
+		go c.changeDeploymentStatus(action)
 
 	// Nice in debug
 	default:
@@ -302,6 +354,71 @@ func (c *Connection) keepAlive() {
 		case <-ticker.C:
 			logger.Debugf("Sending keep-alive packet")
 			c.send <- &structs.Action{Type: structs.KeepAlive, Payload: "hello-world", Index: 0}
+		}
+	}
+}
+
+func (c *Connection) unwatchJobsFiltered(action structs.Action) {
+	payload := action.Payload.(map[string]interface{})
+	subKey := "jobs-filtered-"
+
+	if prefix, ok := payload["prefix"]; ok {
+		subKey = subKey + prefix.(string)
+	}
+
+	c.watches.Remove(subKey)
+	c.Infof("Stopped subscribing to jobs filtered")
+}
+
+func (c *Connection) watchJobsFiltered(action structs.Action) {
+	payload := action.Payload.(map[string]interface{})
+
+	q := &api.QueryOptions{
+		WaitIndex:  1,
+		WaitTime:   10 * time.Second,
+		AllowStale: c.region.Config.NomadAllowStale,
+	}
+
+	if prefix, ok := payload["prefix"]; ok {
+		q.Prefix = prefix.(string)
+	}
+
+	subKey := "jobs-filtered-" + q.Prefix
+
+	defer func() {
+		c.watches.Remove(subKey)
+		c.Infof("Stopped watching filtered jobs: %s", q.Prefix)
+	}()
+	c.watches.Add(subKey)
+
+	c.Infof("Started watching jobs filtered: %s", q.Prefix)
+
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		default:
+
+			alloc, meta, err := c.region.Client.Jobs().List(q)
+			if err != nil {
+				c.Errorf("connection: unable to fetch filtered jobs (%s): %s", q.Prefix, err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			if !c.watches.Has(subKey) {
+				return
+			}
+
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				c.send <- &structs.Action{Type: fetchedJobsFiltered, Payload: alloc, Index: remoteWaitIndex}
+				q.WaitIndex = remoteWaitIndex
+			}
 		}
 	}
 }
@@ -342,6 +459,132 @@ func (c *Connection) watchAlloc(action structs.Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &structs.Action{Type: fetchedAlloc, Payload: alloc, Index: remoteWaitIndex}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+			}
+		}
+	}
+}
+
+func (c *Connection) watchDeployment(action structs.Action) {
+	deploymentID := action.Payload.(string)
+
+	defer func() {
+		c.watches.Remove(deploymentID)
+		c.Infof("Stopped watching deployment with id: %s", deploymentID)
+	}()
+	c.watches.Add(deploymentID)
+
+	c.Infof("Started watching deployment with id: %s", deploymentID)
+
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
+
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		default:
+			deployment, meta, err := c.region.Client.Deployments().Info(deploymentID, q)
+			if err != nil {
+				c.Errorf("connection: unable to fetch deployment info: %s", err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			if !c.watches.Has(deploymentID) {
+				return
+			}
+
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				c.send <- &structs.Action{Type: fetchedDeployment, Payload: deployment, Index: remoteWaitIndex}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+			}
+		}
+	}
+}
+
+func (c *Connection) watchDeploymentAllocs(action structs.Action) {
+	deploymentID := action.Payload.(string)
+
+	defer func() {
+		c.watches.Remove(deploymentID + "-allocs")
+		c.Infof("Stopped watching allocations for deployment with id: %s", deploymentID)
+	}()
+	c.watches.Add(deploymentID + "-allocs")
+
+	c.Infof("Started watching allocations for deployment with id: %s", deploymentID)
+
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
+
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		default:
+			allocs, meta, err := c.region.Client.Deployments().Allocations(deploymentID, q)
+			if err != nil {
+				c.Errorf("connection: unable to fetch deployment info: %s", err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			if !c.watches.Has(deploymentID + "-allocs") {
+				return
+			}
+
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				c.send <- &structs.Action{Type: fetchedDeploymentAllocs, Payload: allocs, Index: remoteWaitIndex}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+			}
+		}
+	}
+}
+
+func (c *Connection) watchJobDeployments(action structs.Action) {
+	jobID := action.Payload.(string)
+
+	defer func() {
+		c.watches.Remove(jobID)
+		c.Infof("Stopped watching job deployments for job %s", jobID)
+	}()
+	c.watches.Add(jobID)
+
+	c.Infof("Started watching job deployments for job %s", jobID)
+
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
+
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		default:
+			deployments, meta, err := c.region.Client.Jobs().Deployments(jobID, q)
+			if err != nil {
+				c.Errorf("connection: unable to fetch job deployments: %s", err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			if !c.watches.Has(jobID) {
+				return
+			}
+
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				c.send <- &structs.Action{Type: fetchedJobDeployments, Payload: deployments, Index: remoteWaitIndex}
 				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
 			}
 		}
@@ -537,16 +780,16 @@ func (c *Connection) unwatchGenericBroadcast(watchKey string) {
 	c.watches.Remove(watchKey)
 }
 
-func (c *Connection) watchJob(action structs.Action) {
+func (c *Connection) watchJobVersions(action structs.Action) {
 	jobID := action.Payload.(string)
 
 	defer func() {
-		c.watches.Remove(jobID)
-		c.Infof("Stopped watching job with id: %s", jobID)
+		c.watches.Remove(jobID + "-versions")
+		c.Infof("Stopped watching job versions with id: %s", jobID)
 	}()
-	c.watches.Add(jobID)
+	c.watches.Add(jobID + "-versions")
 
-	c.Infof("Started watching job with id: %s", jobID)
+	c.Infof("Started watching job versions with id: %s", jobID)
 
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 	for {
@@ -555,7 +798,95 @@ func (c *Connection) watchJob(action structs.Action) {
 			return
 
 		default:
-			job, meta, err := c.region.Client.Jobs().Info(jobID, q)
+			jobs, _, meta, err := c.region.Client.Jobs().Versions(jobID, false, q)
+
+			response := make([]*uint64, 0)
+			for _, version := range jobs {
+				response = append(response, version.Version)
+			}
+
+			if err != nil {
+				c.Errorf("connection: unable to fetch job versions: %s", err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			if !c.watches.Has(jobID + "-versions") {
+				return
+			}
+
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				c.send <- &structs.Action{Type: fetchedJobVersions, Payload: response, Index: remoteWaitIndex}
+				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+			}
+		}
+	}
+}
+
+func (c *Connection) unwatchJob(action structs.Action) {
+	payload := action.Payload.(map[string]interface{})
+	jobID := payload["id"].(string)
+
+	// optional job version
+	var jobVersion uint64
+	if v, ok := payload["version"]; ok {
+		x, _ := strconv.Atoi(v.(string))
+		jobVersion = uint64(x)
+	}
+
+	c.watches.Remove(jobID + "/" + string(jobVersion))
+	c.Infof("Unwatching job with id: %s @ v%d", jobID, jobVersion)
+}
+
+func (c *Connection) watchJob(action structs.Action) {
+	payload := action.Payload.(map[string]interface{})
+	jobID := payload["id"].(string)
+
+	// optional job version
+	var jobVersion uint64
+	var v interface{}
+	var getJobVersion bool
+	if v, getJobVersion = payload["version"]; getJobVersion {
+		x, _ := strconv.Atoi(v.(string))
+		jobVersion = uint64(x)
+	}
+
+	defer func() {
+		c.watches.Remove(jobID + "/" + string(jobVersion))
+		c.Infof("Stopped watching job with id: %s @ v%d", jobID, jobVersion)
+	}()
+	c.watches.Add(jobID + "/" + string(jobVersion))
+
+	c.Infof("Started watching job with id: %s @ v%d", jobID, jobVersion)
+
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		default:
+			var job *api.Job
+			var jobs []*api.Job
+			var meta *api.QueryMeta
+			var err error
+
+			if !getJobVersion {
+				job, meta, err = c.region.Client.Jobs().Info(jobID, q)
+			} else {
+				jobs, _, meta, err = c.region.Client.Jobs().Versions(jobID, false, q)
+
+				for _, version := range jobs {
+					if *version.Version == jobVersion {
+						job = version
+						break
+					}
+				}
+			}
 
 			if c.region.Config.NomadHideEnvData {
 				for _, taskGroup := range job.TaskGroups {
@@ -573,7 +904,7 @@ func (c *Connection) watchJob(action structs.Action) {
 				continue
 			}
 
-			if !c.watches.Has(jobID) {
+			if !c.watches.Has(jobID + "/" + string(jobVersion)) {
 				return
 			}
 
@@ -997,6 +1328,84 @@ func (c *Connection) evaluateJob(action structs.Action) {
 
 	logger.Infof("connection: successfully re-evaluated job '%s'", jobID)
 	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "The job has been successfully re-evaluated.", Index: index}
+}
+
+func (c *Connection) forcePeriodicRun(action structs.Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	if c.region.Config.NomadReadOnly {
+		logger.Errorf("Unable to evaluate job: NomadReadOnly is set to true")
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		return
+	}
+
+	jobID := action.Payload.(string)
+
+	logger.Infof("Begin force-run of job with id: %s", jobID)
+
+	allocID, _, err := c.region.Client.Jobs().PeriodicForce(jobID, nil)
+	if err != nil {
+		logger.Errorf("connection: unable to periodic force run job '%s' : %s", jobID, err)
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Unable to periodic force run job : %s", err), Index: index}
+		return
+	}
+
+	logger.Infof("connection: successfully forced periodic job to run '%s' as allocation %s", jobID, allocID)
+	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: fmt.Sprintf("The job has been successfully re-run as allocation id %s.", allocID), Index: index}
+}
+
+func (c *Connection) changeDeploymentStatus(action structs.Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	if c.region.Config.NomadReadOnly {
+		logger.Errorf("Unable to update deployment: NomadReadOnly is set to true")
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		return
+	}
+
+	payload := action.Payload.(map[string]interface{})
+
+	var ID, actionType string
+	var x interface{}
+	var ok bool
+	var err error
+
+	if x, ok = payload["id"]; !ok {
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Missing deployment id", Index: index}
+		return
+	}
+	ID = x.(string)
+
+	if x, ok = payload["action"]; !ok {
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Missing action", Index: index}
+		return
+	}
+	actionType = x.(string)
+
+	switch actionType {
+	case "promote":
+		if x, ok = payload["group"]; ok {
+			_, _, err = c.region.Client.Deployments().PromoteGroups(ID, []string{x.(string)}, nil)
+		} else {
+			_, _, err = c.region.Client.Deployments().PromoteAll(ID, nil)
+		}
+	case "fail":
+		_, _, err = c.region.Client.Deployments().Fail(ID, nil)
+	case "pause":
+		_, _, err = c.region.Client.Deployments().Pause(ID, true, nil)
+	case "resume":
+		_, _, err = c.region.Client.Deployments().Pause(ID, false, nil)
+	}
+
+	if err != nil {
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Failed to update deployment: %s", err), Index: index}
+		return
+	}
+
+	logger.Infof("connection: successfully updated deployment '%s'", ID)
+	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully updated deployment.", Index: index}
 }
 
 func (c *Connection) fetchRegions() {

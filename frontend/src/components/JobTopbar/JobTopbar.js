@@ -6,14 +6,25 @@ import { withRouter } from "react-router"
 
 const infoIcon = <FontIcon className="material-icons">info_outline</FontIcon>
 const allocationIcon = <FontIcon className="material-icons">apps</FontIcon>
+const executionIcon = <FontIcon className="material-icons">alarm</FontIcon>
+const deploymentIcon = <FontIcon className="material-icons">device_hub</FontIcon>
 const evaluationIcon = <FontIcon className="material-icons">share</FontIcon>
 const taskGroupIcon = <FontIcon className="material-icons">layers</FontIcon>
 const rawIcon = <FontIcon className="material-icons">code</FontIcon>
 
 class _JobTopbar extends PureComponent {
   handleActive(tab) {
-    const path = ["", "nomad", this.props.router.params.region, "jobs", this.props.job.ID, tab]
-    this.props.router.push(path.map(encodeURIComponent).join("/"))
+    let path = ["", "nomad", this.props.router.params.region, "jobs", this.props.job.ID, tab]
+    let query = {}
+
+    if (this.props.location.query && this.props.location.query.version) {
+      query["version"] = this.props.location.query.version
+    }
+
+    this.props.router.push({
+      pathname: path.map(encodeURIComponent).join("/"),
+      query: query
+    })
   }
 
   getActiveTab() {
@@ -28,16 +39,29 @@ class _JobTopbar extends PureComponent {
       return 1
     }
 
-    if (end.startsWith("allocations")) {
+    if (end.startsWith("deployments")) {
       return 2
     }
 
-    if (end.startsWith("evaluations")) {
+    if (end.startsWith("allocations")) {
       return 3
     }
 
-    if (end.startsWith("raw")) {
+    if (end.startsWith("evaluations")) {
       return 4
+    }
+
+    // only for periodic jobs
+    if (end.startsWith("children")) {
+      return 2
+    }
+
+    if (end.startsWith("raw")) {
+      if (this.props.job.Periodic || this.props.job.ParameterizedJob) {
+        return 3
+      }
+
+      return 5
     }
 
     return 0
@@ -51,21 +75,69 @@ class _JobTopbar extends PureComponent {
   }
 
   render() {
+    let options = []
+    options.push(
+      <BottomNavigationItem key="info" label="Info" icon={infoIcon} onTouchTap={() => this.handleActive("info")} />
+    )
+
+    options.push(
+      <BottomNavigationItem
+        key="groups"
+        label="Groups"
+        icon={taskGroupIcon}
+        onTouchTap={() => this.handleActive("groups")}
+      />
+    )
+
+    if (this.props.job.Periodic || this.props.job.ParameterizedJob) {
+      options.push(
+        <BottomNavigationItem
+          key="children"
+          label="Children"
+          icon={executionIcon}
+          onTouchTap={() => this.handleActive("children")}
+        />
+      )
+    }
+
+    if (!("version" in this.props.location.query) && !this.props.job.Periodic && !this.props.job.ParameterizedJob) {
+      options.push(
+        <BottomNavigationItem
+          key="deployments"
+          label="Deployments"
+          icon={deploymentIcon}
+          onTouchTap={() => this.handleActive("deployments")}
+        />
+      )
+
+      if (!this.props.job.Periodic && !this.props.job.ParameterizedJob) {
+        options.push(
+          <BottomNavigationItem
+            key="allocations"
+            label="Allocations"
+            icon={allocationIcon}
+            onTouchTap={() => this.handleActive("allocations")}
+          />
+        )
+
+        options.push(
+          <BottomNavigationItem
+            key="evaluations"
+            label="Evaluations"
+            icon={evaluationIcon}
+            onTouchTap={() => this.handleActive("evaluations")}
+          />
+        )
+      }
+    }
+
+    options.push(
+      <BottomNavigationItem key="raw" label="Raw" icon={rawIcon} onTouchTap={() => this.handleActive("raw")} />
+    )
+
     return (
       <BottomNavigation selectedIndex={this.getActiveTab()} style={this.getStyle()}>
-        <BottomNavigationItem label="Info" icon={infoIcon} onTouchTap={() => this.handleActive("info")} />
-        <BottomNavigationItem label="Groups" icon={taskGroupIcon} onTouchTap={() => this.handleActive("groups")} />
-        <BottomNavigationItem
-          label="Allocations"
-          icon={allocationIcon}
-          onTouchTap={() => this.handleActive("allocations")}
-        />
-        <BottomNavigationItem
-          label="Evaluations"
-          icon={evaluationIcon}
-          onTouchTap={() => this.handleActive("evaluations")}
-        />
-        <BottomNavigationItem label="Raw" icon={rawIcon} onTouchTap={() => this.handleActive("raw")} />
+        {options}
       </BottomNavigation>
     )
   }

@@ -1,9 +1,16 @@
 import {
+  NOMAD_FETCHED_DEPLOYMENT_ALLOCATIONS,
+  NOMAD_FETCHED_JOB_DEPLOYMENTS,
+  NOMAD_FETCHED_JOB_VERSIONS,
   NOMAD_FETCHED_JOB,
+  NOMAD_FETCHED_JOBS_FILTERED,
   NOMAD_FETCHED_JOBS,
   NOMAD_JOB_HIDE_DIALOG,
   NOMAD_JOB_SHOW_DIALOG,
-  NOMAD_UNWATCH_JOB
+  NOMAD_UNWATCH_JOB_DEPLOYMENTS,
+  NOMAD_UNWATCH_JOB_VERSIONS,
+  NOMAD_UNWATCH_JOB,
+  NOMAD_UNWATCH_JOBS_FILTERED
 } from "../sagas/event"
 
 export function JobInfoReducer(state = {}, action) {
@@ -25,6 +32,39 @@ export function JobInfoReducer(state = {}, action) {
     default:
   }
 
+  return state
+}
+
+export function JobDeploymentsReducer(state = [], action) {
+  switch (action.type) {
+    case NOMAD_FETCHED_JOB_DEPLOYMENTS:
+      return action.payload
+    case NOMAD_UNWATCH_JOB_DEPLOYMENTS:
+      return []
+    default:
+  }
+  return state
+}
+
+export function FilteredJobsReducer(state = [], action) {
+  switch (action.type) {
+    case NOMAD_FETCHED_JOBS_FILTERED:
+      return action.payload
+    case NOMAD_UNWATCH_JOBS_FILTERED:
+      return []
+    default:
+  }
+  return state
+}
+
+export function JobVersionsReducer(state = [], action) {
+  switch (action.type) {
+    case NOMAD_FETCHED_JOB_VERSIONS:
+      return action.payload
+    case NOMAD_UNWATCH_JOB_VERSIONS:
+      return []
+    default:
+  }
   return state
 }
 

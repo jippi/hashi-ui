@@ -2,45 +2,12 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Card, CardHeader, CardText } from "material-ui/Card"
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "../components/Table"
 import FilterFreetext from "../components/FilterFreetext/FilterFreetext"
 import JobStatusFilter from "../components/JobStatusFilter/JobStatusFilter"
 import JobTypeFilter from "../components/JobTypeFilter/JobTypeFilter"
-import JobLink from "../components/JobLink/JobLink"
-import AllocationDistribution from "../components/AllocationDistribution/AllocationDistribution"
+import JobList from "../components/JobList/JobList"
 import { NOMAD_WATCH_JOBS, NOMAD_UNWATCH_JOBS } from "../sagas/event"
 import { Grid, Row, Col } from "react-flexbox-grid"
-
-const columnFormat = {
-  width: 50,
-  maxWidth: 50,
-  overflow: "inherit",
-  whiteSpace: "normal"
-}
-const flexibleWidth = {
-  width: 300,
-  minWidth: 300,
-  overflow: "display",
-  whiteSpace: "normal"
-}
-
-const summaryLabels = ["Starting", "Running", "Queued", "Complete", "Failed", "Lost"]
-
-const getJobStatisticsHeader = () => {
-  return (
-    <TableHeaderColumn style={flexibleWidth} key={`statistics-header`}>
-      Allocation Status
-    </TableHeaderColumn>
-  )
-}
-
-const getJobStatisticsRow = job => {
-  return (
-    <TableRowColumn style={flexibleWidth} key={`${job.ID}-statistics`}>
-      <AllocationDistribution job={job} />
-    </TableRowColumn>
-  )
-}
 
 class Jobs extends Component {
   componentDidMount() {
@@ -70,29 +37,6 @@ class Jobs extends Component {
     return jobs
   }
 
-  taskGroupCount(job) {
-    let taskGroupCount = "N/A"
-
-    if (job.JobSummary !== null) {
-      taskGroupCount = Object.keys(job.JobSummary.Summary).length
-    }
-
-    return taskGroupCount
-  }
-
-  failedTaskCount(job) {
-    let counter = 0
-
-    if (job.JobSummary !== null) {
-      const summary = job.JobSummary.Summary
-      Object.keys(job.JobSummary.Summary).forEach(taskGroupID => {
-        counter += summary[taskGroupID].Lost
-      })
-    }
-
-    return counter
-  }
-
   render() {
     return (
       <div>
@@ -116,46 +60,7 @@ class Jobs extends Component {
 
         <Card style={{ marginTop: "1rem" }}>
           <CardText>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHeaderColumn style={flexibleWidth}>Name</TableHeaderColumn>
-                  <TableHeaderColumn style={columnFormat}>Type</TableHeaderColumn>
-                  <TableHeaderColumn style={columnFormat}>Priority</TableHeaderColumn>
-                  <TableHeaderColumn style={columnFormat}>Status</TableHeaderColumn>
-                  <TableHeaderColumn style={columnFormat}>Groups</TableHeaderColumn>
-                  {getJobStatisticsHeader()}
-                  <TableHeaderColumn style={columnFormat}># Lost</TableHeaderColumn>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {this.filteredJobs().map(job => {
-                  return (
-                    <TableRow key={job.ID}>
-                      <TableRowColumn style={flexibleWidth}>
-                        <JobLink jobId={job.ID} />
-                      </TableRowColumn>
-                      <TableRowColumn style={columnFormat}>
-                        {job.Type}
-                      </TableRowColumn>
-                      <TableRowColumn style={columnFormat}>
-                        {job.Priority}
-                      </TableRowColumn>
-                      <TableRowColumn style={columnFormat}>
-                        {job.Status}
-                      </TableRowColumn>
-                      <TableRowColumn style={columnFormat}>
-                        {this.taskGroupCount(job)}
-                      </TableRowColumn>
-                      {getJobStatisticsRow(job)}
-                      <TableRowColumn style={columnFormat}>
-                        {this.failedTaskCount(job)}
-                      </TableRowColumn>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
+            <JobList jobs={this.filteredJobs()} />
           </CardText>
         </Card>
       </div>
