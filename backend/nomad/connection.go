@@ -321,6 +321,18 @@ func (c *Connection) process(action structs.Action) {
 	case changeDeploymentStatus:
 		go c.changeDeploymentStatus(action)
 
+	case drainClient:
+		go c.drainClient(action)
+
+	case removeClient:
+		go c.removeClient(action)
+
+	case forceGC:
+		go c.forceGC(action)
+
+	case reconcileSystem:
+		go c.reconcileSystem(action)
+
 	// Nice in debug
 	default:
 		logger.Errorf("Unknown action: %s", action.Type)
@@ -1406,6 +1418,104 @@ func (c *Connection) changeDeploymentStatus(action structs.Action) {
 
 	logger.Infof("connection: successfully updated deployment '%s'", ID)
 	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully updated deployment.", Index: index}
+}
+
+func (c *Connection) drainClient(action structs.Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	if c.region.Config.NomadReadOnly {
+		logger.Errorf("Unable to drain client: NomadReadOnly is set to true")
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		return
+	}
+
+	var ID, actionType string
+	var ok bool
+	var x interface{}
+	var err error
+
+	payload := action.Payload.(map[string]interface{})
+
+	if x, ok = payload["id"]; !ok {
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Missing client id", Index: index}
+		return
+	}
+	ID = x.(string)
+
+	if x, ok = payload["action"]; !ok {
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Missing action key", Index: index}
+		return
+	}
+	actionType = x.(string)
+
+	switch actionType {
+	case "enable":
+		_, err = c.region.Client.Nodes().ToggleDrain(ID, true, nil)
+	case "disable":
+		_, err = c.region.Client.Nodes().ToggleDrain(ID, false, nil)
+	default:
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Invalid action", Index: index}
+	}
+
+	if err != nil {
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Failed to change client drain mode: %s", err), Index: index}
+		return
+	}
+
+	logger.Infof("connection: successfully updated client drain mode '%s'", ID)
+	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully updated client drain mode.", Index: index}
+}
+
+func (c *Connection) removeClient(action structs.Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	if c.region.Config.NomadReadOnly {
+		logger.Errorf("Unable to remove client: NomadReadOnly is set to true")
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "The backend server is in read-only mode", Index: index}
+		return
+	}
+
+	ID := action.Payload.(string)
+
+	err := c.region.Client.Agent().ForceLeave(ID)
+	if err != nil {
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Failed to force leave the client: %s", err), Index: index}
+		return
+	}
+
+	logger.Infof("connection: successfully force leaved client '%s'", ID)
+	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully force leaved the client.", Index: index}
+}
+
+func (c *Connection) forceGC(action structs.Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	err := c.region.Client.System().GarbageCollect()
+	if err != nil {
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Failed to force gc: %s", err), Index: index}
+		return
+	}
+
+	logger.Info("connection: successfully forced gc")
+	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully forced gc.", Index: index}
+}
+
+func (c *Connection) reconcileSystem(action structs.Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+	c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Failed to reconsile summaries: Waiting for https://github.com/hashicorp/nomad/pull/3091 to be merged", Index: index}
+
+	// err := c.region.Client.System().ReconcileSummaries()
+	// if err != nil {
+	// 	c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Failed to reconsile summaries: %s", err), Index: index}
+	// 	return
+	// }
+
+	// logger.Info("connection: successfully reconsiled summaries")
+	// c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully reconsiled summaries.", Index: index}
 }
 
 func (c *Connection) fetchRegions() {

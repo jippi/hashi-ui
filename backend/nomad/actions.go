@@ -97,4 +97,10 @@ const (
 	forcePeriodicRun = "NOMAD_FORCE_PERIODIC_RUN"
 
 	changeDeploymentStatus = "NOMAD_CHANGE_DEPLOYMENT_STATUS"
+
+	drainClient  = "NOMAD_DRAIN_CLIENT"
+	removeClient = "NOMAD_REMOVE_CLIENT"
+
+	forceGC         = "NOMAD_FORCE_GC"
+	reconcileSystem = "NOMAD_RECONCILE_SYSTEM"
 )

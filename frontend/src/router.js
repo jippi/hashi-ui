@@ -53,6 +53,8 @@ import ConsulServices from "./containers/consul_services"
 import ConsulNodes from "./containers/consul_nodes"
 import SelectConsulRegion from "./containers/select_consul_region"
 
+import System from "./containers/system"
+
 const AppRouter = ({ history }) =>
   <Router history={history}>
     <Route path="/" component={App}>
@@ -140,6 +142,8 @@ const AppRouter = ({ history }) =>
         <Route path="/nomad/:region/evaluations/:evalId/allocations" component={EvalAllocations} />
         <Route path="/nomad/:region/evaluations/:evalId/raw" component={EvalRaw} />
       </Route>
+      /* system */
+      <Route path="/nomad/:region/system" component={System} />
     </Route>
   </Router>
 

@@ -19,6 +19,15 @@ const withPrefix = function withPrefix(obj, prefix) {
   return result
 }
 
+const speialProps = function speialProps(obj) {
+  const result = {}
+  nodeProps.forEach(v => {
+    result[v] = obj[v]
+  })
+
+  return result
+}
+
 const ClientInfo = ({ node }) =>
   <Grid fluid style={{ padding: 0 }}>
     <Row style={{ marginTop: "1rem" }}>
@@ -26,18 +35,7 @@ const ClientInfo = ({ node }) =>
         <Card key="client">
           <CardTitle title="Client Properties" />
           <CardText>
-            <dl className="dl-horizontal">
-              {nodeProps.map(nodeProp =>
-                <div key={nodeProp}>
-                  <dt>
-                    {nodeProp}
-                  </dt>
-                  <dd>
-                    {node[nodeProp] ? node[nodeProp] : "-"}
-                  </dd>
-                </div>
-              )}
-            </dl>
+            <MetaPayload dtWithClass="wide" metaBag={speialProps(node)} sortKeys={false} identifier="client" />
           </CardText>
         </Card>
         <Card key="nomad">

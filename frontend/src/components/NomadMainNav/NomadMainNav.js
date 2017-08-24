@@ -45,6 +45,10 @@ class NomadMainNav extends PureComponent {
         route = `${prefix}/servers`
         break
 
+      case "system":
+        route = `${prefix}/system`
+        break
+
       default:
         route = `${prefix}/cluster`
     }
@@ -87,6 +91,10 @@ class NomadMainNav extends PureComponent {
 
     if (location.pathname.startsWith(prefix + "/servers")) {
       return "servers"
+    }
+
+    if (location.pathname.startsWith(prefix + "/system")) {
+      return "system"
     }
 
     return "cluster"
@@ -165,6 +173,13 @@ class NomadMainNav extends PureComponent {
           value="servers"
           href={this.getRoute("servers")}
           onClick={clickHandler("servers")}
+        />
+        <ListItem
+          key="system"
+          primaryText="System"
+          value="system"
+          href={this.getRoute("system")}
+          onClick={clickHandler("system")}
         />
       </SelectableList>
     )
