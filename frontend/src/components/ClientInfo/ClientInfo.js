@@ -105,11 +105,11 @@ const ClientInfo = ({ node }) =>
       </Col>
     </Row>
     <Row style={{ marginTop: "1rem" }}>
-      <Col key="memory-pane" xs={12} sm={12} md={6} lg={6}>
+      <Col key="consul-pane" xs={12} sm={12} md={6} lg={6}>
         <Card>
-          <CardTitle title="Memory Properties" />
+          <CardTitle title="Consul Properties" />
           <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "memory.")} identifier="memory" />
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "consul.")} identifier="consul" />
           </CardText>
         </Card>
       </Col>
@@ -118,6 +118,16 @@ const ClientInfo = ({ node }) =>
           <CardTitle title="OS Properties" />
           <CardText>
             <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "os.")} identifier="os" />
+          </CardText>
+        </Card>
+      </Col>
+    </Row>
+    <Row style={{ marginTop: "1rem" }}>
+      <Col key="memory-pane" xs={12} sm={12} md={6} lg={6}>
+        <Card>
+          <CardTitle title="Memory Properties" />
+          <CardText>
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "memory.")} identifier="memory" />
           </CardText>
         </Card>
       </Col>

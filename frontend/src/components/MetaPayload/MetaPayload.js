@@ -30,7 +30,7 @@ class MetaPayload extends Component {
       )
       meta.push(
         <dd key={`${key}dd`}>
-          {metaBag[key]}
+          {metaBag[key] ? metaBag[key] : "-"}
         </dd>
       )
     })
