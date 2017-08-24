@@ -21,9 +21,9 @@ const withPrefix = function withPrefix(obj, prefix) {
 
 const ClientInfo = ({ node }) =>
   <Grid fluid style={{ padding: 0 }}>
-    <Row>
-      <Col key="properties-pane" xs={12} sm={12} md={6} lg={6}>
-        <Card>
+    <Row style={{ marginTop: "1rem" }}>
+      <Col key="resource-pane" xs={12} sm={12} md={6} lg={6}>
+        <Card key="client">
           <CardTitle title="Client Properties" />
           <CardText>
             <dl className="dl-horizontal">
@@ -40,94 +40,66 @@ const ClientInfo = ({ node }) =>
             </dl>
           </CardText>
         </Card>
-      </Col>
-      <Col key="meta-pane" xs={12} sm={12} md={6} lg={6}>
-        <Card>
-          <CardTitle title="Meta Properties" />
-          <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={node.Meta} identifier="meta" />
-          </CardText>
-        </Card>
-      </Col>
-    </Row>
-    <Row style={{ marginTop: "1rem" }}>
-      <Col key="cpu-pane" xs={12} sm={12} md={6} lg={6}>
-        <Card>
-          <CardTitle title="CPU Properties" />
-          <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "cpu.")} identifier="cpu" />
-          </CardText>
-        </Card>
-      </Col>
-      <Col key="driver-pane" xs={12} sm={12} md={6} lg={6}>
-        <Card>
-          <CardTitle title="Driver Properties" />
-          <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "driver.")} identifier="driver" />
-          </CardText>
-        </Card>
-      </Col>
-    </Row>
-    <Row style={{ marginTop: "1rem" }}>
-      <Col key="kernel-pane" xs={12} sm={12} md={6} lg={6}>
-        <Card>
-          <CardTitle title="Kernel Properties" />
-          <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "kernel.")} identifier="kernel" />
-          </CardText>
-        </Card>
-      </Col>
-      <Col key="unique-pane" xs={12} sm={12} md={6} lg={6}>
-        <Card>
-          <CardTitle title="Unique Properties" />
-          <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "unique.")} identifier="unique" />
-          </CardText>
-        </Card>
-      </Col>
-    </Row>
-    <Row style={{ marginTop: "1rem" }}>
-      <Col key="nomad-pane" xs={12} sm={12} md={6} lg={6}>
-        <Card>
+        <Card key="nomad">
           <CardTitle title="Nomad Properties" />
           <CardText>
             <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "nomad.")} identifier="nomad" />
           </CardText>
         </Card>
-      </Col>
-      <Col key="value-pane" xs={12} sm={12} md={6} lg={6}>
-        <Card>
+        <Card key="vault">
           <CardTitle title="Vault Properties" />
           <CardText>
             <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "vault.")} identifier="vault" />
           </CardText>
         </Card>
-      </Col>
-    </Row>
-    <Row style={{ marginTop: "1rem" }}>
-      <Col key="consul-pane" xs={12} sm={12} md={6} lg={6}>
-        <Card>
-          <CardTitle title="Consul Properties" />
+        <Card key="cpu">
+          <CardTitle title="CPU Properties" />
           <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "consul.")} identifier="consul" />
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "cpu.")} identifier="cpu" />
           </CardText>
         </Card>
-      </Col>
-      <Col key="os-pane" xs={12} sm={12} md={6} lg={6}>
-        <Card>
+        <Card key="memory">
+          <CardTitle title="Memory Properties" />
+          <CardText>
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "memory.")} identifier="memory" />
+          </CardText>
+        </Card>
+        <Card key="kernel">
+          <CardTitle title="Kernel Properties" />
+          <CardText>
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "kernel.")} identifier="kernel" />
+          </CardText>
+        </Card>
+        <Card key="os">
           <CardTitle title="OS Properties" />
           <CardText>
             <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "os.")} identifier="os" />
           </CardText>
         </Card>
       </Col>
-    </Row>
-    <Row style={{ marginTop: "1rem" }}>
-      <Col key="memory-pane" xs={12} sm={12} md={6} lg={6}>
-        <Card>
-          <CardTitle title="Memory Properties" />
+      <Col key="driver-pane" xs={12} sm={12} md={6} lg={6}>
+        <Card key="meta">
+          <CardTitle title="Meta Properties" />
           <CardText>
-            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "memory.")} identifier="memory" />
+            <MetaPayload dtWithClass="wide" metaBag={node.Meta} identifier="meta" />
+          </CardText>
+        </Card>
+        <Card key="consul">
+          <CardTitle title="Consul Properties" />
+          <CardText>
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "consul.")} identifier="consul" />
+          </CardText>
+        </Card>
+        <Card key="driver">
+          <CardTitle title="Driver Properties" />
+          <CardText>
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "driver.")} identifier="driver" />
+          </CardText>
+        </Card>
+        <Card key="unique">
+          <CardTitle title="Unique Properties" />
+          <CardText>
+            <MetaPayload dtWithClass="wide" metaBag={withPrefix(node.Attributes, "unique.")} identifier="unique" />
           </CardText>
         </Card>
       </Col>
