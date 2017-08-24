@@ -193,7 +193,10 @@ class AllocationFiles extends Component {
   unwatchFile(props) {
     props.dispatch({
       type: NOMAD_UNWATCH_FILE,
-      payload: props.location.query.path + props.location.query.file
+      payload: {
+        allocID: props.allocation.ID,
+        path: props.location.query.path + props.location.query.file
+      }
     })
   }
 

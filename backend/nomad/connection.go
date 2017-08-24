@@ -6,14 +6,14 @@ import (
 	"io"
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
-
-	"gopkg.in/fatih/set.v0"
 
 	"github.com/gorilla/websocket"
 	"github.com/hashicorp/nomad/api"
 	"github.com/imkira/go-observer"
 	"github.com/jippi/hashi-ui/backend/structs"
+	"github.com/jippi/hashi-ui/backend/subscriber"
 
 	uuid "github.com/satori/go.uuid"
 )
@@ -42,7 +42,7 @@ type Connection struct {
 	receive           chan *structs.Action
 	send              chan *structs.Action
 	destroyCh         chan struct{}
-	watches           *set.Set
+	watches           *subscriber.Manager
 	hub               *Hub
 	region            *Region
 	broadcastChannels *RegionBroadcastChannels
@@ -55,7 +55,7 @@ func NewConnection(hub *Hub, socket *websocket.Conn, nomadRegion *Region, channe
 	return &Connection{
 		ID:                connectionID,
 		shortID:           fmt.Sprintf("%s", connectionID)[0:8],
-		watches:           set.New(),
+		watches:           &subscriber.Manager{},
 		hub:               hub,
 		socket:            socket,
 		receive:           make(chan *structs.Action),
@@ -97,9 +97,10 @@ func (c *Connection) writePump() {
 
 	for {
 		select {
+
 		case <-c.destroyCh:
 			c.Warningf("Stopping writePump")
-			return
+
 		case action, ok := <-c.send:
 			if !ok {
 				if err := c.socket.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
@@ -161,9 +162,9 @@ func (c *Connection) process(action structs.Action) {
 	// Actions for a list of jobs
 	//
 	case watchJobs:
-		go c.watchGenericBroadcast("jobs", fetchedJobs, c.region.broadcastChannels.jobs, c.region.jobs)
+		go c.watchGenericBroadcast("/jobs", fetchedJobs, c.region.broadcastChannels.jobs, c.region.jobs)
 	case unwatchJobs:
-		c.unwatchGenericBroadcast("jobs")
+		c.unwatchGenericBroadcast("/jobs")
 
 	//
 	// Actions for filtered job lists
@@ -177,37 +178,37 @@ func (c *Connection) process(action structs.Action) {
 	// Actions for a list of allocations
 	//
 	case watchAllocs:
-		go c.watchGenericBroadcast("allocs", fetchedAllocs, c.region.broadcastChannels.allocations, c.region.allocations)
+		go c.watchGenericBroadcast("/allocations", fetchedAllocs, c.region.broadcastChannels.allocations, c.region.allocations)
 	case watchAllocsShallow:
-		go c.watchGenericBroadcast("allocsShallow", fetchedAllocs, c.region.broadcastChannels.allocationsShallow, c.region.allocationsShallow)
+		go c.watchGenericBroadcast("/allocations-shallow", fetchedAllocs, c.region.broadcastChannels.allocationsShallow, c.region.allocationsShallow)
 	case unwatchAllocs:
-		c.unwatchGenericBroadcast("allocs")
+		c.unwatchGenericBroadcast("/allocations")
 	case unwatchAllocsShallow:
-		c.unwatchGenericBroadcast("allocsShallow")
+		c.unwatchGenericBroadcast("/allocations-shallow")
 
 	//
 	// Actions for a list of nodes (aka clients in the UI)
 	//
 	case watchNodes:
-		go c.watchGenericBroadcast("nodes", fetchedNodes, c.region.broadcastChannels.nodes, c.region.nodes)
+		go c.watchGenericBroadcast("/nodes", fetchedNodes, c.region.broadcastChannels.nodes, c.region.nodes)
 	case unwatchNodes:
-		c.unwatchGenericBroadcast("nodes")
+		c.unwatchGenericBroadcast("/nodes")
 
 	//
 	// Actions for a list of evaluations
 	//
 	case watchClusterStatistics:
-		go c.watchGenericBroadcast("ClusterStatistics", fetchedClusterStatistics, c.region.broadcastChannels.clusterStatistics, c.region.clusterStatistics)
+		go c.watchGenericBroadcast("/cluster/statistics", fetchedClusterStatistics, c.region.broadcastChannels.clusterStatistics, c.region.clusterStatistics)
 	case unwatchClusterStatistics:
-		c.unwatchGenericBroadcast("ClusterStatistics")
+		c.unwatchGenericBroadcast("/cluster/statistics")
 
 	//
 	// Actions for a list of evaluations
 	//
 	case watchEvals:
-		go c.watchGenericBroadcast("evaluations", fetchedEvals, c.region.broadcastChannels.evaluations, c.region.evaluations)
+		go c.watchGenericBroadcast("/evaluations", fetchedEvals, c.region.broadcastChannels.evaluations, c.region.evaluations)
 	case unwatchEvals:
-		c.unwatchGenericBroadcast("evaluations")
+		c.unwatchGenericBroadcast("/evaluations")
 
 	//
 	// Actions for a single node (aka client in the UI)
@@ -215,7 +216,9 @@ func (c *Connection) process(action structs.Action) {
 	case watchNode:
 		go c.watchNode(action)
 	case unwatchNode:
-		c.watches.Remove(action.Payload.(string))
+		watchKey := fmt.Sprintf("/node/%s", action.Payload.(string))
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Unwatching %s", watchKey)
 	case fetchNode:
 		go c.fetchNode(action)
 
@@ -231,13 +234,17 @@ func (c *Connection) process(action structs.Action) {
 	case watchJobDeployments:
 		go c.watchJobDeployments(action)
 	case unwatchJobDeployments:
-		c.watches.Remove(action.Payload.(string))
+		watchKey := fmt.Sprintf("/job/%s/deployments", action.Payload.(string))
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Unwatching %s", watchKey)
 
 	// Versions for a specific job
 	case watchJobVersions:
 		go c.watchJobVersions(action)
 	case unwatchJobVersions:
-		c.watches.Remove(action.Payload.(string) + "-versions")
+		watchKey := fmt.Sprintf("/job/%s/versions", action.Payload.(string))
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Unwatching %s", watchKey)
 
 	//
 	// Actions for a single allocation
@@ -245,7 +252,9 @@ func (c *Connection) process(action structs.Action) {
 	case watchAlloc:
 		go c.watchAlloc(action)
 	case unwatchAlloc:
-		c.watches.Remove(action.Payload.(string))
+		watchKey := fmt.Sprintf("/allocation/%s", action.Payload.(string))
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Unwatching %s", watchKey)
 
 	//
 	// Actions for a single deployment
@@ -253,7 +262,9 @@ func (c *Connection) process(action structs.Action) {
 	case watchDeployment:
 		go c.watchDeployment(action)
 	case unwatchDeployment:
-		c.watches.Remove(action.Payload.(string))
+		watchKey := fmt.Sprintf("/deployment/%s", action.Payload.(string))
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Unwatching %s", watchKey)
 
 	//
 	// Allocations for a single deployment
@@ -261,40 +272,48 @@ func (c *Connection) process(action structs.Action) {
 	case watchDeploymentAllocs:
 		go c.watchDeploymentAllocs(action)
 	case unwatchDeploymentAllocs:
-		c.watches.Remove(action.Payload.(string) + "-allocs")
+		watchKey := fmt.Sprintf("/deployment/%s/allocations", action.Payload.(string))
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Unwatching %s", watchKey)
 
 	//
 	// Actions for allocation FS
 	//
-	case fetchDir: // for file browsing in an allocation
+	case fetchDir:
 		go c.fetchDir(action)
-	case watchFile: // for following (tail -f) a file in an allocation
+	case watchFile:
 		go c.watchFile(action)
-	case unwatchFile: // for stopping a follow of a file (tail -f)
-		c.watches.Remove(action.Payload.(string))
+	case unwatchFile:
+		c.unwatchFile(action)
 
 	case fetchClientStats:
 		go c.fetchClientStats(action)
 	case watchClientStats:
 		go c.watchClientStats(action)
 	case unwatchClientStats:
-		c.watches.Remove("node-stats-" + action.Payload.(string))
+		watchKey := fmt.Sprintf("/node/%s/statistics", action.Payload.(string))
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Unwatching %s", watchKey)
 
 	//
 	// Actions for a single member (aka server in the UI)
 	//
 	case watchMember:
 		go c.watchMember(action)
+	case unwatchMember:
+		watchKey := fmt.Sprintf("/member/%s", action.Payload.(string))
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Unwatching %s", watchKey)
 	case fetchMember:
 		go c.fetchMember(action)
-	case unwatchMember:
-		c.watches.Remove(action.Payload.(string))
 
 	// Actions for a single evaluation
 	case watchEval:
 		go c.watchEval(action)
 	case unwatchEval:
-		c.watches.Remove(action.Payload.(string))
+		watchKey := fmt.Sprintf("/evaluation/%s", action.Payload.(string))
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Unwatching %s", watchKey)
 
 	// Change task group count
 	case changeTaskGroupCount:
@@ -349,6 +368,8 @@ func (c *Connection) process(action structs.Action) {
 func (c *Connection) Handle() {
 	go c.keepAlive()
 	go c.writePump()
+	go c.subscriptionPublisher()
+
 	c.readPump()
 
 	c.Debugf("Connection closing down")
@@ -357,17 +378,31 @@ func (c *Connection) Handle() {
 	close(c.destroyCh)
 }
 
-func (c *Connection) keepAlive() {
-	logger.Debugf("Starting keep-alive packer sender")
+func (c *Connection) subscriptionPublisher() {
 	ticker := time.NewTicker(10 * time.Second)
-	defer func() {
-		ticker.Stop()
-	}()
+	defer ticker.Stop()
 
 	for {
 		select {
 		case <-c.destroyCh:
 			return
+
+		case <-ticker.C:
+			c.Infof("Subscriptions: %s", strings.Join(c.watches.Subscriptions(), ", "))
+		}
+	}
+}
+
+func (c *Connection) keepAlive() {
+	logger.Debugf("Starting keep-alive packer sender")
+	ticker := time.NewTicker(10 * time.Second)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
 		case <-ticker.C:
 			logger.Debugf("Sending keep-alive packet")
 			c.send <- &structs.Action{Type: structs.KeepAlive, Payload: "hello-world", Index: 0}
@@ -377,14 +412,14 @@ func (c *Connection) keepAlive() {
 
 func (c *Connection) unwatchJobsFiltered(action structs.Action) {
 	payload := action.Payload.(map[string]interface{})
-	subKey := "jobs-filtered-"
+	watchKey := "/jobs?prefix="
 
 	if prefix, ok := payload["prefix"]; ok {
-		subKey = subKey + prefix.(string)
+		watchKey = watchKey + prefix.(string)
 	}
 
-	c.watches.Remove(subKey)
-	c.Infof("Stopped subscribing to jobs filtered")
+	c.watches.Unsubscribe(watchKey)
+	c.Infof("Stopped watching %s", watchKey)
 }
 
 func (c *Connection) watchJobsFiltered(action structs.Action) {
@@ -400,32 +435,41 @@ func (c *Connection) watchJobsFiltered(action structs.Action) {
 		q.Prefix = prefix.(string)
 	}
 
-	subKey := "jobs-filtered-" + q.Prefix
+	watchKey := fmt.Sprintf("/jobs?prefix=%s", q.Prefix)
 
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
+		return
+	}
+
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
 	defer func() {
-		c.watches.Remove(subKey)
-		c.Infof("Stopped watching filtered jobs: %s", q.Prefix)
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
 	}()
-	c.watches.Add(subKey)
-
-	c.Infof("Started watching jobs filtered: %s", q.Prefix)
+	c.Infof("Started watching %s", watchKey)
 
 	for {
 		select {
+		case <-subscribeCh:
+			return
+
 		case <-c.destroyCh:
 			return
 
 		default:
-
 			alloc, meta, err := c.region.Client.Jobs().List(q)
+
+			if !c.watches.Subscribed(watchKey) {
+				return
+			}
+
 			if err != nil {
 				c.Errorf("connection: unable to fetch filtered jobs (%s): %s", q.Prefix, err)
 				time.Sleep(10 * time.Second)
 				continue
-			}
-
-			if !c.watches.Has(subKey) {
-				return
 			}
 
 			remoteWaitIndex := meta.LastIndex
@@ -442,32 +486,43 @@ func (c *Connection) watchJobsFiltered(action structs.Action) {
 
 func (c *Connection) watchAlloc(action structs.Action) {
 	allocID := action.Payload.(string)
+	watchKey := fmt.Sprintf("/allocation/%s", allocID)
 
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
+		return
+	}
+
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
 	defer func() {
-		c.watches.Remove(allocID)
-		c.Infof("Stopped watching alloc with id: %s", allocID)
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
 	}()
-	c.watches.Add(allocID)
-
-	c.Infof("Started watching alloc with id: %s", allocID)
+	c.Infof("Started watching %s", watchKey)
 
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 
 	for {
 		select {
+		case <-subscribeCh:
+			return
+
 		case <-c.destroyCh:
 			return
 
 		default:
 			alloc, meta, err := c.region.Client.Allocations().Info(allocID, q)
+
+			if !c.watches.Subscribed(watchKey) {
+				return
+			}
+
 			if err != nil {
 				c.Errorf("connection: unable to fetch alloc info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
-			}
-
-			if !c.watches.Has(allocID) {
-				return
 			}
 
 			remoteWaitIndex := meta.LastIndex
@@ -476,7 +531,7 @@ func (c *Connection) watchAlloc(action structs.Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &structs.Action{Type: fetchedAlloc, Payload: alloc, Index: remoteWaitIndex}
-				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+				q.WaitIndex = remoteWaitIndex
 			}
 		}
 	}
@@ -484,32 +539,42 @@ func (c *Connection) watchAlloc(action structs.Action) {
 
 func (c *Connection) watchDeployment(action structs.Action) {
 	deploymentID := action.Payload.(string)
+	watchKey := fmt.Sprintf("/deployment/%s", deploymentID)
 
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
+		return
+	}
+
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
 	defer func() {
-		c.watches.Remove(deploymentID)
-		c.Infof("Stopped watching deployment with id: %s", deploymentID)
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
 	}()
-	c.watches.Add(deploymentID)
-
-	c.Infof("Started watching deployment with id: %s", deploymentID)
+	c.Infof("Started watching %s", watchKey)
 
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 
 	for {
 		select {
+		case <-subscribeCh:
+			return
+
 		case <-c.destroyCh:
 			return
 
 		default:
 			deployment, meta, err := c.region.Client.Deployments().Info(deploymentID, q)
+			if !c.watches.Subscribed(watchKey) {
+				return
+			}
+
 			if err != nil {
 				c.Errorf("connection: unable to fetch deployment info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
-			}
-
-			if !c.watches.Has(deploymentID) {
-				return
 			}
 
 			remoteWaitIndex := meta.LastIndex
@@ -518,7 +583,7 @@ func (c *Connection) watchDeployment(action structs.Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &structs.Action{Type: fetchedDeployment, Payload: deployment, Index: remoteWaitIndex}
-				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+				q.WaitIndex = remoteWaitIndex
 			}
 		}
 	}
@@ -526,32 +591,42 @@ func (c *Connection) watchDeployment(action structs.Action) {
 
 func (c *Connection) watchDeploymentAllocs(action structs.Action) {
 	deploymentID := action.Payload.(string)
+	watchKey := fmt.Sprintf("/deployment/%s/allocations", deploymentID)
 
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
+		return
+	}
+
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
 	defer func() {
-		c.watches.Remove(deploymentID + "-allocs")
-		c.Infof("Stopped watching allocations for deployment with id: %s", deploymentID)
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
 	}()
-	c.watches.Add(deploymentID + "-allocs")
-
-	c.Infof("Started watching allocations for deployment with id: %s", deploymentID)
+	c.Infof("Started watching %s", watchKey)
 
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 
 	for {
 		select {
+		case <-subscribeCh:
+			return
+
 		case <-c.destroyCh:
 			return
 
 		default:
 			allocs, meta, err := c.region.Client.Deployments().Allocations(deploymentID, q)
+			if !c.watches.Subscribed(watchKey) {
+				return
+			}
+
 			if err != nil {
 				c.Errorf("connection: unable to fetch deployment info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
-			}
-
-			if !c.watches.Has(deploymentID + "-allocs") {
-				return
 			}
 
 			remoteWaitIndex := meta.LastIndex
@@ -560,7 +635,7 @@ func (c *Connection) watchDeploymentAllocs(action structs.Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &structs.Action{Type: fetchedDeploymentAllocs, Payload: allocs, Index: remoteWaitIndex}
-				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+				q.WaitIndex = remoteWaitIndex
 			}
 		}
 	}
@@ -568,32 +643,44 @@ func (c *Connection) watchDeploymentAllocs(action structs.Action) {
 
 func (c *Connection) watchJobDeployments(action structs.Action) {
 	jobID := action.Payload.(string)
+	watchKey := fmt.Sprintf("/job/%s/deployments", jobID)
 
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
+		return
+	}
+
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
 	defer func() {
-		c.watches.Remove(jobID)
-		c.Infof("Stopped watching job deployments for job %s", jobID)
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
 	}()
-	c.watches.Add(jobID)
-
-	c.Infof("Started watching job deployments for job %s", jobID)
+	c.Infof("Started watching %s", watchKey)
 
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 
 	for {
 		select {
+		case <-subscribeCh:
+			return
+
 		case <-c.destroyCh:
 			return
 
 		default:
 			deployments, meta, err := c.region.Client.Jobs().Deployments(jobID, q)
+			// Check if we are still subscribed
+			if !c.watches.Subscribed(watchKey) {
+				return
+			}
+
+			// Check for errors
 			if err != nil {
 				c.Errorf("connection: unable to fetch job deployments: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
-			}
-
-			if !c.watches.Has(jobID) {
-				return
 			}
 
 			remoteWaitIndex := meta.LastIndex
@@ -602,7 +689,7 @@ func (c *Connection) watchJobDeployments(action structs.Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &structs.Action{Type: fetchedJobDeployments, Payload: deployments, Index: remoteWaitIndex}
-				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+				q.WaitIndex = remoteWaitIndex
 			}
 		}
 	}
@@ -610,30 +697,41 @@ func (c *Connection) watchJobDeployments(action structs.Action) {
 
 func (c *Connection) watchEval(action structs.Action) {
 	evalID := action.Payload.(string)
+	watchKey := fmt.Sprintf("/evaluation/%s", evalID)
 
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
+		return
+	}
+
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
 	defer func() {
-		c.watches.Remove(evalID)
-		c.Infof("Stopped watching eval with id: %s", evalID)
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
 	}()
-	c.watches.Add(evalID)
-
-	c.Infof("Started watching eval with id: %s", evalID)
+	c.Infof("Started watching %s", watchKey)
 
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 	for {
 		select {
+		case <-subscribeCh:
+			return
+
 		case <-c.destroyCh:
 			return
+
 		default:
 			eval, meta, err := c.region.Client.Evaluations().Info(evalID, q)
+			if !c.watches.Subscribed(watchKey) {
+				return
+			}
+
 			if err != nil {
 				c.Errorf("connection: unable to fetch eval info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
-			}
-
-			if !c.watches.Has(evalID) {
-				return
 			}
 
 			remoteWaitIndex := meta.LastIndex
@@ -642,7 +740,7 @@ func (c *Connection) watchEval(action structs.Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &structs.Action{Type: fetchedEval, Payload: eval, Index: remoteWaitIndex}
-				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+				q.WaitIndex = remoteWaitIndex
 			}
 		}
 	}
@@ -661,30 +759,40 @@ func (c *Connection) fetchMember(action structs.Action) {
 
 func (c *Connection) watchMember(action structs.Action) {
 	memberID := action.Payload.(string)
+	watchKey := fmt.Sprintf("/member/%s", memberID)
 
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
+		return
+	}
+
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
 	defer func() {
-		c.watches.Remove(memberID)
-		c.Infof("Stopped watching member with id: %s", memberID)
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
 	}()
-	c.watches.Add(memberID)
-
-	c.Infof("Started watching member with id: %s", memberID)
+	c.Infof("Started watching %s", watchKey)
 
 	for {
 		select {
+		case <-subscribeCh:
+			return
+
 		case <-c.destroyCh:
 			return
 
 		default:
 			member, err := c.hub.cluster.MemberWithID(memberID)
+			if !c.watches.Subscribed(watchKey) {
+				return
+			}
+
 			if err != nil {
 				c.Errorf("connection: unable to fetch member info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
-			}
-
-			if !c.watches.Has(memberID) {
-				return
 			}
 
 			c.send <- &structs.Action{Type: fetchedMember, Payload: member}
@@ -706,31 +814,41 @@ func (c *Connection) fetchNode(action structs.Action) {
 
 func (c *Connection) watchNode(action structs.Action) {
 	nodeID := action.Payload.(string)
+	watchKey := fmt.Sprintf("/node/%s", nodeID)
 
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
+		return
+	}
+
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
 	defer func() {
-		c.watches.Remove(nodeID)
-		c.Infof("Stopped watching node with id: %s", nodeID)
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
 	}()
-	c.watches.Add(nodeID)
-
-	c.Infof("Started watching node with id: %s", nodeID)
+	c.Infof("Started watching %s", watchKey)
 
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 	for {
 		select {
+		case <-subscribeCh:
+			return
+
 		case <-c.destroyCh:
 			return
 
 		default:
 			node, meta, err := c.region.Client.Nodes().Info(nodeID, q)
+			if !c.watches.Subscribed(watchKey) {
+				return
+			}
+
 			if err != nil {
 				c.Errorf("connection: unable to fetch node info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
-			}
-
-			if !c.watches.Has(nodeID) {
-				return
 			}
 
 			remoteWaitIndex := meta.LastIndex
@@ -739,33 +857,36 @@ func (c *Connection) watchNode(action structs.Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &structs.Action{Type: fetchedNode, Payload: node, Index: remoteWaitIndex}
-				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+				q.WaitIndex = remoteWaitIndex
 			}
 		}
 	}
 }
 
 func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, prop observer.Property, initialPayload interface{}) {
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
+		return
+	}
+
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
 	defer func() {
-		c.watches.Remove(watchKey)
+		c.watches.Unsubscribe(watchKey)
 		c.Infof("Stopped watching %s", watchKey)
-
-		// recovering from panic caused by writing to a closed channel
-		if r := recover(); r != nil {
-			c.Warningf("Recover from panic: %s", r)
-		}
 	}()
-
-	c.watches.Add(watchKey)
+	c.Infof("Started watching %s", watchKey)
 
 	c.Debugf("Sending our current %s list", watchKey)
 	c.send <- &structs.Action{Type: actionEvent, Payload: initialPayload, Index: 0}
 
 	stream := prop.Observe()
-
-	c.Debugf("Started watching %s", watchKey)
 	for {
 		select {
+		case <-subscribeCh:
+			return
+
 		case <-c.destroyCh:
 			return
 
@@ -776,7 +897,7 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 			channelAction := stream.Value().(*structs.Action)
 			c.Debugf("got new data for %s (WaitIndex: %d)", watchKey, channelAction.Index)
 
-			if !c.watches.Has(watchKey) {
+			if !c.watches.Subscribed(watchKey) {
 				c.Infof("Connection is no longer subscribed to %s", watchKey)
 				return
 			}
@@ -793,20 +914,27 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 }
 
 func (c *Connection) unwatchGenericBroadcast(watchKey string) {
-	c.Debugf("Removing subscription for %s", watchKey)
-	c.watches.Remove(watchKey)
+	c.Infof("Unwatching %s", watchKey)
+	c.watches.Unsubscribe(watchKey)
 }
 
 func (c *Connection) watchJobVersions(action structs.Action) {
 	jobID := action.Payload.(string)
+	watchKey := "/job/" + jobID + "/versions"
 
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
+		return
+	}
+
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
 	defer func() {
-		c.watches.Remove(jobID + "-versions")
-		c.Infof("Stopped watching job versions with id: %s", jobID)
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
 	}()
-	c.watches.Add(jobID + "-versions")
-
-	c.Infof("Started watching job versions with id: %s", jobID)
+	c.Infof("Started watching %s", watchKey)
 
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 	for {
@@ -814,22 +942,28 @@ func (c *Connection) watchJobVersions(action structs.Action) {
 		case <-c.destroyCh:
 			return
 
+		case <-subscribeCh:
+			return
+
 		default:
 			jobs, _, meta, err := c.region.Client.Jobs().Versions(jobID, false, q)
 
-			response := make([]*uint64, 0)
-			for _, version := range jobs {
-				response = append(response, version.Version)
+			// Check if we are still subscribed
+			if !c.watches.Subscribed(watchKey) {
+				return
 			}
 
+			// Check for errors
 			if err != nil {
 				c.Errorf("connection: unable to fetch job versions: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
 			}
 
-			if !c.watches.Has(jobID + "-versions") {
-				return
+			// Convert to a list of job versions
+			response := make([]*uint64, 0)
+			for _, version := range jobs {
+				response = append(response, version.Version)
 			}
 
 			remoteWaitIndex := meta.LastIndex
@@ -838,51 +972,52 @@ func (c *Connection) watchJobVersions(action structs.Action) {
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &structs.Action{Type: fetchedJobVersions, Payload: response, Index: remoteWaitIndex}
-				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+				q.WaitIndex = remoteWaitIndex
 			}
 		}
 	}
 }
 
-func (c *Connection) unwatchJob(action structs.Action) {
+func (c *Connection) parseJobAction(action structs.Action) (string, int) {
 	payload := action.Payload.(map[string]interface{})
 	jobID := payload["id"].(string)
 
 	// optional job version
-	var jobVersion uint64
-	if v, ok := payload["version"]; ok {
-		x, _ := strconv.Atoi(v.(string))
-		jobVersion = uint64(x)
+	jobVersion := int(-1)
+	var v interface{}
+	var getJobVersion bool
+
+	if v, getJobVersion = payload["version"]; getJobVersion {
+		jobVersion, _ = strconv.Atoi(v.(string))
 	}
 
-	c.watches.Remove(jobID + "/" + string(jobVersion))
-	c.Infof("Unwatching job with id: %s @ v%d", jobID, jobVersion)
+	return jobID, jobVersion
 }
 
 func (c *Connection) watchJob(action structs.Action) {
-	payload := action.Payload.(map[string]interface{})
-	jobID := payload["id"].(string)
+	ID, version := c.parseJobAction(action)
+	watchKey := fmt.Sprintf("/job/%s@%d", ID, version)
 
-	// optional job version
-	var jobVersion uint64
-	var v interface{}
-	var getJobVersion bool
-	if v, getJobVersion = payload["version"]; getJobVersion {
-		x, _ := strconv.Atoi(v.(string))
-		jobVersion = uint64(x)
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
+		return
 	}
 
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
 	defer func() {
-		c.watches.Remove(jobID + "/" + string(jobVersion))
-		c.Infof("Stopped watching job with id: %s @ v%d", jobID, jobVersion)
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
 	}()
-	c.watches.Add(jobID + "/" + string(jobVersion))
-
-	c.Infof("Started watching job with id: %s @ v%d", jobID, jobVersion)
+	c.Infof("Started watching %s", watchKey)
 
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 	for {
 		select {
+		case <-subscribeCh:
+			return
+
 		case <-c.destroyCh:
 			return
 
@@ -892,19 +1027,32 @@ func (c *Connection) watchJob(action structs.Action) {
 			var meta *api.QueryMeta
 			var err error
 
-			if !getJobVersion {
-				job, meta, err = c.region.Client.Jobs().Info(jobID, q)
+			if version == -1 {
+				job, meta, err = c.region.Client.Jobs().Info(ID, q)
 			} else {
-				jobs, _, meta, err = c.region.Client.Jobs().Versions(jobID, false, q)
+				jobs, _, meta, err = c.region.Client.Jobs().Versions(ID, false, q)
 
-				for _, version := range jobs {
-					if *version.Version == jobVersion {
-						job = version
+				for _, jobVersion := range jobs {
+					if string(*jobVersion.Version) == string(version) {
+						job = jobVersion
 						break
 					}
 				}
 			}
 
+			// Check if we are still subscribed
+			if !c.watches.Subscribed(watchKey) {
+				return
+			}
+
+			// Check for errors in the response
+			if err != nil {
+				c.Errorf("connection: unable to fetch job info: %s", err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			// Optionally hide all environment keys
 			if c.region.Config.NomadHideEnvData {
 				for _, taskGroup := range job.TaskGroups {
 					for _, task := range taskGroup.Tasks {
@@ -915,26 +1063,24 @@ func (c *Connection) watchJob(action structs.Action) {
 				}
 			}
 
-			if err != nil {
-				c.Errorf("connection: unable to fetch job info: %s", err)
-				time.Sleep(10 * time.Second)
-				continue
-			}
-
-			if !c.watches.Has(jobID + "/" + string(jobVersion)) {
-				return
-			}
-
 			remoteWaitIndex := meta.LastIndex
 			localWaitIndex := q.WaitIndex
 
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
 				c.send <- &structs.Action{Type: fetchedJob, Payload: job, Index: remoteWaitIndex}
-				q = &api.QueryOptions{WaitIndex: remoteWaitIndex, WaitTime: 10 * time.Second, AllowStale: c.region.Config.NomadAllowStale}
+				q.WaitIndex = remoteWaitIndex
 			}
 		}
 	}
+}
+
+func (c *Connection) unwatchJob(action structs.Action) {
+	ID, version := c.parseJobAction(action)
+	watchKey := fmt.Sprintf("/job/%s@%d", ID, version)
+
+	c.watches.Unsubscribe(watchKey)
+	c.Infof("Stopped subscribing to %s", watchKey)
 }
 
 func (c *Connection) fetchClientStats(action structs.Action) {
@@ -954,44 +1100,53 @@ func (c *Connection) fetchClientStats(action structs.Action) {
 }
 
 func (c *Connection) watchClientStats(action structs.Action) {
-	nodeID, ok := action.Payload.(string)
-	if !ok {
-		c.Errorf("Could not decode payload")
+	ID := action.Payload.(string)
+	watchKey := "/node/" + ID + "/statistics"
+
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
 		return
 	}
 
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
 	defer func() {
-		c.watches.Remove("node-stats-" + nodeID)
-		c.Infof("Stopped watching client stats with id: %s", nodeID)
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
 	}()
-	c.watches.Add("node-stats-" + nodeID)
+	c.Infof("Started watching %s", watchKey)
 
 	for {
 		select {
 		case <-c.destroyCh:
 			return
 
+		case <-subscribeCh:
+			return
+
 		default:
-			stats, err := c.region.Client.Nodes().Stats(nodeID, nil)
+			stats, err := c.region.Client.Nodes().Stats(ID, nil)
+
+			// Check if we are still subscribed
+			if !c.watches.Subscribed(watchKey) {
+				return
+			}
+
+			// Check for errors
 			if err != nil {
 				logger.Errorf("watch: unable to fetch client stats: %s", err)
 				time.Sleep(3 * time.Second)
 				return
 			}
 
-			if !c.watches.Has("node-stats-" + nodeID) {
-				c.Infof("Connection is no longer subscribed to node stats with id %s", nodeID)
-				return
-			}
-
-			c.Debugf("Sending Client Stats")
 			c.send <- &structs.Action{Type: fetchedClientStats, Payload: stats, Index: 0}
 			time.Sleep(5 * time.Second)
 		}
 	}
 }
 
-func nodeUrl(params map[string]interface{}) string {
+func nodeURL(params map[string]interface{}) string {
 	addr := params["addr"].(string)
 	if params["secure"].(bool) {
 		return fmt.Sprintf("https://%s", addr)
@@ -1009,7 +1164,7 @@ func (c *Connection) fetchDir(action structs.Action) {
 	allocID := params["allocID"].(string)
 
 	config := api.DefaultConfig()
-	config.Address = nodeUrl(params)
+	config.Address = nodeURL(params)
 
 	client, err := api.NewClient(config)
 	if err != nil {
@@ -1031,18 +1186,42 @@ func (c *Connection) fetchDir(action structs.Action) {
 	c.send <- &structs.Action{Type: fetchedDir, Payload: dir, Index: 0}
 }
 
+func (c *Connection) parseWatchFileAction(action structs.Action) (string, string) {
+	params := action.Payload.(map[string]interface{})
+	ID := params["allocID"].(string)
+	path := params["path"].(string)
+
+	return ID, path
+}
+
+func (c *Connection) unwatchFile(action structs.Action) {
+	allocID, path := c.parseWatchFileAction(action)
+	watchKey := "/allocation/" + allocID + "/file" + path
+
+	c.watches.Unsubscribe(watchKey)
+	c.Infof("Stopped subscribing to %s", watchKey)
+}
+
 func (c *Connection) watchFile(action structs.Action) {
-	params, ok := action.Payload.(map[string]interface{})
-	if !ok {
-		logger.Error("Could not decode payload")
+	allocID, path := c.parseWatchFileAction(action)
+	watchKey := "/allocation/" + allocID + "/file" + path
+
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
 		return
 	}
 
-	path := params["path"].(string)
-	allocID := params["allocID"].(string)
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
+	defer func() {
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
+	}()
+	c.Infof("Started watching %s", watchKey)
 
 	config := api.DefaultConfig()
-	config.Address = nodeUrl(params)
+	config.Address = nodeURL(action.Payload.(map[string]interface{}))
 
 	client, err := api.NewClient(config)
 	if err != nil {
@@ -1074,6 +1253,7 @@ func (c *Connection) watchFile(action structs.Action) {
 	}
 
 	cancel := make(chan struct{})
+
 	frames, err := client.AllocFS().Stream(alloc, path, origin, offset, cancel, nil)
 	if err != nil {
 		c.send <- &structs.Action{
@@ -1095,36 +1275,35 @@ func (c *Connection) watchFile(action structs.Action) {
 	frameReader.SetUnblockTime(500 * time.Millisecond)
 	r = NewLineLimitReader(frameReader, int(defaultTailLines), int(defaultTailLines*bytesToLines), 1*time.Second)
 
+	// Cleanup
+	// defer r.Close()
+
 	// Turn the reader into a channel
 	lines := make(chan []byte)
 	b := make([]byte, defaultTailLines*bytesToLines)
 	go func() {
 		for {
-			n, err := r.Read(b[:cap(b)])
-
-			if !c.watches.Has(path) {
+			select {
+			case <-c.destroyCh:
 				return
-			}
 
-			if err != nil {
+			case <-subscribeCh:
 				return
-			}
 
-			if n > 0 {
-				lines <- b[0:n]
+			default:
+				n, err := r.Read(b[:cap(b)])
+
+				if err != nil {
+					return
+				}
+
+				if n > 0 {
+					lines <- b[0:n]
+				}
 			}
 		}
 	}()
 
-	c.watches.Add(path)
-
-	defer func() {
-		c.Infof("Stopped watching file with path: %s", path)
-		c.watches.Remove(path)
-		r.Close()
-	}()
-
-	c.Infof("Started watching file with path: %s", path)
 	c.send <- &structs.Action{
 		Type: fetchedFile,
 		Payload: struct {
@@ -1139,17 +1318,17 @@ func (c *Connection) watchFile(action structs.Action) {
 		Index: 0,
 	}
 
-	ticker := time.NewTicker(1 * time.Second)
-	defer ticker.Stop()
-
 	for {
 		select {
+
+		case <-subscribeCh:
+			return
 
 		case <-c.destroyCh:
 			return
 
 		case line := <-lines:
-			if !c.watches.Has(path) {
+			if !c.watches.Subscribed(watchKey) {
 				return
 			}
 
@@ -1166,21 +1345,12 @@ func (c *Connection) watchFile(action structs.Action) {
 				},
 				Index: 0,
 			}
-
-		case <-ticker.C:
-			if !c.watches.Has(path) {
-				return
-			}
 		}
 	}
 }
 
 func (c *Connection) changeTaskGroupCount(action structs.Action) {
-	params, ok := action.Payload.(map[string]interface{})
-	if !ok {
-		c.Errorf("Could not decode payload")
-		return
-	}
+	params := action.Payload.(map[string]interface{})
 
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
@@ -1525,26 +1695,35 @@ func (c *Connection) reconcileSystem(action structs.Action) {
 
 func (c *Connection) watchJobAllocations(action structs.Action) {
 	ID := action.Payload.(string)
+	watchKey := fmt.Sprintf("/job/%s/allocations", ID)
 
-	watcherKey := "job-allocs-" + ID
+	// Check if we are already subscribed
+	if c.watches.Subscribed(watchKey) {
+		c.Infof("Already watching %s", watchKey)
+		return
+	}
+
+	// Create subscription
+	subscribeCh := c.watches.Subscribe(watchKey)
 	defer func() {
-		c.watches.Remove(watcherKey)
-		c.Infof("Stopped watching job allocations for %s", ID)
+		c.watches.Unsubscribe(watchKey)
+		c.Infof("Stopped watching %s", watchKey)
 	}()
-	c.watches.Add(watcherKey)
-
-	c.Infof("Started watching job allocations for %s", ID)
+	c.Infof("Started watching %s", watchKey)
 
 	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
 	for {
 		select {
+		case <-subscribeCh:
+			return
+
 		case <-c.destroyCh:
 			return
 
 		default:
 			allocations, meta, err := c.region.Client.Jobs().Allocations(ID, true, q)
 
-			if !c.watches.Has(watcherKey) {
+			if !c.watches.Subscribed(watchKey) {
 				return
 			}
 
@@ -1559,6 +1738,7 @@ func (c *Connection) watchJobAllocations(action structs.Action) {
 
 			// only broadcast if the LastIndex has changed
 			if remoteWaitIndex > localWaitIndex {
+				// Don't need task state at the moment
 				for i := range allocations {
 					allocations[i].TaskStates = make(map[string]*api.TaskState)
 				}
@@ -1571,9 +1751,9 @@ func (c *Connection) watchJobAllocations(action structs.Action) {
 }
 
 func (c *Connection) unwatchJobAllocations(action structs.Action) {
-	ID := action.Payload.(string)
-	watcherKey := "job-allocs-" + ID
-	c.watches.Remove(watcherKey)
+	watchKey := fmt.Sprintf("/job/%s/allocations", action.Payload.(string))
+	c.watches.Unsubscribe(watchKey)
+	c.Infof("Unwatching %s", watchKey)
 }
 
 func (c *Connection) fetchRegions() {
