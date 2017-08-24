@@ -33,7 +33,7 @@ class System extends Component {
                     style={{ fontSize: 50, cursor: "pointer" }}
                     onClick={() => this.gc()}
                   >
-                    remove_circle
+                    delete
                   </FontIcon>
                 </CardText>
               </Card>
