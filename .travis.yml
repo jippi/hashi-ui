@@ -39,7 +39,8 @@ after_success:
 
 deploy:
   - provider: releases
-    api_key: ${GITHUB_API_KEY}
+    api_key:
+      secure: JpoLJBxjwzF6KjyxXF2cWL7lVcVjZXYjadhZCHYWC8QVJaJb8N+LxibPU8Cdp08no/QkpM7f8ku64hRVmBz+x39UKRsdmtyablJ5ZyfsfnuhX/cPRyQ9nplzd9r7+LN+u3jgVATm0Egf1VOt7LlZmUg4P0XeezQpdwqfjghSAmpKeUgsW5swaCjyC6fqHM8u9oCTQRdQdtZUvFJ4JkIsNyGDiBJjzAql8gxuZcnM66ihC6jUIi1alb4eSEZ72g5H/L68fkpLr+zb/OfUP0H48gpDm/Cycm17Vi7zntoZQA+fhUtCVMAFzhAC8iefw6PYj/xCBtD5yl7flGr8MXciJs+atd417ErF9h7G9zdLRTTBI/1o2kxOs7VKB19QWINi5Fkm8KxoiI+ttnFnbDlSPyP8jcDw7jcV2Nw6CtwiMgWLXJL4uRw2E7Xucq7pKUuJkl0BAqEvAaZHIia6uQl98j0o/7ZPvMvuQJ5Bq3O6NkRwODXw0iFSzCtqONyDp7VkQKY1jy8EDll5/HjlKFuPUEmRMXM/3YWtZiZfb/RP8t3o+4m7uOOaAvhunEo/756CZmR4kYnebquhzhvlr5IdcdrpNm2F5GwpEFymTO3998/xhZdnScTaACcG0y3MD511TNBR9udfFRKtT44MRtNJ+byPtKKzPDBX+TM8nmaZGvw=
     file:
       - backend/build/hashi-ui-linux-amd64
       - backend/build/hashi-ui-windows-amd64
@@ -47,4 +48,5 @@ deploy:
     skip_cleanup: true
     overwrite: true
     on:
+      repo: jippi/hashi-ui
       tags: true
