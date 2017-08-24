@@ -103,4 +103,8 @@ const (
 
 	forceGC         = "NOMAD_FORCE_GC"
 	reconcileSystem = "NOMAD_RECONCILE_SYSTEM"
+
+	watchJobAllocs   = "NOMAD_WATCH_JOB_ALLOCATIONS"
+	unwatchJobAllocs = "NOMAD_UNWATCH_JOB_ALLOCATIONS"
+	fetchedJobAllocs = "NOMAD_FETCHED_JOB_ALLOCATIONS"
 )

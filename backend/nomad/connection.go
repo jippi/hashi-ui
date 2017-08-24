@@ -333,6 +333,11 @@ func (c *Connection) process(action structs.Action) {
 	case reconcileSystem:
 		go c.reconcileSystem(action)
 
+	case watchJobAllocs:
+		go c.watchJobAllocations(action)
+	case unwatchJobAllocs:
+		c.unwatchJobAllocations(action)
+
 	// Nice in debug
 	default:
 		logger.Errorf("Unknown action: %s", action.Type)
@@ -1516,6 +1521,59 @@ func (c *Connection) reconcileSystem(action structs.Action) {
 
 	// logger.Info("connection: successfully reconsiled summaries")
 	// c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully reconsiled summaries.", Index: index}
+}
+
+func (c *Connection) watchJobAllocations(action structs.Action) {
+	ID := action.Payload.(string)
+
+	watcherKey := "job-allocs-" + ID
+	defer func() {
+		c.watches.Remove(watcherKey)
+		c.Infof("Stopped watching job allocations for %s", ID)
+	}()
+	c.watches.Add(watcherKey)
+
+	c.Infof("Started watching job allocations for %s", ID)
+
+	q := &api.QueryOptions{WaitIndex: 1, AllowStale: c.region.Config.NomadAllowStale}
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
+		default:
+			allocations, meta, err := c.region.Client.Jobs().Allocations(ID, true, q)
+
+			if !c.watches.Has(watcherKey) {
+				return
+			}
+
+			if err != nil {
+				logger.Errorf("watch: unable to fetch job allocations: %s", err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only broadcast if the LastIndex has changed
+			if remoteWaitIndex > localWaitIndex {
+				for i := range allocations {
+					allocations[i].TaskStates = make(map[string]*api.TaskState)
+				}
+
+				c.send <- &structs.Action{Type: fetchedJobAllocs, Payload: allocations, Index: remoteWaitIndex}
+				q.WaitIndex = remoteWaitIndex
+			}
+		}
+	}
+}
+
+func (c *Connection) unwatchJobAllocations(action structs.Action) {
+	ID := action.Payload.(string)
+	watcherKey := "job-allocs-" + ID
+	c.watches.Remove(watcherKey)
 }
 
 func (c *Connection) fetchRegions() {

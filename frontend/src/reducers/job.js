@@ -1,5 +1,6 @@
 import {
   NOMAD_FETCHED_DEPLOYMENT_ALLOCATIONS,
+  NOMAD_FETCHED_JOB_ALLOCATIONS,
   NOMAD_FETCHED_JOB_DEPLOYMENTS,
   NOMAD_FETCHED_JOB_VERSIONS,
   NOMAD_FETCHED_JOB,
@@ -7,6 +8,7 @@ import {
   NOMAD_FETCHED_JOBS,
   NOMAD_JOB_HIDE_DIALOG,
   NOMAD_JOB_SHOW_DIALOG,
+  NOMAD_UNWATCH_JOB_ALLOCATIONS,
   NOMAD_UNWATCH_JOB_DEPLOYMENTS,
   NOMAD_UNWATCH_JOB_VERSIONS,
   NOMAD_UNWATCH_JOB,
@@ -40,6 +42,17 @@ export function JobDeploymentsReducer(state = [], action) {
     case NOMAD_FETCHED_JOB_DEPLOYMENTS:
       return action.payload
     case NOMAD_UNWATCH_JOB_DEPLOYMENTS:
+      return []
+    default:
+  }
+  return state
+}
+
+export function jobAllocationsReducer(state = [], action) {
+  switch (action.type) {
+    case NOMAD_FETCHED_JOB_ALLOCATIONS:
+      return action.payload
+    case NOMAD_UNWATCH_JOB_ALLOCATIONS:
       return []
     default:
   }

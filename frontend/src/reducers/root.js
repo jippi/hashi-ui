@@ -12,6 +12,7 @@ import {
   JobInfoReducer,
   JobListReducer,
   JobDeploymentsReducer,
+  jobAllocationsReducer,
   JobVersionsReducer,
   JobDialogReducer,
   FilteredJobsReducer
@@ -58,6 +59,7 @@ const rootReducer = combineReducers({
   file: FileReducer,
   job: JobInfoReducer,
   jobDeployments: JobDeploymentsReducer,
+  jobAllocations: jobAllocationsReducer,
   jobVersions: JobVersionsReducer,
   jobDialog: JobDialogReducer,
   jobs: JobListReducer,
