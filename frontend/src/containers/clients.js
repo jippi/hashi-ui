@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
+import { Helmet } from "react-helmet"
 import { Card, CardText } from "material-ui/Card"
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "../components/Table"
 import { NOMAD_WATCH_NODES, NOMAD_UNWATCH_NODES } from "../sagas/event"
@@ -20,6 +21,10 @@ class Clients extends Component {
   render() {
     return (
       <div>
+        <Helmet>
+          <title>Clients - Nomad - Hashi-UI</title>
+        </Helmet>
+
         <Card>
           <CardText>
             <Table>

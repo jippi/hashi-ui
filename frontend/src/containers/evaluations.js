@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
+import { Helmet } from "react-helmet"
 import { NOMAD_WATCH_EVALS, NOMAD_UNWATCH_EVALS } from "../sagas/event"
 import EvaluationList from "../components/EvaluationList/EvaluationList"
 
@@ -14,7 +15,14 @@ class Evaluations extends Component {
   }
 
   render() {
-    return <EvaluationList evaluations={this.props.evaluations} containerClassName="content" />
+    return (
+      <span>
+        <Helmet>
+          <title>Evaluations - Nomad - Hashi-UI</title>
+        </Helmet>
+        <EvaluationList evaluations={this.props.evaluations} containerClassName="content" />
+      </span>
+    )
   }
 }
 

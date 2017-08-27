@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
+import { Helmet } from "react-helmet"
 import { Card, CardHeader, CardText } from "material-ui/Card"
 import FilterFreetext from "../components/FilterFreetext/FilterFreetext"
 import JobStatusFilter from "../components/JobStatusFilter/JobStatusFilter"
@@ -40,6 +41,9 @@ class Jobs extends Component {
   render() {
     return (
       <div>
+        <Helmet>
+          <title>Jobs - Nomad - Hashi-UI</title>
+        </Helmet>
         <Card>
           <CardText>
             <Grid fluid style={{ padding: 0, margin: 0 }}>

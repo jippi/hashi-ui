@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
+import { Helmet } from "react-helmet"
 import ClientTopbar from "../components/ClientTopbar/ClientTopbar"
 import ClientActionMenu from "../components/ClientActionMenu/ClientActionMenu"
 import { NOMAD_WATCH_NODE, NOMAD_UNWATCH_NODE } from "../sagas/event"
@@ -25,8 +26,17 @@ class Client extends Component {
       return <div>Loading ...</div>
     }
 
+    const location = this.props.location
+    const end = location.pathname.split("/").pop()
+
     return (
       <div>
+        <Helmet>
+          <title>
+            Client {this.props.node.Name} {end} - Nomad - Hashi-UI
+          </title>
+        </Helmet>
+
         <div style={{ float: "left" }}>
           <h3 style={{ marginTop: "10px" }}>
             Client: {this.props.node.Name}

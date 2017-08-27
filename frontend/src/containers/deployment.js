@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
+import { Helmet } from "react-helmet"
 import { orange500 } from "material-ui/styles/colors"
 import FontIcon from "material-ui/FontIcon"
 import DeploymentTopbar from "../components/DeploymentTopbar/DeploymentTopbar"
@@ -113,7 +114,13 @@ class Deployment extends Component {
     }
 
     return (
-      <div>
+      <span>
+        <Helmet>
+          <title>
+            {`Deployment v${this.props.deployment.JobVersion} for ${this.props.deployment.JobID}`} - Nomad - Hashi-UI
+          </title>
+        </Helmet>
+
         <h3 style={{ marginTop: "10px", marginBottom: "15px" }}>
           {this.breadcrumb()}
         </h3>
@@ -121,7 +128,7 @@ class Deployment extends Component {
         <DeploymentTopbar {...this.props} />
 
         {this.props.children}
-      </div>
+      </span>
     )
   }
 }

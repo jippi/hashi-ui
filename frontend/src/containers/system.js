@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
+import { Helmet } from "react-helmet"
 import { Card, CardTitle, CardText } from "material-ui/Card"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import { green500 } from "material-ui/styles/colors"
@@ -19,6 +20,10 @@ class System extends Component {
   render() {
     return (
       <div>
+        <Helmet>
+          <title>System - Nomad - Hashi-UI</title>
+        </Helmet>
+
         <h3 style={{ marginTop: "10px" }}>System tasks</h3>
 
         <Grid fluid style={{ padding: 0 }}>

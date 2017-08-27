@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
+import { Helmet } from "react-helmet"
 import { orange500 } from "material-ui/styles/colors"
 import FontIcon from "material-ui/FontIcon"
 import AllocationTopbar from "../components/AllocationTopbar/AllocationTopbar"
@@ -196,8 +197,16 @@ class Allocation extends Component {
       return <div>Loading allocation ...</div>
     }
 
+    const location = this.props.location
+    const end = location.pathname.split("/").pop()
+
     return (
       <div>
+        <Helmet>
+          <title>
+            Allocation {shortenUUID(this.props.allocation.ID)} {end} - Nomad - Hashi-UI
+          </title>
+        </Helmet>
         <div style={{ padding: 10, paddingBottom: 0 }}>
           <h3 style={{ marginTop: "10px", marginBottom: "15px" }}>
             {this.breadcrumb()}

@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
+import { Helmet } from "react-helmet"
 import ServerTopbar from "../components/ServerTopbar/ServerTopbar"
 import { NOMAD_WATCH_MEMBER, NOMAD_UNWATCH_MEMBER } from "../sagas/event"
 
@@ -26,6 +27,12 @@ class Server extends Component {
 
     return (
       <div>
+        <Helmet>
+          <title>
+            Server {this.props.member.Name} - Nomad - Hashi-UI
+          </title>
+        </Helmet>
+
         <ServerTopbar {...this.props} />
 
         <div style={{ padding: 10, paddingBottom: 0 }}>

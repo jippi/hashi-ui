@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
+import { Helmet } from "react-helmet"
 import { Card, CardText } from "material-ui/Card"
 import { green500 } from "material-ui/styles/colors"
 import FontIcon from "material-ui/FontIcon"
@@ -31,60 +32,65 @@ class Servers extends Component {
 
   render() {
     return (
-      <Card>
-        <CardText>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHeaderColumn>Name</TableHeaderColumn>
-                <TableHeaderColumn>Address</TableHeaderColumn>
-                <TableHeaderColumn>Port</TableHeaderColumn>
-                <TableHeaderColumn>Region</TableHeaderColumn>
-                <TableHeaderColumn>Datacenter</TableHeaderColumn>
-                <TableHeaderColumn>Status</TableHeaderColumn>
-                <TableHeaderColumn>Leader</TableHeaderColumn>
-                <TableHeaderColumn>Protocol</TableHeaderColumn>
-                <TableHeaderColumn>Build</TableHeaderColumn>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {this.props.members.map(member => {
-                return (
-                  <TableRow key={member.Name}>
-                    <TableRowColumn>
-                      <ServerLink serverId={member.Name} />
-                    </TableRowColumn>
-                    <TableRowColumn>
-                      {member.Addr}
-                    </TableRowColumn>
-                    <TableRowColumn>
-                      {member.Port}
-                    </TableRowColumn>
-                    <TableRowColumn>
-                      {member.Tags.region}
-                    </TableRowColumn>
-                    <TableRowColumn>
-                      {member.Tags.dc}
-                    </TableRowColumn>
-                    <TableRowColumn>
-                      {member.Status}
-                    </TableRowColumn>
-                    <TableRowColumn>
-                      {this.showLeaderIcon(member)}
-                    </TableRowColumn>
-                    <TableRowColumn>
-                      {member.ProtocolCur}
-                    </TableRowColumn>
-                    <TableRowColumn>
-                      {member.Tags.build}
-                    </TableRowColumn>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </CardText>
-      </Card>
+      <span>
+        <Helmet>
+          <title>Servers - Nomad - Hashi-UI</title>
+        </Helmet>
+        <Card>
+          <CardText>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHeaderColumn>Name</TableHeaderColumn>
+                  <TableHeaderColumn>Address</TableHeaderColumn>
+                  <TableHeaderColumn>Port</TableHeaderColumn>
+                  <TableHeaderColumn>Region</TableHeaderColumn>
+                  <TableHeaderColumn>Datacenter</TableHeaderColumn>
+                  <TableHeaderColumn>Status</TableHeaderColumn>
+                  <TableHeaderColumn>Leader</TableHeaderColumn>
+                  <TableHeaderColumn>Protocol</TableHeaderColumn>
+                  <TableHeaderColumn>Build</TableHeaderColumn>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {this.props.members.map(member => {
+                  return (
+                    <TableRow key={member.Name}>
+                      <TableRowColumn>
+                        <ServerLink serverId={member.Name} />
+                      </TableRowColumn>
+                      <TableRowColumn>
+                        {member.Addr}
+                      </TableRowColumn>
+                      <TableRowColumn>
+                        {member.Port}
+                      </TableRowColumn>
+                      <TableRowColumn>
+                        {member.Tags.region}
+                      </TableRowColumn>
+                      <TableRowColumn>
+                        {member.Tags.dc}
+                      </TableRowColumn>
+                      <TableRowColumn>
+                        {member.Status}
+                      </TableRowColumn>
+                      <TableRowColumn>
+                        {this.showLeaderIcon(member)}
+                      </TableRowColumn>
+                      <TableRowColumn>
+                        {member.ProtocolCur}
+                      </TableRowColumn>
+                      <TableRowColumn>
+                        {member.Tags.build}
+                      </TableRowColumn>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </CardText>
+        </Card>
+      </span>
     )
   }
 }

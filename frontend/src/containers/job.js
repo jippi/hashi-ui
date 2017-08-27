@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
+import { Helmet } from "react-helmet"
 import JobTopbar from "../components/JobTopbar/JobTopbar"
 import JobActionMenu from "../components/JobActionMenu/JobActionMenu"
 import DropDownMenu from "material-ui/DropDownMenu"
@@ -347,8 +348,17 @@ class Job extends Component {
       return <div>Loading ...</div>
     }
 
+    const location = this.props.location
+    const end = location.pathname.split("/").pop()
+
     return (
       <div>
+        <Helmet>
+          <title>
+            Job {this.props.job.Name} / {end} - Nomad - Hashi-UI
+          </title>
+        </Helmet>
+
         <div style={{ float: "left" }}>
           <h3 style={{ marginTop: "10px" }}>
             {this.breadcrumb()}

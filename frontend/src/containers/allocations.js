@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
+import { Helmet } from "react-helmet"
 import AllocationList from "../components/AllocationList/AllocationList"
 import {
   NOMAD_WATCH_ALLOCS_SHALLOW,
@@ -21,7 +22,15 @@ class Allocations extends Component {
   }
 
   render() {
-    return <AllocationList {...this.props} />
+    return (
+      <span>
+        <Helmet>
+          <title>Allocations - Nomad - Hashi-UI</title>
+        </Helmet>
+
+        <AllocationList {...this.props} />
+      </span>
+    )
   }
 }
 
