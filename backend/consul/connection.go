@@ -9,8 +9,8 @@ import (
 	api "github.com/hashicorp/consul/api"
 	observer "github.com/imkira/go-observer"
 	"github.com/jippi/hashi-ui/backend/structs"
+	"github.com/jippi/hashi-ui/backend/subscriber"
 	uuid "github.com/satori/go.uuid"
-	"gopkg.in/fatih/set.v0"
 )
 
 // Connection monitors the websocket connection. It processes any action
@@ -23,7 +23,7 @@ type Connection struct {
 	receive           chan *structs.Action
 	send              chan *structs.Action
 	destroyCh         chan struct{}
-	watches           *set.Set
+	watches           *subscriber.Manager
 	hub               *Hub
 	region            *Region
 	broadcastChannels *RegionBroadcastChannels
@@ -36,7 +36,7 @@ func NewConnection(hub *Hub, socket *websocket.Conn, consulRegion *Region, chann
 	return &Connection{
 		ID:                connectionID,
 		shortID:           fmt.Sprintf("%s", connectionID)[0:8],
-		watches:           set.New(),
+		watches:           &subscriber.Manager{},
 		hub:               hub,
 		socket:            socket,
 		receive:           make(chan *structs.Action),
@@ -143,7 +143,7 @@ func (c *Connection) process(action structs.Action) {
 	case watchConsulService:
 		go c.watchConsulService(action)
 	case unwatchConsulService:
-		c.watches.Remove(action.Payload.(string))
+		c.watches.Unsubscribe(action.Payload.(string))
 	case dereigsterConsulService:
 		go c.dereigsterConsulService(action)
 	case dereigsterConsulServiceCheck:
@@ -163,7 +163,7 @@ func (c *Connection) process(action structs.Action) {
 	case watchConsulNode:
 		go c.watchConsulNode(action)
 	case unwatchConsulNode:
-		c.watches.Remove("consul/node/" + action.Payload.(string))
+		c.watches.Unsubscribe("consul/node/" + action.Payload.(string))
 
 	//
 	// Watch a KV path
@@ -171,7 +171,7 @@ func (c *Connection) process(action structs.Action) {
 	case watchConsulKVPath:
 		go c.watchConsulKVPath(action)
 	case unwatchConsulKVPath:
-		c.watches.Remove("consul/kv/path?" + action.Payload.(string))
+		c.watches.Unsubscribe("consul/kv/path?" + action.Payload.(string))
 	case setConsulKVPair:
 		go c.writeConsulKV(action)
 	case deleteConsulKvFolder:
@@ -227,13 +227,13 @@ func (c *Connection) fetchRegions() {
 }
 
 func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, prop observer.Property, initialPayload interface{}) {
-	if c.watches.Has(watchKey) {
+	if c.watches.Subscribed(watchKey) {
 		c.Warningf("Connection is already subscribed to %s", actionEvent)
 		return
 	}
 
 	defer func() {
-		c.watches.Remove(watchKey)
+		c.watches.Unsubscribe(watchKey)
 		c.Infof("Stopped watching %s", watchKey)
 
 		// recovering from panic caused by writing to a closed channel
@@ -242,7 +242,7 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 		}
 	}()
 
-	c.watches.Add(watchKey)
+	subscribeCh := c.watches.Subscribe(watchKey)
 
 	c.Debugf("Sending our current %s list", watchKey)
 	c.send <- &structs.Action{Type: actionEvent, Payload: initialPayload, Index: 0}
@@ -252,6 +252,8 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 	c.Debugf("Started watching %s", watchKey)
 	for {
 		select {
+		case <-subscribeCh:
+			return
 		case <-c.destroyCh:
 			return
 
@@ -262,7 +264,7 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 			channelAction := stream.Value().(*structs.Action)
 			c.Debugf("got new data for %s (WaitIndex: %d)", watchKey, channelAction.Index)
 
-			if !c.watches.Has(watchKey) {
+			if !c.watches.Subscribed(watchKey) {
 				c.Infof("Connection is no longer subscribed to %s", watchKey)
 				return
 			}
@@ -280,41 +282,43 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 
 func (c *Connection) unwatchGenericBroadcast(watchKey string) {
 	c.Debugf("Removing subscription for %s", watchKey)
-	c.watches.Remove(watchKey)
+	c.watches.Unsubscribe(watchKey)
 }
 
 func (c *Connection) watchConsulService(action structs.Action) {
 	serviceID := action.Payload.(string)
 
-	if c.watches.Has(serviceID) {
+	if c.watches.Subscribed(serviceID) {
 		c.Warningf("Connection is already subscribed to service %s", serviceID)
 		return
 	}
 
 	defer func() {
-		c.watches.Remove(serviceID)
+		c.watches.Unsubscribe(serviceID)
 		c.Infof("Stopped watching service with id: %s", serviceID)
 	}()
-	c.watches.Add(serviceID)
+	subscribeCh := c.watches.Subscribe(serviceID)
 
 	c.Infof("Started watching service with id: %s", serviceID)
 
 	q := &api.QueryOptions{WaitIndex: 1}
 	for {
 		select {
+		case <-subscribeCh:
+			return
 		case <-c.destroyCh:
 			return
 
 		default:
 			service, meta, err := c.region.Client.Health().Service(serviceID, "", false, q)
+			if !c.watches.Subscribed(serviceID) {
+				return
+			}
+
 			if err != nil {
 				c.Errorf("connection: unable to fetch consul service info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
-			}
-
-			if !c.watches.Has(serviceID) {
-				return
 			}
 
 			remoteWaitIndex := meta.LastIndex
@@ -336,16 +340,16 @@ func (c *Connection) watchConsulNode(action structs.Action) {
 	nodeID := action.Payload.(string)
 	key := "consul/node/" + nodeID
 
-	if c.watches.Has(key) {
+	if c.watches.Subscribed(key) {
 		c.Warningf("Connection is already subscribed to %s", key)
 		return
 	}
 
 	defer func() {
-		c.watches.Remove(key)
+		c.watches.Unsubscribe(key)
 		c.Infof("Stopped watching %s", key)
 	}()
-	c.watches.Add(key)
+	subscribeCh := c.watches.Subscribe(key)
 
 	c.Infof("Started watching %s", key)
 
@@ -353,33 +357,42 @@ func (c *Connection) watchConsulNode(action structs.Action) {
 	q := &api.QueryOptions{WaitIndex: 0}
 
 	for {
-		var node InternalNode
-
-		meta, err := raw.Query(fmt.Sprintf("/v1/internal/ui/node/%s", nodeID), &node, q)
-		if err != nil {
-			logger.Errorf("watch: unable to fetch node/%s: %s", nodeID, err)
-			time.Sleep(10 * time.Second)
-			continue
-		}
-
-		remoteWaitIndex := meta.LastIndex
-		localWaitIndex := q.WaitIndex
-
-		// only work if the WaitIndex have changed
-		if remoteWaitIndex == localWaitIndex {
-			logger.Debugf("Node/%s index is unchanged (%d == %d)", nodeID, localWaitIndex, remoteWaitIndex)
-			continue
-		}
-
-		logger.Debugf("Node/%s index is changed (%d <> %d)", nodeID, localWaitIndex, remoteWaitIndex)
-
-		if !c.watches.Has(key) {
-			c.Warningf("Connection is not subscribed to %s", key)
+		select {
+		case <-subscribeCh:
 			return
-		}
 
-		c.send <- &structs.Action{Type: fetchedConsulNode, Payload: node, Index: remoteWaitIndex}
-		q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
+		case <-c.destroyCh:
+			return
+
+		default:
+			var node InternalNode
+
+			meta, err := raw.Query(fmt.Sprintf("/v1/internal/ui/node/%s", nodeID), &node, q)
+			if !c.watches.Subscribed(key) {
+				c.Warningf("Connection is not subscribed to %s", key)
+				return
+			}
+
+			if err != nil {
+				logger.Errorf("watch: unable to fetch node/%s: %s", nodeID, err)
+				time.Sleep(10 * time.Second)
+				continue
+			}
+
+			remoteWaitIndex := meta.LastIndex
+			localWaitIndex := q.WaitIndex
+
+			// only work if the WaitIndex have changed
+			if remoteWaitIndex == localWaitIndex {
+				logger.Debugf("Node/%s index is unchanged (%d == %d)", nodeID, localWaitIndex, remoteWaitIndex)
+				continue
+			}
+
+			logger.Debugf("Node/%s index is changed (%d <> %d)", nodeID, localWaitIndex, remoteWaitIndex)
+
+			c.send <- &structs.Action{Type: fetchedConsulNode, Payload: node, Index: remoteWaitIndex}
+			q = &api.QueryOptions{WaitIndex: remoteWaitIndex}
+		}
 	}
 }
 
@@ -387,16 +400,16 @@ func (c *Connection) watchConsulKVPath(action structs.Action) {
 	path := action.Payload.(string)
 	key := "consul/kv/path?" + path
 
-	if c.watches.Has(key) {
+	if c.watches.Subscribed(key) {
 		c.Warningf("Connection is already subscribed to %s", key)
 		return
 	}
 
 	defer func() {
-		c.watches.Remove(key)
+		c.watches.Unsubscribe(key)
 		c.Infof("Stopped watching %s", key)
 	}()
-	c.watches.Add(key)
+	subscribeCh := c.watches.Subscribe(key)
 
 	c.Infof("Started watching %s", key)
 
@@ -404,19 +417,22 @@ func (c *Connection) watchConsulKVPath(action structs.Action) {
 
 	for {
 		select {
+		case <-subscribeCh:
+			return
+
 		case <-c.destroyCh:
 			return
 
 		default:
 			keys, meta, err := c.region.Client.KV().Keys(path, "/", q)
+			if !c.watches.Subscribed(key) {
+				return
+			}
+
 			if err != nil {
 				c.Errorf("connection: unable to fetch consul node info: %s", err)
 				time.Sleep(10 * time.Second)
 				continue
-			}
-
-			if !c.watches.Has(key) {
-				return
 			}
 
 			remoteWaitIndex := meta.LastIndex
