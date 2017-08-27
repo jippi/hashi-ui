@@ -254,6 +254,7 @@ func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, 
 		select {
 		case <-subscribeCh:
 			return
+
 		case <-c.destroyCh:
 			return
 
@@ -306,6 +307,7 @@ func (c *Connection) watchConsulService(action structs.Action) {
 		select {
 		case <-subscribeCh:
 			return
+
 		case <-c.destroyCh:
 			return
 

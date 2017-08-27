@@ -1119,10 +1119,10 @@ func (c *Connection) watchClientStats(action structs.Action) {
 
 	for {
 		select {
-		case <-c.destroyCh:
+		case <-subscribeCh:
 			return
 
-		case <-subscribeCh:
+		case <-c.destroyCh:
 			return
 
 		default:
@@ -1284,10 +1284,10 @@ func (c *Connection) watchFile(action structs.Action) {
 	go func() {
 		for {
 			select {
-			case <-c.destroyCh:
+			case <-subscribeCh:
 				return
 
-			case <-subscribeCh:
+			case <-c.destroyCh:
 				return
 
 			default:
@@ -1320,7 +1320,6 @@ func (c *Connection) watchFile(action structs.Action) {
 
 	for {
 		select {
-
 		case <-subscribeCh:
 			return
 
