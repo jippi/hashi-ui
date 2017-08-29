@@ -1680,16 +1680,15 @@ func (c *Connection) forceGC(action structs.Action) {
 func (c *Connection) reconcileSystem(action structs.Action) {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
-	c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "Failed to reconsile summaries: Waiting for https://github.com/hashicorp/nomad/pull/3091 to be merged", Index: index}
 
-	// err := c.region.Client.System().ReconcileSummaries()
-	// if err != nil {
-	// 	c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Failed to reconsile summaries: %s", err), Index: index}
-	// 	return
-	// }
+	err := c.region.Client.System().ReconcileSummaries()
+	if err != nil {
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: fmt.Sprintf("Failed to reconsile summaries: %s", err), Index: index}
+		return
+	}
 
-	// logger.Info("connection: successfully reconsiled summaries")
-	// c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully reconsiled summaries.", Index: index}
+	logger.Info("connection: successfully reconsiled summaries")
+	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully reconsiled summaries.", Index: index}
 }
 
 func (c *Connection) watchJobAllocations(action structs.Action) {
