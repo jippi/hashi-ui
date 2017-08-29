@@ -107,4 +107,6 @@ const (
 	watchJobAllocs   = "NOMAD_WATCH_JOB_ALLOCATIONS"
 	unwatchJobAllocs = "NOMAD_UNWATCH_JOB_ALLOCATIONS"
 	fetchedJobAllocs = "NOMAD_FETCHED_JOB_ALLOCATIONS"
+
+	evaluateAllJobs = "NOMAD_EVALUATE_ALL_JOBS"
 )

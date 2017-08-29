@@ -357,6 +357,9 @@ func (c *Connection) process(action structs.Action) {
 	case unwatchJobAllocs:
 		c.unwatchJobAllocations(action)
 
+	case evaluateAllJobs:
+		go c.evaluateAllJobs(action)
+
 	// Nice in debug
 	default:
 		logger.Errorf("Unknown action: %s", action.Type)
@@ -1689,6 +1692,23 @@ func (c *Connection) reconcileSystem(action structs.Action) {
 
 	logger.Info("connection: successfully reconsiled summaries")
 	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully reconsiled summaries.", Index: index}
+}
+
+func (c *Connection) evaluateAllJobs(action structs.Action) {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	index := uint64(r.Int())
+
+	for _, job := range c.region.jobs {
+		go func(job *api.JobListStub) {
+			c.Infof("Evaluating job %s", job.ID)
+			if _, _, err := c.region.Client.Jobs().ForceEvaluate(job.ID, nil); err != nil {
+				c.Infof("Falied to evaluate job %s: %s", job.ID, err)
+			}
+		}(job)
+	}
+
+	logger.Info("connection: evaluating all jobs in the background")
+	c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: "Evaluating all jobs in the background.", Index: index}
 }
 
 func (c *Connection) watchJobAllocations(action structs.Action) {
