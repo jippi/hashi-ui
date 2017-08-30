@@ -1414,6 +1414,8 @@ func (c *Connection) changeTaskGroupCount(action structs.Action) {
 		return
 	}
 
+	job.Canonicalize()
+
 	updateAction, updateErr := c.region.updateJob(job)
 	updateAction.Index = index
 
