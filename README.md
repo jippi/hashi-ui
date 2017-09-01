@@ -120,6 +120,7 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | `NOMAD_PORT_http` 	  | `<none>` 	              | `0.0.0.0:3000`          	| The IP + PORT to listen on (will overwrite `LISTEN_ADDRESS`)                                                     |
 | `NOMAD_HIDE_ENV_DATA`   | `nomad-hide-env-data` 	  | `false`          	        | Whether Nomad env{} values should be hidden (will prevent updating jobs in the UI)                               |
 | `NOMAD_ALLOW_STALE`     | `nomad-allow-stale` 	  | `true`          	        | Whether Hashi-UI should use stale mode when connecting to the nomad-api servers                                  |
+| `NOMAD_ALLOW_FS`        | `nomad-allow-fs`       | `true`                         | Whether Hashi-UI should disable the Files browser                                                                |
 
 ## Consul Configuration
 
