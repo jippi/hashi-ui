@@ -3,6 +3,7 @@ package config
 import (
 	"flag"
 	"fmt"
+        "os"
 	"strconv"
 	"syscall"
 )
@@ -32,6 +33,8 @@ var (
 		"Overrides the NOMAD_CLIENT_KEY environment variable if set. "+FlagDefault(defaultConfig.NomadClientKey))
 
 	flagNomadHideEnvData = flag.Bool("nomad-hide-env-data", false, "Whether Nomad env{} values should be hidden (will prevent updating jobs in the UI)"+FlagDefault(strconv.FormatBool(defaultConfig.NomadHideEnvData)))
+
+	flagNomadHideEmbeddedTmpl = flag.Bool("nomad-hide-embedded-tmpl", false, "Whether Nomad EmbeddedTmpl should be hidden"+FlagDefault(strconv.FormatBool(defaultConfig.NomadHideEmbeddedTmpl)))
 
 	flagNomadAllowStale = flag.Bool("nomad-allow-stale", true, "Whether Hashi-UI should use stale mode when connecting to the nomad-api servers"+
 		"Overrides the NOMAD_ALLOW_STALE environment variable if set. "+FlagDefault(strconv.FormatBool(defaultConfig.NomadAllowStale)))
@@ -85,15 +88,16 @@ type Config struct {
 	NewRelicAppName string
 	NewRelicLicense string
 
-	NomadEnable      bool
-	NomadAddress     string
-	NomadCACert      string
-	NomadClientCert  string
-	NomadClientKey   string
-	NomadReadOnly    bool
-	NomadSkipVerify  bool
-	NomadHideEnvData bool
-	NomadAllowStale  bool
+	NomadEnable           bool
+	NomadAddress          string
+	NomadCACert           string
+	NomadClientCert       string
+	NomadClientKey        string
+	NomadReadOnly         bool
+	NomadSkipVerify       bool
+	NomadHideEnvData      bool
+	NomadHideEmbeddedTmpl bool
+	NomadAllowStale       bool
 
 	ConsulEnable   bool
 	ConsulReadOnly bool
@@ -126,9 +130,10 @@ func DefaultConfig() *Config {
 
 		NewRelicAppName: "hashi-ui",
 
-		NomadReadOnly:    false,
-		NomadAddress:     "http://127.0.0.1:4646",
-		NomadHideEnvData: false,
+		NomadReadOnly:         false,
+		NomadAddress:          "http://127.0.0.1:4646",
+		NomadHideEnvData:      false,
+		NomadHideEmbeddedTmpl: false,
 
 		ConsulReadOnly: false,
 		ConsulAddress:  "127.0.0.1:8500",
@@ -272,6 +277,13 @@ func ParseNomadEnvConfig(c *Config) {
 	if ok {
 		c.NomadHideEnvData = hideEnvData != "false"
 	}
+	hideEmbeddedTmpl := os.Getenv("NOMAD_HIDE_EMBEDDED_TMPL")
+	if hideEmbeddedTmpl != "" {
+		hideEmbeddedTmplBool, err := strconv.ParseBool(hideEmbeddedTmpl)
+		if err == nil {
+			c.NomadHideEmbeddedTmpl = hideEmbeddedTmplBool
+		}
+	}
 	nomadAllowStale, ok := syscall.Getenv("NOMAD_ALLOW_STALE")
 	if ok {
 		c.NomadAllowStale = nomadAllowStale != "true"
@@ -294,6 +306,10 @@ func ParseNomadFlagConfig(c *Config) {
 
 	if *flagNomadHideEnvData {
 		c.NomadHideEnvData = *flagNomadHideEnvData
+	}
+
+	if *flagNomadHideEmbeddedTmpl {
+		c.NomadHideEmbeddedTmpl = *flagNomadHideEmbeddedTmpl
 	}
 
 	if *flagNomadAddress != "" {
