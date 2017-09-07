@@ -72,8 +72,10 @@ func (c *Connection) Debugf(format string, args ...interface{}) {
 }
 
 func (c *Connection) writePump() {
+	logger.Debugf("Starting keep-alive packer sender")
+	ticker := time.NewTicker(10 * time.Second)
 	defer func() {
-		c.socket.Close()
+		ticker.Stop()
 	}()
 
 	for {
@@ -93,6 +95,10 @@ func (c *Connection) writePump() {
 			if err := c.socket.WriteJSON(action); err != nil {
 				c.Errorf("Could not write action to websocket: %s", err)
 			}
+
+		case <-ticker.C:
+			logger.Debugf("Sending keep-alive packet")
+			c.socket.WriteMessage(websocket.PingMessage, []byte("keepalive"))
 		}
 	}
 }
@@ -101,7 +107,6 @@ func (c *Connection) readPump() {
 	defer func() {
 		c.watches.Clear()
 		c.hub.unregister <- c
-		c.socket.Close()
 	}()
 
 	// Register this connection with the hub for broadcast updates
@@ -192,7 +197,10 @@ func (c *Connection) process(action structs.Action) {
 // Handle monitors the websocket connection for incoming actions. It sends
 // out actions on state changes.
 func (c *Connection) Handle() {
-	go c.keepAlive()
+	defer func() {
+		c.socket.Close()
+	}()
+
 	go c.writePump()
 	c.readPump()
 
@@ -202,24 +210,6 @@ func (c *Connection) Handle() {
 
 	// Kill any remaining watcher routines
 	close(c.destroyCh)
-}
-
-func (c *Connection) keepAlive() {
-	logger.Debugf("Starting keep-alive packer sender")
-	ticker := time.NewTicker(10 * time.Second)
-	defer func() {
-		ticker.Stop()
-	}()
-
-	for {
-		select {
-		case <-c.destroyCh:
-			return
-		case <-ticker.C:
-			logger.Debugf("Sending keep-alive packet")
-			c.socket.WriteMessage(websocket.PingMessage, []byte("keepalive"))
-		}
-	}
 }
 
 func (c *Connection) fetchRegions() {
