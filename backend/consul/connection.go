@@ -11,6 +11,7 @@ import (
 	"github.com/jippi/hashi-ui/backend/structs"
 	"github.com/jippi/hashi-ui/backend/subscriber"
 	uuid "github.com/satori/go.uuid"
+	"sync"
 )
 
 // Connection monitors the websocket connection. It processes any action
@@ -76,16 +77,14 @@ func (c *Connection) writePump() {
 	ticker := time.NewTicker(10 * time.Second)
 	defer func() {
 		ticker.Stop()
+		c.socket.Close()
 	}()
 
 	for {
 		select {
-		case <-c.destroyCh:
-			c.Warningf("Stopping writePump")
-			return
-
 		case action, ok := <-c.send:
 			if !ok {
+				// Exiting...
 				if err := c.socket.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
 					c.Errorf("Could not write close message to websocket: %s", err)
 				}
@@ -104,27 +103,92 @@ func (c *Connection) writePump() {
 }
 
 func (c *Connection) readPump() {
-	defer func() {
-		c.watches.Clear()
-		c.hub.unregister <- c
-	}()
-
 	// Register this connection with the hub for broadcast updates
 	c.hub.register <- c
 
+	var waitg sync.WaitGroup
 	var action structs.Action
+
 	for {
-		err := c.socket.ReadJSON(&action)
-		if err != nil {
+		if err := c.socket.ReadJSON(&action); err != nil {
 			break
 		}
 
-		c.process(action)
+		// Unwatch events are processed synchronously
+		unwatchProcessed := c.processUnwatch(action)
+		if !unwatchProcessed {
+			// Watch events are processed asynchronously
+			go func() {
+				defer waitg.Done()
+				waitg.Add(1)
+				watchProcessed := c.processWatch(action)
+				if !watchProcessed {
+					logger.Warningf("Unknown action: %s", action.Type)
+				}
+			}()
+		}
 	}
+
+	c.Debugf("Connection closing down")
+
+	// Kill any remaining watcher routines
+	close(c.destroyCh)
+
+	// This ensure all processing is done and the 'send' channel can be closed safely
+	waitg.Wait()
+	c.watches.Clear()
+
+	// Unregister this connection and close the 'send' channel (causing writePump to exit)
+	c.hub.unregister <- c
 }
 
-func (c *Connection) process(action structs.Action) {
-	c.Debugf("Processing event %s (index %d)", action.Type, action.Index)
+func (c *Connection) processUnwatch(action structs.Action) bool {
+	c.Debugf("Processing unwatch event %s (index %d)", action.Type, action.Index)
+
+	switch action.Type {
+
+	//
+	// Consul services
+	//
+	case unwatchConsulServices:
+		c.unwatchGenericBroadcast("services")
+
+		//
+		// Consul service (single)
+		//
+	case unwatchConsulService:
+		c.watches.Unsubscribe(action.Payload.(string))
+
+		//
+		// Consul nodes
+		//
+	case unwatchConsulNodes:
+		c.unwatchGenericBroadcast("nodes")
+
+		//
+		// Consul node (single)
+		//
+	case unwatchConsulNode:
+		c.watches.Unsubscribe("consul/node/" + action.Payload.(string))
+
+		//
+		// KV path
+		//
+	case unwatchConsulKVPath:
+		c.watches.Unsubscribe("consul/kv/path?" + action.Payload.(string))
+
+		//
+		// No match
+		//
+	default:
+		return false
+	}
+
+	return true
+}
+
+func (c *Connection) processWatch(action structs.Action) bool {
+	c.Debugf("Processing watch event %s (index %d)", action.Type, action.Index)
 
 	switch action.Type {
 
@@ -132,84 +196,65 @@ func (c *Connection) process(action structs.Action) {
 	// Consul regions
 	//
 	case fetchConsulRegions:
-		go c.fetchRegions()
+		c.fetchRegions()
 
 	//
 	// Consul services
 	//
 	case watchConsulServices:
-		go c.watchGenericBroadcast("services", fetchedConsulServices, c.region.broadcastChannels.services, c.region.services)
-	case unwatchConsulServices:
-		c.unwatchGenericBroadcast("services")
+		c.watchGenericBroadcast("services", fetchedConsulServices, c.region.broadcastChannels.services, c.region.services)
 
 	//
 	// Consul service (single)
 	//
 	case watchConsulService:
-		go c.watchConsulService(action)
-	case unwatchConsulService:
-		c.watches.Unsubscribe(action.Payload.(string))
+		c.watchConsulService(action)
 	case dereigsterConsulService:
-		go c.dereigsterConsulService(action)
+		c.dereigsterConsulService(action)
 	case dereigsterConsulServiceCheck:
-		go c.dereigsterConsulServiceCheck(action)
+		c.dereigsterConsulServiceCheck(action)
 
 	//
 	// Consul nodes
 	//
 	case watchConsulNodes:
-		go c.watchGenericBroadcast("nodes", fetchedConsulNodes, c.region.broadcastChannels.nodes, c.region.nodes)
-	case unwatchConsulNodes:
-		c.unwatchGenericBroadcast("nodes")
+		c.watchGenericBroadcast("nodes", fetchedConsulNodes, c.region.broadcastChannels.nodes, c.region.nodes)
 
 	//
 	// Consul node (single)
 	//
 	case watchConsulNode:
-		go c.watchConsulNode(action)
-	case unwatchConsulNode:
-		c.watches.Unsubscribe("consul/node/" + action.Payload.(string))
+		c.watchConsulNode(action)
 
 	//
-	// Watch a KV path
+	// KV path
 	//
 	case watchConsulKVPath:
-		go c.watchConsulKVPath(action)
-	case unwatchConsulKVPath:
-		c.watches.Unsubscribe("consul/kv/path?" + action.Payload.(string))
+		c.watchConsulKVPath(action)
 	case setConsulKVPair:
-		go c.writeConsulKV(action)
+		c.writeConsulKV(action)
 	case deleteConsulKvFolder:
-		go c.deleteConsulKV(action)
+		c.deleteConsulKV(action)
 	case getConsulKVPair:
-		go c.getConsulKVPair(action)
+		c.getConsulKVPair(action)
 	case deleteConsulKvPair:
-		go c.deleteConsulKvPair(action)
+		c.deleteConsulKvPair(action)
 
 	//
-	// Nice in debug
+	// No match
 	//
 	default:
-		logger.Warningf("Unknown action: %s", action.Type)
+		return false
 	}
+
+	return true
 }
 
 // Handle monitors the websocket connection for incoming actions. It sends
 // out actions on state changes.
 func (c *Connection) Handle() {
-	defer func() {
-		c.socket.Close()
-	}()
-
 	go c.writePump()
 	c.readPump()
-
-	c.Debugf("Connection closing down")
-
-	c.destroyCh <- struct{}{}
-
-	// Kill any remaining watcher routines
-	close(c.destroyCh)
 }
 
 func (c *Connection) fetchRegions() {
