@@ -85,9 +85,7 @@ func (c *Connection) writePump() {
 		case action, ok := <-c.send:
 			if !ok {
 				// Exiting...
-				if err := c.socket.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
-					c.Errorf("Could not write close message to websocket: %s", err)
-				}
+				c.socket.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
 
