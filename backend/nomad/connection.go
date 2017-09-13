@@ -51,16 +51,12 @@ func NewCountWG() *CountWG {
 // Add ...
 func (cg *CountWG) Add(delta int) {
 	atomic.AddInt64(&cg.count, int64(delta))
-	fmt.Printf("add(%d) = %d\n", delta, cg.count)
-
 	cg.wg.Add(delta)
 }
 
 // Done ...
 func (cg *CountWG) Done() {
 	atomic.AddInt64(&cg.count, -1)
-	fmt.Printf("done(1) = %d\n", cg.count)
-
 	cg.wg.Done()
 }
 
@@ -434,7 +430,7 @@ func (c *Connection) subscriptionPublisher() {
 			return
 
 		case <-ticker.C:
-			c.Infof("Subscriptions: %s / WaitGroups: %d", strings.Join(c.watches.Subscriptions(), ", "), c.wg.Count())
+			c.Infof("WaitGroups: %d | Subscriptions: %s", c.wg.Count(), strings.Join(c.watches.Subscriptions(), ", "))
 		}
 	}
 }
