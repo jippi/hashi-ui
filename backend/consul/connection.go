@@ -97,10 +97,8 @@ func (c *Connection) writePump() {
 }
 
 func (c *Connection) readPump() {
-	defer c.watches.Clear()
-	defer c.socket.Close()
-
 	var action structs.Action
+
 	for {
 		err := c.socket.ReadJSON(&action)
 		if err != nil {
@@ -189,9 +187,16 @@ func (c *Connection) Handle() {
 	go c.writePump()
 	go c.subscriptionPublisher()
 
+	// Read from ws, will only return once connection has an error
 	c.readPump()
 
 	c.Debugf("Connection closing down")
+
+	// Clear subscribers
+	c.watches.Clear()
+
+	// Close the socket
+	c.socket.Close()
 
 	// Kill any remaining watcher routines
 	close(c.destroyCh)
