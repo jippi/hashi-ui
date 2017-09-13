@@ -1066,6 +1066,23 @@ func (c *Connection) watchJob(action structs.Action) {
 				}
 			}
 
+			//Optionally hide EmbeddedTmpl
+			if c.region.Config.NomadHideEmbeddedTmpl {
+				for _, taskGroup := range job.TaskGroups {
+					for _, task := range taskGroup.Tasks {
+						if err := task.Templates; err == nil {
+							continue
+						}
+						for _, template := range task.Templates {
+							if err := template.EmbeddedTmpl; err != nil {
+								temp := StrToPtr("")
+								template.EmbeddedTmpl = temp
+							}
+						}
+					}
+				}
+			}
+
 			remoteWaitIndex := meta.LastIndex
 			localWaitIndex := q.WaitIndex
 

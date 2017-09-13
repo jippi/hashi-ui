@@ -16,6 +16,11 @@ func PtrToInt(i *int) int {
 	return *i
 }
 
+// StrToPtr returns the pointer to a string
+func StrToPtr(s string) *string {
+	return &s
+}
+
 // LineLimitReader wraps another reader and provides `tail -n` like behavior.
 // LineLimitReader buffers up to the searchLimit and returns `-n` number of
 // lines. After those lines have been returned, LineLimitReader streams the
