@@ -11,7 +11,7 @@
 The following assumptions are made for local development:
 
 - the project is checked out into `$GOPATH/src/github.com/jippi/hashi-ui`
-- `go` in a recent version (I use `1.7.3` but older 7.x might also work)
+- `go` in a recent version (I use `1.9.0` but older 1.8 might also work)
 - `node` in a recent version (I use `7.2.1` but older versions should work too)
 - `yarn` is installed (`brew install yarn` on OS X)
 
