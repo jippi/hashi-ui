@@ -1354,7 +1354,6 @@ func (c *Connection) watchFile(action structs.Action) {
 }
 
 func (c *Connection) changeTaskGroupCount(action structs.Action) {
-
 	params := action.Payload.(map[string]interface{})
 
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))

@@ -3,6 +3,7 @@ package consul
 import (
 	"fmt"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -72,9 +73,7 @@ func (c *Connection) Debugf(format string, args ...interface{}) {
 }
 
 func (c *Connection) writePump() {
-	defer func() {
-		c.socket.Close()
-	}()
+	defer c.socket.Close()
 
 	for {
 		select {
@@ -98,14 +97,8 @@ func (c *Connection) writePump() {
 }
 
 func (c *Connection) readPump() {
-	defer func() {
-		c.watches.Clear()
-		c.hub.unregister <- c
-		c.socket.Close()
-	}()
-
-	// Register this connection with the hub for broadcast updates
-	c.hub.register <- c
+	defer c.watches.Clear()
+	defer c.socket.Close()
 
 	var action structs.Action
 	for {
@@ -194,27 +187,51 @@ func (c *Connection) process(action structs.Action) {
 func (c *Connection) Handle() {
 	go c.keepAlive()
 	go c.writePump()
+	go c.subscriptionPublisher()
+
 	c.readPump()
 
 	c.Debugf("Connection closing down")
 
-	c.destroyCh <- struct{}{}
-
 	// Kill any remaining watcher routines
 	close(c.destroyCh)
+
+	c.Infof("Waiting for subscriptions to finish up")
+	c.watches.Wait()
+
+	c.Infof("Done, closing send channel")
+	close(c.send)
 }
 
-func (c *Connection) keepAlive() {
-	logger.Debugf("Starting keep-alive packer sender")
+func (c *Connection) subscriptionPublisher() {
 	ticker := time.NewTicker(10 * time.Second)
-	defer func() {
-		ticker.Stop()
-	}()
+	defer ticker.Stop()
 
 	for {
 		select {
 		case <-c.destroyCh:
 			return
+
+		case <-ticker.C:
+			c.Infof("WaitGroups: %d | Subscriptions: %s", c.watches.Count(), strings.Join(c.watches.Subscriptions(), ", "))
+		}
+	}
+}
+
+func (c *Connection) keepAlive() {
+	logger.Debugf("Starting keep-alive packer sender")
+
+	ticker := time.NewTicker(10 * time.Second)
+	defer ticker.Stop()
+
+	c.watches.Subscribe("KeepAlive")
+	defer c.watches.Unsubscribe("KeepAlive")
+
+	for {
+		select {
+		case <-c.destroyCh:
+			return
+
 		case <-ticker.C:
 			logger.Debugf("Sending keep-alive packet")
 			c.socket.WriteMessage(websocket.PingMessage, []byte("keepalive"))

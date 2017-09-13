@@ -11,13 +11,10 @@ import (
 // Hub keeps track of all the websocket connections and sends state updates
 // from Nomad to all connections.
 type Hub struct {
-	connections map[*Connection]bool
-	cluster     *Cluster
-	channels    *RegionChannels
-	clients     *RegionClients
-	regions     []string
-	register    chan *Connection
-	unregister  chan *Connection
+	cluster  *Cluster
+	channels *RegionChannels
+	clients  *RegionClients
+	regions  []string
 }
 
 var upgrader = websocket.Upgrader{
@@ -34,31 +31,10 @@ func NewHub(cluster *Cluster) *Hub {
 	}
 
 	return &Hub{
-		cluster:     cluster,
-		clients:     cluster.RegionClients,
-		channels:    cluster.RegionChannels,
-		regions:     regions,
-		connections: make(map[*Connection]bool),
-		register:    make(chan *Connection),
-		unregister:  make(chan *Connection),
-	}
-}
-
-// Run (un)registers websocket connections and broadcasts Nomad state updates
-// to all connections.
-func (h *Hub) Run() {
-	for {
-		select {
-
-		case c := <-h.register:
-			h.connections[c] = true
-
-		case c := <-h.unregister:
-			if _, ok := h.connections[c]; ok {
-				delete(h.connections, c)
-				close(c.send)
-			}
-		}
+		cluster:  cluster,
+		clients:  cluster.RegionClients,
+		channels: cluster.RegionChannels,
+		regions:  regions,
 	}
 }
 
@@ -84,6 +60,8 @@ func (h *Hub) Handler(w http.ResponseWriter, r *http.Request) {
 		h.sendAction(socket, &structs.Action{Type: unknownConsulRegion, Payload: ""})
 		return
 	}
+
+	defer socket.Close()
 
 	c := NewConnection(h, socket, (*h.clients)[region], (*h.channels)[region])
 	c.Handle()
