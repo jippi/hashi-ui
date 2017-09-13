@@ -1158,6 +1158,14 @@ func nodeURL(params map[string]interface{}) string {
 }
 
 func (c *Connection) fetchDir(action structs.Action) {
+	index := uint64(rand.New(rand.NewSource(time.Now().UnixNano())).Int())
+
+	if c.region.Config.NomadAllowFS == false {
+		logger.Errorf("Unable to fetch dir: NomadAllowFS is set to false")
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "NomadAllowFS must be true to view files", Index: index}
+		return
+	}
+
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -1198,6 +1206,14 @@ func (c *Connection) parseWatchFileAction(action structs.Action) (string, string
 }
 
 func (c *Connection) unwatchFile(action structs.Action) {
+	index := uint64(rand.New(rand.NewSource(time.Now().UnixNano())).Int())
+
+	if c.region.Config.NomadAllowFS == false {
+		logger.Errorf("Unable to unwatch Files: NomadAllowFS is set to false")
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "NomadAllowFS must be true to unwatch Files", Index: index}
+		return
+	}
+
 	allocID, path := c.parseWatchFileAction(action)
 	watchKey := "/allocation/" + allocID + "/file" + path
 
@@ -1206,6 +1222,14 @@ func (c *Connection) unwatchFile(action structs.Action) {
 }
 
 func (c *Connection) watchFile(action structs.Action) {
+	index := uint64(rand.New(rand.NewSource(time.Now().UnixNano())).Int())
+
+	if c.region.Config.NomadAllowFS == false {
+		logger.Errorf("Unable to view Files: NomadAllowFS is set to false")
+		c.send <- &structs.Action{Type: structs.ErrorNotification, Payload: "NomadAllowFS must be true to view Files", Index: index}
+		return
+	}
+
 	allocID, path := c.parseWatchFileAction(action)
 	watchKey := "/allocation/" + allocID + "/file" + path
 

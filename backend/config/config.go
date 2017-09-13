@@ -3,6 +3,7 @@ package config
 import (
 	"flag"
 	"fmt"
+	"os"
 	"strconv"
 	"syscall"
 )
@@ -35,6 +36,9 @@ var (
 
 	flagNomadAllowStale = flag.Bool("nomad-allow-stale", true, "Whether Hashi-UI should use stale mode when connecting to the nomad-api servers"+
 		"Overrides the NOMAD_ALLOW_STALE environment variable if set. "+FlagDefault(strconv.FormatBool(defaultConfig.NomadAllowStale)))
+
+	flagNomadAllowFS = flag.Bool("nomad-allow-fs", true, "Whether Hashi-UI should disable the Files browser. "+
+		"Overrides the NOMAD_ALLOW_FS environment variable if set. "+FlagDefault(strconv.FormatBool(defaultConfig.NomadAllowFS)))
 
 	flagConsulEnable = flag.Bool("consul-enable", false, "Whether Consul engine should be started. "+
 		"Overrides the CONSUL_ENABLE environment variable if set. "+FlagDefault(strconv.FormatBool(defaultConfig.ConsulEnable)))
@@ -94,6 +98,7 @@ type Config struct {
 	NomadSkipVerify  bool
 	NomadHideEnvData bool
 	NomadAllowStale  bool
+	NomadAllowFS     bool
 
 	ConsulEnable   bool
 	ConsulReadOnly bool
@@ -129,6 +134,7 @@ func DefaultConfig() *Config {
 		NomadReadOnly:    false,
 		NomadAddress:     "http://127.0.0.1:4646",
 		NomadHideEnvData: false,
+		NomadAllowFS:     true,
 
 		ConsulReadOnly: false,
 		ConsulAddress:  "127.0.0.1:8500",
@@ -276,6 +282,13 @@ func ParseNomadEnvConfig(c *Config) {
 	if ok {
 		c.NomadAllowStale = nomadAllowStale != "true"
 	}
+	nomadAllowFS := os.Getenv("NOMAD_ALLOW_FS")
+	if nomadAllowFS != "" {
+		nomadAllowFSBool, err := strconv.ParseBool(nomadAllowFS)
+		if err == nil {
+			c.NomadAllowFS = nomadAllowFSBool
+		}
+	}
 }
 
 // ParseNomadFlagConfig ...
@@ -314,6 +327,10 @@ func ParseNomadFlagConfig(c *Config) {
 
 	if *flagNomadAllowStale {
 		c.NomadAllowStale = *flagNomadAllowStale
+	}
+
+	if *flagNomadAllowFS {
+		c.NomadAllowFS = *flagNomadAllowFS
 	}
 }
 
