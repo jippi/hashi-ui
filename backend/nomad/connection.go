@@ -7,6 +7,8 @@ import (
 	"math/rand"
 	"strconv"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -32,6 +34,46 @@ const (
 	maxFileSize int64 = defaultTailLines * bytesToLines
 )
 
+// CountWG ...
+type CountWG struct {
+	wg    *sync.WaitGroup
+	count int64 // Race conditions, only for info logging.
+}
+
+// NewCountWG ...
+func NewCountWG() *CountWG {
+	return &CountWG{
+		wg:    &sync.WaitGroup{},
+		count: 0,
+	}
+}
+
+// Add ...
+func (cg *CountWG) Add(delta int) {
+	atomic.AddInt64(&cg.count, int64(delta))
+	fmt.Printf("add(%d) = %d\n", delta, cg.count)
+
+	cg.wg.Add(delta)
+}
+
+// Done ...
+func (cg *CountWG) Done() {
+	atomic.AddInt64(&cg.count, -1)
+	fmt.Printf("done(1) = %d\n", cg.count)
+
+	cg.wg.Done()
+}
+
+// Wait ...
+func (cg *CountWG) Wait() {
+	cg.wg.Wait()
+}
+
+// Count ...
+func (cg *CountWG) Count() int64 {
+	return cg.count
+}
+
 // Connection monitors the websocket connection. It processes any action
 // received on the websocket and sends out actions on Nomad state changes. It
 // maintains a set to keep track of the running watches.
@@ -46,6 +88,7 @@ type Connection struct {
 	hub               *Hub
 	region            *Region
 	broadcastChannels *RegionBroadcastChannels
+	wg                *CountWG
 }
 
 // NewConnection creates a new connection.
@@ -63,6 +106,7 @@ func NewConnection(hub *Hub, socket *websocket.Conn, nomadRegion *Region, channe
 		destroyCh:         make(chan struct{}),
 		region:            nomadRegion,
 		broadcastChannels: channels,
+		wg:                NewCountWG(),
 	}
 }
 
@@ -91,15 +135,14 @@ func (c *Connection) Debugf(format string, args ...interface{}) {
 }
 
 func (c *Connection) writePump() {
-	defer func() {
-		c.socket.Close()
-	}()
+	defer c.socket.Close()
 
 	for {
 		select {
 
 		case <-c.destroyCh:
 			c.Warningf("Stopping writePump")
+			return
 
 		case action, ok := <-c.send:
 			if !ok {
@@ -117,14 +160,8 @@ func (c *Connection) writePump() {
 }
 
 func (c *Connection) readPump() {
-	defer func() {
-		c.watches.Clear()
-		c.hub.unregister <- c
-		c.socket.Close()
-	}()
-
-	// Register this connection with the hub for broadcast updates
-	c.hub.register <- c
+	defer c.watches.Clear()
+	defer c.socket.Close()
 
 	var action structs.Action
 	for {
@@ -379,6 +416,12 @@ func (c *Connection) Handle() {
 
 	// Kill any remaining watcher routines
 	close(c.destroyCh)
+
+	c.Infof("Waiting for subscriptions to finish up")
+	c.wg.Wait()
+
+	c.Infof("Done, closing send channel")
+	close(c.send)
 }
 
 func (c *Connection) subscriptionPublisher() {
@@ -391,12 +434,15 @@ func (c *Connection) subscriptionPublisher() {
 			return
 
 		case <-ticker.C:
-			c.Infof("Subscriptions: %s", strings.Join(c.watches.Subscriptions(), ", "))
+			c.Infof("Subscriptions: %s / WaitGroups: %d", strings.Join(c.watches.Subscriptions(), ", "), c.wg.Count())
 		}
 	}
 }
 
 func (c *Connection) keepAlive() {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	logger.Debugf("Starting keep-alive packer sender")
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
@@ -867,6 +913,9 @@ func (c *Connection) watchNode(action structs.Action) {
 }
 
 func (c *Connection) watchGenericBroadcast(watchKey string, actionEvent string, prop observer.Property, initialPayload interface{}) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	// Check if we are already subscribed
 	if c.watches.Subscribed(watchKey) {
 		c.Infof("Already watching %s", watchKey)
@@ -922,6 +971,9 @@ func (c *Connection) unwatchGenericBroadcast(watchKey string) {
 }
 
 func (c *Connection) watchJobVersions(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	jobID := action.Payload.(string)
 	watchKey := "/job/" + jobID + "/versions"
 
@@ -998,6 +1050,9 @@ func (c *Connection) parseJobAction(action structs.Action) (string, int) {
 }
 
 func (c *Connection) watchJob(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	ID, version := c.parseJobAction(action)
 	watchKey := fmt.Sprintf("/job/%s@%d", ID, version)
 
@@ -1079,6 +1134,9 @@ func (c *Connection) watchJob(action structs.Action) {
 }
 
 func (c *Connection) unwatchJob(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	ID, version := c.parseJobAction(action)
 	watchKey := fmt.Sprintf("/job/%s@%d", ID, version)
 
@@ -1087,6 +1145,9 @@ func (c *Connection) unwatchJob(action structs.Action) {
 }
 
 func (c *Connection) fetchClientStats(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	nodeID, ok := action.Payload.(string)
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -1103,6 +1164,9 @@ func (c *Connection) fetchClientStats(action structs.Action) {
 }
 
 func (c *Connection) watchClientStats(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	ID := action.Payload.(string)
 	watchKey := "/node/" + ID + "/statistics"
 
@@ -1158,6 +1222,9 @@ func nodeURL(params map[string]interface{}) string {
 }
 
 func (c *Connection) fetchDir(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	params, ok := action.Payload.(map[string]interface{})
 	if !ok {
 		c.Errorf("Could not decode payload")
@@ -1198,6 +1265,9 @@ func (c *Connection) parseWatchFileAction(action structs.Action) (string, string
 }
 
 func (c *Connection) unwatchFile(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	allocID, path := c.parseWatchFileAction(action)
 	watchKey := "/allocation/" + allocID + "/file" + path
 
@@ -1206,6 +1276,9 @@ func (c *Connection) unwatchFile(action structs.Action) {
 }
 
 func (c *Connection) watchFile(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	allocID, path := c.parseWatchFileAction(action)
 	watchKey := "/allocation/" + allocID + "/file" + path
 
@@ -1352,6 +1425,9 @@ func (c *Connection) watchFile(action structs.Action) {
 }
 
 func (c *Connection) changeTaskGroupCount(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	params := action.Payload.(map[string]interface{})
 
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -1439,6 +1515,9 @@ func (c *Connection) changeTaskGroupCount(action structs.Action) {
 }
 
 func (c *Connection) submitJob(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
@@ -1472,6 +1551,9 @@ func (c *Connection) submitJob(action structs.Action) {
 }
 
 func (c *Connection) stopJob(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
@@ -1497,6 +1579,9 @@ func (c *Connection) stopJob(action structs.Action) {
 }
 
 func (c *Connection) evaluateJob(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
@@ -1522,6 +1607,9 @@ func (c *Connection) evaluateJob(action structs.Action) {
 }
 
 func (c *Connection) forcePeriodicRun(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
@@ -1547,6 +1635,9 @@ func (c *Connection) forcePeriodicRun(action structs.Action) {
 }
 
 func (c *Connection) changeDeploymentStatus(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
@@ -1600,6 +1691,9 @@ func (c *Connection) changeDeploymentStatus(action structs.Action) {
 }
 
 func (c *Connection) drainClient(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
@@ -1647,6 +1741,9 @@ func (c *Connection) drainClient(action structs.Action) {
 }
 
 func (c *Connection) removeClient(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
@@ -1669,6 +1766,9 @@ func (c *Connection) removeClient(action structs.Action) {
 }
 
 func (c *Connection) forceGC(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
@@ -1683,6 +1783,9 @@ func (c *Connection) forceGC(action structs.Action) {
 }
 
 func (c *Connection) reconcileSystem(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
@@ -1697,6 +1800,9 @@ func (c *Connection) reconcileSystem(action structs.Action) {
 }
 
 func (c *Connection) evaluateAllJobs(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	index := uint64(r.Int())
 
@@ -1714,6 +1820,9 @@ func (c *Connection) evaluateAllJobs(action structs.Action) {
 }
 
 func (c *Connection) watchJobAllocations(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	ID := action.Payload.(string)
 	watchKey := fmt.Sprintf("/job/%s/allocations", ID)
 
@@ -1771,11 +1880,17 @@ func (c *Connection) watchJobAllocations(action structs.Action) {
 }
 
 func (c *Connection) unwatchJobAllocations(action structs.Action) {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	watchKey := fmt.Sprintf("/job/%s/allocations", action.Payload.(string))
 	c.watches.Unsubscribe(watchKey)
 	c.Infof("Unwatching %s", watchKey)
 }
 
 func (c *Connection) fetchRegions() {
+	c.wg.Add(1)
+	defer c.wg.Done()
+
 	c.send <- &structs.Action{Type: fetchedNomadRegions, Payload: c.hub.regions}
 }

@@ -65,7 +65,6 @@ func Initialize(cfg *config.Config) (*Hub, bool) {
 	cluster.StartWatchers()
 
 	hub := NewHub(cluster)
-	go hub.Run()
 
 	return hub, true
 }
