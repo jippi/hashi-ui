@@ -47,7 +47,7 @@ func (m *Manager) Unsubscribe(key string) {
 	}
 
 	// WaitGroup
-	m.Done()
+	defer m.Done()
 
 	// Counter
 	atomic.AddInt64(&m.count, -1)
