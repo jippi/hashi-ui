@@ -91,6 +91,7 @@ func (c *Connection) writePump() {
 
 			if err := c.socket.WriteJSON(action); err != nil {
 				c.Errorf("Could not write action to websocket: %s", err)
+				return
 			}
 		}
 	}
