@@ -110,6 +110,7 @@ func (c *Connection) writePump() {
 
 			if err := c.socket.WriteJSON(action); err != nil {
 				c.Errorf("Could not write action to websocket: %s", err)
+				return
 			}
 		}
 	}
@@ -137,17 +138,17 @@ func (c *Connection) process(action structs.Action) {
 	// Actions for a list of members (aka servers in the UI)
 	//
 	case watchMembers:
-		go c.watchGenericBroadcast("members", fetchedMembers, c.region.broadcastChannels.members, c.hub.cluster.members)
+		go c.watchGenericBroadcast("/members", fetchedMembers, c.region.broadcastChannels.members, c.hub.cluster.members)
 	case unwatchMembers:
-		c.unwatchGenericBroadcast("members")
+		c.unwatchGenericBroadcast("/members")
 
 	//
 	// Actions for a list of deployments
 	//
 	case watchDeployments:
-		go c.watchGenericBroadcast("deployments", fetchedDeployments, c.region.broadcastChannels.deployments, c.region.deployments)
+		go c.watchGenericBroadcast("/deployments", fetchedDeployments, c.region.broadcastChannels.deployments, c.region.deployments)
 	case unwatchDeployments:
-		c.unwatchGenericBroadcast("deployments")
+		c.unwatchGenericBroadcast("/deployments")
 
 	//
 	// Actions for a list of jobs
