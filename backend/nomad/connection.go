@@ -406,8 +406,8 @@ func (c *Connection) keepAlive() {
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
-	c.watches.Subscribe("KeepAlive")
-	defer c.watches.Unsubscribe("KeepAlive")
+	c.watches.Subscribe("/internal/keep-alive")
+	defer c.watches.Unsubscribe("/internal/keep-alive")
 
 	for {
 		select {
