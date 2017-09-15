@@ -370,9 +370,6 @@ func (c *Connection) Handle() {
 
 	c.Debugf("Connection closing down")
 
-	// Clear subscribers
-	c.watches.Clear()
-
 	// Close the socket
 	c.socket.Close()
 
