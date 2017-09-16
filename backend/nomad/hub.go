@@ -18,25 +18,23 @@ var upgrader = websocket.Upgrader{
 // Hub keeps track of all the websocket connections and sends state updates
 // from Nomad to all connections.
 type Hub struct {
-	cluster  *Cluster
-	channels *RegionChannels
-	clients  *RegionClients
-	regions  []string
+	cluster *Cluster
+	clients *RegionClients
+	regions []string
 }
 
 // NewHub initializes a new hub.
 func NewHub(cluster *Cluster) *Hub {
 	regions := make([]string, 0)
 
-	for region := range *cluster.RegionChannels {
+	for region := range *cluster.RegionClients {
 		regions = append(regions, region)
 	}
 
 	return &Hub{
-		cluster:  cluster,
-		clients:  cluster.RegionClients,
-		channels: cluster.RegionChannels,
-		regions:  regions,
+		cluster: cluster,
+		clients: cluster.RegionClients,
+		regions: regions,
 	}
 }
 
@@ -57,7 +55,7 @@ func (h *Hub) Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, ok := (*h.channels)[region]; !ok {
+	if _, ok := (*h.clients)[region]; !ok {
 		logger.Errorf("region was not found: %s", region)
 		h.sendAction(socket, &structs.Action{Type: unknownNomadRegion, Payload: ""})
 		return
@@ -65,7 +63,7 @@ func (h *Hub) Handler(w http.ResponseWriter, r *http.Request) {
 
 	defer socket.Close()
 
-	c := NewConnection(h, socket, (*h.clients)[region], (*h.channels)[region])
+	c := NewConnection(h, socket, (*h.clients)[region])
 	c.Handle()
 }
 

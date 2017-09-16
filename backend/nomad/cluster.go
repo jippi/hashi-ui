@@ -7,10 +7,9 @@ import (
 
 // Cluster derp
 type Cluster struct {
-	ClusterClient  *api.Client
-	RegionChannels *RegionChannels
-	RegionClients  *RegionClients
-	members        []*AgentMemberWithID
+	ClusterClient *api.Client
+	RegionClients *RegionClients
+	members       []*AgentMemberWithID
 }
 
 // ClusterBroadcastChannels ...
@@ -19,15 +18,9 @@ type ClusterBroadcastChannels struct {
 }
 
 // NewCluster ...
-func NewCluster(clusterClient *api.Client, clients *RegionClients, channels *RegionChannels) *Cluster {
+func NewCluster(clusterClient *api.Client, clients *RegionClients) *Cluster {
 	return &Cluster{
-		ClusterClient:  clusterClient,
-		RegionClients:  clients,
-		RegionChannels: channels,
+		ClusterClient: clusterClient,
+		RegionClients: clients,
 	}
-}
-
-// StartWatchers ...
-func (c *Cluster) StartWatchers() {
-	go c.watchMembers()
 }

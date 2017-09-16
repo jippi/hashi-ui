@@ -7,6 +7,12 @@ import (
 	"golang.org/x/sync/syncmap"
 )
 
+type Subscription interface {
+	Subscribe(key string) chan interface{}
+	Subscribed(key string) bool
+	Unsubscribe(key string)
+}
+
 // Manager ...
 type Manager struct {
 	s syncmap.Map

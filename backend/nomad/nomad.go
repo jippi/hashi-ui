@@ -1,9 +1,7 @@
 package nomad
 
 import (
-	observer "github.com/imkira/go-observer"
 	"github.com/jippi/hashi-ui/backend/config"
-	"github.com/jippi/hashi-ui/backend/structs"
 	logging "github.com/op/go-logging"
 )
 
@@ -24,23 +22,10 @@ func Initialize(cfg *config.Config) (*Hub, bool) {
 		return nil, false
 	}
 
-	regionChannels := RegionChannels{}
 	regionClients := RegionClients{}
 
 	for _, region := range regions {
 		logger.Infof("Starting handlers for region: %s", region)
-
-		channels := &RegionBroadcastChannels{}
-		channels.allocations = observer.NewProperty(&structs.Action{})
-		channels.allocationsShallow = observer.NewProperty(&structs.Action{})
-		channels.clusterStatistics = observer.NewProperty(&structs.Action{})
-		channels.deployments = observer.NewProperty(&structs.Action{})
-		channels.evaluations = observer.NewProperty(&structs.Action{})
-		channels.jobs = observer.NewProperty(&structs.Action{})
-		channels.members = observer.NewProperty(&structs.Action{})
-		channels.nodes = observer.NewProperty(&structs.Action{})
-
-		regionChannels[region] = channels
 
 		regionClient, clientErr := CreateRegionClient(cfg, region)
 		if clientErr != nil {
@@ -49,22 +34,16 @@ func Initialize(cfg *config.Config) (*Hub, bool) {
 		}
 
 		logger.Infof("  -> Connecting to nomad")
-		nomad, nomadErr := NewRegion(cfg, regionClient, channels)
+		nomad, nomadErr := NewRegion(cfg, regionClient)
 		if nomadErr != nil {
 			logger.Errorf("    -> Could not create client: %s", nomadErr)
 			return nil, false
 		}
 
 		regionClients[region] = nomad
-
-		logger.Info("  -> Starting resource watchers")
-		nomad.StartWatchers()
 	}
 
-	cluster := NewCluster(client, &regionClients, &regionChannels)
-	cluster.StartWatchers()
-
-	hub := NewHub(cluster)
+	hub := NewHub(NewCluster(client, &regionClients))
 
 	return hub, true
 }

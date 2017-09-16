@@ -3,13 +3,11 @@ package nomad
 import (
 	"errors"
 	"fmt"
-	"sort"
 	"sync"
 	"time"
 
 	"github.com/hashicorp/nomad/api"
 	nstructs "github.com/hashicorp/nomad/nomad/structs"
-	observer "github.com/imkira/go-observer"
 	"github.com/jippi/hashi-ui/backend/config"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
@@ -18,40 +16,16 @@ const (
 	waitTime = 1 * time.Minute
 )
 
-// RegionChannels ...
-type RegionChannels map[string]*RegionBroadcastChannels
-
 // RegionClients ...
 type RegionClients map[string]*Region
-
-// RegionBroadcastChannels contains all the channels for resources hashi-ui automatically maintain active lists of
-type RegionBroadcastChannels struct {
-	allocations        observer.Property
-	allocationsShallow observer.Property
-	clusterStatistics  observer.Property
-	deployments        observer.Property
-	evaluations        observer.Property
-	jobs               observer.Property
-	members            observer.Property
-	nodes              observer.Property
-}
 
 // Region keeps track of the Region state. It monitors changes to allocations,
 // evaluations, jobs and nodes and broadcasts them to all connected websockets.
 // It also exposes an API client for the Region server.
 type Region struct {
-	allocations        []*api.AllocationListStub
-	allocationsShallow []*api.AllocationListStub // with TaskStates removed
-	broadcastChannels  *RegionBroadcastChannels
-	Client             *api.Client
-	clusterStatistics  *NomadRegionStatisticsAggregatedResult
-	deployments        []*api.Deployment
-	Config             *config.Config
-	evaluations        []*api.Evaluation
-	jobs               []*api.JobListStub
-	members            []*AgentMemberWithID
-	nodes              []*api.NodeListStub
-	regions            []string
+	Client  *api.Client
+	Config  *config.Config
+	regions []string
 }
 
 // CreateRegionClient derp
@@ -71,212 +45,12 @@ func CreateRegionClient(c *config.Config, region string) (*api.Client, error) {
 }
 
 // NewRegion configures the Nomad API client and initializes the internal state.
-func NewRegion(c *config.Config, client *api.Client, channels *RegionBroadcastChannels) (*Region, error) {
+func NewRegion(c *config.Config, client *api.Client) (*Region, error) {
 	return &Region{
-		allocations:        make([]*api.AllocationListStub, 0),
-		allocationsShallow: make([]*api.AllocationListStub, 0),
-		broadcastChannels:  channels,
-		Client:             client,
-		clusterStatistics:  &NomadRegionStatisticsAggregatedResult{},
-		Config:             c,
-		deployments:        make([]*api.Deployment, 0),
-		evaluations:        make([]*api.Evaluation, 0),
-		jobs:               make([]*api.JobListStub, 0),
-		members:            make([]*AgentMemberWithID, 0),
-		nodes:              make([]*api.NodeListStub, 0),
-		regions:            make([]string, 0),
+		Client:  client,
+		Config:  c,
+		regions: make([]string, 0),
 	}, nil
-}
-
-// StartWatchers derp
-func (n *Region) StartWatchers() {
-	go n.watchAggregateClusterStatistics()
-	go n.watchAllocs()
-	go n.watchAllocsShallow()
-	go n.watchDeployments()
-	go n.watchEvals()
-	go n.watchJobs()
-	go n.watchNodes()
-}
-
-func (n *Region) watchDeployments() {
-	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
-
-	for {
-		deployments, meta, err := n.Client.Deployments().List(q)
-		if err != nil {
-			logger.Errorf("watch: unable to fetch deployments: %s", err)
-			time.Sleep(10 * time.Second)
-			continue
-		}
-
-		remoteWaitIndex := meta.LastIndex
-		localWaitIndex := q.WaitIndex
-
-		// only work if the WaitIndex have changed
-		if remoteWaitIndex <= localWaitIndex {
-			logger.Debugf("deployments index is unchanged (%d <= %d)", remoteWaitIndex, localWaitIndex)
-			continue
-		}
-
-		logger.Debugf("deployments index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
-
-		n.deployments = deployments
-		n.broadcastChannels.deployments.Update(&structs.Action{Type: fetchedDeployments, Payload: deployments, Index: remoteWaitIndex})
-		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
-	}
-}
-
-func (n *Region) watchAllocs() {
-	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
-
-	for {
-		allocations, meta, err := n.Client.Allocations().List(q)
-		if err != nil {
-			logger.Errorf("watch: unable to fetch allocations: %s", err)
-			time.Sleep(10 * time.Second)
-			continue
-		}
-
-		remoteWaitIndex := meta.LastIndex
-		localWaitIndex := q.WaitIndex
-
-		// only work if the WaitIndex have changed
-		if remoteWaitIndex <= localWaitIndex {
-			logger.Debugf("Allocations index is unchanged (%d <= %d)", remoteWaitIndex, localWaitIndex)
-			continue
-		}
-
-		logger.Debugf("Allocations index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
-
-		n.allocations = allocations
-		n.broadcastChannels.allocations.Update(&structs.Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
-		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
-	}
-}
-
-func (n *Region) watchAllocsShallow() {
-	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
-
-	for {
-		allocations, meta, err := n.Client.Allocations().List(q)
-		if err != nil {
-			logger.Errorf("watch: unable to fetch allocations: %s", err)
-			time.Sleep(10 * time.Second)
-			continue
-		}
-
-		remoteWaitIndex := meta.LastIndex
-		localWaitIndex := q.WaitIndex
-
-		// only work if the WaitIndex have changed
-		if remoteWaitIndex <= localWaitIndex {
-			logger.Debugf("Allocations (shallow) index is unchanged (%d <= %d)", remoteWaitIndex, localWaitIndex)
-			continue
-		}
-
-		logger.Debugf("Allocations (shallow) index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
-
-		for i := range allocations {
-			allocations[i].TaskStates = make(map[string]*api.TaskState)
-		}
-
-		n.allocationsShallow = allocations
-		n.broadcastChannels.allocationsShallow.Update(&structs.Action{Type: fetchedAllocs, Payload: allocations, Index: remoteWaitIndex})
-
-		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
-	}
-}
-
-// ClientNameSorter sorts planets by name
-type ClientNameSorter []*api.NodeListStub
-
-func (a ClientNameSorter) Len() int           { return len(a) }
-func (a ClientNameSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a ClientNameSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
-
-func (n *Region) watchNodes() {
-	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
-	for {
-		nodes, meta, err := n.Client.Nodes().List(q)
-		if err != nil {
-			logger.Errorf("watch: unable to fetch nodes: %s", err)
-			time.Sleep(10 * time.Second)
-			continue
-		}
-
-		remoteWaitIndex := meta.LastIndex
-		localWaitIndex := q.WaitIndex
-
-		// only work if the WaitIndex have changed
-		if remoteWaitIndex <= localWaitIndex {
-			logger.Debugf("Nodes wait-index is unchanged (%d <= %d)", remoteWaitIndex, localWaitIndex)
-			continue
-		}
-
-		logger.Debugf("Nodes index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
-
-		// http://stackoverflow.com/a/28999886
-		sort.Sort(ClientNameSorter(nodes))
-
-		n.nodes = nodes
-		n.broadcastChannels.nodes.Update(&structs.Action{Type: fetchedNodes, Payload: nodes, Index: remoteWaitIndex})
-		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
-	}
-}
-
-func (n *Region) watchEvals() {
-	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
-	for {
-		evaluations, meta, err := n.Client.Evaluations().List(q)
-		if err != nil {
-			logger.Errorf("watch: unable to fetch evaluations: %s", err)
-			time.Sleep(10 * time.Second)
-			continue
-		}
-
-		remoteWaitIndex := meta.LastIndex
-		localWaitIndex := q.WaitIndex
-
-		// only work if the WaitIndex have changed
-		if remoteWaitIndex <= localWaitIndex {
-			logger.Debugf("Evaluations wait-index is unchanged (%d <= %d)", remoteWaitIndex, localWaitIndex)
-			continue
-		}
-
-		logger.Debugf("Evaluations index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
-
-		n.evaluations = evaluations
-		n.broadcastChannels.evaluations.Update(&structs.Action{Type: fetchedEvals, Payload: evaluations, Index: remoteWaitIndex})
-		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
-	}
-}
-
-func (n *Region) watchJobs() {
-	q := &api.QueryOptions{WaitIndex: 1, AllowStale: n.Config.NomadAllowStale}
-	for {
-		jobs, meta, err := n.Client.Jobs().List(q)
-		if err != nil {
-			logger.Errorf("watch: unable to fetch jobs: %s", err)
-			time.Sleep(10 * time.Second)
-			continue
-		}
-
-		remoteWaitIndex := meta.LastIndex
-		localWaitIndex := q.WaitIndex
-
-		// only work if the WaitIndex have changed
-		if remoteWaitIndex <= localWaitIndex {
-			logger.Debugf("Jobs wait-index is unchanged (%d <= %d)", remoteWaitIndex, localWaitIndex)
-			continue
-		}
-
-		logger.Debugf("Jobs index is changed (%d <> %d)", remoteWaitIndex, localWaitIndex)
-
-		n.jobs = jobs
-		n.broadcastChannels.jobs.Update(&structs.Action{Type: fetchedJobs, Payload: jobs, Index: remoteWaitIndex})
-		q = &api.QueryOptions{WaitIndex: remoteWaitIndex, AllowStale: n.Config.NomadAllowStale}
-	}
 }
 
 func (n *Region) updateJob(job *api.Job) (*structs.Action, error) {
@@ -369,7 +143,10 @@ func worker(payload *NomadRegionStatisticsWorkerPayload) {
 }
 
 func (n *Region) collectAggregateClusterStatistics() {
-	nodes := n.nodes
+	nodes, _, err := n.Client.Nodes().List(nil)
+	if err != nil {
+		logger.Warningf("Could not fetch nodes: %s", err)
+	}
 
 	quit := make(chan bool)
 	tasks := make(chan *NomadRegionStatisticsTask, len(nodes))
@@ -432,8 +209,8 @@ func (n *Region) collectAggregateClusterStatistics() {
 		aggResult.MemoryTotal,
 	)
 
-	n.clusterStatistics = aggResult
-	n.broadcastChannels.clusterStatistics.Update(&structs.Action{Type: fetchedClusterStatistics, Payload: aggResult})
+	// n.clusterStatistics = aggResult
+	// n.broadcastChannels.clusterStatistics.Update(&structs.Action{Type: fetchedClusterStatistics, Payload: aggResult})
 }
 
 func (n *Region) watchAggregateClusterStatistics() {
