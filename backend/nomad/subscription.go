@@ -16,13 +16,14 @@ type Watcher interface {
 	IsMutable() bool
 }
 
-// Stream interface
+// Streamer interface
 type Streamer interface {
 	Do(client *api.Client, send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error)
 	Key() string
 	IsMutable() bool
 }
 
+// Keyer interface
 type Keyer interface {
 	Key() string
 }
@@ -101,7 +102,7 @@ func Once(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.C
 	}
 
 	// Create subscription
-	subscribeCh := s.Subscribe(watchKey)
+	_ = s.Subscribe(watchKey)
 	defer func() {
 		s.Unsubscribe(watchKey)
 		logger.Infof("Stopped running %s", watchKey)
@@ -110,37 +111,23 @@ func Once(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.C
 
 	q := query.Default(true)
 
-	for {
-		select {
-		case <-subscribeCh:
-			logger.Errorf("[%s] Shutting down due to closed subscribeCh", watchKey)
-			return
-
-		case <-destroyCh:
-			logger.Errorf("[%s] Shutting down due to closed destroyCh", watchKey)
-			return
-
-		default:
-			action, err := w.Do(client, q)
-			if err != nil {
-				logger.Errorf("connection: unable to run %s: %s", watchKey, err)
-				send <- &structs.Action{
-					Payload: err.Error(),
-					Type:    structs.ErrorNotification,
-				}
-				return
-			}
-
-			if !s.Subscribed(watchKey) {
-				logger.Errorf("No longer running %s", watchKey)
-				return
-			}
-
-			if action != nil {
-				send <- action
-				return
-			}
+	action, err := w.Do(client, q)
+	if err != nil {
+		logger.Errorf("connection: unable to run %s: %s", watchKey, err)
+		send <- &structs.Action{
+			Payload: err.Error(),
+			Type:    structs.ErrorNotification,
 		}
+		return
+	}
+
+	if !s.Subscribed(watchKey) {
+		logger.Errorf("No longer running %s", watchKey)
+		return
+	}
+
+	if action != nil {
+		send <- action
 	}
 }
 
