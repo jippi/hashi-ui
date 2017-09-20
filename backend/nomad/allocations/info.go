@@ -45,5 +45,5 @@ func (w *info) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, err
 
 // Key will return the subscription key for the action
 func (w *info) Key() string {
-	return fmt.Sprintf("/allocation/%s", w.action.Payload.(string))
+	return fmt.Sprintf("/allocation/%s/info", w.action.Payload.(string))
 }

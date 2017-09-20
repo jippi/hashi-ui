@@ -115,21 +115,15 @@ func main() {
 	router := mux.NewRouter()
 
 	if cfg.NomadEnable {
-		nomadHub, nomadSuccess := nomad.Initialize(cfg)
-		if !nomadSuccess {
-			logger.Fatalf("Failed to start Nomad hub, please check your configuration")
-		}
-		logger.Infof("Nomad client successfully initialized")
-
 		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			logger.Infof("Redirecting / to /nomad")
 			w.Write([]byte("<script>document.location.href='" + cfg.ProxyAddress + "/nomad'</script>"))
 			return
 		})
 
-		router.HandleFunc("/ws/nomad", nomadHub.Handler)
-		router.HandleFunc("/ws/nomad/{region}", nomadHub.Handler)
-		router.HandleFunc("/nomad/{region}/download/{path:.*}", nomadHub.DownloadFile)
+		router.HandleFunc("/ws/nomad", nomad.Handler(cfg))
+		router.HandleFunc("/ws/nomad/{region}", nomad.Handler(cfg))
+		router.HandleFunc("/nomad/{region}/download/{path:.*}", nomad.DownloadFile(cfg))
 	}
 
 	if cfg.ConsulEnable {

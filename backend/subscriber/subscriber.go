@@ -10,7 +10,7 @@ import (
 type Subscription interface {
 	Subscribe(key string) chan interface{}
 	Subscribed(key string) bool
-	Unsubscribe(key string)
+	Unsubscribe(key string) bool
 }
 
 // Manager ...
@@ -43,13 +43,13 @@ func (m *Manager) Subscribed(key string) bool {
 }
 
 // Unsubscribe ...
-func (m *Manager) Unsubscribe(key string) {
+func (m *Manager) Unsubscribe(key string) bool {
 	m.Lock()
 	defer m.Unlock()
 
 	chInterface, ok := m.s.Load(key)
 	if !ok {
-		return
+		return false
 	}
 
 	// WaitGroup
@@ -61,6 +61,8 @@ func (m *Manager) Unsubscribe(key string) {
 	ch := chInterface.(chan interface{})
 	close(ch)
 	m.s.Delete(key)
+
+	return true
 }
 
 // Clear the list

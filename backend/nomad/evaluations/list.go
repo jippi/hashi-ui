@@ -35,12 +35,12 @@ func (w *list) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, err
 	}
 
 	return &structs.Action{
-		Index:   meta.LastIndex,
-		Payload: evaluations,
 		Type:    fetchedList,
+		Payload: evaluations,
+		Index:   meta.LastIndex,
 	}, nil
 }
 
 func (w *list) Key() string {
-	return "/evaluations"
+	return "/evaluations/list"
 }

@@ -43,7 +43,7 @@ func (w *info) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, err
 }
 
 func (w *info) Key() string {
-	return "/node/" + w.id()
+	return "/node/" + w.id() + "/info"
 }
 
 func (w *info) id() string {

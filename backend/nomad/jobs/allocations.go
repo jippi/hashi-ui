@@ -35,9 +35,9 @@ func (w *allocations) Do(client *api.Client, q *api.QueryOptions) (*structs.Acti
 	}
 
 	return &structs.Action{
-		Index:   meta.LastIndex,
-		Payload: allocations,
 		Type:    fetchedAllocations,
+		Payload: allocations,
+		Index:   meta.LastIndex,
 	}, nil
 }
 

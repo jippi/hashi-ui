@@ -42,5 +42,5 @@ func (w *info) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, err
 }
 
 func (w *info) Key() string {
-	return fmt.Sprintf("/evaluation/%s/", w.action.Payload.(string))
+	return fmt.Sprintf("/evaluation/%s/info", w.action.Payload.(string))
 }

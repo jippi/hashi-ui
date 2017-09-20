@@ -53,10 +53,10 @@ func (w *list) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, err
 }
 
 func (w *list) Key() string {
-	key := "/allocations"
+	key := "/allocations/list"
 
 	if w.shallow {
-		key = key + "/shallow"
+		key = key + "?shallow"
 	}
 
 	return key

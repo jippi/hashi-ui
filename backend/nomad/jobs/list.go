@@ -53,7 +53,7 @@ func (w *list) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, err
 }
 
 func (w *list) Key() string {
-	path := "/jobs"
+	path := "/jobs/list"
 
 	if payload, ok := w.action.Payload.(map[string]interface{}); ok {
 		if prefix, ok := payload["prefix"]; ok {

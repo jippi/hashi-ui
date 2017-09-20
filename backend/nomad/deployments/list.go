@@ -38,5 +38,5 @@ func (w *list) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, err
 }
 
 func (w *list) Key() string {
-	return "/deployments"
+	return "/deployments/list"
 }

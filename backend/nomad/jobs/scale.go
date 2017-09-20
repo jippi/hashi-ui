@@ -106,7 +106,7 @@ func (w *scale) Key() string {
 	taskGroupID := params["taskGroup"].(string)
 	scaleAction := params["scaleAction"].(string)
 
-	return fmt.Sprintf("/job/%s/scale/%s/%s", jobID, taskGroupID, scaleAction)
+	return fmt.Sprintf("/job/%s/scale/%s?group=%s", jobID, scaleAction, taskGroupID)
 }
 
 // IntToPtr returns the pointer to an int

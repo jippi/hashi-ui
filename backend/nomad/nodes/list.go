@@ -48,7 +48,7 @@ func (w *list) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, err
 }
 
 func (w *list) Key() string {
-	return "/nodes"
+	return "/nodes/list"
 }
 
 // ClientNameSorter sorts planets by name
