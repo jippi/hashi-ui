@@ -59,6 +59,10 @@ func (w *stats) Key() string {
 	return "/cluster/stats"
 }
 
+func (w *stats) IsMutable() bool {
+	return false
+}
+
 // task is meta data about a client when passed into the cluster statistics worker
 type task struct {
 	NodeID   string

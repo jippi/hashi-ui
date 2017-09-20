@@ -44,3 +44,7 @@ func (w *info) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, err
 func (w *info) Key() string {
 	return fmt.Sprintf("/deployment/%s/info", w.action.Payload.(string))
 }
+
+func (w *info) IsMutable() bool {
+	return false
+}

@@ -33,3 +33,7 @@ func (w *stop) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, err
 func (w *stop) Key() string {
 	return fmt.Sprintf("/job/%s/stop", w.action.Payload.(string))
 }
+
+func (w *stop) IsMutable() bool {
+	return true
+}

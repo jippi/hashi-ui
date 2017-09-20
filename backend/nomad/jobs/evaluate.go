@@ -36,3 +36,7 @@ func (w *evaluate) Do(client *api.Client, q *api.QueryOptions) (*structs.Action,
 func (w *evaluate) Key() string {
 	return fmt.Sprintf("/job/%s/evaluate", w.action.Payload.(string))
 }
+
+func (w *evaluate) IsMutable() bool {
+	return true
+}

@@ -44,3 +44,7 @@ func (w *deployments) Do(client *api.Client, q *api.QueryOptions) (*structs.Acti
 func (w *deployments) Key() string {
 	return fmt.Sprintf("/job/%s/deployments", w.action.Payload.(string))
 }
+
+func (w *deployments) IsMutable() bool {
+	return false
+}

@@ -109,6 +109,10 @@ func (w *scale) Key() string {
 	return fmt.Sprintf("/job/%s/scale/%s?group=%s", jobID, scaleAction, taskGroupID)
 }
 
+func (w *scale) IsMutable() bool {
+	return true
+}
+
 // IntToPtr returns the pointer to an int
 func IntToPtr(i int) *int {
 	return &i

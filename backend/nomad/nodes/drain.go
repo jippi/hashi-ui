@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	Drain  = "NOMAD_DRAIN_CLIENT"
+	Drain = "NOMAD_DRAIN_CLIENT"
 )
 
 type drain struct {
@@ -53,6 +53,10 @@ func (w *drain) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, er
 func (w *drain) Key() string {
 	w.parse()
 	return "/node/" + w.id + "/drain/" + w.actionType
+}
+
+func (w *drain) IsMutable() bool {
+	return true
 }
 
 func (w *drain) parse() {

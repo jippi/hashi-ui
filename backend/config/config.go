@@ -65,12 +65,6 @@ var (
 
 	flagServerKey = flag.String("server-key", "",
 		"Server key to use when https protocol is enabled. "+FlagDefault(defaultConfig.ServerKey))
-
-	flagNewRelicAppName = flag.String("newrelic-app-name", "hashi-ui",
-		"The NewRelic app name. "+FlagDefault(defaultConfig.NewRelicAppName))
-
-	flagNewRelicLicense = flag.String("newrelic-license", "",
-		"The NewRelic license key. "+FlagDefault(defaultConfig.NewRelicLicense))
 )
 
 // Config for the hashi-ui server
@@ -81,9 +75,6 @@ type Config struct {
 	HttpsEnable   bool
 	ServerCert    string
 	ServerKey     string
-
-	NewRelicAppName string
-	NewRelicLicense string
 
 	NomadEnable      bool
 	NomadAddress     string
@@ -113,8 +104,6 @@ func (c *Config) Parse() {
 
 	ParseConsulFlagConfig(c)
 	ParseConsulEnvConfig(c)
-
-	ParseNewRelicConfig(c)
 }
 
 // DefaultConfig is the basic out-of-the-box configuration for hashi-ui
@@ -123,8 +112,6 @@ func DefaultConfig() *Config {
 		LogLevel:      "info",
 		ListenAddress: "0.0.0.0:3000",
 		HttpsEnable:   false,
-
-		NewRelicAppName: "hashi-ui",
 
 		NomadReadOnly:    false,
 		NomadAddress:     "http://127.0.0.1:4646",
@@ -198,29 +185,6 @@ func ParseAppFlagConfig(c *Config) {
 		c.ServerKey = *flagServerKey
 	}
 
-}
-
-// ParseNewRelicConfig ...
-func ParseNewRelicConfig(c *Config) {
-	// env
-	newRelicAppName, ok := syscall.Getenv("NEWRELIC_APP_NAME")
-	if ok {
-		c.NewRelicAppName = newRelicAppName
-	}
-
-	newRelicLicense, ok := syscall.Getenv("NEWRELIC_LICENSE")
-	if ok {
-		c.NewRelicLicense = newRelicLicense
-	}
-
-	// flags
-	if *flagNewRelicAppName != "" {
-		c.NewRelicAppName = *flagNewRelicAppName
-	}
-
-	if *flagNewRelicLicense != "" {
-		c.NewRelicLicense = *flagNewRelicLicense
-	}
 }
 
 // ParseNomadEnvConfig ...

@@ -44,3 +44,7 @@ func (w *submit) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, e
 func (w *submit) Key() string {
 	return "/job/submit"
 }
+
+func (w *submit) IsMutable() bool {
+	return true
+}

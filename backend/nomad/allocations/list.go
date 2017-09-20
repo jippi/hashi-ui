@@ -61,3 +61,7 @@ func (w *list) Key() string {
 
 	return key
 }
+
+func (w *list) IsMutable() bool {
+	return false
+}

@@ -35,3 +35,7 @@ func (w *remove) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, e
 func (w *remove) Key() string {
 	return "/node/" + w.action.Payload.(string) + "/remove"
 }
+
+func (w *remove) IsMutable() bool {
+	return true
+}

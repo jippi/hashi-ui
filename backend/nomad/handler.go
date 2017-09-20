@@ -11,6 +11,8 @@ import (
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/config"
 	"github.com/jippi/hashi-ui/backend/structs"
+	uuid "github.com/satori/go.uuid"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -43,8 +45,10 @@ func newRegionClient(c *config.Config, region string) (*api.Client, error) {
 // Handler establishes the websocket connection and calls the connection handler.
 func Handler(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
 	defaultClient, _ := newRegionClient(cfg, "")
-
 	return func(w http.ResponseWriter, r *http.Request) {
+		connectionID := uuid.NewV4()
+		logger := log.WithField("connection_id", connectionID.String()[:8])
+
 		socket, err := websocketUpgrader.Upgrade(w, r, nil)
 		if err != nil {
 			logger.Errorf("transport: websocket upgrade failed: %s", err)
@@ -56,19 +60,19 @@ func Handler(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
 		region, ok := params["region"]
 		if !ok {
 			logger.Errorf("No region provided")
-			requireNomadRegion(socket, defaultClient)
+			requireNomadRegion(socket, defaultClient, logger)
 			return
 		}
 
 		defer socket.Close()
 
 		client, _ := newRegionClient(cfg, region)
-		c := NewConnection(socket, client)
+		c := NewConnection(socket, client, logger, connectionID, cfg)
 		c.Handle()
 	}
 }
 
-func requireNomadRegion(socket *websocket.Conn, client *api.Client) {
+func requireNomadRegion(socket *websocket.Conn, client *api.Client, logger *log.Entry) {
 	var action structs.Action
 
 	regions, _ := client.Regions().List()
@@ -85,7 +89,7 @@ func requireNomadRegion(socket *websocket.Conn, client *api.Client) {
 		}
 	}
 
-	sendAction(socket, &action)
+	sendAction(socket, &action, logger)
 
 	var readAction structs.Action
 	for {
@@ -95,11 +99,11 @@ func requireNomadRegion(socket *websocket.Conn, client *api.Client) {
 		}
 
 		logger.Debugf("Sending request for user to select a region in the UI again")
-		sendAction(socket, &action)
+		sendAction(socket, &action, logger)
 	}
 }
 
-func sendAction(socket *websocket.Conn, action *structs.Action) {
+func sendAction(socket *websocket.Conn, action *structs.Action, logger *log.Entry) {
 	if err := socket.WriteJSON(action); err != nil {
 		logger.Errorf(" %s", err)
 	}
@@ -108,6 +112,9 @@ func sendAction(socket *websocket.Conn, action *structs.Action) {
 // DownloadFile ...
 func DownloadFile(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		connectionID := uuid.NewV4()
+		logger := log.WithField("connection_id", connectionID.String()[:8])
+
 		params := mux.Vars(r)
 		region := params["region"]
 

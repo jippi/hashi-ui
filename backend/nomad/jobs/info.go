@@ -73,6 +73,10 @@ func (w *info) Key() string {
 	return fmt.Sprintf("/job/%s/version/%s", w.id, version)
 }
 
+func (w *info) IsMutable() bool {
+	return false
+}
+
 func (w *info) parse() {
 	payload := w.action.Payload.(map[string]interface{})
 	w.id = payload["id"].(string)

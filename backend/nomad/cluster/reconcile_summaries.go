@@ -33,3 +33,7 @@ func (w *reconsileSummaries) Do(client *api.Client, q *api.QueryOptions) (*struc
 func (w *reconsileSummaries) Key() string {
 	return "/system/reconsile_summaries"
 }
+
+func (w *reconsileSummaries) IsMutable() bool {
+	return true
+}

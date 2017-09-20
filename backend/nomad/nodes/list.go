@@ -51,6 +51,10 @@ func (w *list) Key() string {
 	return "/nodes/list"
 }
 
+func (w *list) IsMutable() bool {
+	return false
+}
+
 // ClientNameSorter sorts planets by name
 type ClientNameSorter []*api.NodeListStub
 

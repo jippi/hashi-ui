@@ -12,7 +12,6 @@ import { Grid, Row, Col } from "react-flexbox-grid"
 
 class Jobs extends Component {
   componentDidMount() {
-    console.log("NOMAD_WATCH_JOBS")
     this.props.dispatch({ type: NOMAD_WATCH_JOBS })
   }
 

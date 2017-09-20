@@ -199,52 +199,16 @@
 			"revisionTime": "2017-05-08T17:38:06Z"
 		},
 		{
-			"checksumSHA1": "fG/hdI57tzm9CfcELMa7QVXESR8=",
-			"path": "github.com/newrelic/go-agent",
-			"revision": "29ec3cd1bb2f21d21d36da37dae52695cb2c3a17",
-			"revisionTime": "2017-04-18T16:35:58Z"
-		},
-		{
-			"checksumSHA1": "xOBMYhyCFUIXslS7AWykIUY6dUk=",
-			"path": "github.com/newrelic/go-agent/internal",
-			"revision": "29ec3cd1bb2f21d21d36da37dae52695cb2c3a17",
-			"revisionTime": "2017-04-18T16:35:58Z"
-		},
-		{
-			"checksumSHA1": "mkbupMdy+cF7xyo8xW0A6Bq15k4=",
-			"path": "github.com/newrelic/go-agent/internal/jsonx",
-			"revision": "29ec3cd1bb2f21d21d36da37dae52695cb2c3a17",
-			"revisionTime": "2017-04-18T16:35:58Z"
-		},
-		{
-			"checksumSHA1": "ywxlVKtGArJ2vDfH1rAqEFwSGds=",
-			"path": "github.com/newrelic/go-agent/internal/logger",
-			"revision": "29ec3cd1bb2f21d21d36da37dae52695cb2c3a17",
-			"revisionTime": "2017-04-18T16:35:58Z"
-		},
-		{
-			"checksumSHA1": "S7CiHO7EblgZt9q7wgiXMv/j/ao=",
-			"path": "github.com/newrelic/go-agent/internal/sysinfo",
-			"revision": "29ec3cd1bb2f21d21d36da37dae52695cb2c3a17",
-			"revisionTime": "2017-04-18T16:35:58Z"
-		},
-		{
-			"checksumSHA1": "c2JSKesj3tHYgzIF3QL37WfHWG8=",
-			"path": "github.com/newrelic/go-agent/internal/utilization",
-			"revision": "29ec3cd1bb2f21d21d36da37dae52695cb2c3a17",
-			"revisionTime": "2017-04-18T16:35:58Z"
-		},
-		{
-			"checksumSHA1": "BoXdUBWB8UnSlFlbnuTQaPqfCGk=",
-			"path": "github.com/op/go-logging",
-			"revision": "970db520ece77730c7e4724c61121037378659d9",
-			"revisionTime": "2016-03-15T20:05:05Z"
-		},
-		{
 			"checksumSHA1": "zmC8/3V4ls53DJlNTKDZwPSC/dA=",
 			"path": "github.com/satori/go.uuid",
 			"revision": "5bf94b69c6b68ee1b541973bb8e1144db23a194b",
 			"revisionTime": "2017-03-21T23:07:31Z"
+		},
+		{
+			"checksumSHA1": "BYvROBsiyAXK4sq6yhDe8RgT4LM=",
+			"path": "github.com/sirupsen/logrus",
+			"revision": "89742aefa4b206dcf400792f3bd35b542998eb3b",
+			"revisionTime": "2017-08-22T13:27:46Z"
 		},
 		{
 			"checksumSHA1": "9Zw986fuQM/hCoVd8vmHoSM+8sU=",
@@ -253,10 +217,28 @@
 			"revisionTime": "2017-06-20T10:48:52Z"
 		},
 		{
+			"checksumSHA1": "nqWNlnMmVpt628zzvyo6Yv2CX5Q=",
+			"path": "golang.org/x/crypto/ssh/terminal",
+			"revision": "7d9177d70076375b9a59c8fde23d52d9c4a7ecd5",
+			"revisionTime": "2017-09-15T19:08:28Z"
+		},
+		{
 			"checksumSHA1": "4TEYFKrAUuwBMqExjQBsnf/CgjQ=",
 			"path": "golang.org/x/sync/syncmap",
 			"revision": "f52d1811a62927559de87708c8913c1650ce4f26",
 			"revisionTime": "2017-05-17T20:25:26Z"
+		},
+		{
+			"checksumSHA1": "qLwcuele4pa2OxBoa3Titv9Msr0=",
+			"path": "golang.org/x/sys/unix",
+			"revision": "b6e1ae21643682ce023deb8d152024597b0e9bb4",
+			"revisionTime": "2017-09-18T15:00:50Z"
+		},
+		{
+			"checksumSHA1": "pBPFzDGt3AVSRffB7ffiUnruFUk=",
+			"path": "golang.org/x/sys/windows",
+			"revision": "b6e1ae21643682ce023deb8d152024597b0e9bb4",
+			"revisionTime": "2017-09-18T15:00:50Z"
 		}
 	],
 	"rootPath": "github.com/jippi/hashi-ui/backend"

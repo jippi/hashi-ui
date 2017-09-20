@@ -33,3 +33,7 @@ func (w *forceGC) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, 
 func (w *forceGC) Key() string {
 	return "/system/force_gc"
 }
+
+func (w *forceGC) IsMutable() bool {
+	return true
+}

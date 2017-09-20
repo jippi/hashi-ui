@@ -71,6 +71,10 @@ func (w *list) Key() string {
 	return "/members/list"
 }
 
+func (w *list) IsMutable() bool {
+	return false
+}
+
 // MembersWithID is used to query all of the known server members.
 func membersWithID(client *api.Client) (string, []*AgentMemberWithID, error) {
 	members, err := client.Agent().Members()

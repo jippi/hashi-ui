@@ -4,10 +4,10 @@ import (
 	observer "github.com/imkira/go-observer"
 	"github.com/jippi/hashi-ui/backend/config"
 	"github.com/jippi/hashi-ui/backend/structs"
-	logging "github.com/op/go-logging"
+	logging "github.com/sirupsen/logrus"
 )
 
-var logger = logging.MustGetLogger("hashi-ui")
+var logger = logging.New()
 
 // Initialize ...
 func Initialize(cfg *config.Config) (*Hub, bool) {

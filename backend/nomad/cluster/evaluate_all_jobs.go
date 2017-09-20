@@ -45,3 +45,7 @@ func (w *evaluateAllJobs) Do(client *api.Client, q *api.QueryOptions) (*structs.
 func (w *evaluateAllJobs) Key() string {
 	return "/system/evaluate_all_jobs"
 }
+
+func (w *evaluateAllJobs) IsMutable() bool {
+	return false
+}

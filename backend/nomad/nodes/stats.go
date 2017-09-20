@@ -38,3 +38,7 @@ func (w *stats) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, er
 func (w *stats) Key() string {
 	return "/node/" + w.action.Payload.(string) + "/stats"
 }
+
+func (w *stats) IsMutable() bool {
+	return false
+}

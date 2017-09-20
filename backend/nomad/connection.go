@@ -8,6 +8,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/hashicorp/nomad/api"
+	"github.com/jippi/hashi-ui/backend/config"
 	"github.com/jippi/hashi-ui/backend/nomad/allocations"
 	"github.com/jippi/hashi-ui/backend/nomad/cluster"
 	"github.com/jippi/hashi-ui/backend/nomad/deployments"
@@ -17,266 +18,37 @@ import (
 	"github.com/jippi/hashi-ui/backend/nomad/nodes"
 	"github.com/jippi/hashi-ui/backend/structs"
 	"github.com/jippi/hashi-ui/backend/subscriber"
-	logging "github.com/op/go-logging"
 	uuid "github.com/satori/go.uuid"
+	log "github.com/sirupsen/logrus"
 )
 
 var random = rand.New(rand.NewSource(time.Now().UnixNano()))
-var logger = logging.MustGetLogger("hashi-ui")
 
 // Connection monitors the websocket connection. It processes any action
 // received on the websocket and sends out actions on Nomad state changes. It
 // maintains a set to keep track of the running watches.
 type Connection struct {
-	ID        uuid.UUID
-	shortID   string
-	socket    *websocket.Conn
-	receive   chan *structs.Action
-	send      chan *structs.Action
-	destroyCh chan struct{}
-	watches   *subscriber.Manager
-	client    *api.Client
+	cfg           *config.Config
+	client        *api.Client
+	destroyCh     chan struct{}
+	id            uuid.UUID
+	logger        *log.Entry
+	sendCh        chan *structs.Action
+	socket        *websocket.Conn
+	subscriptions *subscriber.Manager
 }
 
 // NewConnection creates a new connection.
-func NewConnection(socket *websocket.Conn, client *api.Client) *Connection {
-	connectionID := uuid.NewV4()
-
+func NewConnection(socket *websocket.Conn, client *api.Client, logger *log.Entry, connectionID uuid.UUID, cfg *config.Config) *Connection {
 	return &Connection{
-		ID:        connectionID,
-		shortID:   fmt.Sprintf("%s", connectionID)[0:8],
-		watches:   &subscriber.Manager{},
-		socket:    socket,
-		receive:   make(chan *structs.Action),
-		send:      make(chan *structs.Action),
-		destroyCh: make(chan struct{}),
-		client:    client,
-	}
-}
-
-// Warningf is a stupid wrapper for logger.Warningf
-func (c *Connection) Warningf(format string, args ...interface{}) {
-	message := fmt.Sprintf("[%s] ", c.shortID) + format
-	logger.Warningf(message, args...)
-}
-
-// Errorf is a stupid wrapper for logger.Errorf
-func (c *Connection) Errorf(format string, args ...interface{}) {
-	message := fmt.Sprintf("[%s] ", c.shortID) + format
-	logger.Errorf(message, args...)
-}
-
-// Infof is a stupid wrapper for logger.Infof
-func (c *Connection) Infof(format string, args ...interface{}) {
-	message := fmt.Sprintf("[%s] ", c.shortID) + format
-	logger.Infof(message, args...)
-}
-
-// Debugf is a stupid wrapper for logger.Debugf
-func (c *Connection) Debugf(format string, args ...interface{}) {
-	message := fmt.Sprintf("[%s] ", c.shortID) + format
-	logger.Debugf(message, args...)
-}
-
-func (c *Connection) writePump() {
-	defer c.socket.Close()
-
-	for {
-		select {
-
-		case <-c.destroyCh:
-			c.Warningf("Stopping writePump")
-			return
-
-		case action, ok := <-c.send:
-			ensureIndex(action)
-
-			if !ok {
-				if err := c.socket.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
-					c.Errorf("Could not write close message to websocket: %s", err)
-				}
-				return
-			}
-
-			if err := c.socket.WriteJSON(action); err != nil {
-				c.Errorf("Could not write action to websocket: %s", err)
-				return
-			}
-		}
-	}
-}
-
-func ensureIndex(action *structs.Action) {
-	if action.Index == 0 {
-		action.Index = uint64(random.Int())
-	}
-}
-
-func (c *Connection) readPump() {
-	for {
-		var action structs.Action
-		err := c.socket.ReadJSON(&action)
-		if err != nil {
-			logger.Errorf("Could not read payload: %s", err)
-			break
-		}
-
-		c.process(action)
-	}
-}
-
-func (c *Connection) process(action structs.Action) {
-	c.Debugf("Processing event %s (index %d)", action.Type, action.Index)
-
-	switch action.Type {
-	//
-	// Deployments
-	//
-	case deployments.WatchList:
-		go Watch(deployments.NewList(action), c.watches, c.client, c.send, c.destroyCh)
-	case deployments.UnwatchList:
-		go Unwatch(deployments.NewList(action), c.watches)
-	case deployments.WatchInfo:
-		go Watch(deployments.NewInfo(action), c.watches, c.client, c.send, c.destroyCh)
-	case deployments.UnwatchInfo:
-		go Unwatch(deployments.NewInfo(action), c.watches)
-	case deployments.WatchAllocations:
-		go Watch(deployments.NewAllocations(action), c.watches, c.client, c.send, c.destroyCh)
-	case deployments.UnwatchAllocations:
-		go Unwatch(deployments.NewAllocations(action), c.watches)
-	case deployments.ChangeStatus:
-		go Once(deployments.NewCHangeStatus(action), c.watches, c.client, c.send, c.destroyCh)
-
-	//
-	// Jobs
-	//
-	case jobs.WatchList:
-		fallthrough // same as filtered
-	case jobs.WatchListFiltered:
-		go Watch(jobs.NewList(action), c.watches, c.client, c.send, c.destroyCh)
-	case jobs.UnwatchListFiltered:
-		fallthrough // same as filtered
-	case jobs.UnwatchList:
-		go Unwatch(jobs.NewList(action), c.watches)
-	case jobs.WatchInfo:
-		go Watch(jobs.NewInfo(action), c.watches, c.client, c.send, c.destroyCh)
-	case jobs.UnwatchInfo:
-		go Unwatch(jobs.NewInfo(action), c.watches)
-	case jobs.WatchVersions:
-		go Watch(jobs.NewVersions(action), c.watches, c.client, c.send, c.destroyCh)
-	case jobs.UnwatchVersions:
-		go Unwatch(jobs.NewVersions(action), c.watches)
-	case jobs.WatchDeployments:
-		go Watch(jobs.NewDeployments(action), c.watches, c.client, c.send, c.destroyCh)
-	case jobs.UnwatchDeployments:
-		go Unwatch(jobs.NewDeployments(action), c.watches)
-	case jobs.ChangeTaskGroupCount:
-		go Once(jobs.NewScale(action), c.watches, c.client, c.send, c.destroyCh)
-	case jobs.EvaluateJob:
-		go Once(jobs.NewEvaluate(action), c.watches, c.client, c.send, c.destroyCh)
-	case jobs.WatchAllocations:
-		go Watch(jobs.NewAllocations(action), c.watches, c.client, c.send, c.destroyCh)
-	case jobs.UnwatchAllocations:
-		go Unwatch(jobs.NewAllocations(action), c.watches)
-	case jobs.Stop:
-		go Once(jobs.NewStop(action), c.watches, c.client, c.send, c.destroyCh)
-	case jobs.ForcePeriodicRun:
-		go Once(jobs.NewForcePeriodicRun(action), c.watches, c.client, c.send, c.destroyCh)
-	case jobs.Submit:
-		go Once(jobs.NewSubmit(action), c.watches, c.client, c.send, c.destroyCh)
-
-	//
-	// Allocations
-	//
-	case allocations.WatchList:
-		go Watch(allocations.NewList(action, false), c.watches, c.client, c.send, c.destroyCh)
-	case allocations.WatchListShallow:
-		go Watch(allocations.NewList(action, true), c.watches, c.client, c.send, c.destroyCh)
-	case allocations.UnwatchList:
-		go Unwatch(allocations.NewList(action, false), c.watches)
-	case allocations.UnwatchListShallow:
-		go Unwatch(allocations.NewList(action, true), c.watches)
-	case allocations.WatchInfo:
-		go Watch(allocations.NewInfo(action), c.watches, c.client, c.send, c.destroyCh)
-	case allocations.UnwatchInfo:
-		go Unwatch(allocations.NewInfo(action), c.watches)
-	case allocations.WatchFile:
-		go Stream(allocations.NewStreamFile(action), c.watches, c.client, c.send, c.destroyCh)
-	case allocations.UnwatchFile:
-		go Unwatch(allocations.NewStreamFile(action), c.watches)
-	case allocations.FetchDir:
-		go Once(allocations.NewDir(action), c.watches, c.client, c.send, c.destroyCh)
-
-	//
-	// Nodes
-	//
-	case nodes.WatchList:
-		go Watch(nodes.NewList(action), c.watches, c.client, c.send, c.destroyCh)
-	case nodes.UnwatchList:
-		go Unwatch(nodes.NewList(action), c.watches)
-	case nodes.WatchInfo:
-		go Watch(nodes.NewInfo(action), c.watches, c.client, c.send, c.destroyCh)
-	case nodes.UnwatchInfo:
-		go Unwatch(nodes.NewInfo(action), c.watches)
-	case nodes.FetchInfo:
-		go Once(nodes.NewInfo(action), c.watches, c.client, c.send, c.destroyCh)
-	case nodes.Drain:
-		go Once(nodes.NewDrain(action), c.watches, c.client, c.send, c.destroyCh)
-	case nodes.Remove:
-		go Once(nodes.NewRemove(action), c.watches, c.client, c.send, c.destroyCh)
-	case nodes.FetchClientStats:
-		go Once(nodes.NewStats(action), c.watches, c.client, c.send, c.destroyCh)
-	case nodes.WatchStats:
-		go Watch(nodes.NewStats(action), c.watches, c.client, c.send, c.destroyCh)
-	case nodes.UnwatchStats:
-		go Unwatch(nodes.NewStats(action), c.watches)
-
-	//
-	// Members
-	//
-	case members.WatchMembers:
-		go Stream(members.NewList(action), c.watches, c.client, c.send, c.destroyCh)
-	case members.UnwatchMembers:
-		go Unwatch(members.NewList(action), c.watches)
-	case members.WatchInfo:
-		go Watch(members.NewInfo(action), c.watches, c.client, c.send, c.destroyCh)
-	case members.UnwatchInfo:
-		go Unwatch(members.NewInfo(action), c.watches)
-	case members.FetchInfo:
-		go Once(members.NewInfo(action), c.watches, c.client, c.send, c.destroyCh)
-
-	//
-	// Evaluations
-	//
-	case evaluations.WatchList:
-		go Watch(evaluations.NewList(action), c.watches, c.client, c.send, c.destroyCh)
-	case evaluations.UnwatchList:
-		go Unwatch(evaluations.NewList(action), c.watches)
-	case evaluations.WatchInfo:
-		go Watch(evaluations.NewInfo(action), c.watches, c.client, c.send, c.destroyCh)
-	case evaluations.UnwatchInfo:
-		go Unwatch(evaluations.NewInfo(action), c.watches)
-
-	//
-	// Cluster
-	//
-	case cluster.EvaluateAllJobs:
-		go Once(cluster.NewEvaluateAllJobs(action), c.watches, c.client, c.send, c.destroyCh)
-	case cluster.ReconsileSummaries:
-		go Once(cluster.NewReconsileSummaries(action), c.watches, c.client, c.send, c.destroyCh)
-	case cluster.ForceGC:
-		go Once(cluster.NewForceGC(action), c.watches, c.client, c.send, c.destroyCh)
-	case cluster.WatchClusterStatistics:
-		go Stream(cluster.NewStats(action), c.watches, c.client, c.send, c.destroyCh)
-	case cluster.UnwatchClusterStatistics:
-		go Unwatch(cluster.NewStats(action), c.watches)
-
-	case fetchNomadRegions:
-		// go c.fetchRegions()
-
-	// Nice in debug
-	default:
-		logger.Errorf("Unknown action: %s", action.Type)
+		cfg:           cfg,
+		client:        client,
+		destroyCh:     make(chan struct{}),
+		id:            connectionID,
+		logger:        logger,
+		sendCh:        make(chan *structs.Action),
+		socket:        socket,
+		subscriptions: &subscriber.Manager{},
 	}
 }
 
@@ -290,16 +62,258 @@ func (c *Connection) Handle() {
 	// Read from ws, will only return once connection has an error
 	c.readPump()
 
-	c.Debugf("Connection closing down")
+	c.logger.Debugf("Connection closing down")
 	c.socket.Close()
 
 	close(c.destroyCh)
 
-	c.Infof("Waiting for subscriptions to finish up")
-	c.watches.Wait()
+	c.logger.Infof("Waiting for subscriptions to finish up")
+	c.subscriptions.Wait()
 
-	c.Infof("Done, closing send channel")
-	close(c.send)
+	c.logger.Infof("Done, closing send channel")
+	close(c.sendCh)
+}
+
+func (c *Connection) writePump() {
+	defer c.socket.Close()
+
+	for {
+		select {
+
+		case <-c.destroyCh:
+			c.logger.Warningf("Stopping writePump")
+			return
+
+		case action, ok := <-c.sendCh:
+			c.ensureIndex(action)
+
+			if !ok {
+				if err := c.socket.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
+					c.logger.Errorf("Could not write close message to websocket: %s", err)
+				}
+				return
+			}
+
+			if err := c.socket.WriteJSON(action); err != nil {
+				c.logger.Errorf("Could not write action to websocket: %s", err)
+				return
+			}
+		}
+	}
+}
+
+func (c *Connection) ensureIndex(action *structs.Action) {
+	if action.Index == 0 {
+		action.Index = uint64(random.Int())
+	}
+}
+
+func (c *Connection) readPump() {
+	for {
+		var action structs.Action
+		err := c.socket.ReadJSON(&action)
+		if err != nil {
+			c.logger.Errorf("Could not read payload: %s", err)
+			break
+		}
+
+		c.process(action)
+	}
+}
+
+func (c *Connection) process(action structs.Action) {
+	c.logger.Debugf("Processing event %s (index %d)", action.Type, action.Index)
+
+	switch action.Type {
+	//
+	// Deployments
+	//
+	case deployments.WatchList:
+		c.watch(deployments.NewList(action))
+	case deployments.UnwatchList:
+		c.unwatch(deployments.NewList(action))
+	case deployments.WatchInfo:
+		c.watch(deployments.NewInfo(action))
+	case deployments.UnwatchInfo:
+		c.unwatch(deployments.NewInfo(action))
+	case deployments.WatchAllocations:
+		c.watch(deployments.NewAllocations(action))
+	case deployments.UnwatchAllocations:
+		c.unwatch(deployments.NewAllocations(action))
+	case deployments.ChangeStatus:
+		c.once(deployments.NewCHangeStatus(action))
+
+	//
+	// Jobs
+	//
+	case jobs.WatchList:
+		fallthrough // same as filtered
+	case jobs.WatchListFiltered:
+		c.watch(jobs.NewList(action))
+	case jobs.UnwatchListFiltered:
+		fallthrough // same as filtered
+	case jobs.UnwatchList:
+		c.unwatch(jobs.NewList(action))
+	case jobs.WatchInfo:
+		c.watch(jobs.NewInfo(action))
+	case jobs.UnwatchInfo:
+		c.unwatch(jobs.NewInfo(action))
+	case jobs.WatchVersions:
+		c.watch(jobs.NewVersions(action))
+	case jobs.UnwatchVersions:
+		c.unwatch(jobs.NewVersions(action))
+	case jobs.WatchDeployments:
+		c.watch(jobs.NewDeployments(action))
+	case jobs.UnwatchDeployments:
+		c.unwatch(jobs.NewDeployments(action))
+	case jobs.ChangeTaskGroupCount:
+		c.once(jobs.NewScale(action))
+	case jobs.EvaluateJob:
+		c.once(jobs.NewEvaluate(action))
+	case jobs.WatchAllocations:
+		c.watch(jobs.NewAllocations(action))
+	case jobs.UnwatchAllocations:
+		c.unwatch(jobs.NewAllocations(action))
+	case jobs.Stop:
+		c.once(jobs.NewStop(action))
+	case jobs.ForcePeriodicRun:
+		c.once(jobs.NewForcePeriodicRun(action))
+	case jobs.Submit:
+		c.once(jobs.NewSubmit(action))
+
+	//
+	// Allocations
+	//
+	case allocations.WatchList:
+		c.watch(allocations.NewList(action, false))
+	case allocations.WatchListShallow:
+		c.watch(allocations.NewList(action, true))
+	case allocations.UnwatchList:
+		c.unwatch(allocations.NewList(action, false))
+	case allocations.UnwatchListShallow:
+		c.unwatch(allocations.NewList(action, true))
+	case allocations.WatchInfo:
+		c.watch(allocations.NewInfo(action))
+	case allocations.UnwatchInfo:
+		c.unwatch(allocations.NewInfo(action))
+	case allocations.WatchFile:
+		c.stream(allocations.NewStreamFile(action))
+	case allocations.UnwatchFile:
+		c.unwatch(allocations.NewStreamFile(action))
+	case allocations.FetchDir:
+		c.once(allocations.NewDir(action))
+
+	//
+	// Nodes
+	//
+	case nodes.WatchList:
+		c.watch(nodes.NewList(action))
+	case nodes.UnwatchList:
+		c.unwatch(nodes.NewList(action))
+	case nodes.WatchInfo:
+		c.watch(nodes.NewInfo(action))
+	case nodes.UnwatchInfo:
+		c.unwatch(nodes.NewInfo(action))
+	case nodes.FetchInfo:
+		c.once(nodes.NewInfo(action))
+	case nodes.Drain:
+		c.once(nodes.NewDrain(action))
+	case nodes.Remove:
+		c.once(nodes.NewRemove(action))
+	case nodes.FetchClientStats:
+		c.once(nodes.NewStats(action))
+	case nodes.WatchStats:
+		c.watch(nodes.NewStats(action))
+	case nodes.UnwatchStats:
+		c.unwatch(nodes.NewStats(action))
+
+	//
+	// Members
+	//
+	case members.WatchMembers:
+		c.stream(members.NewList(action))
+	case members.UnwatchMembers:
+		c.unwatch(members.NewList(action))
+	case members.WatchInfo:
+		c.watch(members.NewInfo(action))
+	case members.UnwatchInfo:
+		c.unwatch(members.NewInfo(action))
+	case members.FetchInfo:
+		c.once(members.NewInfo(action))
+
+	//
+	// Evaluations
+	//
+	case evaluations.WatchList:
+		c.watch(evaluations.NewList(action))
+	case evaluations.UnwatchList:
+		c.unwatch(evaluations.NewList(action))
+	case evaluations.WatchInfo:
+		c.watch(evaluations.NewInfo(action))
+	case evaluations.UnwatchInfo:
+		c.unwatch(evaluations.NewInfo(action))
+
+	//
+	// Cluster
+	//
+	case cluster.EvaluateAllJobs:
+		c.once(cluster.NewEvaluateAllJobs(action))
+	case cluster.ReconsileSummaries:
+		c.once(cluster.NewReconsileSummaries(action))
+	case cluster.ForceGC:
+		c.once(cluster.NewForceGC(action))
+	case cluster.WatchClusterStatistics:
+		c.stream(cluster.NewStats(action))
+	case cluster.UnwatchClusterStatistics:
+		c.unwatch(cluster.NewStats(action))
+
+	case fetchNomadRegions:
+		// go c.fetchRegions()
+
+	// Nice in debug
+	default:
+		c.logger.Errorf("Unknown action: %s", action.Type)
+	}
+}
+
+func (c *Connection) watch(w Watcher) {
+	if c.cfg.NomadReadOnly && w.IsMutable() {
+		c.readOnlyError(w.Key())
+		return
+	}
+
+	go Watch(w, c.subscriptions, c.logger, c.client, c.sendCh, c.destroyCh)
+}
+
+func (c *Connection) unwatch(w Keyer) {
+	go Unwatch(w, c.subscriptions, c.logger)
+}
+
+func (c *Connection) once(w Watcher) {
+	if c.cfg.NomadReadOnly && w.IsMutable() {
+		c.readOnlyError(w.Key())
+		return
+	}
+	go Once(w, c.subscriptions, c.logger, c.client, c.sendCh, c.destroyCh)
+}
+
+func (c *Connection) stream(s Streamer) {
+	if c.cfg.NomadReadOnly && s.IsMutable() {
+		c.readOnlyError(s.Key())
+		return
+	}
+
+	go Stream(s, c.subscriptions, c.logger, c.client, c.sendCh, c.destroyCh)
+}
+
+func (c *Connection) readOnlyError(key string) {
+	msg := fmt.Sprintf("Can not execute %s: hashi-ui is in read-only mode", key)
+	c.logger.Error(msg)
+
+	c.sendCh <- &structs.Action{
+		Type:    structs.ErrorNotification,
+		Payload: msg,
+	}
 }
 
 func (c *Connection) subscriptionPublisher() {
@@ -312,18 +326,18 @@ func (c *Connection) subscriptionPublisher() {
 			return
 
 		case <-ticker.C:
-			c.Infof("WaitGroups: %d | Subscriptions: %s", c.watches.Count(), strings.Join(c.watches.Subscriptions(), ", "))
+			c.logger.Infof("WaitGroups: %d | Subscriptions: %s", c.subscriptions.Count(), strings.Join(c.subscriptions.Subscriptions(), ", "))
 		}
 	}
 }
 
 func (c *Connection) keepAlive() {
-	logger.Debugf("Starting keep-alive packer sender")
+	c.logger.Debugf("Starting keep-alive packer sender")
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
-	c.watches.Subscribe("/internal/keep-alive")
-	defer c.watches.Unsubscribe("/internal/keep-alive")
+	c.subscriptions.Subscribe("/internal/keep-alive")
+	defer c.subscriptions.Unsubscribe("/internal/keep-alive")
 
 	for {
 		select {
@@ -331,8 +345,8 @@ func (c *Connection) keepAlive() {
 			return
 
 		case <-ticker.C:
-			logger.Debugf("Sending keep-alive packet")
-			c.send <- &structs.Action{Type: structs.KeepAlive, Payload: "hello-world", Index: 0}
+			c.logger.Debugf("Sending keep-alive packet")
+			c.sendCh <- &structs.Action{Type: structs.KeepAlive, Payload: "hello-world", Index: 0}
 		}
 	}
 }

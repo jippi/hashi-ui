@@ -62,6 +62,10 @@ func (w *changeStatus) Key() string {
 	return fmt.Sprintf("/deployment/%s/change/%s/group/%s", w.id, w.actionType, w.group)
 }
 
+func (w *changeStatus) IsMutable() bool {
+	return true
+}
+
 func (w *changeStatus) parse() {
 	payload := w.action.Payload.(map[string]interface{})
 

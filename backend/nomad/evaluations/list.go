@@ -44,3 +44,7 @@ func (w *list) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, err
 func (w *list) Key() string {
 	return "/evaluations/list"
 }
+
+func (w *list) IsMutable() bool {
+	return false
+}

@@ -46,6 +46,10 @@ func (w *info) Key() string {
 	return "/node/" + w.id() + "/info"
 }
 
+func (w *info) IsMutable() bool {
+	return false
+}
+
 func (w *info) id() string {
 	return w.action.Payload.(string)
 }

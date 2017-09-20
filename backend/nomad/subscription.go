@@ -3,6 +3,7 @@ package nomad
 import (
 	"github.com/jippi/hashi-ui/backend/nomad/query"
 	"github.com/jippi/hashi-ui/backend/subscriber"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/structs"
@@ -12,12 +13,14 @@ import (
 type Watcher interface {
 	Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error)
 	Key() string
+	IsMutable() bool
 }
 
 // Stream interface
 type Streamer interface {
 	Do(client *api.Client, send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error)
 	Key() string
+	IsMutable() bool
 }
 
 type Keyer interface {
@@ -25,7 +28,7 @@ type Keyer interface {
 }
 
 // Watch is a generic watcher for Nomad
-func Watch(w Watcher, s subscriber.Subscription, client *api.Client, send chan *structs.Action, destroyCh chan struct{}) {
+func Watch(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.Client, send chan *structs.Action, destroyCh chan struct{}) {
 	watchKey := w.Key()
 
 	// Check if we are already subscribed
@@ -74,7 +77,7 @@ func Watch(w Watcher, s subscriber.Subscription, client *api.Client, send chan *
 }
 
 // Unwatch is a generic watcher for Nomad
-func Unwatch(w Keyer, s subscriber.Subscription) error {
+func Unwatch(w Keyer, s subscriber.Subscription, logger *log.Entry) error {
 	key := w.Key()
 
 	if s.Unsubscribe(key) {
@@ -87,7 +90,7 @@ func Unwatch(w Keyer, s subscriber.Subscription) error {
 }
 
 // Once is a generic one-off query for Nomad
-func Once(w Watcher, s subscriber.Subscription, client *api.Client, send chan *structs.Action, destroyCh chan struct{}) {
+func Once(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.Client, send chan *structs.Action, destroyCh chan struct{}) {
 	watchKey := w.Key()
 
 	// Check if we are already subscribed
@@ -140,7 +143,7 @@ func Once(w Watcher, s subscriber.Subscription, client *api.Client, send chan *s
 }
 
 // Stream is a generic one-off query for Nomad
-func Stream(w Streamer, s subscriber.Subscription, client *api.Client, send chan *structs.Action, destroyCh chan struct{}) {
+func Stream(w Streamer, s subscriber.Subscription, logger *log.Entry, client *api.Client, send chan *structs.Action, destroyCh chan struct{}) {
 	watchKey := w.Key()
 
 	// Check if we are already subscribed

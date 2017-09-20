@@ -7,10 +7,6 @@ import (
 )
 
 func updateJob(client *api.Client, job *api.Job) error {
-	// if n.Config.NomadReadOnly {
-	// 	return &structs.Action{Type: structs.ErrorNotification, Payload: "The backend server is set to read-only"}, errors.New("Nomad is in read-only mode")
-	// }
-
 	_, _, err := client.Jobs().Register(job, nil)
 	if err != nil {
 		return err

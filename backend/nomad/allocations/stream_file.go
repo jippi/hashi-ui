@@ -155,7 +155,11 @@ func (w *streamFile) Do(client *api.Client, send chan *structs.Action, subscribe
 func (w *streamFile) Key() string {
 	w.parse()
 
-	return fmt.Sprintf("/allocation/%s/stream_file/%s", w.id, w.path)
+	return fmt.Sprintf("/allocation/%s/stream?file=%s", w.id, w.path)
+}
+
+func (w *streamFile) IsMutable() bool {
+	return false
 }
 
 func (w *streamFile) parse() {

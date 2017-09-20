@@ -49,3 +49,7 @@ func (w *versions) Do(client *api.Client, q *api.QueryOptions) (*structs.Action,
 func (w *versions) Key() string {
 	return fmt.Sprintf("/job/%s/versions", w.action.Payload.(string))
 }
+
+func (w *versions) IsMutable() bool {
+	return false
+}

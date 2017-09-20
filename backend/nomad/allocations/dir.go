@@ -58,6 +58,10 @@ func (w *dir) Key() string {
 	return fmt.Sprintf("/allocation/%s/dir?path=%s", w.id, w.path)
 }
 
+func (w *dir) IsMutable() bool {
+	return false
+}
+
 func (w *dir) parse() {
 	params := w.action.Payload.(map[string]interface{})
 	w.id = params["allocID"].(string)
