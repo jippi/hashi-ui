@@ -85,14 +85,14 @@ func (c *Connection) writePump() {
 			return
 
 		case action, ok := <-c.sendCh:
-			c.ensureIndex(action)
-
 			if !ok {
 				if err := c.socket.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
 					c.logger.Errorf("Could not write close message to websocket: %s", err)
 				}
 				return
 			}
+
+			c.ensureIndex(action)
 
 			if err := c.socket.WriteJSON(action); err != nil {
 				c.logger.Errorf("Could not write action to websocket: %s", err)
