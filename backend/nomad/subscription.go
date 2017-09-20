@@ -34,6 +34,7 @@ func Watch(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.
 	// Check if we are already subscribed
 	if s.Subscribed(watchKey) {
 		logger.Errorf("Already watching %s", watchKey)
+		return
 	}
 
 	// Create subscription
@@ -95,16 +96,17 @@ func Once(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.C
 
 	// Check if we are already subscribed
 	if s.Subscribed(watchKey) {
-		logger.Errorf("Already watching %s", watchKey)
+		logger.Errorf("Already running %s", watchKey)
+		return
 	}
 
 	// Create subscription
 	subscribeCh := s.Subscribe(watchKey)
 	defer func() {
 		s.Unsubscribe(watchKey)
-		logger.Infof("Stopped watching %s", watchKey)
+		logger.Infof("Stopped running %s", watchKey)
 	}()
-	logger.Infof("Started watching %s", watchKey)
+	logger.Infof("Started running %s", watchKey)
 
 	q := query.Default(true)
 
@@ -121,7 +123,7 @@ func Once(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.C
 		default:
 			action, err := w.Do(client, q)
 			if err != nil {
-				logger.Errorf("connection: unable to fetch %s: %s", watchKey, err)
+				logger.Errorf("connection: unable to run %s: %s", watchKey, err)
 				send <- &structs.Action{
 					Payload: err.Error(),
 					Type:    structs.ErrorNotification,
@@ -130,7 +132,7 @@ func Once(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.C
 			}
 
 			if !s.Subscribed(watchKey) {
-				logger.Errorf("No longer subscribed to %s", watchKey)
+				logger.Errorf("No longer running %s", watchKey)
 				return
 			}
 
@@ -148,16 +150,17 @@ func Stream(w Streamer, s subscriber.Subscription, logger *log.Entry, client *ap
 
 	// Check if we are already subscribed
 	if s.Subscribed(watchKey) {
-		logger.Errorf("Already watching %s", watchKey)
+		logger.Errorf("Already streaming %s", watchKey)
+		return
 	}
 
 	// Create subscription
 	subscribeCh := s.Subscribe(watchKey)
 	defer func() {
 		s.Unsubscribe(watchKey)
-		logger.Infof("Stopped watching %s", watchKey)
+		logger.Infof("Stopped streaming %s", watchKey)
 	}()
-	logger.Infof("Started watching %s", watchKey)
+	logger.Infof("Started streaming %s", watchKey)
 
 	action, err := w.Do(client, send, subscribeCh, destroyCh)
 	if err != nil {
