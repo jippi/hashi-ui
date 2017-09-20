@@ -45,6 +45,7 @@ func newRegionClient(c *config.Config, region string) (*api.Client, error) {
 // Handler establishes the websocket connection and calls the connection handler.
 func Handler(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
 	defaultClient, _ := newRegionClient(cfg, "")
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		connectionID := uuid.NewV4()
 		logger := log.WithField("connection_id", connectionID.String()[:8])

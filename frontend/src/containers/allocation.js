@@ -108,7 +108,13 @@ class Allocation extends Component {
 
     out.push(
       <span key="job">
-        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.allocation.JobID}/info` }}>
+        <Link
+          to={{
+            pathname: `/nomad/${this.props.router.params.region}/jobs/${encodeURIComponent(
+              this.props.allocation.JobID
+            )}/info`
+          }}
+        >
           {this.props.allocation.JobID}
         </Link>
       </span>
@@ -118,7 +124,11 @@ class Allocation extends Component {
     out.push(
       <span key="allocations">
         <Link
-          to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.allocation.JobID}/allocations` }}
+          to={{
+            pathname: `/nomad/${this.props.router.params.region}/jobs/${encodeURIComponent(
+              this.props.allocation.JobID
+            )}/allocations`
+          }}
         >
           Allocations
         </Link>
@@ -208,9 +218,7 @@ class Allocation extends Component {
           </title>
         </Helmet>
         <div style={{ padding: 10, paddingBottom: 0 }}>
-          <h3 style={{ marginTop: "10px", marginBottom: "15px" }}>
-            {this.breadcrumb()}
-          </h3>
+          <h3 style={{ marginTop: "10px", marginBottom: "15px" }}>{this.breadcrumb()}</h3>
 
           {this.derp()}
 
