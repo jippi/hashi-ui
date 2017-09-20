@@ -8,14 +8,14 @@ import (
 )
 
 const (
-	ForcePeriodicRun = "NOMAD_FORCE_PERIODIC_RUN"
+	PeriodicForce = "NOMAD_FORCE_PERIODIC_RUN"
 )
 
 type periodicForce struct {
 	action structs.Action
 }
 
-func NewForcePeriodicRun(action structs.Action) *periodicForce {
+func NewPeriodicForce(action structs.Action) *periodicForce {
 	return &periodicForce{
 		action: action,
 	}
@@ -31,7 +31,7 @@ func (w *periodicForce) Do(client *api.Client, q *api.QueryOptions) (*structs.Ac
 }
 
 func (w *periodicForce) Key() string {
-	return fmt.Sprintf("/job/%s/force-run", w.action.Payload.(string))
+	return fmt.Sprintf("/job/%s/periodic-force", w.action.Payload.(string))
 }
 
 func (w *periodicForce) IsMutable() bool {

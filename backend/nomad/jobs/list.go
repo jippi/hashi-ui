@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/nomad/api"
-	"github.com/jippi/hashi-ui/backend/nomad/query"
+	"github.com/jippi/hashi-ui/backend/nomad/helper"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
 
@@ -35,7 +35,7 @@ func (w *list) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, err
 		return nil, fmt.Errorf("watch: unable to fetch jobs: %s", err)
 	}
 
-	if !query.Changed(q, meta) {
+	if !helper.QueryChanged(q, meta) {
 		return nil, nil
 	}
 

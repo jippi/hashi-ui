@@ -26,20 +26,20 @@ const (
 	maxFileSize int64 = defaultTailLines * bytesToLines
 )
 
-type streamFile struct {
+type file struct {
 	action structs.Action
 	id     string
 	path   string
 }
 
-func NewStreamFile(action structs.Action) *streamFile {
-	return &streamFile{
+func NewFile(action structs.Action) *file {
+	return &file{
 		action: action,
 	}
 }
 
 // Do will watch the /job/:id endpoint for changes
-func (w *streamFile) Do(client *api.Client, send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error) {
+func (w *file) Do(client *api.Client, send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error) {
 	alloc, _, err := client.Allocations().Info(w.id, nil)
 	if err != nil {
 		return nil, err
@@ -66,8 +66,6 @@ func (w *streamFile) Do(client *api.Client, send chan *structs.Action, subscribe
 	}
 
 	cancel := make(chan struct{})
-	// defer close(cancel)
-
 	frames, err := allocClient.AllocFS().Stream(alloc, w.path, origin, offset, cancel, nil)
 	if err != nil {
 		return nil, fmt.Errorf("Unable to stream file: %s", err)
@@ -152,17 +150,17 @@ func (w *streamFile) Do(client *api.Client, send chan *structs.Action, subscribe
 	}
 }
 
-func (w *streamFile) Key() string {
+func (w *file) Key() string {
 	w.parse()
 
 	return fmt.Sprintf("/allocation/%s/stream?file=%s", w.id, w.path)
 }
 
-func (w *streamFile) IsMutable() bool {
+func (w *file) IsMutable() bool {
 	return false
 }
 
-func (w *streamFile) parse() {
+func (w *file) parse() {
 	params := w.action.Payload.(map[string]interface{})
 	w.id = params["allocID"].(string)
 	w.path = params["path"].(string)

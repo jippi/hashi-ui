@@ -166,20 +166,20 @@ func (c *Connection) process(action structs.Action) {
 		c.watch(jobs.NewDeployments(action))
 	case jobs.UnwatchDeployments:
 		c.unwatch(jobs.NewDeployments(action))
-	case jobs.ChangeTaskGroupCount:
+	case jobs.Scale:
 		c.once(jobs.NewScale(action))
-	case jobs.EvaluateJob:
-		c.once(jobs.NewEvaluate(action))
+	case jobs.ForceEvaluate:
+		c.once(jobs.NewForceEvaluate(action))
 	case jobs.WatchAllocations:
 		c.watch(jobs.NewAllocations(action))
 	case jobs.UnwatchAllocations:
 		c.unwatch(jobs.NewAllocations(action))
 	case jobs.Stop:
 		c.once(jobs.NewStop(action))
-	case jobs.ForcePeriodicRun:
-		c.once(jobs.NewForcePeriodicRun(action))
+	case jobs.PeriodicForce:
+		c.once(jobs.NewPeriodicForce(action))
 	case jobs.Submit:
-		c.once(jobs.NewSubmit(action))
+		c.once(jobs.NewSubmit(action, c.cfg))
 
 	//
 	// Allocations
@@ -197,9 +197,9 @@ func (c *Connection) process(action structs.Action) {
 	case allocations.UnwatchInfo:
 		c.unwatch(allocations.NewInfo(action))
 	case allocations.WatchFile:
-		c.stream(allocations.NewStreamFile(action))
+		c.stream(allocations.NewFile(action))
 	case allocations.UnwatchFile:
-		c.unwatch(allocations.NewStreamFile(action))
+		c.unwatch(allocations.NewFile(action))
 	case allocations.FetchDir:
 		c.once(allocations.NewDir(action))
 
@@ -230,16 +230,16 @@ func (c *Connection) process(action structs.Action) {
 	//
 	// Members
 	//
-	case members.WatchMembers:
-		c.stream(members.NewList(action))
-	case members.UnwatchMembers:
-		c.unwatch(members.NewList(action))
+	case members.WatchList:
+		c.stream(members.NewList(action, c.cfg))
+	case members.UnwatchList:
+		c.unwatch(members.NewList(action, c.cfg))
 	case members.WatchInfo:
-		c.watch(members.NewInfo(action))
+		c.watch(members.NewInfo(action, c.cfg))
 	case members.UnwatchInfo:
-		c.unwatch(members.NewInfo(action))
+		c.unwatch(members.NewInfo(action, c.cfg))
 	case members.FetchInfo:
-		c.once(members.NewInfo(action))
+		c.once(members.NewInfo(action, c.cfg))
 
 	//
 	// Evaluations
@@ -262,9 +262,9 @@ func (c *Connection) process(action structs.Action) {
 		c.once(cluster.NewReconsileSummaries(action))
 	case cluster.ForceGC:
 		c.once(cluster.NewForceGC(action))
-	case cluster.WatchClusterStatistics:
+	case cluster.WatchStats:
 		c.stream(cluster.NewStats(action))
-	case cluster.UnwatchClusterStatistics:
+	case cluster.UnwatchStats:
 		c.unwatch(cluster.NewStats(action))
 
 	case fetchNomadRegions:

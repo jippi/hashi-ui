@@ -4,12 +4,12 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/config"
+	"github.com/jippi/hashi-ui/backend/nomad/helper"
 	"github.com/jippi/hashi-ui/backend/structs"
 	uuid "github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
@@ -22,29 +22,12 @@ const (
 )
 
 var websocketUpgrader = websocket.Upgrader{
-	// Allow all requests
 	CheckOrigin: func(r *http.Request) bool { return true },
-}
-
-// newRegionClient derp
-func newRegionClient(c *config.Config, region string) (*api.Client, error) {
-	config := api.DefaultConfig()
-	config.Address = c.NomadAddress
-	config.WaitTime = 1 * time.Minute
-	config.Region = region
-	config.TLSConfig = &api.TLSConfig{
-		CACert:     c.NomadCACert,
-		ClientCert: c.NomadClientCert,
-		ClientKey:  c.NomadClientKey,
-		Insecure:   c.NomadSkipVerify,
-	}
-
-	return api.NewClient(config)
 }
 
 // Handler establishes the websocket connection and calls the connection handler.
 func Handler(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
-	defaultClient, _ := newRegionClient(cfg, "")
+	defaultClient, _ := helper.NewRegionClient(cfg, "")
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		connectionID := uuid.NewV4()
@@ -67,7 +50,7 @@ func Handler(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
 
 		defer socket.Close()
 
-		client, _ := newRegionClient(cfg, region)
+		client, _ := helper.NewRegionClient(cfg, region)
 		c := NewConnection(socket, client, logger, connectionID, cfg)
 		c.Handle()
 	}
@@ -119,7 +102,7 @@ func DownloadFile(cfg *config.Config) func(w http.ResponseWriter, r *http.Reques
 		params := mux.Vars(r)
 		region := params["region"]
 
-		regionClient, _ := newRegionClient(cfg, region)
+		regionClient, _ := helper.NewRegionClient(cfg, region)
 
 		c := r.URL.Query().Get("client")
 		allocID := r.URL.Query().Get("allocID")

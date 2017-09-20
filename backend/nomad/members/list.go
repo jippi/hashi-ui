@@ -3,35 +3,39 @@ package members
 import (
 	"crypto/sha1"
 	"fmt"
+	"net"
 	"sort"
 	"time"
 
 	"github.com/cnf/structhash"
 	"github.com/hashicorp/nomad/api"
+	"github.com/jippi/hashi-ui/backend/config"
+	"github.com/jippi/hashi-ui/backend/nomad/helper"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
 
 const (
-	WatchMembers   = "NOMAD_WATCH_MEMBERS"
-	UnwatchMembers = "NOMAD_UNWATCH_MEMBERS"
-	fetchedMembers = "NOMAD_FETCHED_MEMBERS"
+	WatchList   = "NOMAD_WATCH_MEMBERS"
+	UnwatchList = "NOMAD_UNWATCH_MEMBERS"
+	fetchedList = "NOMAD_FETCHED_MEMBERS"
 )
 
 type list struct {
 	action   structs.Action
 	checksum string
+	cfg      *config.Config
 }
 
-func NewList(action structs.Action) *list {
+func NewList(action structs.Action, cfg *config.Config) *list {
 	return &list{
 		action: action,
+		cfg:    cfg,
 	}
 }
 
-// Do will watch the /jobs endpoint for changes
 func (w *list) Do(client *api.Client, send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error) {
-	ticker := time.NewTicker(5 * time.Second) // fetch members once in a while
-	timer := time.NewTimer(0 * time.Second)   // fetch members right away
+	ticker := time.NewTicker(5 * time.Second)
+	timer := time.NewTimer(0 * time.Second)
 
 	for {
 		select {
@@ -48,7 +52,7 @@ func (w *list) Do(client *api.Client, send chan *structs.Action, subscribeCh cha
 }
 
 func (w *list) update(client *api.Client, send chan *structs.Action) error {
-	checksum, members, err := membersWithID(client)
+	checksum, members, err := membersWithID(client, w.cfg)
 	if err != nil {
 		return err
 	}
@@ -60,7 +64,7 @@ func (w *list) update(client *api.Client, send chan *structs.Action) error {
 	w.checksum = checksum
 
 	send <- &structs.Action{
-		Type:    fetchedMembers,
+		Type:    fetchedList,
 		Payload: members,
 	}
 
@@ -75,8 +79,7 @@ func (w *list) IsMutable() bool {
 	return false
 }
 
-// MembersWithID is used to query all of the known server members.
-func membersWithID(client *api.Client) (string, []*AgentMemberWithID, error) {
+func membersWithID(client *api.Client, cfg *config.Config) (string, []*AgentMemberWithID, error) {
 	members, err := client.Agent().Members()
 	if err != nil {
 		return "", nil, err
@@ -92,24 +95,28 @@ func membersWithID(client *api.Client) (string, []*AgentMemberWithID, error) {
 		ms = append(ms, x)
 	}
 
-	// for region, regionClient := range *c.RegionClients {
-	// 	leader, err := regionClient.Client.Status().Leader()
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
+	regions, _ := client.Regions().List()
 
-	// 	addr, port, err := net.SplitHostPort(leader)
-	// 	if err != nil {
-	// 		return nil, fmt.Errorf("Failed to parse leader: %s", leader)
-	// 	}
+	for _, region := range regions {
+		regionClient, _ := helper.NewRegionClient(cfg, region)
 
-	// 	for _, m := range ms {
-	// 		mPort, ok := m.Tags["port"]
-	// 		if ok && (mPort == port) && (m.Addr == addr) {
-	// 			m.Leader = true
-	// 		}
-	// 	}
-	// }
+		leader, err := regionClient.Status().Leader()
+		if err != nil {
+			return "", nil, err
+		}
+
+		addr, port, err := net.SplitHostPort(leader)
+		if err != nil {
+			return "", nil, fmt.Errorf("Failed to parse leader: %s", leader)
+		}
+
+		for _, m := range ms {
+			mPort, ok := m.Tags["port"]
+			if ok && (mPort == port) && (m.Addr == addr) {
+				m.Leader = true
+			}
+		}
+	}
 
 	sort.Sort(MembersNameSorter(ms))
 

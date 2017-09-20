@@ -26,7 +26,6 @@ func NewDir(action structs.Action) *dir {
 	}
 }
 
-// Do will watch the /job/:id endpoint for changes
 func (w *dir) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
 	if w.alloc == nil {
 		alloc, _, err := client.Allocations().Info(w.id, nil)
@@ -51,7 +50,6 @@ func (w *dir) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, erro
 	}, nil
 }
 
-// Key will return the subscription key for the action
 func (w *dir) Key() string {
 	w.parse()
 

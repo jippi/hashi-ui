@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/nomad/api"
+	"github.com/jippi/hashi-ui/backend/config"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
 
@@ -14,17 +15,20 @@ const (
 
 type submit struct {
 	action structs.Action
+	cfg    *config.Config
 }
 
-func NewSubmit(action structs.Action) *submit {
+func NewSubmit(action structs.Action, cfg *config.Config) *submit {
 	return &submit{
 		action: action,
+		cfg:    cfg,
 	}
 }
 
 func (w *submit) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	// if c.region.Config.NomadReadOnly {
-	// if c.region.Config.NomadHideEnvData {
+	if w.cfg.NomadHideEnvData {
+		return nil, fmt.Errorf("Can't update job, the hashi-ui setting 'nomad-hide-env-data' will delete all your env{} clauses")
+	}
 
 	jobjson := w.action.Payload.(string)
 	runjob := api.Job{}

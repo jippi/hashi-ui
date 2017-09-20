@@ -1,12 +1,11 @@
 package nomad
 
 import (
-	"github.com/jippi/hashi-ui/backend/nomad/query"
+	"github.com/hashicorp/nomad/api"
+	"github.com/jippi/hashi-ui/backend/nomad/helper"
+	"github.com/jippi/hashi-ui/backend/structs"
 	"github.com/jippi/hashi-ui/backend/subscriber"
 	log "github.com/sirupsen/logrus"
-
-	"github.com/hashicorp/nomad/api"
-	"github.com/jippi/hashi-ui/backend/structs"
 )
 
 // Watcher interface
@@ -46,7 +45,7 @@ func Watch(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.
 	}()
 	logger.Infof("Started watching %s", watchKey)
 
-	q := query.Default(true)
+	q := helper.DefaultQuery(true)
 
 	for {
 		select {
@@ -109,7 +108,7 @@ func Once(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.C
 	}()
 	logger.Infof("Started running %s", watchKey)
 
-	q := query.Default(true)
+	q := helper.DefaultQuery(true)
 
 	action, err := w.Do(client, q)
 	if err != nil {

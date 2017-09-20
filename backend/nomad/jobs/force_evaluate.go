@@ -8,20 +8,20 @@ import (
 )
 
 const (
-	EvaluateJob = "NOMAD_EVALUATE_JOB"
+	ForceEvaluate = "NOMAD_EVALUATE_JOB"
 )
 
-type evaluate struct {
+type forceEvaluate struct {
 	action structs.Action
 }
 
-func NewEvaluate(action structs.Action) *evaluate {
-	return &evaluate{
+func NewForceEvaluate(action structs.Action) *forceEvaluate {
+	return &forceEvaluate{
 		action: action,
 	}
 }
 
-func (w *evaluate) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
+func (w *forceEvaluate) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
 	_, _, err := client.Jobs().ForceEvaluate(w.action.Payload.(string), nil)
 	if err != nil {
 		return nil, fmt.Errorf("watch: unable to evaluate %s: %s", w.Key(), err)
@@ -33,10 +33,10 @@ func (w *evaluate) Do(client *api.Client, q *api.QueryOptions) (*structs.Action,
 	}, nil
 }
 
-func (w *evaluate) Key() string {
+func (w *forceEvaluate) Key() string {
 	return fmt.Sprintf("/job/%s/evaluate", w.action.Payload.(string))
 }
 
-func (w *evaluate) IsMutable() bool {
+func (w *forceEvaluate) IsMutable() bool {
 	return true
 }

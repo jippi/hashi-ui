@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	ChangeTaskGroupCount = "NOMAD_CHANGE_TASK_GROUP_COUNT"
+	Scale = "NOMAD_CHANGE_TASK_GROUP_COUNT"
 )
 
 type scale struct {

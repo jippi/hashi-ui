@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	fetchedClusterStatistics = "NOMAD_FETCHED_CLUSTER_STATISTICS"
-	WatchClusterStatistics   = "NOMAD_WATCH_CLUSTER_STATISTICS"
-	UnwatchClusterStatistics = "NOMAD_UNWATCH_CLUSTER_STATISTICS"
+	fetchedStats = "NOMAD_FETCHED_CLUSTER_STATISTICS"
+	WatchStats   = "NOMAD_WATCH_CLUSTER_STATISTICS"
+	UnwatchStats = "NOMAD_UNWATCH_CLUSTER_STATISTICS"
 )
 
 type stats struct {
@@ -52,7 +52,7 @@ func (w *stats) work(client *api.Client, send chan *structs.Action, subscribeCh 
 		return
 	}
 
-	send <- &structs.Action{Type: fetchedClusterStatistics, Payload: c}
+	send <- &structs.Action{Type: fetchedStats, Payload: c}
 }
 
 func (w *stats) Key() string {
