@@ -36,6 +36,7 @@ class Clients extends Component {
                   <TableHeaderColumn>Drain</TableHeaderColumn>
                   <TableHeaderColumn>Datacenter</TableHeaderColumn>
                   <TableHeaderColumn>Class</TableHeaderColumn>
+                  <TableHeaderColumn>CPU</TableHeaderColumn>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -45,21 +46,16 @@ class Clients extends Component {
                       <TableRowColumn>
                         <ClientLink clientId={node.ID} />
                       </TableRowColumn>
-                      <TableRowColumn>
-                        {node.Name}
-                      </TableRowColumn>
+                      <TableRowColumn>{node.Name}</TableRowColumn>
                       <TableRowColumn>
                         <NodeStatus value={node.Status} />
                       </TableRowColumn>
                       <TableRowColumn>
                         <FormatBoolean value={node.Drain} />
                       </TableRowColumn>
-                      <TableRowColumn>
-                        {node.Datacenter}
-                      </TableRowColumn>
-                      <TableRowColumn>
-                        {node.NodeClass ? node.NodeClass : "<none>"}
-                      </TableRowColumn>
+                      <TableRowColumn>{node.Datacenter}</TableRowColumn>
+                      <TableRowColumn>{node.NodeClass ? node.NodeClass : "<none>"}</TableRowColumn>
+                      <TableRowColumn>{node.Stats.cpu}%</TableRowColumn>
                     </TableRow>
                   )
                 })}

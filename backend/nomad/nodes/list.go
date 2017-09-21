@@ -2,6 +2,7 @@ package nodes
 
 import (
 	"sort"
+	"sync"
 
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/nomad/helper"
@@ -14,10 +15,16 @@ const (
 	fetchedList = "NOMAD_FETCHED_NODES"
 )
 
+type customClient struct {
+	*api.NodeListStub
+	Stats map[string]interface{}
+}
+
 type list struct {
 	action structs.Action
 	client *api.Client
 	query  *api.QueryOptions
+	last   []*api.NodeListStub
 }
 
 func NewList(action structs.Action, client *api.Client, query *api.QueryOptions) *list {
@@ -35,14 +42,16 @@ func (w *list) Do() (*structs.Response, error) {
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
-		return nil, nil
+		structs.NewResponseWithIndex(fetchedList, nodeStats(w.client, w.last), meta.LastIndex)
 	}
 
 	// http://stackoverflow.com/a/28999886
 	// TODO: refactor to Go 1.9 sorting !
 	sort.Sort(ClientNameSorter(nodes))
 
-	return structs.NewResponseWithIndex(fetchedList, nodes, meta.LastIndex)
+	w.last = nodes
+
+	return structs.NewResponseWithIndex(fetchedList, nodeStats(w.client, nodes), meta.LastIndex)
 }
 
 func (w *list) Key() string {
@@ -51,6 +60,42 @@ func (w *list) Key() string {
 
 func (w *list) IsMutable() bool {
 	return false
+}
+
+func nodeStats(client *api.Client, nodes []*api.NodeListStub) []*customClient {
+	var wg sync.WaitGroup
+	res := make([]*customClient, len(nodes))
+
+	for i, node := range nodes {
+		wg.Add(1)
+		go func(i int, node *api.NodeListStub) {
+			defer wg.Done()
+
+			stats, err := client.Nodes().Stats(node.ID, nil)
+			if err != nil {
+				return
+			}
+
+			comp := make(map[string]interface{})
+			comp["cpu"] = cpu(stats.CPU)
+
+			res[i] = &customClient{node, comp}
+		}(i, node)
+	}
+
+	wg.Wait()
+
+	return res
+}
+
+func cpu(cpus []*api.HostCPUStats) int {
+	var sum float64
+
+	for _, cpu := range cpus {
+		sum = sum + (100 - cpu.Idle)
+	}
+
+	return int(sum / float64(len(cpus)))
 }
 
 type ClientNameSorter []*api.NodeListStub
