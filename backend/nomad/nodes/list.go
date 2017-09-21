@@ -29,7 +29,9 @@ type list struct {
 }
 
 func NewList(action structs.Action, client *api.Client, query *api.QueryOptions) *list {
-	query.WaitTime = 10 * time.Second
+	if query != nil {
+		query.WaitTime = 10 * time.Second
+	}
 
 	return &list{
 		action: action,

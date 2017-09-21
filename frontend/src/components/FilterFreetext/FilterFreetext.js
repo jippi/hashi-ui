@@ -31,7 +31,7 @@ class FilterFreetext extends Component {
     }
 
     const q = this.props.location.query || {}
-    this.nameInput.input.value = q[this.props.query]
+    this.nameInput.input.value = q[this.props.query] || ""
   }
 
   search(proxy, value) {
