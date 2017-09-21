@@ -69,9 +69,6 @@ func (c *Connection) Handle() {
 
 	c.logger.Infof("Waiting for subscriptions to finish up")
 	c.subscriptions.Wait()
-
-	c.logger.Infof("Done, closing send channel")
-	close(c.sendCh)
 }
 
 func (c *Connection) writePump() {
@@ -90,6 +87,11 @@ func (c *Connection) writePump() {
 					c.logger.Errorf("Could not write close message to websocket: %s", err)
 				}
 				return
+			}
+
+			if action == nil {
+				c.logger.Warnf("Got empty action from sendCh")
+				continue
 			}
 
 			c.ensureIndex(action)

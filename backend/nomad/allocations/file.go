@@ -78,7 +78,6 @@ func (w *file) Do(client *api.Client, send chan *structs.Action, subscribeCh cha
 
 	// Turn the reader into a channel
 	lines := make(chan []byte)
-	defer close(lines)
 
 	b := make([]byte, defaultTailLines*bytesToLines)
 	go func() {
