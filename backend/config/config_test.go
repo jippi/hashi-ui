@@ -12,8 +12,6 @@ func TestConfig_correctDefaulValues(t *testing.T) {
 		LogLevel:      "info",
 		ListenAddress: "0.0.0.0:3000",
 
-		NewRelicAppName: "hashi-ui",
-
 		NomadReadOnly:    false,
 		NomadAddress:     "http://127.0.0.1:4646",
 		NomadHideEnvData: false,
