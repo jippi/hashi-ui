@@ -14,6 +14,7 @@ const (
 
 type dir struct {
 	action     structs.Action
+	query      *api.QueryOptions
 	id         string
 	path       string
 	alloc      *api.Allocation
@@ -21,16 +22,17 @@ type dir struct {
 	nodeClient *api.Client
 }
 
-func NewDir(action structs.Action, client *api.Client) *dir {
+func NewDir(action structs.Action, client *api.Client, query *api.QueryOptions) *dir {
 	return &dir{
 		action: action,
 		client: client,
+		query:  query,
 	}
 }
 
 func (w *dir) Do() (*structs.Response, error) {
 	if w.alloc == nil {
-		alloc, _, err := w.client.Allocations().Info(w.id, &api.QueryOptions{})
+		alloc, _, err := w.client.Allocations().Info(w.id, w.query)
 		if err != nil {
 			return structs.NewErrorResponse(err)
 		}
@@ -38,10 +40,10 @@ func (w *dir) Do() (*structs.Response, error) {
 	}
 
 	if w.client == nil {
-		w.nodeClient, _ = w.client.GetNodeClient(w.alloc.NodeID, &api.QueryOptions{})
+		w.nodeClient, _ = w.client.GetNodeClient(w.alloc.NodeID, w.query)
 	}
 
-	dir, _, err := w.nodeClient.AllocFS().List(w.alloc, w.path, &api.QueryOptions{})
+	dir, _, err := w.nodeClient.AllocFS().List(w.alloc, w.path, w.query)
 	if err != nil {
 		return structs.NewErrorResponse(err)
 	}

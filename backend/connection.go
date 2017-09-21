@@ -299,7 +299,7 @@ func (c *connection) process(action structs.Action) {
 	case nomad_allocations.UnwatchFile:
 		c.unwatch(nomad_allocations.NewFile(action, nil))
 	case nomad_allocations.FetchDir:
-		c.once(nomad_allocations.NewDir(action, c.nomadClient))
+		c.once(nomad_allocations.NewDir(action, c.nomadClient, c.newNomadQueryOptions()))
 
 	//
 	// Nomad Nodes
