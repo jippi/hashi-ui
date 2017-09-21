@@ -16,7 +16,12 @@
     "build": "webpack --config webpack-prod.config.js --progress",
     "lint": "eslint src"
   },
-  "keywords": ["nomad", "consul", "hashi-ui", "hashicorp"],
+  "keywords": [
+    "nomad",
+    "consul",
+    "hashi-ui",
+    "hashicorp"
+  ],
   "author": {
     "name": "Christian Winther",
     "email": "jippignu@gmail.com",
