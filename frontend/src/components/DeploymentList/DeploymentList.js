@@ -12,25 +12,25 @@ import React, { Component } from "react"
 
 /* eslint-disable react/prop-types */
 
-const TextCell = ({ rowIndex, data, col, ...props }) =>
-  <Cell {...props}>
-    {data[rowIndex][col]}
-  </Cell>
+const TextCell = ({ rowIndex, data, col, ...props }) => <Cell {...props}>{data[rowIndex][col]}</Cell>
 
-const JobLinkCell = ({ rowIndex, data, ...props }) =>
+const JobLinkCell = ({ rowIndex, data, ...props }) => (
   <Cell {...props}>
     <JobLink jobId={data[rowIndex].JobID} />
   </Cell>
+)
 
-const DeploymentLinkCell = ({ rowIndex, data, col, ...props }) =>
+const DeploymentLinkCell = ({ rowIndex, data, col, ...props }) => (
   <Cell {...props}>
     <DeploymentLink deploymentId={data[rowIndex][col]} />
   </Cell>
+)
 
-const DeploymentDistributionCell = ({ rowIndex, data, type, ...props }) =>
+const DeploymentDistributionCell = ({ rowIndex, data, type, ...props }) => (
   <Cell {...props}>
     <DeploymentDistribution deployment={data[rowIndex]} type={type} />
   </Cell>
+)
 
 const ActionsCell = ({ id, action, rowIndex, data, ...props }) => {
   return (
@@ -104,7 +104,7 @@ class DeploymentList extends Component {
     if (this.props.showJob) {
       return (
         <Col key="job-filter-pane" xs={6} sm={3} md={3} lg={3}>
-          <FilterFreetext query="job" label="Job" />
+          <FilterFreetext focusOnLoad query="job" label="Job" />
         </Col>
       )
     }
@@ -135,10 +135,10 @@ class DeploymentList extends Component {
           <CardText>
             <Grid fluid style={{ padding: 0, margin: 0 }}>
               <Row>
+                {this.jobFilter()}
                 <Col key="id-filter-pane" xs={6} sm={3} md={3} lg={3}>
                   <FilterFreetext query="id" label="ID" />
                 </Col>
-                {this.jobFilter()}
                 <Col key="deployment-status-filter-pane" xs={6} sm={3} md={3} lg={3}>
                   <DeploymentStatusFilter />
                 </Col>
