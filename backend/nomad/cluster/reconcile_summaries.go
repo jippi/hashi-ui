@@ -1,8 +1,6 @@
 package cluster
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
@@ -13,21 +11,26 @@ const (
 
 type reconsileSummaries struct {
 	action structs.Action
+	client *api.Client
 }
 
-func NewReconsileSummaries(action structs.Action) *reconsileSummaries {
+func NewReconsileSummaries(action structs.Action, client *api.Client) *reconsileSummaries {
 	return &reconsileSummaries{
 		action: action,
+		client: client,
 	}
 }
 
-func (w *reconsileSummaries) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	err := client.System().ReconcileSummaries()
+func (w *reconsileSummaries) Do() (*structs.Action, error) {
+	err := w.client.System().ReconcileSummaries()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to reconsile summaries: %s", err)
+		return nil, err
 	}
 
-	return &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully reconsiled summaries."}, nil
+	return &structs.Action{
+		Type:    structs.SuccessNotification,
+		Payload: "Successfully reconsiled summaries",
+	}, nil
 }
 
 func (w *reconsileSummaries) Key() string {

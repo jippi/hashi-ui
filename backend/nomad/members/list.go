@@ -22,18 +22,20 @@ const (
 
 type list struct {
 	action   structs.Action
+	client   *api.Client
 	checksum string
 	cfg      *config.Config
 }
 
-func NewList(action structs.Action, cfg *config.Config) *list {
+func NewList(action structs.Action, cfg *config.Config, client *api.Client) *list {
 	return &list{
 		action: action,
+		client: client,
 		cfg:    cfg,
 	}
 }
 
-func (w *list) Do(client *api.Client, send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error) {
+func (w *list) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error) {
 	ticker := time.NewTicker(5 * time.Second)
 	timer := time.NewTimer(0 * time.Second)
 
@@ -44,9 +46,9 @@ func (w *list) Do(client *api.Client, send chan *structs.Action, subscribeCh cha
 		case <-destroyCh:
 			return nil, nil
 		case <-timer.C:
-			w.update(client, send)
+			w.update(w.client, send)
 		case <-ticker.C:
-			w.update(client, send)
+			w.update(w.client, send)
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package nodes
 
 import (
-	"fmt"
 	"sort"
 
 	"github.com/hashicorp/nomad/api"
@@ -17,22 +16,25 @@ const (
 
 type list struct {
 	action structs.Action
+	client *api.Client
+	query  *api.QueryOptions
 }
 
-func NewList(action structs.Action) *list {
+func NewList(action structs.Action, client *api.Client, query *api.QueryOptions) *list {
 	return &list{
 		action: action,
+		client: client,
+		query:  query,
 	}
 }
 
-// Do will watch the /jobs endpoint for changes
-func (w *list) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	nodes, meta, err := client.Nodes().List(q)
+func (w *list) Do() (*structs.Action, error) {
+	nodes, meta, err := w.client.Nodes().List(w.query)
 	if err != nil {
-		return nil, fmt.Errorf("watch: unable to fetch %s: %s", w.Key(), err)
+		return nil, err
 	}
 
-	if !helper.QueryChanged(q, meta) {
+	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 
@@ -55,7 +57,6 @@ func (w *list) IsMutable() bool {
 	return false
 }
 
-// ClientNameSorter sorts planets by name
 type ClientNameSorter []*api.NodeListStub
 
 func (a ClientNameSorter) Len() int           { return len(a) }

@@ -1,8 +1,6 @@
 package nodes
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/nomad/helper"
 	"github.com/jippi/hashi-ui/backend/structs"
@@ -17,21 +15,25 @@ const (
 
 type info struct {
 	action structs.Action
+	client *api.Client
+	query  *api.QueryOptions
 }
 
-func NewInfo(action structs.Action) *info {
+func NewInfo(action structs.Action, client *api.Client, query *api.QueryOptions) *info {
 	return &info{
 		action: action,
+		client: client,
+		query:  query,
 	}
 }
 
-func (w *info) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	node, meta, err := client.Nodes().Info(w.id(), q)
+func (w *info) Do() (*structs.Action, error) {
+	node, meta, err := w.client.Nodes().Info(w.id(), w.query)
 	if err != nil {
-		return nil, fmt.Errorf("watch: unable to fetch node info: %s", err)
+		return nil, err
 	}
 
-	if !helper.QueryChanged(q, meta) {
+	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 

@@ -1,8 +1,6 @@
 package cluster
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
@@ -13,21 +11,26 @@ const (
 
 type forceGC struct {
 	action structs.Action
+	client *api.Client
 }
 
-func NewForceGC(action structs.Action) *forceGC {
+func NewForceGC(action structs.Action, client *api.Client) *forceGC {
 	return &forceGC{
 		action: action,
+		client: client,
 	}
 }
 
-func (w *forceGC) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	err := client.System().GarbageCollect()
+func (w *forceGC) Do() (*structs.Action, error) {
+	err := w.client.System().GarbageCollect()
 	if err != nil {
-		return nil, fmt.Errorf("Failed to force a gc: %s", err)
+		return nil, err
 	}
 
-	return &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully forced a gc."}, nil
+	return &structs.Action{
+		Type:    structs.SuccessNotification,
+		Payload: "Successfully forced a gc",
+	}, nil
 }
 
 func (w *forceGC) Key() string {

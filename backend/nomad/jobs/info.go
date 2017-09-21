@@ -17,26 +17,30 @@ const (
 
 type info struct {
 	action  structs.Action
+	client  *api.Client
+	query   *api.QueryOptions
 	id      string
 	version *uint64
 }
 
-func NewInfo(action structs.Action) *info {
+func NewInfo(action structs.Action, client *api.Client, query *api.QueryOptions) *info {
 	return &info{
 		action: action,
+		client: client,
+		query:  query,
 	}
 }
 
-func (w *info) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
+func (w *info) Do() (*structs.Action, error) {
 	var job *api.Job
 	var err error
 	var meta *api.QueryMeta
 
 	if w.version == nil {
-		job, meta, err = client.Jobs().Info(w.id, q)
+		job, meta, err = w.client.Jobs().Info(w.id, w.query)
 	} else {
 		var jobs []*api.Job
-		jobs, _, meta, err = client.Jobs().Versions(w.id, false, q)
+		jobs, _, meta, err = w.client.Jobs().Versions(w.id, false, w.query)
 
 		for _, jobVersion := range jobs {
 			if *jobVersion.Version == *w.version {
@@ -47,10 +51,10 @@ func (w *info) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, err
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("watch: unable to fetch %s: %s", w.Key(), err)
+		return nil, err
 	}
 
-	if !helper.QueryChanged(q, meta) {
+	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 

@@ -13,21 +13,26 @@ const (
 
 type periodicForce struct {
 	action structs.Action
+	client *api.Client
 }
 
-func NewPeriodicForce(action structs.Action) *periodicForce {
+func NewPeriodicForce(action structs.Action, client *api.Client) *periodicForce {
 	return &periodicForce{
 		action: action,
+		client: client,
 	}
 }
 
-func (w *periodicForce) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	_, _, err := client.Jobs().PeriodicForce(w.action.Payload.(string), nil)
+func (w *periodicForce) Do() (*structs.Action, error) {
+	_, _, err := w.client.Jobs().PeriodicForce(w.action.Payload.(string), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully force ran the job"}, nil
+	return &structs.Action{
+		Type:    structs.SuccessNotification,
+		Payload: "Successfully force ran the job",
+	}, nil
 }
 
 func (w *periodicForce) Key() string {

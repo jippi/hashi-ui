@@ -1,8 +1,6 @@
 package nodes
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
@@ -13,23 +11,28 @@ const (
 
 type remove struct {
 	action structs.Action
+	client *api.Client
 }
 
-func NewRemove(action structs.Action) *remove {
+func NewRemove(action structs.Action, client *api.Client) *remove {
 	return &remove{
 		action: action,
+		client: client,
 	}
 }
 
-func (w *remove) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
+func (w *remove) Do() (*structs.Action, error) {
 	ID := w.action.Payload.(string)
 
-	err := client.Agent().ForceLeave(ID)
+	err := w.client.Agent().ForceLeave(ID)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to force leave the client: %s", err)
+		return nil, err
 	}
 
-	return &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully force leaved the client."}, nil
+	return &structs.Action{
+		Type:    structs.SuccessNotification,
+		Payload: "Successfully force leaved the client.",
+	}, nil
 }
 
 func (w *remove) Key() string {

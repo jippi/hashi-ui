@@ -16,21 +16,25 @@ const (
 
 type info struct {
 	action structs.Action
+	client *api.Client
+	query  *api.QueryOptions
 }
 
-func NewInfo(action structs.Action) *info {
+func NewInfo(action structs.Action, client *api.Client, query *api.QueryOptions) *info {
 	return &info{
 		action: action,
+		client: client,
+		query:  query,
 	}
 }
 
-func (w *info) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	job, meta, err := client.Evaluations().Info(w.action.Payload.(string), q)
+func (w *info) Do() (*structs.Action, error) {
+	job, meta, err := w.client.Evaluations().Info(w.action.Payload.(string), w.query)
 	if err != nil {
-		return nil, fmt.Errorf("watch: unable to fetch %s: %s", w.Key(), err)
+		return nil, err
 	}
 
-	if !helper.QueryChanged(q, meta) {
+	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 

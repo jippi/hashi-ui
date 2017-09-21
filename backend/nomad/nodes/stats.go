@@ -1,8 +1,6 @@
 package nodes
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
@@ -16,23 +14,28 @@ const (
 
 type stats struct {
 	action structs.Action
+	client *api.Client
 }
 
-func NewStats(action structs.Action) *stats {
+func NewStats(action structs.Action, client *api.Client) *stats {
 	return &stats{
 		action: action,
+		client: client,
 	}
 }
 
-func (w *stats) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
+func (w *stats) Do() (*structs.Action, error) {
 	ID := w.action.Payload.(string)
 
-	stats, err := client.Nodes().Stats(ID, nil)
+	stats, err := w.client.Nodes().Stats(ID, nil)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to force leave the client: %s", err)
+		return nil, err
 	}
 
-	return &structs.Action{Type: fetchedClientStats, Payload: stats}, nil
+	return &structs.Action{
+		Type:    fetchedClientStats,
+		Payload: stats,
+	}, nil
 }
 
 func (w *stats) Key() string {

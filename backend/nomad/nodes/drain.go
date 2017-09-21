@@ -13,17 +13,19 @@ const (
 
 type drain struct {
 	action     structs.Action
+	client     *api.Client
 	id         string
 	actionType string
 }
 
-func NewDrain(action structs.Action) *drain {
+func NewDrain(action structs.Action, client *api.Client) *drain {
 	return &drain{
 		action: action,
+		client: client,
 	}
 }
 
-func (w *drain) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
+func (w *drain) Do() (*structs.Action, error) {
 	var err error
 
 	if w.id == "" {
@@ -36,9 +38,9 @@ func (w *drain) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, er
 
 	switch w.actionType {
 	case "enable":
-		_, err = client.Nodes().ToggleDrain(w.id, true, nil)
+		_, err = w.client.Nodes().ToggleDrain(w.id, true, nil)
 	case "disable":
-		_, err = client.Nodes().ToggleDrain(w.id, false, nil)
+		_, err = w.client.Nodes().ToggleDrain(w.id, false, nil)
 	default:
 		return nil, fmt.Errorf("Invalid action: %s", w.actionType)
 	}
@@ -47,7 +49,10 @@ func (w *drain) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, er
 		return nil, fmt.Errorf("Failed to change client drain mode: %s", err)
 	}
 
-	return &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully updated client drain mode."}, nil
+	return &structs.Action{
+		Type:    structs.SuccessNotification,
+		Payload: "Successfully updated client drain mode.",
+	}, nil
 }
 
 func (w *drain) Key() string {

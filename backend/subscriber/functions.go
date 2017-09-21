@@ -1,23 +1,20 @@
-package nomad
+package subscriber
 
 import (
-	"github.com/hashicorp/nomad/api"
-	"github.com/jippi/hashi-ui/backend/nomad/helper"
 	"github.com/jippi/hashi-ui/backend/structs"
-	"github.com/jippi/hashi-ui/backend/subscriber"
 	log "github.com/sirupsen/logrus"
 )
 
 // Watcher interface
 type Watcher interface {
-	Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error)
+	Do() (*structs.Action, error)
 	Key() string
 	IsMutable() bool
 }
 
 // Streamer interface
 type Streamer interface {
-	Do(client *api.Client, send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error)
+	Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error)
 	Key() string
 	IsMutable() bool
 }
@@ -28,7 +25,7 @@ type Keyer interface {
 }
 
 // Watch is a generic watcher for Nomad
-func Watch(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.Client, send chan *structs.Action, destroyCh chan struct{}) {
+func Watch(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Action, destroyCh chan struct{}) {
 	watchKey := w.Key()
 
 	// Check if we are already subscribed
@@ -45,8 +42,6 @@ func Watch(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.
 	}()
 	logger.Infof("Started watching %s", watchKey)
 
-	q := helper.DefaultQuery(true)
-
 	for {
 		select {
 		case <-subscribeCh:
@@ -58,7 +53,7 @@ func Watch(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.
 			return
 
 		default:
-			action, err := w.Do(client, q)
+			action, err := w.Do()
 			if err != nil {
 				logger.Errorf("connection: unable to fetch %s: %s", watchKey, err)
 				send <- &structs.Action{Type: structs.ErrorNotification, Payload: err.Error()}
@@ -78,7 +73,7 @@ func Watch(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.
 }
 
 // Unwatch is a generic watcher for Nomad
-func Unwatch(w Keyer, s subscriber.Subscription, logger *log.Entry) error {
+func Unwatch(w Keyer, s Subscription, logger *log.Entry) error {
 	key := w.Key()
 
 	if s.Unsubscribe(key) {
@@ -91,7 +86,7 @@ func Unwatch(w Keyer, s subscriber.Subscription, logger *log.Entry) error {
 }
 
 // Once is a generic one-off query for Nomad
-func Once(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.Client, send chan *structs.Action, destroyCh chan struct{}) {
+func Once(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Action, destroyCh chan struct{}) {
 	watchKey := w.Key()
 
 	// Check if we are already subscribed
@@ -108,9 +103,7 @@ func Once(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.C
 	}()
 	logger.Infof("Started running %s", watchKey)
 
-	q := helper.DefaultQuery(true)
-
-	action, err := w.Do(client, q)
+	action, err := w.Do()
 	if err != nil {
 		logger.Errorf("connection: unable to run %s: %s", watchKey, err)
 		send <- &structs.Action{
@@ -131,7 +124,7 @@ func Once(w Watcher, s subscriber.Subscription, logger *log.Entry, client *api.C
 }
 
 // Stream is a generic one-off query for Nomad
-func Stream(w Streamer, s subscriber.Subscription, logger *log.Entry, client *api.Client, send chan *structs.Action, destroyCh chan struct{}) {
+func Stream(w Streamer, s Subscription, logger *log.Entry, send chan *structs.Action, destroyCh chan struct{}) {
 	watchKey := w.Key()
 
 	// Check if we are already subscribed
@@ -148,7 +141,7 @@ func Stream(w Streamer, s subscriber.Subscription, logger *log.Entry, client *ap
 	}()
 	logger.Infof("Started streaming %s", watchKey)
 
-	action, err := w.Do(client, send, subscribeCh, destroyCh)
+	action, err := w.Do(send, subscribeCh, destroyCh)
 	if err != nil {
 		logger.Errorf("connection: unable to stream %s: %s", watchKey, err)
 		send <- &structs.Action{

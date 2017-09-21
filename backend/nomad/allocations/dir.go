@@ -13,22 +13,24 @@ const (
 )
 
 type dir struct {
-	action structs.Action
-	id     string
-	path   string
-	alloc  *api.Allocation
-	client *api.Client
+	action     structs.Action
+	id         string
+	path       string
+	alloc      *api.Allocation
+	client     *api.Client
+	nodeClient *api.Client
 }
 
-func NewDir(action structs.Action) *dir {
+func NewDir(action structs.Action, client *api.Client) *dir {
 	return &dir{
 		action: action,
+		client: client,
 	}
 }
 
-func (w *dir) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
+func (w *dir) Do() (*structs.Action, error) {
 	if w.alloc == nil {
-		alloc, _, err := client.Allocations().Info(w.id, nil)
+		alloc, _, err := w.client.Allocations().Info(w.id, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -36,10 +38,10 @@ func (w *dir) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, erro
 	}
 
 	if w.client == nil {
-		w.client, _ = client.GetNodeClient(w.alloc.NodeID, nil)
+		w.nodeClient, _ = w.client.GetNodeClient(w.alloc.NodeID, nil)
 	}
 
-	dir, _, err := w.client.AllocFS().List(w.alloc, w.path, nil)
+	dir, _, err := w.nodeClient.AllocFS().List(w.alloc, w.path, nil)
 	if err != nil {
 		return nil, err
 	}

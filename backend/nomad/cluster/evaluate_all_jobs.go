@@ -13,16 +13,18 @@ const (
 
 type evaluateAllJobs struct {
 	action structs.Action
+	client *api.Client
 }
 
-func NewEvaluateAllJobs(action structs.Action) *evaluateAllJobs {
+func NewEvaluateAllJobs(action structs.Action, client *api.Client) *evaluateAllJobs {
 	return &evaluateAllJobs{
 		action: action,
+		client: client,
 	}
 }
 
-func (w *evaluateAllJobs) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	jobs, _, err := client.Jobs().List(nil)
+func (w *evaluateAllJobs) Do() (*structs.Action, error) {
+	jobs, _, err := w.client.Jobs().List(nil)
 	if err != nil {
 		return nil, err
 	}
@@ -32,14 +34,17 @@ func (w *evaluateAllJobs) Do(client *api.Client, q *api.QueryOptions) (*structs.
 		wg.Add(1)
 
 		go func(job *api.JobListStub) {
-			client.Jobs().ForceEvaluate(job.ID, nil)
+			w.client.Jobs().ForceEvaluate(job.ID, nil)
 			wg.Done()
 		}(job)
 	}
 
 	wg.Wait()
 
-	return &structs.Action{Type: structs.SuccessNotification, Payload: "Evaluating all jobs in the background."}, nil
+	return &structs.Action{
+		Type:    structs.SuccessNotification,
+		Payload: "Evaluating all jobs in the background.",
+	}, nil
 }
 
 func (w *evaluateAllJobs) Key() string {

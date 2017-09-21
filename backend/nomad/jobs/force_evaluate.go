@@ -13,16 +13,18 @@ const (
 
 type forceEvaluate struct {
 	action structs.Action
+	client *api.Client
 }
 
-func NewForceEvaluate(action structs.Action) *forceEvaluate {
+func NewForceEvaluate(action structs.Action, client *api.Client) *forceEvaluate {
 	return &forceEvaluate{
 		action: action,
+		client: client,
 	}
 }
 
-func (w *forceEvaluate) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	_, _, err := client.Jobs().ForceEvaluate(w.action.Payload.(string), nil)
+func (w *forceEvaluate) Do() (*structs.Action, error) {
+	_, _, err := w.client.Jobs().ForceEvaluate(w.action.Payload.(string), nil)
 	if err != nil {
 		return nil, fmt.Errorf("watch: unable to evaluate %s: %s", w.Key(), err)
 	}

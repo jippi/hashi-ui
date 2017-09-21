@@ -16,21 +16,25 @@ const (
 
 type versions struct {
 	action structs.Action
+	client *api.Client
+	query  *api.QueryOptions
 }
 
-func NewVersions(action structs.Action) *versions {
+func NewVersions(action structs.Action, client *api.Client, query *api.QueryOptions) *versions {
 	return &versions{
 		action: action,
+		client: client,
+		query:  query,
 	}
 }
 
-func (w *versions) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	versions, _, meta, err := client.Jobs().Versions(w.action.Payload.(string), false, q)
+func (w *versions) Do() (*structs.Action, error) {
+	versions, _, meta, err := w.client.Jobs().Versions(w.action.Payload.(string), false, w.query)
 	if err != nil {
-		return nil, fmt.Errorf("watch: unable to fetch %s: %s", w.Key(), err)
+		return nil, err
 	}
 
-	if !helper.QueryChanged(q, meta) {
+	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 

@@ -13,22 +13,24 @@ const (
 
 type scale struct {
 	action structs.Action
+	client *api.Client
 }
 
-func NewScale(action structs.Action) *scale {
+func NewScale(action structs.Action, client *api.Client) *scale {
 	return &scale{
 		action: action,
+		client: client,
 	}
 }
 
-func (w *scale) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
+func (w *scale) Do() (*structs.Action, error) {
 	params := w.action.Payload.(map[string]interface{})
 
 	jobID := params["job"].(string)
 	taskGroupID := params["taskGroup"].(string)
 	scaleAction := params["scaleAction"].(string)
 
-	job, _, err := client.Jobs().Info(jobID, nil)
+	job, _, err := w.client.Jobs().Info(jobID, nil)
 	if err != nil {
 		return nil, fmt.Errorf("Could not find job: %s", err)
 	}
@@ -50,12 +52,12 @@ func (w *scale) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, er
 		setTaskGroupCount(job, taskGroupID, 0)
 	case "restart": // special case, as its a two step process
 		setTaskGroupCount(job, taskGroupID, 0)
-		if err := updateJob(client, job); err != nil {
+		if err := updateJob(w.client, job); err != nil {
 			return nil, err
 		}
 
 		setTaskGroupCount(job, taskGroupID, originalCount)
-		if err := updateJob(client, job); err != nil {
+		if err := updateJob(w.client, job); err != nil {
 			return nil, err
 		}
 
@@ -67,7 +69,7 @@ func (w *scale) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, er
 		return nil, fmt.Errorf("Invalid action: %s", scaleAction)
 	}
 
-	if err := updateJob(client, job); err != nil {
+	if err := updateJob(w.client, job); err != nil {
 		return nil, err
 	}
 

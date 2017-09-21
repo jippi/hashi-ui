@@ -16,21 +16,25 @@ const (
 
 type allocations struct {
 	action structs.Action
+	client *api.Client
+	query  *api.QueryOptions
 }
 
-func NewAllocations(action structs.Action) *allocations {
+func NewAllocations(action structs.Action, client *api.Client, query *api.QueryOptions) *allocations {
 	return &allocations{
 		action: action,
+		client: client,
+		query:  query,
 	}
 }
 
-func (w *allocations) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	allocations, meta, err := client.Jobs().Allocations(w.action.Payload.(string), true, q)
+func (w *allocations) Do() (*structs.Action, error) {
+	allocations, meta, err := w.client.Jobs().Allocations(w.action.Payload.(string), true, w.query)
 	if err != nil {
-		return nil, fmt.Errorf("watch: unable to fetch %s: %s", w.Key(), err)
+		return nil, err
 	}
 
-	if !helper.QueryChanged(q, meta) {
+	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 

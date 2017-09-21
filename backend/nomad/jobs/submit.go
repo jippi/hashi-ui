@@ -15,17 +15,19 @@ const (
 
 type submit struct {
 	action structs.Action
+	client *api.Client
 	cfg    *config.Config
 }
 
-func NewSubmit(action structs.Action, cfg *config.Config) *submit {
+func NewSubmit(action structs.Action, client *api.Client, cfg *config.Config) *submit {
 	return &submit{
 		action: action,
+		client: client,
 		cfg:    cfg,
 	}
 }
 
-func (w *submit) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
+func (w *submit) Do() (*structs.Action, error) {
 	if w.cfg.NomadHideEnvData {
 		return nil, fmt.Errorf("Can't update job, the hashi-ui setting 'nomad-hide-env-data' will delete all your env{} clauses")
 	}
@@ -34,14 +36,14 @@ func (w *submit) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, e
 	runjob := api.Job{}
 	json.Unmarshal([]byte(jobjson), &runjob)
 
-	_, _, err := client.Jobs().Register(&runjob, nil)
+	_, _, err := w.client.Jobs().Register(&runjob, nil)
 	if err != nil {
-		return nil, fmt.Errorf("connection: unable to submit job '%s' : %s", *runjob.ID, err)
+		return nil, err
 	}
 
 	return &structs.Action{
 		Type:    structs.SuccessNotification,
-		Payload: "The job has been successfully updated.",
+		Payload: "The job has successfully been submitted.",
 	}, nil
 }
 

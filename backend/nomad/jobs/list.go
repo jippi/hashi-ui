@@ -19,29 +19,33 @@ const (
 
 type list struct {
 	action structs.Action
+	client *api.Client
+	query  *api.QueryOptions
 }
 
-func NewList(action structs.Action) *list {
+func NewList(action structs.Action, client *api.Client, query *api.QueryOptions) *list {
 	return &list{
 		action: action,
+		client: client,
+		query:  query,
 	}
 }
 
-func (w *list) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	w.filter(q)
+func (w *list) Do() (*structs.Action, error) {
+	w.filter(w.query)
 
-	jobs, meta, err := client.Jobs().List(q)
+	jobs, meta, err := w.client.Jobs().List(w.query)
 	if err != nil {
 		return nil, fmt.Errorf("watch: unable to fetch jobs: %s", err)
 	}
 
-	if !helper.QueryChanged(q, meta) {
+	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 
 	actionType := fetchedList
 
-	if q.Prefix != "" {
+	if w.query.Prefix != "" {
 		actionType = fetchedListFiltered
 	}
 

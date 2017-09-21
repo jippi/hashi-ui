@@ -18,21 +18,23 @@ const (
 
 type info struct {
 	action   structs.Action
+	client   *api.Client
 	checksum string
 	cfg      *config.Config
 }
 
-func NewInfo(action structs.Action, cfg *config.Config) *info {
+func NewInfo(action structs.Action, cfg *config.Config, client *api.Client) *info {
 	return &info{
 		action: action,
 		cfg:    cfg,
+		client: client,
 	}
 }
 
-func (w *info) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
+func (w *info) Do() (*structs.Action, error) {
 	id := w.action.Payload.(string)
 
-	checksum, members, err := membersWithID(client, w.cfg)
+	checksum, members, err := membersWithID(w.client, w.cfg)
 	if err != nil {
 		return nil, err
 	}

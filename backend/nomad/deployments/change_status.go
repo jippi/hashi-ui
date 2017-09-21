@@ -13,18 +13,20 @@ const (
 
 type changeStatus struct {
 	action     structs.Action
+	client     *api.Client
 	id         string
 	actionType string
 	group      string
 }
 
-func NewCHangeStatus(action structs.Action) *changeStatus {
+func NewCHangeStatus(action structs.Action, client *api.Client) *changeStatus {
 	return &changeStatus{
 		action: action,
+		client: client,
 	}
 }
 
-func (w *changeStatus) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
+func (w *changeStatus) Do() (*structs.Action, error) {
 	if w.id == "" {
 		return nil, fmt.Errorf("Missing deployment id")
 	}
@@ -37,23 +39,26 @@ func (w *changeStatus) Do(client *api.Client, q *api.QueryOptions) (*structs.Act
 	switch w.actionType {
 	case "promote":
 		if w.group != "" {
-			_, _, err = client.Deployments().PromoteGroups(w.id, []string{w.group}, nil)
+			_, _, err = w.client.Deployments().PromoteGroups(w.id, []string{w.group}, nil)
 		} else {
-			_, _, err = client.Deployments().PromoteAll(w.id, nil)
+			_, _, err = w.client.Deployments().PromoteAll(w.id, nil)
 		}
 	case "fail":
-		_, _, err = client.Deployments().Fail(w.id, nil)
+		_, _, err = w.client.Deployments().Fail(w.id, nil)
 	case "pause":
-		_, _, err = client.Deployments().Pause(w.id, true, nil)
+		_, _, err = w.client.Deployments().Pause(w.id, true, nil)
 	case "resume":
-		_, _, err = client.Deployments().Pause(w.id, false, nil)
+		_, _, err = w.client.Deployments().Pause(w.id, false, nil)
 	}
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to update deployment: %s", err)
 	}
 
-	return &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully updated deployment."}, nil
+	return &structs.Action{
+		Type:    structs.SuccessNotification,
+		Payload: "Successfully updated deployment.",
+	}, nil
 }
 
 func (w *changeStatus) Key() string {

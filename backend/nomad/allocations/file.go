@@ -28,24 +28,26 @@ const (
 
 type file struct {
 	action structs.Action
+	client *api.Client
 	id     string
 	path   string
 }
 
-func NewFile(action structs.Action) *file {
+func NewFile(action structs.Action, client *api.Client) *file {
 	return &file{
 		action: action,
+		client: client,
 	}
 }
 
 // Do will watch the /job/:id endpoint for changes
-func (w *file) Do(client *api.Client, send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error) {
-	alloc, _, err := client.Allocations().Info(w.id, nil)
+func (w *file) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error) {
+	alloc, _, err := w.client.Allocations().Info(w.id, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	allocClient, err := client.GetNodeClient(alloc.NodeID, nil)
+	allocClient, err := w.client.GetNodeClient(alloc.NodeID, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -13,21 +13,26 @@ const (
 
 type stop struct {
 	action structs.Action
+	client *api.Client
 }
 
-func NewStop(action structs.Action) *stop {
+func NewStop(action structs.Action, client *api.Client) *stop {
 	return &stop{
 		action: action,
+		client: client,
 	}
 }
 
-func (w *stop) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	_, _, err := client.Jobs().Deregister(w.action.Payload.(string), false, nil)
+func (w *stop) Do() (*structs.Action, error) {
+	_, _, err := w.client.Jobs().Deregister(w.action.Payload.(string), false, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return &structs.Action{Type: structs.SuccessNotification, Payload: "Successfully stopped job"}, nil
+	return &structs.Action{
+		Type:    structs.SuccessNotification,
+		Payload: "Successfully stopped job",
+	}, nil
 }
 
 func (w *stop) Key() string {

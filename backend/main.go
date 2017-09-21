@@ -34,36 +34,36 @@ func main() {
 	log.Infof("|                             HASHI UI                                      |")
 	log.Infof("-----------------------------------------------------------------------------")
 	if !cfg.HttpsEnable {
-		log.Infof("| listen-address        : http://%-43s |", cfg.ListenAddress)
+		log.Infof("| listen-address       : http://%-43s |", cfg.ListenAddress)
 	} else {
 		log.Infof("| listen-address      : https://%-43s  |", cfg.ListenAddress)
 	}
-	log.Infof("| server-certificate   	: %-50s |", cfg.ServerCert)
-	log.Infof("| server-key       	: %-50s |", cfg.ServerKey)
-	log.Infof("| proxy-address   	: %-50s |", cfg.ProxyAddress)
-	log.Infof("| log-level       	: %-50s |", cfg.LogLevel)
+	log.Infof("| server-certificate   : %-50s |", cfg.ServerCert)
+	log.Infof("| server-key       	  : %-50s |", cfg.ServerKey)
+	log.Infof("| proxy-address   	  : %-50s |", cfg.ProxyAddress)
+	log.Infof("| log-level       	  : %-50s |", cfg.LogLevel)
 
 	// Nomad
-	log.Infof("| nomad-enable     	: %-50t |", cfg.NomadEnable)
+	log.Infof("| nomad-enable     	  : %-50t |", cfg.NomadEnable)
 	if cfg.NomadReadOnly {
-		log.Infof("| nomad-read-only       : %-50s |", "Yes")
+		log.Infof("| nomad-read-only      : %-50s |", "Yes")
 	} else {
-		log.Infof("| nomad-read-only       : %-50s |", "No (Hashi-UI can change Nomad state)")
+		log.Infof("| nomad-read-only      : %-50s |", "No (Hashi-UI can change Nomad state)")
 	}
-	log.Infof("| nomad-address         : %-50s |", cfg.NomadAddress)
-	log.Infof("| nomad-ca-cert         : %-50s |", cfg.NomadCACert)
-	log.Infof("| nomad-client-cert     : %-50s |", cfg.NomadClientCert)
-	log.Infof("| nomad-client-key      : %-50s |", cfg.NomadClientKey)
-	log.Infof("| nomad-skip-verify   	: %-50t |", cfg.NomadSkipVerify)
-	log.Infof("| hide-env-data       	: %-50v |", cfg.NomadHideEnvData)
+	log.Infof("| nomad-address        : %-50s |", cfg.NomadAddress)
+	log.Infof("| nomad-ca-cert        : %-50s |", cfg.NomadCACert)
+	log.Infof("| nomad-client-cert    : %-50s |", cfg.NomadClientCert)
+	log.Infof("| nomad-client-key     : %-50s |", cfg.NomadClientKey)
+	log.Infof("| nomad-skip-verify    : %-50t |", cfg.NomadSkipVerify)
+	log.Infof("| nomad-hide-env-data  : %-50v |", cfg.NomadHideEnvData)
 	if cfg.NomadSkipVerify {
-		log.Infof("| nomad-skip-verify     : %-50s |", "Yes")
+		log.Infof("| nomad-skip-verify    : %-50s |", "Yes")
 	} else {
-		log.Infof("| nomad-skip-verify     : %-50s |", "No")
+		log.Infof("| nomad-skip-verify    : %-50s |", "No")
 	}
 
 	// Consul
-	log.Infof("| consul-enable     	: %-50t |", cfg.ConsulEnable)
+	log.Infof("| consul-enable     	  : %-50t |", cfg.ConsulEnable)
 	if cfg.ConsulReadOnly {
 		log.Infof("| consul-read-only     : %-50s |", "Yes")
 	} else {

@@ -1,8 +1,6 @@
 package allocations
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/nomad/helper"
 	"github.com/jippi/hashi-ui/backend/structs"
@@ -18,23 +16,27 @@ const (
 
 type list struct {
 	shallow bool
+	client  *api.Client
+	query   *api.QueryOptions
 	action  structs.Action
 }
 
-func NewList(action structs.Action, shallow bool) *list {
+func NewList(action structs.Action, shallow bool, client *api.Client, query *api.QueryOptions) *list {
 	return &list{
 		action:  action,
 		shallow: shallow,
+		client:  client,
+		query:   query,
 	}
 }
 
-func (w *list) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	allocations, meta, err := client.Allocations().List(q)
+func (w *list) Do() (*structs.Action, error) {
+	allocations, meta, err := w.client.Allocations().List(w.query)
 	if err != nil {
-		return nil, fmt.Errorf("watch: unable to fetch %s: %s", w.Key(), err)
+		return nil, err
 	}
 
-	if !helper.QueryChanged(q, meta) {
+	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 

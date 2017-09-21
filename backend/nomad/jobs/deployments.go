@@ -16,21 +16,25 @@ const (
 
 type deployments struct {
 	action structs.Action
+	client *api.Client
+	query  *api.QueryOptions
 }
 
-func NewDeployments(action structs.Action) *deployments {
+func NewDeployments(action structs.Action, client *api.Client, query *api.QueryOptions) *deployments {
 	return &deployments{
 		action: action,
+		client: client,
+		query:  query,
 	}
 }
 
-func (w *deployments) Do(client *api.Client, q *api.QueryOptions) (*structs.Action, error) {
-	deployments, meta, err := client.Jobs().Deployments(w.action.Payload.(string), q)
+func (w *deployments) Do() (*structs.Action, error) {
+	deployments, meta, err := w.client.Jobs().Deployments(w.action.Payload.(string), w.query)
 	if err != nil {
-		return nil, fmt.Errorf("watch: unable to fetch %s: %s", w.Key(), err)
+		return nil, err
 	}
 
-	if !helper.QueryChanged(q, meta) {
+	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 

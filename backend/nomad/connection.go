@@ -13,6 +13,7 @@ import (
 	"github.com/jippi/hashi-ui/backend/nomad/cluster"
 	"github.com/jippi/hashi-ui/backend/nomad/deployments"
 	"github.com/jippi/hashi-ui/backend/nomad/evaluations"
+	"github.com/jippi/hashi-ui/backend/nomad/helper"
 	"github.com/jippi/hashi-ui/backend/nomad/jobs"
 	"github.com/jippi/hashi-ui/backend/nomad/members"
 	"github.com/jippi/hashi-ui/backend/nomad/nodes"
@@ -131,19 +132,19 @@ func (c *Connection) process(action structs.Action) {
 	// Deployments
 	//
 	case deployments.WatchList:
-		c.watch(deployments.NewList(action))
+		c.watch(deployments.NewList(action, c.client, c.queryOptions()))
 	case deployments.UnwatchList:
-		c.unwatch(deployments.NewList(action))
+		c.unwatch(deployments.NewList(action, nil, nil))
 	case deployments.WatchInfo:
-		c.watch(deployments.NewInfo(action))
+		c.watch(deployments.NewInfo(action, c.client, c.queryOptions()))
 	case deployments.UnwatchInfo:
-		c.unwatch(deployments.NewInfo(action))
+		c.unwatch(deployments.NewInfo(action, nil, nil))
 	case deployments.WatchAllocations:
-		c.watch(deployments.NewAllocations(action))
+		c.watch(deployments.NewAllocations(action, c.client, c.queryOptions()))
 	case deployments.UnwatchAllocations:
-		c.unwatch(deployments.NewAllocations(action))
+		c.unwatch(deployments.NewAllocations(action, nil, nil))
 	case deployments.ChangeStatus:
-		c.once(deployments.NewCHangeStatus(action))
+		c.once(deployments.NewCHangeStatus(action, c.client))
 
 	//
 	// Jobs
@@ -151,123 +152,123 @@ func (c *Connection) process(action structs.Action) {
 	case jobs.WatchList:
 		fallthrough // same as filtered
 	case jobs.WatchListFiltered:
-		c.watch(jobs.NewList(action))
+		c.watch(jobs.NewList(action, c.client, c.queryOptions()))
 	case jobs.UnwatchListFiltered:
 		fallthrough // same as filtered
 	case jobs.UnwatchList:
-		c.unwatch(jobs.NewList(action))
+		c.unwatch(jobs.NewList(action, c.client, c.queryOptions()))
 	case jobs.WatchInfo:
-		c.watch(jobs.NewInfo(action))
+		c.watch(jobs.NewInfo(action, c.client, c.queryOptions()))
 	case jobs.UnwatchInfo:
-		c.unwatch(jobs.NewInfo(action))
+		c.unwatch(jobs.NewInfo(action, nil, nil))
 	case jobs.WatchVersions:
-		c.watch(jobs.NewVersions(action))
+		c.watch(jobs.NewVersions(action, c.client, c.queryOptions()))
 	case jobs.UnwatchVersions:
-		c.unwatch(jobs.NewVersions(action))
+		c.unwatch(jobs.NewVersions(action, nil, nil))
 	case jobs.WatchDeployments:
-		c.watch(jobs.NewDeployments(action))
+		c.watch(jobs.NewDeployments(action, c.client, c.queryOptions()))
 	case jobs.UnwatchDeployments:
-		c.unwatch(jobs.NewDeployments(action))
+		c.unwatch(jobs.NewDeployments(action, nil, nil))
 	case jobs.Scale:
-		c.once(jobs.NewScale(action))
+		c.once(jobs.NewScale(action, c.client))
 	case jobs.ForceEvaluate:
-		c.once(jobs.NewForceEvaluate(action))
+		c.once(jobs.NewForceEvaluate(action, c.client))
 	case jobs.WatchAllocations:
-		c.watch(jobs.NewAllocations(action))
+		c.watch(jobs.NewAllocations(action, c.client, c.queryOptions()))
 	case jobs.UnwatchAllocations:
-		c.unwatch(jobs.NewAllocations(action))
+		c.unwatch(jobs.NewAllocations(action, nil, nil))
 	case jobs.Stop:
-		c.once(jobs.NewStop(action))
+		c.once(jobs.NewStop(action, c.client))
 	case jobs.PeriodicForce:
-		c.once(jobs.NewPeriodicForce(action))
+		c.once(jobs.NewPeriodicForce(action, c.client))
 	case jobs.Submit:
-		c.once(jobs.NewSubmit(action, c.cfg))
+		c.once(jobs.NewSubmit(action, c.client, c.cfg))
 
 	//
 	// Allocations
 	//
 	case allocations.WatchList:
-		c.watch(allocations.NewList(action, false))
-	case allocations.WatchListShallow:
-		c.watch(allocations.NewList(action, true))
+		c.watch(allocations.NewList(action, false, c.client, c.queryOptions()))
 	case allocations.UnwatchList:
-		c.unwatch(allocations.NewList(action, false))
+		c.unwatch(allocations.NewList(action, false, nil, nil))
+	case allocations.WatchListShallow:
+		c.watch(allocations.NewList(action, true, c.client, c.queryOptions()))
 	case allocations.UnwatchListShallow:
-		c.unwatch(allocations.NewList(action, true))
+		c.unwatch(allocations.NewList(action, true, nil, nil))
 	case allocations.WatchInfo:
-		c.watch(allocations.NewInfo(action))
+		c.watch(allocations.NewInfo(action, c.client, c.queryOptions()))
 	case allocations.UnwatchInfo:
-		c.unwatch(allocations.NewInfo(action))
+		c.unwatch(allocations.NewInfo(action, nil, nil))
 	case allocations.WatchFile:
-		c.stream(allocations.NewFile(action))
+		c.stream(allocations.NewFile(action, c.client))
 	case allocations.UnwatchFile:
-		c.unwatch(allocations.NewFile(action))
+		c.unwatch(allocations.NewFile(action, nil))
 	case allocations.FetchDir:
-		c.once(allocations.NewDir(action))
+		c.once(allocations.NewDir(action, c.client))
 
 	//
 	// Nodes
 	//
 	case nodes.WatchList:
-		c.watch(nodes.NewList(action))
+		c.watch(nodes.NewList(action, c.client, c.queryOptions()))
 	case nodes.UnwatchList:
-		c.unwatch(nodes.NewList(action))
+		c.unwatch(nodes.NewList(action, nil, nil))
 	case nodes.WatchInfo:
-		c.watch(nodes.NewInfo(action))
+		c.watch(nodes.NewInfo(action, c.client, c.queryOptions()))
 	case nodes.UnwatchInfo:
-		c.unwatch(nodes.NewInfo(action))
+		c.unwatch(nodes.NewInfo(action, nil, nil))
 	case nodes.FetchInfo:
-		c.once(nodes.NewInfo(action))
+		c.once(nodes.NewInfo(action, c.client, c.queryOptions()))
 	case nodes.Drain:
-		c.once(nodes.NewDrain(action))
+		c.once(nodes.NewDrain(action, c.client))
 	case nodes.Remove:
-		c.once(nodes.NewRemove(action))
+		c.once(nodes.NewRemove(action, c.client))
 	case nodes.FetchClientStats:
-		c.once(nodes.NewStats(action))
+		c.once(nodes.NewStats(action, c.client))
 	case nodes.WatchStats:
-		c.watch(nodes.NewStats(action))
+		c.watch(nodes.NewStats(action, c.client))
 	case nodes.UnwatchStats:
-		c.unwatch(nodes.NewStats(action))
+		c.unwatch(nodes.NewStats(action, nil))
 
 	//
 	// Members
 	//
 	case members.WatchList:
-		c.stream(members.NewList(action, c.cfg))
+		c.stream(members.NewList(action, c.cfg, c.client))
 	case members.UnwatchList:
-		c.unwatch(members.NewList(action, c.cfg))
+		c.unwatch(members.NewList(action, c.cfg, nil))
 	case members.WatchInfo:
-		c.watch(members.NewInfo(action, c.cfg))
+		c.watch(members.NewInfo(action, c.cfg, c.client))
 	case members.UnwatchInfo:
-		c.unwatch(members.NewInfo(action, c.cfg))
+		c.unwatch(members.NewInfo(action, c.cfg, nil))
 	case members.FetchInfo:
-		c.once(members.NewInfo(action, c.cfg))
+		c.once(members.NewInfo(action, c.cfg, c.client))
 
 	//
 	// Evaluations
 	//
 	case evaluations.WatchList:
-		c.watch(evaluations.NewList(action))
+		c.watch(evaluations.NewList(action, c.client, c.queryOptions()))
 	case evaluations.UnwatchList:
-		c.unwatch(evaluations.NewList(action))
+		c.unwatch(evaluations.NewList(action, nil, nil))
 	case evaluations.WatchInfo:
-		c.watch(evaluations.NewInfo(action))
+		c.watch(evaluations.NewInfo(action, c.client, c.queryOptions()))
 	case evaluations.UnwatchInfo:
-		c.unwatch(evaluations.NewInfo(action))
+		c.unwatch(evaluations.NewInfo(action, nil, nil))
 
 	//
 	// Cluster
 	//
 	case cluster.EvaluateAllJobs:
-		c.once(cluster.NewEvaluateAllJobs(action))
+		c.once(cluster.NewEvaluateAllJobs(action, c.client))
 	case cluster.ReconsileSummaries:
-		c.once(cluster.NewReconsileSummaries(action))
+		c.once(cluster.NewReconsileSummaries(action, c.client))
 	case cluster.ForceGC:
-		c.once(cluster.NewForceGC(action))
+		c.once(cluster.NewForceGC(action, c.client))
 	case cluster.WatchStats:
-		c.stream(cluster.NewStats(action))
+		c.stream(cluster.NewStats(action, c.client))
 	case cluster.UnwatchStats:
-		c.unwatch(cluster.NewStats(action))
+		c.unwatch(cluster.NewStats(action, c.client))
 
 	case fetchNomadRegions:
 		// go c.fetchRegions()
@@ -278,34 +279,38 @@ func (c *Connection) process(action structs.Action) {
 	}
 }
 
-func (c *Connection) watch(w Watcher) {
+func (c *Connection) queryOptions() *api.QueryOptions {
+	return helper.DefaultQuery(c.cfg.NomadAllowStale)
+}
+
+func (c *Connection) watch(w subscriber.Watcher) {
 	if c.cfg.NomadReadOnly && w.IsMutable() {
 		c.readOnlyError(w.Key())
 		return
 	}
 
-	go Watch(w, c.subscriptions, c.logger, c.client, c.sendCh, c.destroyCh)
+	go subscriber.Watch(w, c.subscriptions, c.logger, c.sendCh, c.destroyCh)
 }
 
-func (c *Connection) unwatch(w Keyer) {
-	go Unwatch(w, c.subscriptions, c.logger)
+func (c *Connection) unwatch(w subscriber.Keyer) {
+	go subscriber.Unwatch(w, c.subscriptions, c.logger)
 }
 
-func (c *Connection) once(w Watcher) {
+func (c *Connection) once(w subscriber.Watcher) {
 	if c.cfg.NomadReadOnly && w.IsMutable() {
 		c.readOnlyError(w.Key())
 		return
 	}
-	go Once(w, c.subscriptions, c.logger, c.client, c.sendCh, c.destroyCh)
+	go subscriber.Once(w, c.subscriptions, c.logger, c.sendCh, c.destroyCh)
 }
 
-func (c *Connection) stream(s Streamer) {
+func (c *Connection) stream(s subscriber.Streamer) {
 	if c.cfg.NomadReadOnly && s.IsMutable() {
 		c.readOnlyError(s.Key())
 		return
 	}
 
-	go Stream(s, c.subscriptions, c.logger, c.client, c.sendCh, c.destroyCh)
+	go subscriber.Stream(s, c.subscriptions, c.logger, c.sendCh, c.destroyCh)
 }
 
 func (c *Connection) readOnlyError(key string) {

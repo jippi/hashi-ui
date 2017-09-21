@@ -16,15 +16,17 @@ const (
 
 type stats struct {
 	action structs.Action
+	client *api.Client
 }
 
-func NewStats(action structs.Action) *stats {
+func NewStats(action structs.Action, client *api.Client) *stats {
 	return &stats{
 		action: action,
+		client: client,
 	}
 }
 
-func (w *stats) Do(client *api.Client, send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error) {
+func (w *stats) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error) {
 	ticker := time.NewTicker(5 * time.Second) // fetch stats once in a while
 	timer := time.NewTimer(0 * time.Second)   // fetch stats right away
 
@@ -37,12 +39,11 @@ func (w *stats) Do(client *api.Client, send chan *structs.Action, subscribeCh ch
 			return nil, nil
 
 		case <-timer.C:
-			w.work(client, send, subscribeCh)
+			w.work(w.client, send, subscribeCh)
 
 		case <-ticker.C:
-			w.work(client, send, subscribeCh)
+			w.work(w.client, send, subscribeCh)
 		}
-
 	}
 }
 
