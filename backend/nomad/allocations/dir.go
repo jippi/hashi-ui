@@ -39,8 +39,12 @@ func (w *dir) Do() (*structs.Response, error) {
 		w.alloc = alloc
 	}
 
-	if w.client == nil {
-		w.nodeClient, _ = w.client.GetNodeClient(w.alloc.NodeID, w.query)
+	if w.nodeClient == nil {
+		nodeClient, err := w.client.GetNodeClient(w.alloc.NodeID, w.query)
+		if err != nil {
+			return structs.NewErrorResponse(err)
+		}
+		w.nodeClient = nodeClient
 	}
 
 	dir, _, err := w.nodeClient.AllocFS().List(w.alloc, w.path, w.query)
