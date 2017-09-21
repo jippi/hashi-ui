@@ -3,6 +3,7 @@ package nodes
 import (
 	"sort"
 	"sync"
+	"time"
 
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/nomad/helper"
@@ -28,6 +29,8 @@ type list struct {
 }
 
 func NewList(action structs.Action, client *api.Client, query *api.QueryOptions) *list {
+	query.WaitTime = 10 * time.Second
+
 	return &list{
 		action: action,
 		client: client,
