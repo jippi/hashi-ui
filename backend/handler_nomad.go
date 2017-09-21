@@ -1,4 +1,4 @@
-package nomad
+package main
 
 import (
 	"io"
@@ -9,7 +9,8 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/config"
-	"github.com/jippi/hashi-ui/backend/nomad/helper"
+	consul_helper "github.com/jippi/hashi-ui/backend/consul/helper"
+	nomad_helper "github.com/jippi/hashi-ui/backend/nomad/helper"
 	"github.com/jippi/hashi-ui/backend/structs"
 	uuid "github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
@@ -21,13 +22,10 @@ const (
 	unknownNomadRegion  = "NOMAD_UNKNOWN_REGION"
 )
 
-var websocketUpgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool { return true },
-}
-
-// Handler establishes the websocket connection and calls the connection handler.
-func Handler(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
-	defaultClient, _ := helper.NewRegionClient(cfg, "")
+// NomadHandler establishes the websocket connection and calls the connection handler.
+func NomadHandler(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
+	nomadClient, _ := nomad_helper.NewRegionClient(cfg, "")
+	consulClient, _ := consul_helper.NewDatacenterClient(cfg, "")
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		connectionID := uuid.NewV4()
@@ -44,14 +42,14 @@ func Handler(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
 		region, ok := params["region"]
 		if !ok {
 			logger.Errorf("No region provided")
-			requireNomadRegion(socket, defaultClient, logger)
+			requireNomadRegion(socket, nomadClient, logger)
 			return
 		}
 
 		defer socket.Close()
 
-		client, _ := helper.NewRegionClient(cfg, region)
-		c := NewConnection(socket, client, logger, connectionID, cfg)
+		client, _ := nomad_helper.NewRegionClient(cfg, region)
+		c := NewConnection(socket, client, consulClient, logger, connectionID, cfg)
 		c.Handle()
 	}
 }
@@ -87,14 +85,8 @@ func requireNomadRegion(socket *websocket.Conn, client *api.Client, logger *log.
 	}
 }
 
-func sendAction(socket *websocket.Conn, action *structs.Action, logger *log.Entry) {
-	if err := socket.WriteJSON(action); err != nil {
-		logger.Errorf(" %s", err)
-	}
-}
-
 // DownloadFile ...
-func DownloadFile(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
+func NomadDownloadFile(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		connectionID := uuid.NewV4()
 		logger := log.WithField("connection_id", connectionID.String()[:8])
@@ -102,7 +94,7 @@ func DownloadFile(cfg *config.Config) func(w http.ResponseWriter, r *http.Reques
 		params := mux.Vars(r)
 		region := params["region"]
 
-		regionClient, _ := helper.NewRegionClient(cfg, region)
+		regionClient, _ := nomad_helper.NewRegionClient(cfg, region)
 
 		c := r.URL.Query().Get("client")
 		allocID := r.URL.Query().Get("allocID")

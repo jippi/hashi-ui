@@ -9,8 +9,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jippi/hashi-ui/backend/config"
-	"github.com/jippi/hashi-ui/backend/consul"
-	"github.com/jippi/hashi-ui/backend/nomad"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -89,17 +87,12 @@ func main() {
 			return
 		})
 
-		router.HandleFunc("/ws/nomad", nomad.Handler(cfg))
-		router.HandleFunc("/ws/nomad/{region}", nomad.Handler(cfg))
-		router.HandleFunc("/nomad/{region}/download/{path:.*}", nomad.DownloadFile(cfg))
+		router.HandleFunc("/ws/nomad", NomadHandler(cfg))
+		router.HandleFunc("/ws/nomad/{region}", NomadHandler(cfg))
+		router.HandleFunc("/nomad/{region}/download/{path:.*}", NomadDownloadFile(cfg))
 	}
 
 	if cfg.ConsulEnable {
-		consulHub, consulSuccess := consul.Initialize(cfg)
-		if !consulSuccess {
-			log.Fatalf("Failed to start Consul hub, please check your configuration")
-		}
-
 		if !cfg.NomadEnable {
 			router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 				log.Infof("Redirecting / to /consul")
@@ -107,9 +100,8 @@ func main() {
 			})
 		}
 
-		log.Infof("Consul client successfully initialized")
-		router.HandleFunc("/ws/consul", consulHub.Handler)
-		router.HandleFunc("/ws/consul/{region}", consulHub.Handler)
+		router.HandleFunc("/ws/consul", ConsulHandler(cfg))
+		router.HandleFunc("/ws/consul/{region}", ConsulHandler(cfg))
 	}
 
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

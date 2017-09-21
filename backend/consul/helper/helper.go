@@ -3,22 +3,17 @@ package helper
 import (
 	"time"
 
-	"github.com/hashicorp/nomad/api"
+	"github.com/hashicorp/consul/api"
 	"github.com/jippi/hashi-ui/backend/config"
 )
 
-// NewRegionClient ...
-func NewRegionClient(c *config.Config, region string) (*api.Client, error) {
+// NewDatacenterClient ...
+func NewDatacenterClient(c *config.Config, dc string) (*api.Client, error) {
 	config := api.DefaultConfig()
-	config.Address = c.NomadAddress
-	config.WaitTime = 1 * time.Minute
-	config.Region = region
-	config.TLSConfig = &api.TLSConfig{
-		CACert:     c.NomadCACert,
-		ClientCert: c.NomadClientCert,
-		ClientKey:  c.NomadClientKey,
-		Insecure:   c.NomadSkipVerify,
-	}
+	config.Address = c.ConsulAddress
+	config.WaitTime = 2 * time.Minute
+	config.Datacenter = dc
+	config.Token = c.ConsulACLToken
 
 	return api.NewClient(config)
 }
