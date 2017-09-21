@@ -23,7 +23,7 @@ class FilterFreetext extends Component {
         onChange={(proxy, value) => {
           q[this.props.query] = value
 
-          router.push({
+          this.props.router.push({
             pathname: this.props.location.pathname,
             query: q
           })
