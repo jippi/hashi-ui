@@ -36,7 +36,7 @@ func (w *list) Do() (*structs.Response, error) {
 		return nil, nil
 	}
 
-	return structs.NewResultWithIndex(fetchedList, evaluations, meta.LastIndex), nil
+	return structs.NewResponseWithIndex(fetchedList, evaluations, meta.LastIndex)
 }
 
 func (w *list) Key() string {

@@ -38,7 +38,7 @@ func (w *allocations) Do() (*structs.Response, error) {
 		return nil, nil
 	}
 
-	return structs.NewResultWithIndex(fetchedAllocations, allocations, meta.LastIndex), nil
+	return structs.NewResponseWithIndex(fetchedAllocations, allocations, meta.LastIndex)
 }
 
 func (w *allocations) Key() string {

@@ -38,7 +38,7 @@ func (w *deployments) Do() (*structs.Response, error) {
 		return nil, nil
 	}
 
-	return structs.NewResultWithIndex(fetchedJobDeployments, deployments, meta.LastIndex), nil
+	return structs.NewResponseWithIndex(fetchedJobDeployments, deployments, meta.LastIndex)
 }
 
 func (w *deployments) Key() string {

@@ -42,7 +42,7 @@ func (w *list) Do() (*structs.Response, error) {
 	// TODO: refactor to Go 1.9 sorting !
 	sort.Sort(ClientNameSorter(nodes))
 
-	return structs.NewResultWithIndex(fetchedList, nodes, meta.LastIndex), nil
+	return structs.NewResponseWithIndex(fetchedList, nodes, meta.LastIndex)
 }
 
 func (w *list) Key() string {

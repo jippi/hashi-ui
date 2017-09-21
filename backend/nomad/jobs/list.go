@@ -49,7 +49,7 @@ func (w *list) Do() (*structs.Response, error) {
 		actionType = fetchedListFiltered
 	}
 
-	return structs.NewResultWithIndex(actionType, jobs, meta.LastIndex), nil
+	return structs.NewResponseWithIndex(actionType, jobs, meta.LastIndex)
 }
 
 func (w *list) Key() string {

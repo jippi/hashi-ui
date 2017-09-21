@@ -56,12 +56,12 @@ func NewResponse(kind string, payload interface{}) *Response {
 	return response
 }
 
-// NewResultWithIndex will create a new response with an action with Index value
-func NewResultWithIndex(kind string, payload interface{}, index uint64) *Response {
+// NewResponseWithIndex will create a new response with an action with Index value
+func NewResponseWithIndex(kind string, payload interface{}, index uint64) (*Response, error) {
 	response := &Response{}
 	response.Add(&Action{Type: kind, Payload: payload, Index: index})
 
-	return response
+	return response, nil
 }
 
 // NewErrorResponse will return a Response with error message attached

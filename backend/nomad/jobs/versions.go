@@ -43,7 +43,7 @@ func (w *versions) Do() (*structs.Response, error) {
 		response = append(response, version.Version)
 	}
 
-	return structs.NewResultWithIndex(fetchedVersions, response, meta.LastIndex), nil
+	return structs.NewResponseWithIndex(fetchedVersions, response, meta.LastIndex)
 }
 
 func (w *versions) Key() string {
