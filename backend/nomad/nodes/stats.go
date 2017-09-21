@@ -24,18 +24,15 @@ func NewStats(action structs.Action, client *api.Client) *stats {
 	}
 }
 
-func (w *stats) Do() (*structs.Action, error) {
+func (w *stats) Do() (*structs.Response, error) {
 	ID := w.action.Payload.(string)
 
 	stats, err := w.client.Nodes().Stats(ID, nil)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
-	return &structs.Action{
-		Type:    fetchedClientStats,
-		Payload: stats,
-	}, nil
+	return structs.NewResponse(fetchedClientStats, stats), nil
 }
 
 func (w *stats) Key() string {

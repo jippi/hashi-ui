@@ -1,7 +1,6 @@
 package members
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/hashicorp/nomad/api"
@@ -31,12 +30,12 @@ func NewInfo(action structs.Action, cfg *config.Config, client *api.Client) *inf
 	}
 }
 
-func (w *info) Do() (*structs.Action, error) {
+func (w *info) Do() (*structs.Response, error) {
 	id := w.action.Payload.(string)
 
 	checksum, members, err := membersWithID(w.client, w.cfg)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	if checksum == w.checksum {
@@ -48,11 +47,11 @@ func (w *info) Do() (*structs.Action, error) {
 
 	for _, m := range members {
 		if m.Name == id {
-			return &structs.Action{Type: fetchedInfo, Payload: m}, nil
+			return structs.NewResponse(fetchedInfo, m), nil
 		}
 	}
 
-	return nil, fmt.Errorf("Unable to find member with ID: %s", id)
+	return structs.NewErrorResponse("Unable to find member with ID: %s", id)
 }
 
 func (w *info) Key() string {

@@ -1,8 +1,6 @@
 package kv
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/consul/api"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
@@ -23,19 +21,15 @@ func NewDeleteTree(action structs.Action, client *api.Client) *deleteTree {
 	}
 }
 
-func (w *deleteTree) Do() (*structs.Action, error) {
+func (w *deleteTree) Do() (*structs.Response, error) {
 	key := w.action.Payload.(string)
 
 	_, err := w.client.KV().DeleteTree(key, &api.WriteOptions{})
 	if err != nil {
-		return nil, fmt.Errorf("unable to deleteTree consul kv '%s': %s", key, err)
+		return structs.NewErrorResponse("unable to deleteTree consul kv '%s': %s", key, err)
 	}
 
-	// c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: fmt.Sprintf("Successfully deleteTreed %s", key)}
-	return &structs.Action{
-		Type:    structs.SuccessNotification,
-		Payload: fmt.Sprintf("The tree was successfully deleted: %s.", key),
-	}, nil
+	return structs.NewSuccessResponse("The tree was successfully deleted: %s", key)
 }
 
 func (w *deleteTree) Key() string {
@@ -43,5 +37,5 @@ func (w *deleteTree) Key() string {
 }
 
 func (w *deleteTree) IsMutable() bool {
-	return false
+	return true
 }

@@ -38,22 +38,18 @@ func NewList(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *list) Do() (*structs.Action, error) {
+func (w *list) Do() (*structs.Response, error) {
 	var services InternalServices
 	meta, err := w.client.Raw().Query("/v1/internal/ui/services", &services, w.query)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 
-	return &structs.Action{
-		Index:   meta.LastIndex,
-		Payload: services,
-		Type:    fetchedList,
-	}, nil
+	return structs.NewResultWithIndex(fetchedList, services, meta.LastIndex), nil
 }
 
 func (w *list) Key() string {

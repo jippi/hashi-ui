@@ -1,8 +1,6 @@
 package kv
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/consul/api"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
@@ -24,10 +22,10 @@ func NewDelete(action structs.Action, client *api.Client) *delete {
 	}
 }
 
-func (w *delete) Do() (*structs.Action, error) {
+func (w *delete) Do() (*structs.Response, error) {
 	params, ok := w.action.Payload.(map[string]interface{})
 	if !ok {
-		return nil, fmt.Errorf("Could not decode payload")
+		return structs.NewErrorResponse("Could not decode payload")
 	}
 
 	key := params["path"].(string)
@@ -40,15 +38,17 @@ func (w *delete) Do() (*structs.Action, error) {
 
 	success, _, err := w.client.KV().DeleteCAS(keyPair, &api.WriteOptions{})
 	if err != nil {
-		return nil, fmt.Errorf("unable to delete consul kv '%s': %s", key, err)
+		return structs.NewErrorResponse("unable to delete consul kv '%s': %s", key, err)
 	}
 
 	if !success {
-		return nil, fmt.Errorf("unable to delete consul kv '%s'", key)
+		return structs.NewErrorResponse("unable to delete consul kv '%s'", key)
 	}
 
-	// c.send <- &structs.Action{Type: structs.SuccessNotification, Payload: fmt.Sprintf("Successfully deleted %s", key)}
-	return &structs.Action{Type: clear}, nil
+	response, _ := structs.NewSuccessResponse("Successfully deleted %s", key)
+	response.Add(&structs.Action{Type: clear})
+
+	return response, nil
 }
 
 func (w *delete) Key() string {
@@ -58,5 +58,5 @@ func (w *delete) Key() string {
 }
 
 func (w *delete) IsMutable() bool {
-	return false
+	return true
 }

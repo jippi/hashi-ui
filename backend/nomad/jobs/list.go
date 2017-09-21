@@ -31,12 +31,12 @@ func NewList(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *list) Do() (*structs.Action, error) {
+func (w *list) Do() (*structs.Response, error) {
 	w.filter(w.query)
 
 	jobs, meta, err := w.client.Jobs().List(w.query)
 	if err != nil {
-		return nil, fmt.Errorf("watch: unable to fetch jobs: %s", err)
+		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
@@ -49,11 +49,7 @@ func (w *list) Do() (*structs.Action, error) {
 		actionType = fetchedListFiltered
 	}
 
-	return &structs.Action{
-		Index:   meta.LastIndex,
-		Payload: jobs,
-		Type:    actionType,
-	}, nil
+	return structs.NewResultWithIndex(actionType, jobs, meta.LastIndex), nil
 }
 
 func (w *list) Key() string {

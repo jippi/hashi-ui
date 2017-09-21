@@ -23,16 +23,13 @@ func NewStop(action structs.Action, client *api.Client) *stop {
 	}
 }
 
-func (w *stop) Do() (*structs.Action, error) {
+func (w *stop) Do() (*structs.Response, error) {
 	_, _, err := w.client.Jobs().Deregister(w.action.Payload.(string), false, nil)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
-	return &structs.Action{
-		Type:    structs.SuccessNotification,
-		Payload: "Successfully stopped job",
-	}, nil
+	return structs.NewSuccessResponse("Successfully stopped job")
 }
 
 func (w *stop) Key() string {

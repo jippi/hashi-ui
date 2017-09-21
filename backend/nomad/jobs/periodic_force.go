@@ -23,16 +23,13 @@ func NewPeriodicForce(action structs.Action, client *api.Client) *periodicForce 
 	}
 }
 
-func (w *periodicForce) Do() (*structs.Action, error) {
+func (w *periodicForce) Do() (*structs.Response, error) {
 	_, _, err := w.client.Jobs().PeriodicForce(w.action.Payload.(string), nil)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
-	return &structs.Action{
-		Type:    structs.SuccessNotification,
-		Payload: "Successfully force ran the job",
-	}, nil
+	return structs.NewSuccessResponse("Successfully force ran the job")
 }
 
 func (w *periodicForce) Key() string {

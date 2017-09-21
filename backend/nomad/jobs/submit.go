@@ -2,7 +2,6 @@ package jobs
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/config"
@@ -27,9 +26,9 @@ func NewSubmit(action structs.Action, client *api.Client, cfg *config.Config) *s
 	}
 }
 
-func (w *submit) Do() (*structs.Action, error) {
+func (w *submit) Do() (*structs.Response, error) {
 	if w.cfg.NomadHideEnvData {
-		return nil, fmt.Errorf("Can't update job, the hashi-ui setting 'nomad-hide-env-data' will delete all your env{} clauses")
+		return structs.NewErrorResponse("Can't update job, the hashi-ui setting 'nomad-hide-env-data' will delete all your env{} clauses")
 	}
 
 	jobjson := w.action.Payload.(string)
@@ -38,13 +37,10 @@ func (w *submit) Do() (*structs.Action, error) {
 
 	_, _, err := w.client.Jobs().Register(&runjob, nil)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
-	return &structs.Action{
-		Type:    structs.SuccessNotification,
-		Payload: "The job has successfully been submitted.",
-	}, nil
+	return structs.NewSuccessResponse("The job has successfully been submitted.")
 }
 
 func (w *submit) Key() string {

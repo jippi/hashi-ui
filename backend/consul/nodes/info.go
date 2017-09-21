@@ -28,22 +28,18 @@ func NewInfo(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *info) Do() (*structs.Action, error) {
+func (w *info) Do() (*structs.Response, error) {
 	var node internalNode
 	meta, err := w.client.Raw().Query(fmt.Sprintf("/v1/internal/ui/node/%s", w.action.Payload.(string)), &node, w.query)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 
-	return &structs.Action{
-		Index:   meta.LastIndex,
-		Payload: node,
-		Type:    fetchedInfo,
-	}, nil
+	return structs.NewResultWithIndex(fetchedInfo, node, meta.LastIndex), nil
 }
 
 func (w *info) Key() string {

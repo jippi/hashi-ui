@@ -1,8 +1,6 @@
 package nodes
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
@@ -25,15 +23,15 @@ func NewDrain(action structs.Action, client *api.Client) *drain {
 	}
 }
 
-func (w *drain) Do() (*structs.Action, error) {
+func (w *drain) Do() (*structs.Response, error) {
 	var err error
 
 	if w.id == "" {
-		return nil, fmt.Errorf("Missing client id")
+		return structs.NewErrorResponse("Missing client id")
 	}
 
 	if w.actionType == "" {
-		return nil, fmt.Errorf("Missing action type")
+		return structs.NewErrorResponse("Missing action type")
 	}
 
 	switch w.actionType {
@@ -42,17 +40,14 @@ func (w *drain) Do() (*structs.Action, error) {
 	case "disable":
 		_, err = w.client.Nodes().ToggleDrain(w.id, false, nil)
 	default:
-		return nil, fmt.Errorf("Invalid action: %s", w.actionType)
+		return structs.NewErrorResponse("Invalid action: %s", w.actionType)
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to change client drain mode: %s", err)
+		return structs.NewErrorResponse("Failed to change client drain mode: %s", err)
 	}
 
-	return &structs.Action{
-		Type:    structs.SuccessNotification,
-		Payload: "Successfully updated client drain mode.",
-	}, nil
+	return structs.NewSuccessResponse("Successfully updated client drain mode")
 }
 
 func (w *drain) Key() string {

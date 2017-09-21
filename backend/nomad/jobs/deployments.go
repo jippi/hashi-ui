@@ -28,21 +28,17 @@ func NewDeployments(action structs.Action, client *api.Client, query *api.QueryO
 	}
 }
 
-func (w *deployments) Do() (*structs.Action, error) {
+func (w *deployments) Do() (*structs.Response, error) {
 	deployments, meta, err := w.client.Jobs().Deployments(w.action.Payload.(string), w.query)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 
-	return &structs.Action{
-		Index:   meta.LastIndex,
-		Payload: deployments,
-		Type:    fetchedJobDeployments,
-	}, nil
+	return structs.NewResultWithIndex(fetchedJobDeployments, deployments, meta.LastIndex), nil
 }
 
 func (w *deployments) Key() string {

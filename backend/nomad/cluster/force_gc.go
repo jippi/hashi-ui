@@ -21,16 +21,13 @@ func NewForceGC(action structs.Action, client *api.Client) *forceGC {
 	}
 }
 
-func (w *forceGC) Do() (*structs.Action, error) {
+func (w *forceGC) Do() (*structs.Response, error) {
 	err := w.client.System().GarbageCollect()
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
-	return &structs.Action{
-		Type:    structs.SuccessNotification,
-		Payload: "Successfully forced a gc",
-	}, nil
+	return structs.NewSuccessResponse("Successfully forced a gc")
 }
 
 func (w *forceGC) Key() string {

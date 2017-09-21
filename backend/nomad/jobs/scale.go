@@ -23,7 +23,7 @@ func NewScale(action structs.Action, client *api.Client) *scale {
 	}
 }
 
-func (w *scale) Do() (*structs.Action, error) {
+func (w *scale) Do() (*structs.Response, error) {
 	params := w.action.Payload.(map[string]interface{})
 
 	jobID := params["job"].(string)
@@ -61,10 +61,7 @@ func (w *scale) Do() (*structs.Action, error) {
 			return nil, err
 		}
 
-		return &structs.Action{
-			Type:    structs.SuccessNotification,
-			Payload: fmt.Sprintf("Successfully restarted task group"),
-		}, nil
+		return structs.NewSuccessResponse("Successfully restarted task group")
 	default:
 		return nil, fmt.Errorf("Invalid action: %s", scaleAction)
 	}
@@ -77,25 +74,13 @@ func (w *scale) Do() (*structs.Action, error) {
 
 	switch scaleAction {
 	case "set":
-		return &structs.Action{
-			Type:    structs.SuccessNotification,
-			Payload: fmt.Sprintf("Successfully changed task group count for %s:%s from %d to %d", jobID, taskGroupID, originalCount, newCount),
-		}, nil
+		return structs.NewSuccessResponse("Successfully changed task group count for %s:%s from %d to %d", jobID, taskGroupID, originalCount, newCount)
 	case "increase":
-		return &structs.Action{
-			Type:    structs.SuccessNotification,
-			Payload: fmt.Sprintf("Successfully increased task group count for %s:%s from %d to %d", jobID, taskGroupID, originalCount, newCount),
-		}, nil
+		return structs.NewSuccessResponse("Successfully increased task group count for %s:%s from %d to %d", jobID, taskGroupID, originalCount, newCount)
 	case "decrease":
-		return &structs.Action{
-			Type:    structs.SuccessNotification,
-			Payload: fmt.Sprintf("Successfully decreased task group count for %s:%s from %d to %d", jobID, taskGroupID, originalCount, newCount),
-		}, nil
+		return structs.NewSuccessResponse("Successfully decreased task group count for %s:%s from %d to %d", jobID, taskGroupID, originalCount, newCount)
 	case "stop":
-		return &structs.Action{
-			Type:    structs.SuccessNotification,
-			Payload: fmt.Sprintf("Successfully stopped task group %s:%s", jobID, taskGroupID),
-		}, nil
+		return structs.NewSuccessResponse("Successfully stopped task group %s:%s", jobID, taskGroupID)
 	}
 
 	return nil, nil

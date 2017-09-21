@@ -28,10 +28,10 @@ func NewList(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *list) Do() (*structs.Action, error) {
+func (w *list) Do() (*structs.Response, error) {
 	nodes, meta, err := w.client.Nodes().List(w.query)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
@@ -42,11 +42,7 @@ func (w *list) Do() (*structs.Action, error) {
 	// TODO: refactor to Go 1.9 sorting !
 	sort.Sort(ClientNameSorter(nodes))
 
-	return &structs.Action{
-		Type:    fetchedList,
-		Payload: nodes,
-		Index:   meta.LastIndex,
-	}, nil
+	return structs.NewResultWithIndex(fetchedList, nodes, meta.LastIndex), nil
 }
 
 func (w *list) Key() string {

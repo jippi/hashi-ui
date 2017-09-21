@@ -21,18 +21,15 @@ func NewRemove(action structs.Action, client *api.Client) *remove {
 	}
 }
 
-func (w *remove) Do() (*structs.Action, error) {
+func (w *remove) Do() (*structs.Response, error) {
 	ID := w.action.Payload.(string)
 
 	err := w.client.Agent().ForceLeave(ID)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
-	return &structs.Action{
-		Type:    structs.SuccessNotification,
-		Payload: "Successfully force leaved the client.",
-	}, nil
+	return structs.NewSuccessResponse("Successfully force leaved the client")
 }
 
 func (w *remove) Key() string {

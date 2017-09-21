@@ -23,7 +23,7 @@ func NewSet(action structs.Action, client *api.Client) *set {
 	}
 }
 
-func (w *set) Do() (*structs.Action, error) {
+func (w *set) Do() (*structs.Response, error) {
 	params, ok := w.action.Payload.(map[string]interface{})
 	if !ok {
 		return nil, fmt.Errorf("Could not decode payload")
@@ -41,11 +41,11 @@ func (w *set) Do() (*structs.Action, error) {
 
 	res, _, err := w.client.KV().CAS(keyPair, nil)
 	if err != nil {
-		return nil, fmt.Errorf("unable to write consul kv '%s': %s", key, err)
+		return structs.NewErrorResponse("unable to write consul kv '%s': %s", key, err)
 	}
 
 	if !res {
-		return nil, fmt.Errorf("unable to write consul kv '%s': %s", key, err)
+		return structs.NewErrorResponse("unable to write consul kv '%s': %s", key, err)
 	}
 
 	// TODO: make it so a method can return multiple results if needed
@@ -54,10 +54,7 @@ func (w *set) Do() (*structs.Action, error) {
 		return c.Do()
 	}
 
-	return &structs.Action{
-		Type:    structs.SuccessNotification,
-		Payload: "Successfully wrote key value",
-	}, nil
+	return structs.NewSuccessResponse("Successfully wrote key value")
 }
 
 func (w *set) Key() string {

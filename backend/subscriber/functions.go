@@ -7,14 +7,14 @@ import (
 
 // Watcher interface
 type Watcher interface {
-	Do() (*structs.Action, error)
+	Do() (*structs.Response, error)
 	Key() string
 	IsMutable() bool
 }
 
 // Streamer interface
 type Streamer interface {
-	Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error)
+	Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Response, error)
 	Key() string
 	IsMutable() bool
 }
@@ -53,7 +53,7 @@ func Watch(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Acti
 			return
 
 		default:
-			action, err := w.Do()
+			response, err := w.Do()
 			if err != nil {
 				logger.Errorf("connection: unable to fetch %s: %s", watchKey, err)
 				send <- &structs.Action{Type: structs.ErrorNotification, Payload: err.Error()}
@@ -65,8 +65,8 @@ func Watch(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Acti
 				return
 			}
 
-			if action != nil {
-				send <- action
+			if response != nil {
+				replies(response.Actions(), send)
 			}
 		}
 	}
@@ -103,7 +103,7 @@ func Once(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Actio
 	}()
 	logger.Infof("Started running %s", watchKey)
 
-	action, err := w.Do()
+	response, err := w.Do()
 	if err != nil {
 		logger.Errorf("connection: unable to run %s: %s", watchKey, err)
 		send <- &structs.Action{
@@ -118,8 +118,14 @@ func Once(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Actio
 		return
 	}
 
-	if action != nil {
-		send <- action
+	if response != nil {
+		replies(response.Actions(), send)
+	}
+}
+
+func replies(actions []*structs.Action, sendCh chan *structs.Action) {
+	for _, action := range actions {
+		sendCh <- action
 	}
 }
 
@@ -141,7 +147,7 @@ func Stream(w Streamer, s Subscription, logger *log.Entry, send chan *structs.Ac
 	}()
 	logger.Infof("Started streaming %s", watchKey)
 
-	action, err := w.Do(send, subscribeCh, destroyCh)
+	response, err := w.Do(send, subscribeCh, destroyCh)
 	if err != nil {
 		logger.Errorf("connection: unable to stream %s: %s", watchKey, err)
 		send <- &structs.Action{
@@ -156,8 +162,8 @@ func Stream(w Streamer, s Subscription, logger *log.Entry, send chan *structs.Ac
 		return
 	}
 
-	if action != nil {
-		send <- action
+	if response != nil {
+		replies(response.Actions(), send)
 		return
 	}
 }

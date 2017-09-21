@@ -30,7 +30,7 @@ func NewDeregisterCheck(action structs.Action, cfg *config.Config, client *api.C
 	}
 }
 
-func (w *deregisterCheck) Do() (*structs.Action, error) {
+func (w *deregisterCheck) Do() (*structs.Response, error) {
 	_, port, _ := net.SplitHostPort(w.cfg.ConsulAddress)
 	if port == "" {
 		port = "80"
@@ -42,18 +42,15 @@ func (w *deregisterCheck) Do() (*structs.Action, error) {
 
 	client, err := api.NewClient(config)
 	if err != nil {
-		return nil, fmt.Errorf("unable to create consul client : %s", err)
+		return structs.NewErrorResponse("unable to create consul client : %s", err)
 	}
 
 	err = client.Agent().CheckDeregister(w.checkID)
 	if err != nil {
-		return nil, fmt.Errorf("unable to deregister check '%s': %s", w.checkID, err)
+		return structs.NewErrorResponse("unable to deregister check '%s': %s", w.checkID, err)
 	}
 
-	return &structs.Action{
-		Type:    structs.SuccessNotification,
-		Payload: "The service has been successfully deregisterChecked",
-	}, nil
+	return structs.NewSuccessResponse("The service check has been successfully deregistered")
 }
 
 func (w *deregisterCheck) Key() string {

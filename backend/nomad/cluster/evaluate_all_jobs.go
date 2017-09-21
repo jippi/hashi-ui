@@ -23,10 +23,10 @@ func NewEvaluateAllJobs(action structs.Action, client *api.Client) *evaluateAllJ
 	}
 }
 
-func (w *evaluateAllJobs) Do() (*structs.Action, error) {
+func (w *evaluateAllJobs) Do() (*structs.Response, error) {
 	jobs, _, err := w.client.Jobs().List(nil)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	var wg sync.WaitGroup
@@ -41,10 +41,7 @@ func (w *evaluateAllJobs) Do() (*structs.Action, error) {
 
 	wg.Wait()
 
-	return &structs.Action{
-		Type:    structs.SuccessNotification,
-		Payload: "Evaluating all jobs in the background.",
-	}, nil
+	return structs.NewSuccessResponse("Successfully force-evaluated all jobs")
 }
 
 func (w *evaluateAllJobs) Key() string {

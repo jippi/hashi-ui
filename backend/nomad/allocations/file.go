@@ -41,20 +41,20 @@ func NewFile(action structs.Action, client *api.Client) *file {
 }
 
 // Do will watch the /job/:id endpoint for changes
-func (w *file) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Action, error) {
+func (w *file) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Response, error) {
 	alloc, _, err := w.client.Allocations().Info(w.id, nil)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	allocClient, err := w.client.GetNodeClient(alloc.NodeID, nil)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	file, _, err := allocClient.AllocFS().Stat(alloc, w.path, nil)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	var origin = api.OriginStart
@@ -70,7 +70,7 @@ func (w *file) Do(send chan *structs.Action, subscribeCh chan interface{}, destr
 	cancel := make(chan struct{})
 	frames, err := allocClient.AllocFS().Stream(alloc, w.path, origin, offset, cancel, nil)
 	if err != nil {
-		return nil, fmt.Errorf("Unable to stream file: %s", err)
+		return structs.NewErrorResponse("Unable to stream file: %s", err)
 	}
 
 	frameReader := api.NewFrameReader(frames, cancel)

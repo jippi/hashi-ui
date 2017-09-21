@@ -28,10 +28,10 @@ func NewVersions(action structs.Action, client *api.Client, query *api.QueryOpti
 	}
 }
 
-func (w *versions) Do() (*structs.Action, error) {
+func (w *versions) Do() (*structs.Response, error) {
 	versions, _, meta, err := w.client.Jobs().Versions(w.action.Payload.(string), false, w.query)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
@@ -43,11 +43,7 @@ func (w *versions) Do() (*structs.Action, error) {
 		response = append(response, version.Version)
 	}
 
-	return &structs.Action{
-		Index:   meta.LastIndex,
-		Payload: response,
-		Type:    fetchedVersions,
-	}, nil
+	return structs.NewResultWithIndex(fetchedVersions, response, meta.LastIndex), nil
 }
 
 func (w *versions) Key() string {

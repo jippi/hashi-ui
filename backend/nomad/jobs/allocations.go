@@ -28,21 +28,17 @@ func NewAllocations(action structs.Action, client *api.Client, query *api.QueryO
 	}
 }
 
-func (w *allocations) Do() (*structs.Action, error) {
+func (w *allocations) Do() (*structs.Response, error) {
 	allocations, meta, err := w.client.Jobs().Allocations(w.action.Payload.(string), true, w.query)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 
-	return &structs.Action{
-		Type:    fetchedAllocations,
-		Payload: allocations,
-		Index:   meta.LastIndex,
-	}, nil
+	return structs.NewSuccessResponse(fetchedAllocations, allocations, meta.LastIndex)
 }
 
 func (w *allocations) Key() string {

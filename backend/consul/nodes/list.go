@@ -26,7 +26,7 @@ func NewList(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *list) Do() (*structs.Action, error) {
+func (w *list) Do() (*structs.Response, error) {
 	var nodes internalNodes
 	meta, err := w.client.Raw().Query("/v1/internal/ui/nodes", &nodes, w.query)
 	if err != nil {
@@ -37,11 +37,7 @@ func (w *list) Do() (*structs.Action, error) {
 		return nil, nil
 	}
 
-	return &structs.Action{
-		Index:   meta.LastIndex,
-		Payload: nodes,
-		Type:    fetchedList,
-	}, nil
+	return structs.NewResultWithIndex(fetchedList, nodes, meta.LastIndex), nil
 }
 
 func (w *list) Key() string {

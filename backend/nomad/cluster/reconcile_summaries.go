@@ -21,16 +21,13 @@ func NewReconsileSummaries(action structs.Action, client *api.Client) *reconsile
 	}
 }
 
-func (w *reconsileSummaries) Do() (*structs.Action, error) {
+func (w *reconsileSummaries) Do() (*structs.Response, error) {
 	err := w.client.System().ReconcileSummaries()
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
-	return &structs.Action{
-		Type:    structs.SuccessNotification,
-		Payload: "Successfully reconsiled summaries",
-	}, nil
+	return structs.NewSuccessResponse("Successfully reconsiled summaries")
 }
 
 func (w *reconsileSummaries) Key() string {

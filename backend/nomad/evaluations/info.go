@@ -28,21 +28,17 @@ func NewInfo(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *info) Do() (*structs.Action, error) {
+func (w *info) Do() (*structs.Response, error) {
 	job, meta, err := w.client.Evaluations().Info(w.action.Payload.(string), w.query)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 
-	return &structs.Action{
-		Index:   meta.LastIndex,
-		Payload: job,
-		Type:    fetchedInfo,
-	}, nil
+	return structs.NewResultWithIndex(fetchedInfo, job, meta.LastIndex), nil
 }
 
 func (w *info) Key() string {

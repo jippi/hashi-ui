@@ -224,7 +224,7 @@ func (c *connection) process(action structs.Action) {
 		c.once(consul_catalog.NewDatacenters(action, c.consulClient))
 
 	//
-	// Deployments
+	// Nomad Deployments
 	//
 	case nomad_deployments.WatchList:
 		c.watch(nomad_deployments.NewList(action, c.nomadClient, c.newNomadQueryOptions()))
@@ -242,7 +242,7 @@ func (c *connection) process(action structs.Action) {
 		c.once(nomad_deployments.NewCHangeStatus(action, c.nomadClient))
 
 	//
-	// Jobs
+	// Nomad Jobs
 	//
 	case nomad_jobs.WatchList:
 		fallthrough // same as filtered
@@ -280,7 +280,7 @@ func (c *connection) process(action structs.Action) {
 		c.once(nomad_jobs.NewSubmit(action, c.nomadClient, c.config))
 
 	//
-	// Allocations
+	// Nomad Allocations
 	//
 	case nomad_allocations.WatchList:
 		c.watch(nomad_allocations.NewList(action, false, c.nomadClient, c.newNomadQueryOptions()))
@@ -302,7 +302,7 @@ func (c *connection) process(action structs.Action) {
 		c.once(nomad_allocations.NewDir(action, c.nomadClient))
 
 	//
-	// Nodes
+	// Nomad Nodes
 	//
 	case nomad_nodes.WatchList:
 		c.watch(nomad_nodes.NewList(action, c.nomadClient, c.newNomadQueryOptions()))
@@ -326,7 +326,7 @@ func (c *connection) process(action structs.Action) {
 		c.unwatch(nomad_nodes.NewStats(action, nil))
 
 	//
-	// Members
+	// Nomad Members
 	//
 	case nomad_members.WatchList:
 		c.stream(nomad_members.NewList(action, c.config, c.nomadClient))
@@ -340,7 +340,7 @@ func (c *connection) process(action structs.Action) {
 		c.once(nomad_members.NewInfo(action, c.config, c.nomadClient))
 
 	//
-	// Evaluations
+	// Nomad Evaluations
 	//
 	case nomad_evaluations.WatchList:
 		c.watch(nomad_evaluations.NewList(action, c.nomadClient, c.newNomadQueryOptions()))
@@ -352,7 +352,7 @@ func (c *connection) process(action structs.Action) {
 		c.unwatch(nomad_evaluations.NewInfo(action, nil, nil))
 
 	//
-	// Cluster
+	// Nomad Cluster
 	//
 	case nomad_cluster.EvaluateAllJobs:
 		c.once(nomad_cluster.NewEvaluateAllJobs(action, c.nomadClient))

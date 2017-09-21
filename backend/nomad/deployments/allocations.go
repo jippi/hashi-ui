@@ -28,21 +28,17 @@ func NewAllocations(action structs.Action, client *api.Client, query *api.QueryO
 	}
 }
 
-func (w *allocations) Do() (*structs.Action, error) {
+func (w *allocations) Do() (*structs.Response, error) {
 	allocations, meta, err := w.client.Deployments().Allocations(w.action.Payload.(string), w.query)
 	if err != nil {
-		return nil, fmt.Errorf("watch: unable to fetch %s: %s", w.Key(), err)
+		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 
-	return &structs.Action{
-		Index:   meta.LastIndex,
-		Payload: allocations,
-		Type:    fetchedAllocations,
-	}, nil
+	return structs.NewResultWithIndex(fetchedAllocations, allocations, meta.LastIndex), nil
 }
 
 func (w *allocations) Key() string {

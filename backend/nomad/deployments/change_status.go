@@ -26,7 +26,7 @@ func NewCHangeStatus(action structs.Action, client *api.Client) *changeStatus {
 	}
 }
 
-func (w *changeStatus) Do() (*structs.Action, error) {
+func (w *changeStatus) Do() (*structs.Response, error) {
 	if w.id == "" {
 		return nil, fmt.Errorf("Missing deployment id")
 	}
@@ -52,13 +52,10 @@ func (w *changeStatus) Do() (*structs.Action, error) {
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to update deployment: %s", err)
+		return structs.NewErrorResponse(err)
 	}
 
-	return &structs.Action{
-		Type:    structs.SuccessNotification,
-		Payload: "Successfully updated deployment.",
-	}, nil
+	return structs.NewSuccessResponse("Successfully updated deployment")
 }
 
 func (w *changeStatus) Key() string {

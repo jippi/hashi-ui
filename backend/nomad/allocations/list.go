@@ -30,10 +30,10 @@ func NewList(action structs.Action, shallow bool, client *api.Client, query *api
 	}
 }
 
-func (w *list) Do() (*structs.Action, error) {
+func (w *list) Do() (*structs.Response, error) {
 	allocations, meta, err := w.client.Allocations().List(w.query)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
@@ -46,11 +46,7 @@ func (w *list) Do() (*structs.Action, error) {
 		}
 	}
 
-	return &structs.Action{
-		Index:   meta.LastIndex,
-		Payload: allocations,
-		Type:    fetchedList,
-	}, nil
+	return structs.NewSuccessResponse(fetchedList, allocations, meta.LastIndex)
 }
 
 func (w *list) Key() string {

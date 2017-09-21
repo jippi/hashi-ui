@@ -26,21 +26,17 @@ func NewList(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *list) Do() (*structs.Action, error) {
+func (w *list) Do() (*structs.Response, error) {
 	deployments, meta, err := w.client.Deployments().List(w.query)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
 		return nil, nil
 	}
 
-	return &structs.Action{
-		Type:    fetchedList,
-		Payload: deployments,
-		Index:   meta.LastIndex,
-	}, nil
+	return structs.NewResultWithIndex(fetchedList, deployments, meta.LastIndex), nil
 }
 
 func (w *list) Key() string {

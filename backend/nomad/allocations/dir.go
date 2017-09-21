@@ -28,11 +28,11 @@ func NewDir(action structs.Action, client *api.Client) *dir {
 	}
 }
 
-func (w *dir) Do() (*structs.Action, error) {
+func (w *dir) Do() (*structs.Response, error) {
 	if w.alloc == nil {
 		alloc, _, err := w.client.Allocations().Info(w.id, nil)
 		if err != nil {
-			return nil, err
+			return structs.NewErrorResponse(err)
 		}
 		w.alloc = alloc
 	}
@@ -43,13 +43,10 @@ func (w *dir) Do() (*structs.Action, error) {
 
 	dir, _, err := w.nodeClient.AllocFS().List(w.alloc, w.path, nil)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
-	return &structs.Action{
-		Type:    fetchedDir,
-		Payload: dir,
-	}, nil
+	return structs.NewResponse(fetchedDir, dir), nil
 }
 
 func (w *dir) Key() string {

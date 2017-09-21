@@ -23,16 +23,13 @@ func NewForceEvaluate(action structs.Action, client *api.Client) *forceEvaluate 
 	}
 }
 
-func (w *forceEvaluate) Do() (*structs.Action, error) {
+func (w *forceEvaluate) Do() (*structs.Response, error) {
 	_, _, err := w.client.Jobs().ForceEvaluate(w.action.Payload.(string), nil)
 	if err != nil {
-		return nil, fmt.Errorf("watch: unable to evaluate %s: %s", w.Key(), err)
+		return structs.NewErrorResponse(err)
 	}
 
-	return &structs.Action{
-		Payload: "The job has been successfully re-evaluated.",
-		Type:    structs.SuccessNotification,
-	}, nil
+	return structs.NewSuccessResponse("The job has been successfully re-evaluated")
 }
 
 func (w *forceEvaluate) Key() string {
