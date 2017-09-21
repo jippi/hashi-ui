@@ -41,7 +41,13 @@ class Deployment extends Component {
 
     out.push(
       <span key="job">
-        <Link to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.deployment.JobID}/info` }}>
+        <Link
+          to={{
+            pathname: `/nomad/${this.props.router.params.region}/jobs/${encodeURIComponent(
+              this.props.deployment.JobID
+            )}/info`
+          }}
+        >
           {this.props.deployment.JobID}
         </Link>
       </span>
@@ -51,7 +57,11 @@ class Deployment extends Component {
     out.push(
       <span key="deployments">
         <Link
-          to={{ pathname: `/nomad/${this.props.router.params.region}/jobs/${this.props.deployment.JobID}/deployments` }}
+          to={{
+            pathname: `/nomad/${this.props.router.params.region}/jobs/${encodeURIComponent(
+              this.props.deployment.JobID
+            )}/deployments`
+          }}
         >
           Deployments
         </Link>
@@ -121,9 +131,7 @@ class Deployment extends Component {
           </title>
         </Helmet>
 
-        <h3 style={{ marginTop: "10px", marginBottom: "15px" }}>
-          {this.breadcrumb()}
-        </h3>
+        <h3 style={{ marginTop: "10px", marginBottom: "15px" }}>{this.breadcrumb()}</h3>
 
         <DeploymentTopbar {...this.props} />
 

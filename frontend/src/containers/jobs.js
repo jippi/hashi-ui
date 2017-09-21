@@ -49,7 +49,7 @@ class Jobs extends Component {
             <Grid fluid style={{ padding: 0, margin: 0 }}>
               <Row>
                 <Col key="job-name-filter-pane" xs={6} sm={3} md={3} lg={3}>
-                  <FilterFreetext query="name" label="Name" />
+                  <FilterFreetext query="name" label="Name" focusOnLoad />
                 </Col>
                 <Col key="job-type-filter-pane" xs={6} sm={3} md={3} lg={3}>
                   <JobTypeFilter />

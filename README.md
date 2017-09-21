@@ -136,14 +136,6 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | `CONSUL_CLIENT_CERT`    | `<empty>`                 | `<empty>` 	                | (optional) path to a client cert file (remember to set `CONSUL_HTTP_SSL` to true)                                |
 | `CONSUL_CLIENT_KEY`  	  | `<empty>`                 | `<empty>` 	                | (optional) path to a client key file (remember to set `CONSUL_HTTP_SSL` to true)          	                   |
 
-## Instrumentation Configuration
-
-| Environment        	  |CLI (`--flag`)    	      | Default                     | Description                                                                                                      |
-|-------------------------|-------------------------  |-----------------------------|------------------------------------------------------------------------------------------------------------------|
-| `NEWRELIC_APP_NAME`     | `newrelic.app_name`  	  | `hashi-ui`               	| (optional) NewRelic application name                                                                             |
-| `NEWRELIC_LICENSE`      | `newrelic.license`  	  | `<empty>`          	  		| (optional) NewRelic license key
-
-
 ## Running in AWS
 
 When Running Hashi UI behind AWS ELB (even with Nginx/Traefik in between), ELB should be configured with TCP not HTTP Listeners (HTTP Listener doesn't support websockets)

@@ -19,7 +19,7 @@ class JobChildren extends Component {
     this.props.dispatch({
       type: NOMAD_UNWATCH_JOBS_FILTERED,
       payload: {
-        prefix: this.props.job.ID
+        prefix: this.props.job.ID + "/"
       }
     })
   }
