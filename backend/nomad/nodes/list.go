@@ -76,8 +76,14 @@ func nodeStats(client *api.Client, nodes []*api.NodeListStub) []*customClient {
 		go func(i int, node *api.NodeListStub) {
 			defer wg.Done()
 
+			if node.Status != "ready" {
+				res[i] = &customClient{node, make(map[string]interface{})}
+				return
+			}
+
 			stats, err := client.Nodes().Stats(node.ID, nil)
 			if err != nil {
+				res[i] = &customClient{node, make(map[string]interface{})}
 				return
 			}
 
