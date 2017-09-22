@@ -76,21 +76,21 @@ func nodeStats(client *api.Client, nodes []*api.NodeListStub) []*customClient {
 		go func(i int, node *api.NodeListStub) {
 			defer wg.Done()
 
+			res[i] = &customClient{node, make(map[string]interface{})}
+
 			if node.Status != "ready" {
-				res[i] = &customClient{node, make(map[string]interface{})}
 				return
 			}
 
 			stats, err := client.Nodes().Stats(node.ID, nil)
 			if err != nil {
-				res[i] = &customClient{node, make(map[string]interface{})}
 				return
 			}
 
 			comp := make(map[string]interface{})
 			comp["cpu"] = cpu(stats.CPU)
 
-			res[i] = &customClient{node, comp}
+			res[i].Stats = comp
 		}(i, node)
 	}
 
