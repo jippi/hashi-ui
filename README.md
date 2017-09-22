@@ -7,7 +7,7 @@ Hashi UI [![Build Status](https://travis-ci.org/jippi/hashi-ui.svg?branch=master
 
 An awesome user interface (even for mobile devices!) for HashiCorp Consul & Nomad, plain and simple :-)
 
-![Hashi UI](https://www.dropbox.com/s/fft3sahbzjnaimx/cluster-overview-small.jpg?dl=1)
+![Hashi UI](https://photos-1.dropbox.com/t/2/AAAlaj58EMrlMs0OnIzJ5mdEW_nL_1D9VG34ZtEtyt9q4Q/12/27514/jpeg/32x32/3/1506114000/0/2/cluster-overview-small.jpg/EI74IBjWwZDkBCAHKAc/KKeQKoMcAJemYXbzAnpkb77O5ajxj7I-qD4bE44eMXk?dl=0&size=2048x1536&size_mode=3)
 
 [View more screenshots of Nomad & Consul interface](https://www.dropbox.com/sh/lce7ya1zsa6rjm8/AADH6hYQSnW-KxKkIybiOK9ta?dl=0)
 
