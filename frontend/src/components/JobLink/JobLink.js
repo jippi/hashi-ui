@@ -23,15 +23,11 @@ const JobLink = ({ children, jobId, linkAppend, taskGroupId, taskId, router }) =
   }
 
   const to = {
-    pathname: `/nomad/${router.params.region}/jobs/${JobIdUrl}${linkAppend}`,
+    pathname: `/nomad/${router.params.region}/jobs/${encodeURIComponent(JobIdUrl)}${linkAppend}`,
     query
   }
 
-  return (
-    <Link to={to}>
-      {children}
-    </Link>
-  )
+  return <Link to={to}>{children}</Link>
 }
 
 JobLink.defaultProps = {

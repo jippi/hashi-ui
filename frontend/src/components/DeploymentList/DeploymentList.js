@@ -112,7 +112,7 @@ class DeploymentList extends Component {
 
   jobColumn(deployments) {
     if (this.props.showJob) {
-      return <Column header={<Cell>Job</Cell>} cell={<JobLinkCell data={deployments} />} flexGrow={2} width={100} />
+      return <Column header={<Cell>Job</Cell>} cell={<JobLinkCell data={deployments} />} flexGrow={3} width={150} />
     }
   }
 
