@@ -9,7 +9,7 @@ An awesome user interface (even for mobile devices!) for HashiCorp Consul & Noma
 
 ![Hashi UI](https://dl.dropboxusercontent.com/u/27514/nomad-screenshots/0.5/cluster-overview-small.jpg)
 
-[View more screenshots of Nomad & Consul interface](https://github.com/jippi/hashi-ui/blob/master/SCREENSHOTS.md)
+[View more screenshots of Nomad & Consul interface](https://www.dropbox.com/sh/lce7ya1zsa6rjm8/AADH6hYQSnW-KxKkIybiOK9ta?dl=0)
 
 # TOC
 
