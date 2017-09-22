@@ -318,10 +318,8 @@ func (c *connection) process(action structs.Action) {
 		c.once(nomad_nodes.NewDrain(action, c.nomadClient))
 	case nomad_nodes.Remove:
 		c.once(nomad_nodes.NewRemove(action, c.nomadClient))
-	case nomad_nodes.FetchClientStats:
-		c.once(nomad_nodes.NewStats(action, c.nomadClient))
 	case nomad_nodes.WatchStats:
-		c.watch(nomad_nodes.NewStats(action, c.nomadClient))
+		c.stream(nomad_nodes.NewStats(action, c.nomadClient))
 	case nomad_nodes.UnwatchStats:
 		c.unwatch(nomad_nodes.NewStats(action, nil))
 
