@@ -114,7 +114,7 @@ const consulHealthColumn = (allocations, allocationHealth, dispatch) =>
     <Column
       header={<Cell>Health</Cell>}
       cell={<AllocationConsulHealthCell data={allocations} dispatch={dispatch} allocationHealth={allocationHealth} />}
-      width={100}
+      width={75}
     />
   ) : null
 
