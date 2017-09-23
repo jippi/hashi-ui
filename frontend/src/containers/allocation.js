@@ -9,7 +9,13 @@ import JobLink from "../components/JobLink/JobLink"
 import AllocationLink from "../components/AllocationLink/AllocationLink"
 import ClientLink from "../components/ClientLink/ClientLink"
 import { Link, withRouter } from "react-router"
-import { NOMAD_WATCH_ALLOC, NOMAD_UNWATCH_ALLOC, NOMAD_WATCH_ALLOCS, NOMAD_UNWATCH_ALLOCS } from "../sagas/event"
+import {
+  NOMAD_WATCH_ALLOC,
+  NOMAD_UNWATCH_ALLOC,
+  NOMAD_WATCH_ALLOCS,
+  NOMAD_UNWATCH_ALLOCS,
+  NOMAD_FETCH_NODE
+} from "../sagas/event"
 import { default as shortenUUID } from "../helpers/uuid"
 
 class Allocation extends Component {
@@ -43,6 +49,11 @@ class Allocation extends Component {
     if (prevProps.params.allocId == this.props.params.allocId) {
       return
     }
+
+    this.props.dispatch({
+      type: NOMAD_FETCH_NODE,
+      payload: this.props.allocation.NodeID
+    })
 
     if (prevProps.params.allocId) {
       this.props.dispatch({
@@ -197,7 +208,7 @@ class Allocation extends Component {
     }
 
     out.push(" @ ")
-    out.push(<ClientLink key="client" clientId={this.props.allocation.NodeID} clients={this.props.nodes} />)
+    out.push(<ClientLink key="client" clientId={this.props.allocation.NodeID} client={this.props.node} />)
 
     return out
   }
@@ -231,8 +242,8 @@ class Allocation extends Component {
   }
 }
 
-function mapStateToProps({ allocation, allocations, nodes }) {
-  return { allocation, allocations, nodes }
+function mapStateToProps({ allocation, allocations, node }) {
+  return { allocation, allocations, node }
 }
 
 Allocation.propTypes = {
@@ -240,7 +251,7 @@ Allocation.propTypes = {
   params: PropTypes.object.isRequired,
   allocation: PropTypes.object.isRequired,
   allocations: PropTypes.array.isRequired,
-  nodes: PropTypes.array.isRequired,
+  node: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired, // eslint-disable-line no-unused-vars
   children: PropTypes.object.isRequired
 }

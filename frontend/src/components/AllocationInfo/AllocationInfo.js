@@ -2,31 +2,24 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { Card, CardTitle, CardText } from "material-ui/Card"
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "../Table"
+import { Grid, Row, Col } from "react-flexbox-grid"
 import { connect } from "react-redux"
 import JobLink from "../JobLink/JobLink"
 import ClientLink from "../ClientLink/ClientLink"
 import PortBindings from "../PortBindings/PortBindings"
 import MetaPayload from "../MetaPayload/MetaPayload"
 import FormatTime from "../FormatTime/FormatTime"
-import { NOMAD_WATCH_NODES, NOMAD_UNWATCH_NODES } from "../../sagas/event"
+import { NOMAD_FETCH_NODE } from "../../sagas/event"
 
 const allocProps = ["ID", "Name", "ClientStatus", "ClientDescription", "DesiredStatus", "DesiredDescription"]
 
 class AllocationInfo extends Component {
-  componentWillMount() {
-    this.props.dispatch({ type: NOMAD_WATCH_NODES })
-  }
-
-  componentWillUnmount() {
-    this.props.dispatch({ type: NOMAD_UNWATCH_NODES })
+  componentDidMount() {
+    this.props.dispatch({ type: NOMAD_FETCH_NODE, payload: this.props.allocation.NodeID })
   }
 
   static taskState(allocation, name, states) {
-    const title = (
-      <h3>
-        Task state history for {allocation.JobID}.{allocation.TaskGroup}.{name} (final state: {states.State})
-      </h3>
-    )
+    const title = `Task state history for ${allocation.JobID}.${allocation.TaskGroup}.${name} (final state: ${states.State})`
 
     let lastEventTime = null
 
@@ -65,9 +58,7 @@ class AllocationInfo extends Component {
                         durationFormat="h [hour] m [min] s [seconds]"
                       />
                     </TableRowColumn>
-                    <TableRowColumn style={{ width: 180 }}>
-                      {element.Type}
-                    </TableRowColumn>
+                    <TableRowColumn style={{ width: 180 }}>{element.Type}</TableRowColumn>
                     <TableRowColumn>
                       {element.Message ||
                         element.SetupError ||
@@ -83,12 +74,8 @@ class AllocationInfo extends Component {
                         element.KillReason ||
                         element.TaskSignalReason}
                     </TableRowColumn>
-                    <TableRowColumn style={{ width: 75 }}>
-                      {element.Signal || element.TaskSignal}
-                    </TableRowColumn>
-                    <TableRowColumn style={{ width: 50 }}>
-                      {element.ExitCode}
-                    </TableRowColumn>
+                    <TableRowColumn style={{ width: 75 }}>{element.Signal || element.TaskSignal}</TableRowColumn>
+                    <TableRowColumn style={{ width: 50 }}>{element.ExitCode}</TableRowColumn>
                   </TableRow>
                 )
 
@@ -119,7 +106,7 @@ class AllocationInfo extends Component {
       return <div>Loading ...</div>
     }
 
-    allocValues.Job = <JobLink jobId={jobId} nodeList={this.props.nodes} />
+    allocValues.Job = <JobLink jobId={jobId} />
 
     allocValues.TaskGroup = (
       <JobLink jobId={jobId} taskGroupId={taskGroupId}>
@@ -127,7 +114,7 @@ class AllocationInfo extends Component {
       </JobLink>
     )
 
-    allocValues.Node = <ClientLink clientId={nodeId} clients={this.props.nodes} />
+    allocValues.Node = <ClientLink clientId={nodeId} client={this.props.node} />
 
     const states = []
     Object.keys(allocation.TaskStates || {}).forEach(key => {
@@ -136,37 +123,43 @@ class AllocationInfo extends Component {
     })
 
     return (
-      <div key={allocation.ID} style={{ padding: 0 }}>
-        <Card>
-          <CardTitle title="Allocation Properties" />
-          <CardText>
-            <MetaPayload metaBag={allocValues} sortKeys={false} identifier={allocation.ID} />
-          </CardText>
-        </Card>
-
-        <br/>
-
-        <Card key="PortBindings">
-          <CardTitle title="Port Bindings" />
-          <CardText>
-            <PortBindings networks={this.props.allocation.Resources.Networks}/>
-          </CardText>
-        </Card>
-
-        {states}
-      </div>
+      <Grid key={allocation.ID} fluid style={{ padding: 0 }}>
+        <Row style={{ marginTop: "1rem" }}>
+          <Col key="meta-pane" xs={12} sm={12} md={6} lg={6}>
+            <Card>
+              <CardTitle title="Allocation Properties" />
+              <CardText>
+                <MetaPayload metaBag={allocValues} sortKeys={false} identifier={allocation.ID} />
+              </CardText>
+            </Card>
+          </Col>
+          <Col key="port-pane" xs={12} sm={12} md={6} lg={6}>
+            <Card key="PortBindings">
+              <CardTitle title="Port Bindings" />
+              <CardText>
+                <PortBindings networks={this.props.allocation.Resources.Networks} client={this.props.node} />
+              </CardText>
+            </Card>
+          </Col>
+        </Row>
+        <Row style={{ marginTop: "1rem" }}>
+          <Col key="meta-pane" xs={12} sm={12} md={12} lg={12}>
+            {states}
+          </Col>
+        </Row>
+      </Grid>
     )
   }
 }
 
-function mapStateToProps({ allocation, nodes }) {
-  return { allocation, nodes }
+function mapStateToProps({ allocation, node }) {
+  return { allocation, node }
 }
 
 AllocationInfo.propTypes = {
   dispatch: PropTypes.func.isRequired,
   allocation: PropTypes.object.isRequired,
-  nodes: PropTypes.array.isRequired
+  node: PropTypes.object.isRequired
 }
 
 export default connect(mapStateToProps)(AllocationInfo)

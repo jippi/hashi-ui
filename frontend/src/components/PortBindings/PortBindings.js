@@ -4,12 +4,12 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowCol
 import { withRouter } from "react-router"
 
 class PortBinding extends PureComponent {
-  render () {
+  render() {
     return (
       <TableRow key={this.props.key}>
-        <TableRowColumn>{this.props.network.Device}</TableRowColumn>
-        <TableRowColumn>{this.props.network.IP}</TableRowColumn>
         <TableRowColumn>{this.props.label}</TableRowColumn>
+        <TableRowColumn>{this.props.device}</TableRowColumn>
+        <TableRowColumn>{this.props.ip}</TableRowColumn>
         <TableRowColumn>{this.props.port}</TableRowColumn>
       </TableRow>
     )
@@ -21,19 +21,43 @@ class PortBindings extends PureComponent {
     const networks = this.props.networks
 
     let network_items = []
-    networks.map((network) =>
-      network.DynamicPorts.map((portMap, index) =>
-        network_items.push(<PortBinding key={portMap.Label} network={network} label={portMap.Label} port={portMap.Value}/>)
-      )
-    )
+    networks.map(network => {
+      if (network.DynamicPorts != null) {
+        network.DynamicPorts.map((portMap, index) => {
+          network_items.push(
+            <PortBinding
+              key={portMap.Label}
+              device={network.Device}
+              ip={network.IP}
+              label={portMap.Label}
+              port={portMap.Value}
+            />
+          )
+        })
+      }
+
+      if (network.ReservedPorts != null) {
+        const ip = this.props.client.Resources ? this.props.client.Resources.Networks[0].IP : undefined
+
+        network.ReservedPorts.map((portMap, index) => {
+          network_items.push(
+            <PortBinding key={portMap.Label} device="host" ip={ip} label={portMap.Label} port={portMap.Value} />
+          )
+        })
+      }
+    })
+
+    if (network_items.length == 0) {
+      return <div>The allocation does not expose any port bindings</div>
+    }
 
     return (
       <Table selectable={false} showCheckboxes={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
           <TableRow>
+            <TableHeaderColumn style={{ width: 80 }}>Label</TableHeaderColumn>
             <TableHeaderColumn style={{ width: 80 }}>Interface</TableHeaderColumn>
             <TableHeaderColumn style={{ width: 80 }}>IP</TableHeaderColumn>
-            <TableHeaderColumn style={{ width: 80 }}>Label</TableHeaderColumn>
             <TableHeaderColumn style={{ width: 80 }}>Port</TableHeaderColumn>
           </TableRow>
         </TableHeader>
@@ -46,11 +70,12 @@ class PortBindings extends PureComponent {
 }
 
 PortBindings.defaultProps = {
-  networks: [],
+  networks: []
 }
 
 PortBindings.propTypes = {
   networks: PropTypes.array.isRequired,
+  client: PropTypes.object.isRequired,
   router: PropTypes.object.isRequired
 }
 

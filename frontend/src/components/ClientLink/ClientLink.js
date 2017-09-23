@@ -28,7 +28,9 @@ class ClientLink extends PureComponent {
     let children = this.props.children
 
     if (children === undefined) {
-      if (this.props.clients.length > 0) {
+      if (this.props.client.Name) {
+        children = this.props.client.Name
+      } else if (this.props.clients.length > 0) {
         children = findClientNameById(clientId, this.props.clients)
       }
 
@@ -55,6 +57,7 @@ class ClientLink extends PureComponent {
 
 ClientLink.defaultProps = {
   clients: [],
+  client: {},
   shortUUID: true,
   linkAppend: ""
 }
@@ -63,6 +66,7 @@ ClientLink.propTypes = {
   children: PropTypes.array,
   clientId: PropTypes.string.isRequired,
   clients: PropTypes.array.isRequired,
+  client: PropTypes.object,
   linkAppend: PropTypes.string,
   shortUUID: PropTypes.bool.isRequired,
   router: PropTypes.object.isRequired
