@@ -9,7 +9,7 @@ import UtilizationAreaChart from "../UtilizationAreaChart/UtilizationAreaChart"
 import format from "date-fns/format"
 
 
-class AllocStats extends Component {
+class StatsSet extends Component {
   constructor(props) {
     super(props)
     this.data = {
@@ -17,9 +17,6 @@ class AllocStats extends Component {
       Memory: []
     }
     this.prefillData()
-    if (props.allocation.ID) {
-      this.watchForStats(props)
-    }
   }
 
   prefillData() {
@@ -29,8 +26,58 @@ class AllocStats extends Component {
     }
   }
 
+  render() {
+    this.data.CPU.push({
+      name: format(new Date(), "H:mm:ss"),
+      Used: this.props.data.CpuStats.TotalTicks
+    })
+    if (this.data.CPU.length > 60) {
+      this.data.CPU.splice(0, 1)
+    }
+    this.data.Memory.push({
+      name: format(new Date(), "H:mm:ss"),
+      RSS: this.props.data.MemoryStats.RSS / 1024 / 1024,
+      Cache: this.props.data.MemoryStats.Cache / 1024 / 1024,
+      Swap: this.props.data.MemoryStats.Swap / 1024 / 1024
+    })
+    if (this.data.Memory.length > 60) {
+      this.data.Memory.splice(0, 1)
+    }
+
+    const CPUItems = [
+      { name: 'Used', stroke: green500, fill: green200 },
+    ]
+
+    const MemoryItems = [
+      { name: 'RSS',   stroke: green500,  fill: green200 },
+      { name: 'Cache', stroke: lime500,   fill: lime200 },
+      { name: 'Swap',  stroke: yellow500, fill: yellow200 }
+    ]
+    return (
+      <Grid fluid style={{ padding: 0 }}>
+        <h3>{this.props.title}</h3>
+        <Row>
+          <Col key="cpu-utilization-pane" xs={12} sm={4} md={4} lg={4}>
+            <UtilizationAreaChart title="CPU usage (MHz)" data={this.data.CPU} items={CPUItems} />
+          </Col>
+          <Col key="memory-utilization-pane" xs={12} sm={4} md={4} lg={4}>
+            <UtilizationAreaChart title="RAM usage (MB)" data={this.data.Memory} items={MemoryItems} />
+          </Col>
+        </Row>
+      </Grid>
+    )
+  }
+}
+
+class AllocStats extends Component {
+  constructor(props) {
+    super(props)
+    if (props.allocation.ID) {
+      this.watchForStats(props)
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
-    console.log(this.props)
     if (!this.props.allocation.ID && nextProps.allocation.ID) {
       this.watchForStats(nextProps)
     }
@@ -55,43 +102,17 @@ class AllocStats extends Component {
       return <div>Loading ...</div>
     }
 
-    this.data.CPU.push({
-      name: format(new Date(), "H:mm:ss"),
-      Used: this.props.allocStats.ResourceUsage.CpuStats.TotalTicks
-    })
-    if (this.data.CPU.length > 60) {
-      this.data.CPU.splice(0, 1)
-    }
-    this.data.Memory.push({
-      name: format(new Date(), "H:mm:ss"),
-      RSS: this.props.allocStats.ResourceUsage.MemoryStats.RSS / 1024 / 1024,
-      Cache: this.props.allocStats.ResourceUsage.MemoryStats.Cache / 1024 / 1024,
-      Swap: this.props.allocStats.ResourceUsage.MemoryStats.Swap / 1024 / 1024
-    })
-    if (this.data.Memory.length > 60) {
-      this.data.Memory.splice(0, 1)
-    }
-
-    const CPUItems = [
-      { name: 'Used', stroke: green500, fill: green200 },
+    let statsSets = [
+      <StatsSet key="allocation" title="All tasks" data={this.props.allocStats.ResourceUsage}/>
     ]
+    Object.keys(this.props.allocStats.Tasks).map((key, index) =>
+      statsSets.push(<StatsSet key={key} title={key} data={this.props.allocStats.Tasks[key].ResourceUsage}/>)
+    )
 
-    const MemoryItems = [
-      { name: 'RSS',   stroke: green500,  fill: green200 },
-      { name: 'Cache', stroke: lime500,   fill: lime200 },
-      { name: 'Swap',  stroke: yellow500, fill: yellow200 }
-    ]
     return (
-      <Grid fluid style={{ padding: 0 }}>
-        <Row>
-          <Col key="cpu-utilization-pane" xs={12} sm={4} md={4} lg={4}>
-            <UtilizationAreaChart title="CPU usage (MHz)" data={this.data.CPU} items={CPUItems} />
-          </Col>
-          <Col key="memory-utilization-pane" xs={12} sm={4} md={4} lg={4}>
-            <UtilizationAreaChart title="RAM usage (MB)" data={this.data.Memory} items={MemoryItems} />
-          </Col>
-        </Row>
-      </Grid>
+      <div>
+        {statsSets}
+      </div>
     )
   }
 }
