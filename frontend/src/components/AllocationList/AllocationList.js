@@ -1,7 +1,8 @@
-import React, { Component } from "react"
+import React, { PureComponent, Component } from "react"
 import PropTypes from "prop-types"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import FontIcon from "material-ui/FontIcon"
+import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import { Card, CardHeader, CardText } from "material-ui/Card"
 import SelectField from "material-ui/SelectField"
@@ -15,6 +16,7 @@ import FilterFreetext from "../FilterFreetext/FilterFreetext"
 import JobLink from "../JobLink/JobLink"
 import ClientLink from "../ClientLink/ClientLink"
 import FormatTime from "../FormatTime/FormatTime"
+import AllocationConsulHealth, { AllocationConsulHealthCell } from "../AllocationConsulHealth/AllocationConsulHealth"
 
 const nodeIdToNameCache = {}
 const allocIdRegexp = /\[(\d+)\]/
@@ -104,6 +106,15 @@ const clientColumn = (allocations, display, clients) =>
       cell={<ClientLinkCell data={allocations} clients={clients} />}
       flexGrow={2}
       width={200}
+    />
+  ) : null
+
+const consulHealthColumn = (allocations, allocationHealth, dispatch) =>
+  CONSUL_ENABLED ? (
+    <Column
+      header={<Cell>Health</Cell>}
+      cell={<AllocationConsulHealthCell data={allocations} dispatch={dispatch} allocationHealth={allocationHealth} />}
+      width={75}
     />
   ) : null
 
@@ -273,6 +284,7 @@ class AllocationList extends Component {
                 width={200}
               />
               <Column header={<Cell>Status</Cell>} cell={<StatusCell data={allocations} />} width={200} />
+              {consulHealthColumn(allocations, this.props.allocationHealth, this.props.dispatch)}
               {clientColumn(allocations, this.props.showClientColumn, this.props.nodes)}
               <Column header={<Cell>Age</Cell>} cell={<AgeCell data={allocations} />} width={100} />
               <Column header={<Cell>Actions</Cell>} cell={<ActionsCell data={allocations} />} width={100} />
@@ -285,10 +297,15 @@ class AllocationList extends Component {
   }
 }
 
+function mapStateToProps({ allocationHealth }) {
+  return { allocationHealth }
+}
+
 AllocationList.defaultProps = {
   allocations: [],
   nodes: [],
   location: {},
+  allocationHealth: {},
 
   showJobColumn: true,
   showClientColumn: true,
@@ -302,7 +319,8 @@ AllocationList.propTypes = {
   router: PropTypes.object.isRequired,
   nested: PropTypes.bool.isRequired,
   showJobColumn: PropTypes.bool.isRequired,
-  showClientColumn: PropTypes.bool.isRequired
+  showClientColumn: PropTypes.bool.isRequired,
+  allocationHealth: PropTypes.object
 }
 
-export default withRouter(AllocationList)
+export default withRouter(connect(mapStateToProps)(AllocationList))
