@@ -68,6 +68,11 @@ class AllocationConsulHealth extends Component {
   }
 
   render() {
+    // can't be any health status for non-running jobs
+    if (this.props.allocation.ClientStatus != "running") {
+      return null
+    }
+
     const allocID = this.props.allocation.ID
     const health = this.props.allocationHealth[allocID]
 
