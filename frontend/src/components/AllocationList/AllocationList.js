@@ -68,9 +68,9 @@ const ClientLinkCell = ({ rowIndex, data, clients, ...props }) => (
     <ClientLink clientId={data[rowIndex].NodeID} clients={clients} />
   </Cell>
 )
-const HealthCell = ({ rowIndex, data, ...props }) => (
-  <Cell {...props}>
-    <ConsulHealth allocation={data[rowIndex]} />
+const HealthCell = ({ rowIndex, dispatch, allocationHealth, nodes, data, ...props }) => (
+  <Cell rowIndex={rowIndex} data={data} {...props}>
+    <ConsulHealth dispatch={dispatch} allocation={data[rowIndex]} allocationHealth={allocationHealth} />
   </Cell>
 )
 
@@ -88,13 +88,36 @@ const AgeCell = ({ rowIndex, data, ...props }) => (
   </Cell>
 )
 
-class ConsulHealthReal extends PureComponent {
+class ConsulHealth extends PureComponent {
   componentDidMount() {
     this.watch(this.props)
   }
 
   componentWillUnmount() {
     this.unwatch(this.props)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // if we get a new allocation, unsubscribe from the old and subscribe to the new
+    if (this.props.allocation.ID != nextProps.allocation.ID) {
+      this.unwatch(this.props)
+      this.watch(nextProps)
+      return
+    }
+
+    // if the current allocation changed from running to something else, unsubscribe
+    if (this.props.allocation.ClientStatus == "running" && nextProps.allocation.ClientStatus != "running") {
+      this.unwatch(this.props)
+    }
+
+    // if the current allocation changed anything to running, subscrube to health
+    if (this.props.allocation.ClientStatus != "running" && nextProps.allocation.ClientStatus == "running") {
+      this.watch(nextProps)
+    }
+  }
+
+  shouldComponentUpdate() {
+    return true
   }
 
   unwatch(props) {
@@ -125,28 +148,10 @@ class ConsulHealthReal extends PureComponent {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
-    // if we get a new allocation, unsubscribe from the old and subscribe to the new
-    if (this.props.allocation.ID != nextProps.allocation.ID) {
-      this.unwatch(this.props)
-      this.watch(nextProps)
-      return
-    }
-
-    // if the current allocation changed from running to something else, unsubscribe
-    if (this.props.allocation.ClientStatus == "running" && nextProps.allocation.ClientStatus != "running") {
-      this.unwatch(this.props)
-    }
-
-    // if the current allocation changed anything to running, subscrube to health
-    if (this.props.allocation.ClientStatus != "running" && nextProps.allocation.ClientStatus == "running") {
-      this.watch(nextProps)
-    }
-  }
-
   render() {
     const allocID = this.props.allocation.ID
     const health = this.props.allocationHealth[allocID]
+
     if (!health) {
       return null
     }
@@ -169,15 +174,9 @@ class ConsulHealthReal extends PureComponent {
       )
     }
 
-    return <div>{icon}</div>
+    return <span>{icon}</span>
   }
 }
-
-function mapStateToProps({ allocationHealth }) {
-  return { allocationHealth }
-}
-
-const ConsulHealth = connect(mapStateToProps)(ConsulHealthReal)
 
 const StatusCell = ({ rowIndex, data, ...props }) => <Cell {...props}>{data[rowIndex].ClientStatus}</Cell>
 
@@ -206,8 +205,14 @@ const clientColumn = (allocations, display, clients) =>
     />
   ) : null
 
-const consulHealthColumn = allocations =>
-  CONSUL_ENABLED ? <Column header={<Cell>Health</Cell>} cell={<HealthCell data={allocations} />} width={200} /> : null
+const consulHealthColumn = (allocations, allocationHealth, dispatch) =>
+  CONSUL_ENABLED ? (
+    <Column
+      header={<Cell>Health</Cell>}
+      cell={<HealthCell data={allocations} dispatch={dispatch} allocationHealth={allocationHealth} />}
+      width={100}
+    />
+  ) : null
 
 class AllocationList extends Component {
   constructor(props) {
@@ -375,10 +380,10 @@ class AllocationList extends Component {
                 width={200}
               />
               <Column header={<Cell>Status</Cell>} cell={<StatusCell data={allocations} />} width={200} />
+              {consulHealthColumn(allocations, this.props.allocationHealth, this.props.dispatch)}
               {clientColumn(allocations, this.props.showClientColumn, this.props.nodes)}
               <Column header={<Cell>Age</Cell>} cell={<AgeCell data={allocations} />} width={100} />
               <Column header={<Cell>Actions</Cell>} cell={<ActionsCell data={allocations} />} width={100} />
-              {consulHealthColumn(allocations)}
             </Table>
             <ReactTooltip />
           </CardText>
@@ -388,10 +393,15 @@ class AllocationList extends Component {
   }
 }
 
+function mapStateToProps({ allocationHealth }) {
+  return { allocationHealth }
+}
+
 AllocationList.defaultProps = {
   allocations: [],
   nodes: [],
   location: {},
+  allocationHealth: {},
 
   showJobColumn: true,
   showClientColumn: true,
@@ -405,7 +415,8 @@ AllocationList.propTypes = {
   router: PropTypes.object.isRequired,
   nested: PropTypes.bool.isRequired,
   showJobColumn: PropTypes.bool.isRequired,
-  showClientColumn: PropTypes.bool.isRequired
+  showClientColumn: PropTypes.bool.isRequired,
+  allocationHealth: PropTypes.object
 }
 
-export default withRouter(AllocationList)
+export default withRouter(connect(mapStateToProps)(AllocationList))
