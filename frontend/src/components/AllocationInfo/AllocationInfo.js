@@ -5,6 +5,7 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowCol
 import { connect } from "react-redux"
 import JobLink from "../JobLink/JobLink"
 import ClientLink from "../ClientLink/ClientLink"
+import PortBindings from "../PortBindings/PortBindings"
 import MetaPayload from "../MetaPayload/MetaPayload"
 import FormatTime from "../FormatTime/FormatTime"
 import { NOMAD_WATCH_NODES, NOMAD_UNWATCH_NODES } from "../../sagas/event"
@@ -140,6 +141,15 @@ class AllocationInfo extends Component {
           <CardTitle title="Allocation Properties" />
           <CardText>
             <MetaPayload metaBag={allocValues} sortKeys={false} identifier={allocation.ID} />
+          </CardText>
+        </Card>
+
+        <br/>
+
+        <Card key="PortBindings">
+          <CardTitle title="Port Bindings" />
+          <CardText>
+            <PortBindings networks={this.props.allocation.Resources.Networks}/>
           </CardText>
         </Card>
 
