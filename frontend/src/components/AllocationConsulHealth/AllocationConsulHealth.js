@@ -1,8 +1,8 @@
-import React, { PureComponent } from "react"
-import { Column, Cell } from "fixed-data-table-2"
+import React, { Component } from "react"
 import FontIcon from "material-ui/FontIcon"
+import { Column, Cell } from "fixed-data-table-2"
 import { NOMAD_WATCH_ALLOCATION_HEALTH, NOMAD_UNWATCH_ALLOCATION_HEALTH } from "../../sagas/event"
-import { green500, red500 } from "material-ui/styles/colors"
+import { green500, red500, grey200 } from "material-ui/styles/colors"
 
 const AllocationConsulHealthCell = ({ rowIndex, dispatch, allocationHealth, nodes, data, ...props }) => (
   <Cell rowIndex={rowIndex} data={data} {...props}>
@@ -11,7 +11,7 @@ const AllocationConsulHealthCell = ({ rowIndex, dispatch, allocationHealth, node
 )
 export { AllocationConsulHealthCell }
 
-class AllocationConsulHealth extends PureComponent {
+class AllocationConsulHealth extends Component {
   componentDidMount() {
     this.watch(this.props)
   }
@@ -37,10 +37,6 @@ class AllocationConsulHealth extends PureComponent {
     if (this.props.allocation.ClientStatus != "running" && nextProps.allocation.ClientStatus == "running") {
       this.watch(nextProps)
     }
-  }
-
-  shouldComponentUpdate() {
-    return true
   }
 
   unwatch(props) {
@@ -76,7 +72,11 @@ class AllocationConsulHealth extends PureComponent {
     const health = this.props.allocationHealth[allocID]
 
     if (!health) {
-      return null
+      return (
+        <FontIcon color={grey200} className="material-icons">
+          help_outline
+        </FontIcon>
+      )
     }
 
     let icon = ""
