@@ -5,6 +5,7 @@ import { BottomNavigation, BottomNavigationItem } from "material-ui/BottomNaviga
 import { withRouter } from "react-router"
 
 const infoIcon = <FontIcon className="material-icons">info_outline</FontIcon>
+const statsIcon = <FontIcon className="material-icons">show_chart</FontIcon>
 const filesIcon = <FontIcon className="material-icons">storage</FontIcon>
 const logsIcon = <FontIcon className="material-icons">subject</FontIcon>
 const rawIcon = <FontIcon className="material-icons">code</FontIcon>
@@ -23,16 +24,20 @@ class _AllocationTopbar extends PureComponent {
       return 0
     }
 
-    if (location.query.path && location.query.path.indexOf("alloc/logs") !== -1) {
-      return 2
-    }
-
-    if (end.startsWith("files")) {
+    if (end.startsWith("stats")) {
       return 1
     }
 
-    if (end.startsWith("raw")) {
+    if (end.startsWith("files")) {
+      return 2
+    }
+
+    if (location.query.path && location.query.path.indexOf("alloc/logs") !== -1) {
       return 3
+    }
+
+    if (end.startsWith("raw")) {
+      return 4
     }
 
     return 0
@@ -49,6 +54,7 @@ class _AllocationTopbar extends PureComponent {
     return (
       <BottomNavigation selectedIndex={this.getActiveTab()} style={this.getStyle()}>
         <BottomNavigationItem label="Info" icon={infoIcon} onTouchTap={() => this.handleActive("info")} />
+        <BottomNavigationItem label="Stats" icon={statsIcon} onTouchTap={() => this.handleActive("stats")} />
         <BottomNavigationItem label="Files" icon={filesIcon} onTouchTap={() => this.handleActive("files")} />
         <BottomNavigationItem label="Logs" icon={logsIcon} onTouchTap={() => this.handleActive("logs")} />
         <BottomNavigationItem label="Raw" icon={rawIcon} onTouchTap={() => this.handleActive("raw")} />

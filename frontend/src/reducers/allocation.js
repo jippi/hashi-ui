@@ -3,7 +3,8 @@ import {
   NOMAD_FETCHED_ALLOCATION_HEALTH,
   NOMAD_FETCHED_ALLOCS,
   NOMAD_UNWATCH_ALLOC,
-  NOMAD_UNWATCH_ALLOCATION_HEALTH
+  NOMAD_UNWATCH_ALLOCATION_HEALTH,
+  NOMAD_FETCHED_ALLOC_STATS
 } from "../sagas/event"
 
 export function AllocInfoReducer(state = {}, action) {
@@ -15,6 +16,16 @@ export function AllocInfoReducer(state = {}, action) {
       allocation.TaskGroupId = `${allocation.JobID}.${allocation.TaskGroup}`
       return allocation
     }
+    default:
+  }
+
+  return state
+}
+
+export function AllocStatsReducer(state = {}, action) {
+  switch (action.type) {
+    case NOMAD_FETCHED_ALLOC_STATS:
+      return action.payload
     default:
   }
 
