@@ -17,7 +17,7 @@ import JobLink from "../JobLink/JobLink"
 import ClientLink from "../ClientLink/ClientLink"
 import FormatTime from "../FormatTime/FormatTime"
 import { NOMAD_WATCH_ALLOCATION_HEALTH, NOMAD_UNWATCH_ALLOCATION_HEALTH } from "../../sagas/event"
-import { green500 } from "material-ui/styles/colors"
+import { green500, red500 } from "material-ui/styles/colors"
 
 const nodeIdToNameCache = {}
 const allocIdRegexp = /\[(\d+)\]/
@@ -68,6 +68,11 @@ const ClientLinkCell = ({ rowIndex, data, clients, ...props }) => (
     <ClientLink clientId={data[rowIndex].NodeID} clients={clients} />
   </Cell>
 )
+const HealthCell = ({ rowIndex, data, ...props }) => (
+  <Cell {...props}>
+    <ConsulHealth allocation={data[rowIndex]} />
+  </Cell>
+)
 
 const AgeCell = ({ rowIndex, data, ...props }) => (
   <Cell
@@ -83,42 +88,76 @@ const AgeCell = ({ rowIndex, data, ...props }) => (
   </Cell>
 )
 
-class ConsulHealthCellReal extends Component {
+class ConsulHealthReal extends PureComponent {
   componentDidMount() {
-    this.props.dispatch({
-      type: NOMAD_WATCH_ALLOCATION_HEALTH,
-      payload: {
-        id: this.props.data[this.props.rowIndex].ID,
-        client: this.props.data[this.props.rowIndex].NodeID
-      }
-    })
+    this.watch(this.props)
   }
 
   componentWillUnmount() {
+    this.unwatch(this.props)
+  }
+
+  unwatch(props) {
+    if (props.allocation.ClientStatus != "running") {
+      return
+    }
+
     this.props.dispatch({
       type: NOMAD_UNWATCH_ALLOCATION_HEALTH,
       payload: {
-        id: this.props.data[this.props.rowIndex].ID,
-        client: this.props.data[this.props.rowIndex].NodeID
+        id: props.allocation.ID,
+        client: props.allocation.NodeID
       }
     })
   }
 
+  watch(props) {
+    if (props.allocation.ClientStatus != "running") {
+      return
+    }
+
+    this.props.dispatch({
+      type: NOMAD_WATCH_ALLOCATION_HEALTH,
+      payload: {
+        id: props.allocation.ID,
+        client: props.allocation.NodeID
+      }
+    })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.allocation.ID != nextProps.allocation.ID) {
+      this.unwatch(this.props)
+      this.watch(nextProps)
+    }
+  }
+
   render() {
+    const allocID = this.props.allocation.ID
+    const health = this.props.allocationHealth[allocID]
+    if (!health) {
+      return null
+    }
+
     let icon = ""
-    if (this.props.allocationHealth.Healthy) {
+
+    if (health.Healthy) {
       icon = (
         <FontIcon color={green500} className="material-icons">
-          check
+          {health.Total > 1 ? "done_all" : "done"}
         </FontIcon>
       )
     }
 
-    return (
-      <Cell data={this.props.data} rowIndex={this.props.rowIndex}>
-        {icon} {this.props.allocationHealth.ID}
-      </Cell>
-    )
+    if (health.Healthy == false) {
+      icon = (
+        <FontIcon color={red500} className="material-icons">
+          clear
+        </FontIcon>
+      )
+    }
+
+    return <div>{icon}</div>
   }
 }
 
@@ -126,7 +165,7 @@ function mapStateToProps({ allocationHealth }) {
   return { allocationHealth }
 }
 
-const ConsulHealthCell = connect(mapStateToProps)(ConsulHealthCellReal)
+const ConsulHealth = connect(mapStateToProps)(ConsulHealthReal)
 
 const StatusCell = ({ rowIndex, data, ...props }) => <Cell {...props}>{data[rowIndex].ClientStatus}</Cell>
 
@@ -156,9 +195,7 @@ const clientColumn = (allocations, display, clients) =>
   ) : null
 
 const consulHealthColumn = allocations =>
-  CONSUL_ENABLED ? (
-    <Column header={<Cell>Health</Cell>} cell={<ConsulHealthCell data={allocations} />} width={200} />
-  ) : null
+  CONSUL_ENABLED ? <Column header={<Cell>Health</Cell>} cell={<HealthCell data={allocations} />} width={200} /> : null
 
 class AllocationList extends Component {
   constructor(props) {

@@ -56,11 +56,14 @@ func (w *health) Do() (*structs.Response, error) {
 	result := make(map[string]string)
 	status := make(map[string]int)
 	var healthy *bool
+	total := 0
 
 	for _, check := range checks {
 		if !strings.Contains(check.ServiceID, w.allocationID) {
 			continue
 		}
+
+		total = total + 1
 
 		result[check.Name] = check.Status
 
@@ -85,11 +88,13 @@ func (w *health) Do() (*structs.Response, error) {
 		ID      string
 		Checks  map[string]string
 		Count   map[string]int
+		Total   int
 		Healthy *bool
 	}{
 		ID:      w.allocationID,
 		Checks:  result,
 		Count:   status,
+		Total:   total,
 		Healthy: healthy,
 	}
 

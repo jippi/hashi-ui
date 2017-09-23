@@ -302,6 +302,8 @@ func (c *connection) process(action structs.Action) {
 		c.once(nomad_allocations.NewDir(action, c.nomadClient, c.newNomadQueryOptions()))
 	case nomad_allocations.WatchHealth:
 		c.watch(nomad_allocations.NewHealth(action, c.nomadClient, c.consulClient, c.newConsulQueryOptions()))
+	case nomad_allocations.UnwatchHealth:
+		c.unwatch(nomad_allocations.NewHealth(action, nil, nil, nil))
 
 	//
 	// Nomad Nodes

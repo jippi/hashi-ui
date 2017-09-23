@@ -37,14 +37,16 @@ export function AllocListReducer(state = [], action) {
 
   return state
 }
-export function AllocHealthReducer(state = [], action) {
+export function AllocHealthReducer(state = {}, action) {
   switch (action.type) {
     case NOMAD_FETCHED_ALLOCATION_HEALTH: {
-      return action.payload
+      state[action.payload.ID] = action.payload
+      return state
     }
 
     case NOMAD_UNWATCH_ALLOCATION_HEALTH: {
-      return {}
+      delete state[action.payload.id]
+      return state
     }
 
     default:
