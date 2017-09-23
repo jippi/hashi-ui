@@ -36,6 +36,7 @@ func NewHealth(action structs.Action, nomad *nomad.Client, consul *consul.Client
 }
 
 func (w *health) Do() (*structs.Response, error) {
+	// find the client name (we assume it matches the consul name)
 	if w.clientName == "" {
 		info, _, err := w.nomad.Nodes().Info(w.clientID, nil)
 		if err != nil {
@@ -44,6 +45,7 @@ func (w *health) Do() (*structs.Response, error) {
 		w.clientName = info.Name
 	}
 
+	// lookup health for the consul client
 	checks, meta, err := w.consul.Health().Node(w.clientName, w.consulQuery)
 	if err != nil {
 		return structs.NewErrorResponse(err)

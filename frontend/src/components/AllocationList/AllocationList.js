@@ -126,8 +126,20 @@ class ConsulHealthReal extends PureComponent {
   }
 
   componentWillReceiveProps(nextProps) {
+    // if we get a new allocation, unsubscribe from the old and subscribe to the new
     if (this.props.allocation.ID != nextProps.allocation.ID) {
       this.unwatch(this.props)
+      this.watch(nextProps)
+      return
+    }
+
+    // if the current allocation changed from running to something else, unsubscribe
+    if (this.props.allocation.ClientStatus == "running" && nextProps.allocation.ClientStatus != "running") {
+      this.unwatch(this.props)
+    }
+
+    // if the current allocation changed anything to running, subscrube to health
+    if (this.props.allocation.ClientStatus != "running" && nextProps.allocation.ClientStatus == "running") {
       this.watch(nextProps)
     }
   }
