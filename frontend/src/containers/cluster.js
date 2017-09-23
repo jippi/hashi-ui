@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Helmet } from "react-helmet"
-import { green500, blue500, amber500, yellow500 } from "material-ui/styles/colors"
+import { green500, blue500, amber500, yellow800 } from "material-ui/styles/colors"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import Progressbar from "../components/Progressbar/Progressbar"
 import UtilizationPieChart from "../components/UtilizationPieChart/UtilizationPieChart"
@@ -91,10 +91,11 @@ class Cluster extends Component {
     if (UsedMemory < AllocatedMemory) {
       CompensatedAllocatedMemory = AllocatedMemory - UsedMemory
       CompensatedFreeMemory = TotalMemory - AllocatedMemory
-    } else { // over use of Memory
+    } else {
+      // over use of Memory
       UsedMemoryColor = amber500
       CompensatedAllocatedMemory = 0
-      CompensatedFreeMemory =  TotalMemory - UsedMemory
+      CompensatedFreeMemory = TotalMemory - UsedMemory
     }
     const memoryChart = [
       {
@@ -107,7 +108,7 @@ class Cluster extends Component {
         name: "Allocated",
         value: CompensatedAllocatedMemory,
         humanValue: AllocatedMemory.toFixed(2) + " GB",
-        color: yellow500
+        color: yellow800
       },
       {
         name: "Available",
@@ -129,27 +130,28 @@ class Cluster extends Component {
     if (UsedCPU < AllocatedCPU) {
       CompensatedAllocatedCPU = AllocatedCPU - UsedCPU
       CompensatedIdleCPU = 100 - AllocatedCPU
-    } else { // over use of CPU
+    } else {
+      // over use of CPU
       UsedCPUColor = amber500
       CompensatedAllocatedCPU = 0
-      CompensatedIdleCPU =  100 - UsedCPU
+      CompensatedIdleCPU = 100 - UsedCPU
     }
 
     const cpuChart = [
       {
-        name: "busy",
+        name: "Busy",
         value: UsedCPU,
         humanValue: UsedCPU.toFixed(0) + " %",
         color: UsedCPUColor
       },
       {
-        name: "allocated",
+        name: "Allocated",
         value: CompensatedAllocatedCPU,
         humanValue: AllocatedCPU.toFixed(0) + " %",
-        color: yellow500
+        color: yellow800
       },
       {
-        name: "idle",
+        name: "Idle",
         value: CompensatedIdleCPU,
         humanValue: IdleCPU.toFixed(0) + " %",
         color: blue500

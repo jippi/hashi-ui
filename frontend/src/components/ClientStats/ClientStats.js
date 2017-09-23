@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import { connect } from "react-redux"
 import { NOMAD_WATCH_CLIENT_STATS, NOMAD_UNWATCH_CLIENT_STATS } from "../../sagas/event"
-import { green500, blue500, amber500, yellow500 } from "material-ui/styles/colors"
+import { green500, blue500, amber500, yellow800 } from "material-ui/styles/colors"
 import { Card, CardTitle, CardText } from "material-ui/Card"
 import UtilizationPieChart from "../UtilizationPieChart/UtilizationPieChart"
 import DiskUtilizationTable from "../DiskUtilizationTable/DiskUtilizationTable"
@@ -83,27 +83,28 @@ class ClientStats extends Component {
     if (UsedCPU < AllocatedCPU) {
       CompensatedAllocatedCPU = AllocatedCPU - UsedCPU
       CompensatedIdleCPU = 100 - AllocatedCPU
-    } else { // over use of CPU
+    } else {
+      // over use of CPU
       UsedCPUColor = amber500
       CompensatedAllocatedCPU = 0
-      CompensatedIdleCPU =  100 - UsedCPU
+      CompensatedIdleCPU = 100 - UsedCPU
     }
 
     const cpuChart = [
       {
-        name: "busy",
+        name: "Busy",
         value: UsedCPU,
         humanValue: UsedCPU.toFixed(0) + " %",
         color: UsedCPUColor
       },
       {
-        name: "allocated",
+        name: "Allocated",
         value: CompensatedAllocatedCPU,
         humanValue: AllocatedCPU.toFixed(0) + " %",
-        color: yellow500
+        color: yellow800
       },
       {
-        name: "idle",
+        name: "Idle",
         value: CompensatedIdleCPU,
         humanValue: IdleCPU.toFixed(0) + " %",
         color: blue500
@@ -123,10 +124,11 @@ class ClientStats extends Component {
     if (UsedMemory < AllocatedMemory) {
       CompensatedAllocatedMemory = AllocatedMemory - UsedMemory
       CompensatedFreeMemory = TotalMemory - AllocatedMemory
-    } else { // over use of Memory
+    } else {
+      // over use of Memory
       UsedMemoryColor = amber500
       CompensatedAllocatedMemory = 0
-      CompensatedFreeMemory =  TotalMemory - UsedMemory
+      CompensatedFreeMemory = TotalMemory - UsedMemory
     }
     const memoryChart = [
       {
@@ -139,7 +141,7 @@ class ClientStats extends Component {
         name: "Allocated",
         value: CompensatedAllocatedMemory,
         humanValue: AllocatedMemory.toFixed(2) + " GB",
-        color: yellow500
+        color: yellow800
       },
       {
         name: "Available",
@@ -162,9 +164,7 @@ class ClientStats extends Component {
             <Card>
               <CardTitle title="System uptime" />
               <CardText>
-                <div className="client-uptime">
-                  {this.timeSince(this.props.nodeStats.Uptime)}
-                </div>
+                <div className="client-uptime">{this.timeSince(this.props.nodeStats.Uptime)}</div>
               </CardText>
             </Card>
           </Col>

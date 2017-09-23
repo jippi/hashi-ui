@@ -49,7 +49,6 @@ func (w *stats) Do(send chan *structs.Action, subscribeCh chan interface{}, dest
 }
 
 func (w *stats) work(client *api.Client, send chan *structs.Action, subscribeCh chan interface{}, NodeID string) {
-
 	stats, err := client.Nodes().Stats(NodeID, nil)
 	if err != nil {
 		return
