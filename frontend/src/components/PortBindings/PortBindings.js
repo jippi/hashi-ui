@@ -20,6 +20,10 @@ class PortBindings extends PureComponent {
   render() {
     const networks = this.props.networks
 
+    if (!networks) {
+      return <div>The allocation does not have any port bindings</div>
+    }
+
     let network_items = []
     networks.map(network => {
       if (network.DynamicPorts != null) {
@@ -48,7 +52,7 @@ class PortBindings extends PureComponent {
     })
 
     if (network_items.length == 0) {
-      return <div>The allocation does not expose any port bindings</div>
+      return <div>The allocation does not have any port bindings</div>
     }
 
     return (
@@ -74,7 +78,7 @@ PortBindings.defaultProps = {
 }
 
 PortBindings.propTypes = {
-  networks: PropTypes.array.isRequired,
+  networks: PropTypes.array,
   client: PropTypes.object.isRequired,
   router: PropTypes.object.isRequired
 }
