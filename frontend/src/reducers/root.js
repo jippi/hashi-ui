@@ -17,7 +17,7 @@ import {
   JobDialogReducer,
   FilteredJobsReducer
 } from "./job"
-import { AllocInfoReducer, AllocListReducer } from "./allocation"
+import { AllocInfoReducer, AllocListReducer, AllocHealthReducer } from "./allocation"
 import { EvalInfoReducer, EvalListReducer } from "./evaluation"
 import { DeploymentListReducer, DeploymentInfoReducer, DeploymentAllocsReducer } from "./deployment"
 import { NodeInfoReducer, NodeStatsReducer, NodeListReducer } from "./node"
@@ -36,6 +36,7 @@ import {
 
 const rootReducer = combineReducers({
   allocation: AllocInfoReducer,
+  allocationHealth: AllocHealthReducer,
   allocations: AllocListReducer,
   appDrawer: AppDrawer,
   appError: AppErrorReducer,
@@ -57,13 +58,13 @@ const rootReducer = combineReducers({
   evaluation: EvalInfoReducer,
   evaluations: EvalListReducer,
   file: FileReducer,
+  filteredJobs: FilteredJobsReducer,
   job: JobInfoReducer,
-  jobDeployments: JobDeploymentsReducer,
   jobAllocations: jobAllocationsReducer,
-  jobVersions: JobVersionsReducer,
+  jobDeployments: JobDeploymentsReducer,
   jobDialog: JobDialogReducer,
   jobs: JobListReducer,
-  filteredJobs: FilteredJobsReducer,
+  jobVersions: JobVersionsReducer,
   member: MemberInfoReducer,
   members: MemberListReducer,
   node: NodeInfoReducer,

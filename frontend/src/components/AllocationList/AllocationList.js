@@ -1,7 +1,8 @@
-import React, { Component } from "react"
+import React, { PureComponent, Component } from "react"
 import PropTypes from "prop-types"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import FontIcon from "material-ui/FontIcon"
+import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import { Card, CardHeader, CardText } from "material-ui/Card"
 import SelectField from "material-ui/SelectField"
@@ -15,6 +16,8 @@ import FilterFreetext from "../FilterFreetext/FilterFreetext"
 import JobLink from "../JobLink/JobLink"
 import ClientLink from "../ClientLink/ClientLink"
 import FormatTime from "../FormatTime/FormatTime"
+import { NOMAD_WATCH_ALLOCATION_HEALTH, NOMAD_UNWATCH_ALLOCATION_HEALTH } from "../../sagas/event"
+import { green500 } from "material-ui/styles/colors"
 
 const nodeIdToNameCache = {}
 const allocIdRegexp = /\[(\d+)\]/
@@ -80,6 +83,51 @@ const AgeCell = ({ rowIndex, data, ...props }) => (
   </Cell>
 )
 
+class ConsulHealthCellReal extends Component {
+  componentDidMount() {
+    this.props.dispatch({
+      type: NOMAD_WATCH_ALLOCATION_HEALTH,
+      payload: {
+        id: this.props.data[this.props.rowIndex].ID,
+        client: this.props.data[this.props.rowIndex].NodeID
+      }
+    })
+  }
+
+  componentWillUnmount() {
+    this.props.dispatch({
+      type: NOMAD_UNWATCH_ALLOCATION_HEALTH,
+      payload: {
+        id: this.props.data[this.props.rowIndex].ID,
+        client: this.props.data[this.props.rowIndex].NodeID
+      }
+    })
+  }
+
+  render() {
+    let icon = ""
+    if (this.props.allocationHealth.Healthy) {
+      icon = (
+        <FontIcon color={green500} className="material-icons">
+          check
+        </FontIcon>
+      )
+    }
+
+    return (
+      <Cell data={this.props.data} rowIndex={this.props.rowIndex}>
+        {icon} {this.props.allocationHealth.ID}
+      </Cell>
+    )
+  }
+}
+
+function mapStateToProps({ allocationHealth }) {
+  return { allocationHealth }
+}
+
+const ConsulHealthCell = connect(mapStateToProps)(ConsulHealthCellReal)
+
 const StatusCell = ({ rowIndex, data, ...props }) => <Cell {...props}>{data[rowIndex].ClientStatus}</Cell>
 
 const ActionsCell = ({ rowIndex, data, ...props }) => (
@@ -105,6 +153,11 @@ const clientColumn = (allocations, display, clients) =>
       flexGrow={2}
       width={200}
     />
+  ) : null
+
+const consulHealthColumn = allocations =>
+  CONSUL_ENABLED ? (
+    <Column header={<Cell>Health</Cell>} cell={<ConsulHealthCell data={allocations} />} width={200} />
   ) : null
 
 class AllocationList extends Component {
@@ -276,6 +329,7 @@ class AllocationList extends Component {
               {clientColumn(allocations, this.props.showClientColumn, this.props.nodes)}
               <Column header={<Cell>Age</Cell>} cell={<AgeCell data={allocations} />} width={100} />
               <Column header={<Cell>Actions</Cell>} cell={<ActionsCell data={allocations} />} width={100} />
+              {consulHealthColumn(allocations)}
             </Table>
             <ReactTooltip />
           </CardText>
