@@ -61,7 +61,9 @@ func (w *health) Do() (*structs.Response, error) {
 	total := 0
 
 	for _, check := range checks {
-		if !strings.Contains(check.ServiceID, w.allocationID) {
+		// nomad managed service ids got the following format
+		// "_nomad-executor-${ALLOC_ID}-*",
+		if !strings.Contains(check.ServiceID, "_nomad-executor-"+w.allocationID) {
 			continue
 		}
 
