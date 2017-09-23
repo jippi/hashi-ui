@@ -51,10 +51,6 @@ class PortBindings extends PureComponent {
       }
     })
 
-    if (network_items.length == 0) {
-      return <div>The allocation does not have any port bindings</div>
-    }
-
     return (
       <Table selectable={false} showCheckboxes={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
