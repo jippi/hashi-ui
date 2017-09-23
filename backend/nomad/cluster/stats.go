@@ -72,10 +72,13 @@ type task struct {
 
 // result is struct for the result of a finished client statistics task
 type result struct {
-	CPUCores    int
-	CPUIdleTime float64
-	MemoryUsed  uint64
-	MemoryTotal uint64
+	CPUCores        int
+	CPUAllocatedMHz int64
+	CPUTotalMHz     int64
+	CPUIdleTime     float64
+	MemoryUsed      uint64
+	MemoryTotal     uint64
+	MemoryAllocated int64
 }
 
 // workerPayload is the payload for processing a single collection of client statistics
@@ -89,11 +92,14 @@ type workerPayload struct {
 
 // aggrResult is the final aggregated result for all clients collected resources
 type aggrResult struct {
-	Clients     int
-	CPUCores    int
-	CPUIdleTime float64
-	MemoryUsed  uint64
-	MemoryTotal uint64
+	Clients         int
+	CPUAllocatedMHz int64
+	CPUTotalMHz     int64
+	CPUCores        int
+	CPUIdleTime     float64
+	MemoryUsed      uint64
+	MemoryTotal     uint64
+	MemoryAllocated int64
 }
 
 func worker(payload *workerPayload) {
@@ -110,15 +116,41 @@ func worker(payload *workerPayload) {
 				continue
 			}
 
+			node, _, err := payload.client.Nodes().Info(task.NodeID, nil)
+			if err != nil {
+				payload.wg.Done()
+				continue
+			}
+
+			// We do this per node, as this _does_ return the stats, /v1/allocations does _not_
+			allocations, _, err := payload.client.Nodes().Allocations(task.NodeID, nil)
+			if err != nil {
+				payload.wg.Done()
+				continue
+			}
+
+			// fetch reservations for each allocation
+
 			taksResult := &result{}
 			taksResult.CPUCores = len(stats.CPU)
 			taksResult.CPUIdleTime = 0
+			taksResult.CPUAllocatedMHz = 0
+			taksResult.CPUTotalMHz = 0
 			taksResult.MemoryUsed = 0
 			taksResult.MemoryTotal = 0
+			taksResult.MemoryAllocated = 0
 
+			for _, allocation := range allocations {
+				for _, resources := range allocation.TaskResources {
+					taksResult.MemoryAllocated += int64(*resources.MemoryMB)
+					taksResult.CPUAllocatedMHz += int64(*resources.CPU)
+				}
+			}
 			for _, core := range stats.CPU {
 				taksResult.CPUIdleTime = taksResult.CPUIdleTime + core.Idle
 			}
+
+			taksResult.CPUTotalMHz += int64(*node.Resources.CPU)
 
 			if stats.Memory != nil {
 				taksResult.MemoryUsed = stats.Memory.Used
@@ -176,9 +208,12 @@ func collect(client *api.Client, quitCh chan interface{}) (*aggrResult, error) {
 		aggResult.Clients++
 
 		aggResult.CPUIdleTime += elem.CPUIdleTime
+		aggResult.CPUAllocatedMHz += elem.CPUAllocatedMHz
+		aggResult.CPUTotalMHz += elem.CPUTotalMHz
 		aggResult.CPUCores += elem.CPUCores
 		aggResult.MemoryUsed += elem.MemoryUsed
 		aggResult.MemoryTotal += elem.MemoryTotal
+		aggResult.MemoryAllocated += elem.MemoryAllocated
 	}
 
 	return aggResult, nil
