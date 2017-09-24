@@ -156,6 +156,7 @@ class App extends Component {
               {this.props.children}
             </div>
           </div>
+          <div style={{position: 'absolute', bottom: 0, right: 0, fontSize: 'xx-small'}}>{window.GIT_HASH}</div>
         </div>
       </MuiThemeProvider>
     )

@@ -12,6 +12,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var (
+	GitCommit   string  // Filled in by the compiler
+)
+
 func startLogging(logLevel string) {
 	level, err := log.ParseLevel(logLevel)
 	if err != nil {
@@ -117,6 +121,8 @@ func main() {
 
 		if idx := strings.Index(r.URL.Path, "config.js"); idx != -1 {
 			response := make([]string, 0)
+			response = append(response, fmt.Sprintf("window.GIT_HASH='%s'", GitCommit))
+
 			response = append(response, fmt.Sprintf("window.CONSUL_ENABLED=%s", strconv.FormatBool(cfg.ConsulEnable)))
 			response = append(response, fmt.Sprintf("window.CONSUL_READ_ONLY=%s", strconv.FormatBool(cfg.ConsulReadOnly)))
 
