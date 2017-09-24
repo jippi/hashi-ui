@@ -294,6 +294,10 @@ func (c *connection) process(action structs.Action) {
 		c.watch(nomad_allocations.NewInfo(action, c.nomadClient, c.newNomadQueryOptions()))
 	case nomad_allocations.UnwatchInfo:
 		c.unwatch(nomad_allocations.NewInfo(action, nil, nil))
+	case nomad_allocations.WatchStats:
+		c.stream(nomad_allocations.NewStats(action, c.nomadClient, c.newNomadQueryOptions()))
+	case nomad_allocations.UnwatchStats:
+		c.unwatch(nomad_allocations.NewStats(action, nil, nil))
 	case nomad_allocations.WatchFile:
 		c.stream(nomad_allocations.NewFile(action, c.nomadClient))
 	case nomad_allocations.UnwatchFile:

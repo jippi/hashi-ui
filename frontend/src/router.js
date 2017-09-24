@@ -18,6 +18,7 @@ import JobRaw from "./components/JobRaw/JobRaw"
 import Allocations from "./containers/allocations"
 import Allocation from "./containers/allocation"
 import AllocInfo from "./components/AllocationInfo/AllocationInfo"
+import AllocStats from "./components/AllocationStats/AllocationStats"
 import AllocFiles from "./components/AllocationFiles/AllocationFiles"
 import AllocRaw from "./components/AllocationRaw/AllocationRaw"
 
@@ -55,7 +56,7 @@ import SelectConsulRegion from "./containers/select_consul_region"
 
 import System from "./containers/system"
 
-const AppRouter = ({ history }) =>
+const AppRouter = ({ history }) => (
   <Router history={history}>
     <Route path="/" component={App}>
       // Legacy routes
@@ -126,6 +127,7 @@ const AppRouter = ({ history }) =>
       <Route path="/nomad/:region/allocations/:allocId" component={Allocation}>
         <IndexRedirect to="/nomad/:region/allocations/:allocId/info" />
         <Route path="/nomad/:region/allocations/:allocId/info" component={AllocInfo} />
+        <Route path="/nomad/:region/allocations/:allocId/stats" component={AllocStats} />
         <Redirect
           from="/nomad/:region/allocations/:allocId/logs"
           to="/nomad/:region/allocations/:allocId/files"
@@ -146,6 +148,7 @@ const AppRouter = ({ history }) =>
       <Route path="/nomad/:region/system" component={System} />
     </Route>
   </Router>
+)
 
 AppRouter.propTypes = {
   history: PropTypes.instanceOf(browserHistory.constructor).isRequired
