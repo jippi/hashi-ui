@@ -33,7 +33,7 @@ func NewStats(action structs.Action, client *api.Client, query *api.QueryOptions
 }
 
 func (w *stats) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Response, error) {
-	ticker := time.NewTicker(3 * time.Second) // fetch stats once in a while
+	ticker := time.NewTicker(1 * time.Second) // fetch stats once in a while
 	timer := time.NewTimer(0 * time.Second)   // fetch stats right away
 
 	for {
