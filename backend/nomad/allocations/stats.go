@@ -32,7 +32,6 @@ func NewStats(action structs.Action, client *api.Client, query *api.QueryOptions
 	}
 }
 
-//func (w *stats) Do() (*structs.Response, error) {
 func (w *stats) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Response, error) {
 	ticker := time.NewTicker(3 * time.Second) // fetch stats once in a while
 	timer := time.NewTimer(0 * time.Second)   // fetch stats right away
@@ -46,27 +45,31 @@ func (w *stats) Do(send chan *structs.Action, subscribeCh chan interface{}, dest
 			return nil, nil
 
 		case <-timer.C:
-			w.work(w.client, send, subscribeCh)
+			if err := w.work(w.client, send, subscribeCh); err != nil {
+				return structs.NewErrorResponse(err)
+			}
 
 		case <-ticker.C:
-			w.work(w.client, send, subscribeCh)
+			if err := w.work(w.client, send, subscribeCh); err != nil {
+				return structs.NewErrorResponse(err)
+			}
 		}
 	}
 }
 
-func (w *stats) work(client *api.Client, send chan *structs.Action, subscribeCh chan interface{}) {
+func (w *stats) work(client *api.Client, send chan *structs.Action, subscribeCh chan interface{}) error {
 	// cache the allocation object since it doesn't change between calls
 	if w.allocation == nil {
 		allocation, _, err := w.client.Allocations().Info(w.id, w.query)
 		if err != nil {
-			return
+			return err
 		}
 		w.allocation = allocation
 	}
 
 	stats, err := w.client.Allocations().Stats(w.allocation, w.query)
 	if err != nil {
-		return
+		return err
 	}
 
 	response := struct {
@@ -81,6 +84,8 @@ func (w *stats) work(client *api.Client, send chan *structs.Action, subscribeCh 
 		Type:    fetchedStats,
 		Payload: response,
 	}
+
+	return nil
 }
 
 func (w *stats) Key() string {
