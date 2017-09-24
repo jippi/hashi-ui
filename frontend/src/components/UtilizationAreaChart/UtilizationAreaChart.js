@@ -21,8 +21,12 @@ class UtilizationAreaChart extends Component {
     if (this.props.allocated) {
       reference = <ReferenceLine alwaysShow isFront y={this.props.allocated} stroke="red" strokeDasharray="3 3" />
       label = [
-        <dt style={{ color: "red" }}>Allocated</dt>,
-        <dd style={{ color: "red" }}>{this.props.allocated.toFixed(0)}</dd>
+        <dt key="allocated-dt" style={{ color: "red" }}>
+          Allocated
+        </dt>,
+        <dd key="allocated-dd" style={{ color: "red" }}>
+          {this.props.allocated.toFixed(0)}
+        </dd>
       ]
     }
 

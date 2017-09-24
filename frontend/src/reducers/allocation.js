@@ -76,12 +76,16 @@ export function AllocStatsReducer(state = {}, action) {
 
       state[allocationID].Global = computeResourceStats(state[allocationID].Global, payload.Stats.ResourceUsage)
 
-      Object.keys(payload.Stats.Tasks).map((key, index) => {
-        state[allocationID].Task[key] = computeResourceStats(
-          state[allocationID].Task[key],
-          payload.Stats.Tasks[key].ResourceUsage
-        )
-      })
+      // only bother with per-task resources if there is more than one
+      const tasks = Object.keys(payload.Stats.Tasks)
+      if (tasks.length > 1) {
+        tasks.map((key, index) => {
+          state[allocationID].Task[key] = computeResourceStats(
+            state[allocationID].Task[key],
+            payload.Stats.Tasks[key].ResourceUsage
+          )
+        })
+      }
 
       return Object.assign({}, state)
 
