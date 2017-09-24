@@ -112,6 +112,8 @@ function computeResourceStats(state = {}, resource) {
   if (!state.cpu) {
     state.cpu = []
     state.memory = []
+
+    state = prefillData(state)
   }
 
   state.cpu.push(cpu)
@@ -123,4 +125,13 @@ function computeResourceStats(state = {}, resource) {
   }
 
   return state
+}
+
+function prefillData(data) {
+  for (let i = 0; i < 120; i++) {
+    data.cpu.push({ name: "", Used: 0 })
+    data.memory.push({ name: "", RSS: 0, Cache: 0, Swap: 0 })
+  }
+
+  return data
 }
