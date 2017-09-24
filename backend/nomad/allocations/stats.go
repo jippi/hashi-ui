@@ -1,23 +1,27 @@
 package allocations
 
 import (
-"time"
+	"time"
 
-"github.com/hashicorp/nomad/api"
-"github.com/jippi/hashi-ui/backend/structs"
 	"fmt"
+
+	"github.com/hashicorp/nomad/api"
+	"github.com/jippi/hashi-ui/backend/structs"
 )
 
 const (
-	fetchedStats       = "NOMAD_FETCHED_ALLOC_STATS"
-	WatchStats         = "NOMAD_WATCH_ALLOC_STATS"
-	UnwatchStats       = "NOMAD_UNWATCH_ALLOC_STATS"
+	fetchedStats = "NOMAD_FETCHED_ALLOC_STATS"
+	WatchStats   = "NOMAD_WATCH_ALLOC_STATS"
+	UnwatchStats = "NOMAD_UNWATCH_ALLOC_STATS"
 )
 
 type stats struct {
 	action structs.Action
 	client *api.Client
 	query  *api.QueryOptions
+
+	id         string
+	allocation *api.Allocation
 }
 
 func NewStats(action structs.Action, client *api.Client, query *api.QueryOptions) *stats {
@@ -30,7 +34,7 @@ func NewStats(action structs.Action, client *api.Client, query *api.QueryOptions
 
 //func (w *stats) Do() (*structs.Response, error) {
 func (w *stats) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Response, error) {
-	ticker := time.NewTicker(5 * time.Second) // fetch stats once in a while
+	ticker := time.NewTicker(3 * time.Second) // fetch stats once in a while
 	timer := time.NewTimer(0 * time.Second)   // fetch stats right away
 
 	for {
@@ -51,21 +55,43 @@ func (w *stats) Do(send chan *structs.Action, subscribeCh chan interface{}, dest
 }
 
 func (w *stats) work(client *api.Client, send chan *structs.Action, subscribeCh chan interface{}) {
-	allocation, _, err := w.client.Allocations().Info(w.action.Payload.(string), w.query)
+	// cache the allocation object since it doesn't change between calls
+	if w.allocation == nil {
+		allocation, _, err := w.client.Allocations().Info(w.id, w.query)
+		if err != nil {
+			return
+		}
+		w.allocation = allocation
+	}
+
+	stats, err := w.client.Allocations().Stats(w.allocation, w.query)
 	if err != nil {
 		return
 	}
 
-	stats, err := w.client.Allocations().Stats(allocation, w.query)
-	if err != nil {
-		return
+	response := struct {
+		Stats *api.AllocResourceUsage
+		ID    string
+	}{
+		Stats: stats,
+		ID:    w.allocation.ID,
 	}
 
-	send <- &structs.Action{Type: fetchedStats, Payload: &stats}
+	send <- &structs.Action{
+		Type:    fetchedStats,
+		Payload: response,
+	}
 }
 
 func (w *stats) Key() string {
-	return fmt.Sprintf("/allocation/%s/stats", w.action.Payload.(string))
+	w.parse()
+
+	return fmt.Sprintf("/allocation/%s/stats", w.id)
+}
+
+func (w *stats) parse() {
+	params := w.action.Payload.(map[string]interface{})
+	w.id = params["ID"].(string)
 }
 
 func (w *stats) IsMutable() bool {

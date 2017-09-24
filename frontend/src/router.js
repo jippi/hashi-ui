@@ -56,7 +56,7 @@ import SelectConsulRegion from "./containers/select_consul_region"
 
 import System from "./containers/system"
 
-const AppRouter = ({ history }) =>
+const AppRouter = ({ history }) => (
   <Router history={history}>
     <Route path="/" component={App}>
       // Legacy routes
@@ -148,6 +148,7 @@ const AppRouter = ({ history }) =>
       <Route path="/nomad/:region/system" component={System} />
     </Route>
   </Router>
+)
 
 AppRouter.propTypes = {
   history: PropTypes.instanceOf(browserHistory.constructor).isRequired
