@@ -34,7 +34,7 @@ class UtilizationAreaChart extends Component {
       <Card>
         <CardTitle title={this.props.title} />
         <CardText>
-          <ResponsiveContainer height={400}>
+          <ResponsiveContainer height={230}>
             <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <XAxis dataKey="name" />
               <YAxis />

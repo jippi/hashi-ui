@@ -103,7 +103,9 @@ export function AllocStatsReducer(state = {}, action) {
 function computeResourceStats(state = {}, resource) {
   let cpu = {
     name: format(new Date(), "H:mm:ss"),
-    Used: resource.CpuStats.TotalTicks
+    Used: resource.CpuStats.TotalTicks,
+    System: resource.CpuStats.SystemMode,
+    User: resource.CpuStats.UserMode
   }
 
   let mem = {
@@ -139,7 +141,7 @@ function computeResourceStats(state = {}, resource) {
 
 function prefillData(data) {
   for (let i = 0; i < 30; i++) {
-    data.cpu.push({ name: "", Used: 0 })
+    data.cpu.push({ name: "", Used: 0, System: 0, User: 0 })
     data.memory.push({ name: "", RSS: 0, Cache: 0, Swap: 0 })
   }
 

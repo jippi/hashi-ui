@@ -9,7 +9,11 @@ import UtilizationAreaChart from "../UtilizationAreaChart/UtilizationAreaChart"
 
 class StatsSet extends Component {
   render() {
-    const CPUItems = [{ name: "Used", stroke: green500, fill: green200 }]
+    const CPUItems = [
+      { name: "Used", stroke: green500, fill: green200 },
+      { name: "System", stroke: yellow500, fill: yellow200 },
+      { name: "User", stroke: lime500, fill: lime200 },
+    ]
     const MemoryItems = [
       { name: "RSS", stroke: green500, fill: green200 },
       { name: "Cache", stroke: lime500, fill: lime200 },
