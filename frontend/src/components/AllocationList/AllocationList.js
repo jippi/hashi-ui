@@ -86,6 +86,9 @@ const StatusCell = ({ rowIndex, data, ...props }) => <Cell {...props}>{data[rowI
 
 const ActionsCell = ({ rowIndex, data, ...props }) => (
   <Cell {...props}>
+    <AllocationLink allocationId={data[rowIndex].ID} linkAppend="/stats" linkQuery={{ path: "/stats" }}>
+      <FontIcon className="material-icons">show_chart</FontIcon>
+    </AllocationLink>
     <AllocationLink allocationId={data[rowIndex].ID} linkAppend="/files" linkQuery={{ path: "/alloc/logs/" }}>
       <FontIcon className="material-icons">format_align_left</FontIcon>
     </AllocationLink>
