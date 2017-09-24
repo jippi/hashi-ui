@@ -2,8 +2,7 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import { connect } from "react-redux"
-import { green500, yellow500, lime500 } from "material-ui/styles/colors"
-import { green200, yellow200, lime200 } from "material-ui/styles/colors"
+import { green500, blue500, orange500, green200, blue200, orange200 } from "material-ui/styles/colors"
 import { NOMAD_WATCH_ALLOC_STATS, NOMAD_UNWATCH_ALLOC_STATS } from "../../sagas/event"
 import UtilizationAreaChart from "../UtilizationAreaChart/UtilizationAreaChart"
 
@@ -11,13 +10,13 @@ class StatsSet extends Component {
   render() {
     const CPUItems = [
       { name: "Used", stroke: green500, fill: green200 },
-      { name: "System", stroke: yellow500, fill: yellow200 },
-      { name: "User", stroke: lime500, fill: lime200 },
+      { name: "System", stroke: blue500, fill: blue200 },
+      { name: "User", stroke: orange500, fill: orange200 }
     ]
     const MemoryItems = [
       { name: "RSS", stroke: green500, fill: green200 },
-      { name: "Cache", stroke: lime500, fill: lime200 },
-      { name: "Swap", stroke: yellow500, fill: yellow200 }
+      { name: "Cache", stroke: orange500, fill: orange200 },
+      { name: "Swap", stroke: blue500, fill: blue200 }
     ]
     const data = this.props.data
 

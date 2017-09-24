@@ -24,8 +24,8 @@ class UtilizationAreaChart extends Component {
         <dt key="allocated-dt" style={{ color: "red" }}>
           Allocated
         </dt>,
-        <dd key="allocated-dd" style={{ color: "red" }}>
-          {this.props.allocated.toFixed(0)}
+        <dd key="allocated-dd" style={{ color: "red", textAlign: "right" }}>
+          {this.props.allocated.toLocaleString(undefined, { maximumFractionDigits: 0 })}
         </dd>
       ]
     }
@@ -55,14 +55,17 @@ class UtilizationAreaChart extends Component {
             </AreaChart>
           </ResponsiveContainer>
 
-          <div style={{ marginTop: "1rem" }}>
-            <dl className="metrics">
-              {this.props.items.map(item => [
-                <dt style={{ color: item.stroke }}>{item.name}</dt>,
-                <dd style={{ color: item.stroke }}>
-                  {this.props.data[this.props.data.length - 1][item.name].toFixed(0)}
-                </dd>
-              ])}
+          <div style={{ marginTop: "1rem", margin: "0 auto", display: "table" }}>
+            <dl className="metrics" style={{ width: 250 }}>
+              {this.props.items.map(item => {
+                const v = this.props.data[this.props.data.length - 1][item.name]
+                return [
+                  <dt style={{ color: item.stroke }}>{item.name}</dt>,
+                  <dd style={{ color: item.stroke, textAlign: "right" }}>
+                    {v.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                  </dd>
+                ]
+              })}
               {label}
             </dl>
           </div>
