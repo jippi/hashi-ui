@@ -19,7 +19,7 @@ class UtilizationAreaChart extends Component {
     let reference,
       label = null
     if (this.props.allocated) {
-      reference = <ReferenceLine y={this.props.allocated} label="Allocated" stroke="red" strokeDasharray="3 3" />
+      reference = <ReferenceLine alwaysShow isFront y={this.props.allocated} stroke="red" strokeDasharray="3 3" />
       label = [
         <dt style={{ color: "red" }}>Allocated</dt>,
         <dd style={{ color: "red" }}>{this.props.allocated.toFixed(0)}</dd>
@@ -71,7 +71,8 @@ class UtilizationAreaChart extends Component {
 UtilizationAreaChart.propTypes = {
   data: PropTypes.array.isRequired,
   items: PropTypes.array.isRequired,
-  title: PropTypes.string.isRequired
+  title: PropTypes.string.isRequired,
+  allocated: PropTypes.number
 }
 
 export default UtilizationAreaChart
