@@ -22,10 +22,20 @@ class StatsSet extends Component {
         <h3>{this.props.title}</h3>
         <Row>
           <Col key="cpu-utilization-pane" xs={12} sm={6} md={6} lg={6}>
-            <UtilizationAreaChart title="CPU usage (MHz)" data={data.cpu} items={CPUItems} />
+            <UtilizationAreaChart
+              title="CPU usage (MHz)"
+              data={data.cpu}
+              allocated={this.props.allocatedCPU}
+              items={CPUItems}
+            />
           </Col>
           <Col key="memory-utilization-pane" xs={12} sm={6} md={6} lg={6}>
-            <UtilizationAreaChart title="RAM usage (MB)" data={data.memory} items={MemoryItems} />
+            <UtilizationAreaChart
+              title="RAM usage (MB)"
+              data={data.memory}
+              allocated={this.props.allocatedMemory}
+              items={MemoryItems}
+            />
           </Col>
         </Row>
       </Grid>
@@ -59,10 +69,26 @@ class AllocStats extends Component {
     }
     const stats = this.props.allocStats[allocationID]
 
-    let statsSets = [<StatsSet key="allocation" title="All tasks" data={stats.Global} />]
+    let statsSets = [
+      <StatsSet
+        key="allocation"
+        title="All tasks"
+        data={stats.Global}
+        allocatedCPU={this.props.allocation.Resources.CPU}
+        allocatedMemory={this.props.allocation.Resources.MemoryMB}
+      />
+    ]
 
     Object.keys(stats.Task).map((key, index) =>
-      statsSets.push(<StatsSet key={key} title={key} data={stats.Task[key]} />)
+      statsSets.push(
+        <StatsSet
+          key={key}
+          title={key}
+          data={stats.Task[key]}
+          allocatedCPU={this.props.allocation.TaskResources[key].CPU}
+          allocatedMemory={this.props.allocation.TaskResources[key].MemoryMB}
+        />
+      )
     )
 
     return <div>{statsSets}</div>

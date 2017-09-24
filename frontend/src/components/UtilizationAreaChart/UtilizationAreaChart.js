@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts"
 import { Card, CardTitle, CardText } from "material-ui/Card"
 
 //
@@ -12,13 +12,20 @@ import { Card, CardTitle, CardText } from "material-ui/Card"
 //
 
 class UtilizationAreaChart extends Component {
-  constructor(props) {
-    super(props)
-  }
-
   render() {
     let data = []
     this.props.data.map((item, index) => data.push(item))
+
+    let reference,
+      label = null
+    if (this.props.allocated) {
+      reference = <ReferenceLine y={this.props.allocated} label="Allocated" stroke="red" strokeDasharray="3 3" />
+      label = [
+        <dt style={{ color: "red" }}>Allocated</dt>,
+        <dd style={{ color: "red" }}>{this.props.allocated.toFixed(0)}</dd>
+      ]
+    }
+
     return (
       <Card>
         <CardTitle title={this.props.title} />
@@ -29,6 +36,7 @@ class UtilizationAreaChart extends Component {
               <YAxis />
               <CartesianGrid strokeDasharray="3 3" />
               <Tooltip />
+              {reference}
               {this.props.items.map(item => (
                 <Area
                   key={item.name}
@@ -51,6 +59,7 @@ class UtilizationAreaChart extends Component {
                   {this.props.data[this.props.data.length - 1][item.name].toFixed(0)}
                 </dd>
               ])}
+              {label}
             </dl>
           </div>
         </CardText>
