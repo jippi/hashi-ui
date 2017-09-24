@@ -139,7 +139,7 @@ class Cluster extends Component {
 
     const cpuChart = [
       {
-        name: "Busy",
+        name: "Used",
         value: UsedCPU,
         humanValue: UsedCPU.toFixed(0) + " %",
         color: UsedCPUColor
