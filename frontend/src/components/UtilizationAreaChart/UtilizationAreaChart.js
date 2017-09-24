@@ -11,6 +11,8 @@ import { Card, CardTitle, CardText } from "material-ui/Card"
 //     items: [{name: 'y-axis-name', stroke: '#3060a0', fill: '#205090'}]
 //
 
+const formatNumber = i => i.toLocaleString(undefined, { maximumFractionDigits: 0 })
+
 class UtilizationAreaChart extends Component {
   render() {
     let data = []
@@ -25,7 +27,7 @@ class UtilizationAreaChart extends Component {
           Allocated
         </dt>,
         <dd key="allocated-dd" style={{ color: "red", textAlign: "right" }}>
-          {this.props.allocated.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+          {formatNumber(this.props.allocated)}
         </dd>
       ]
     }
@@ -58,11 +60,10 @@ class UtilizationAreaChart extends Component {
           <div style={{ marginTop: "1rem", margin: "0 auto", display: "table" }}>
             <dl className="metrics" style={{ width: 250 }}>
               {this.props.items.map(item => {
-                const v = this.props.data[this.props.data.length - 1][item.name]
                 return [
                   <dt style={{ color: item.stroke }}>{item.name}</dt>,
                   <dd style={{ color: item.stroke, textAlign: "right" }}>
-                    {v.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                    {formatNumber(this.props.data[this.props.data.length - 1][item.name])}
                   </dd>
                 ]
               })}

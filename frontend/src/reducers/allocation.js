@@ -149,5 +149,5 @@ function prefillData(data) {
 }
 
 function formatNumber(i) {
-  return i.toFixed(0)
+  return Math.round(i)
 }
