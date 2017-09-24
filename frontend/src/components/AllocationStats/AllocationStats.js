@@ -24,7 +24,7 @@ class StatsSet extends Component {
       <Grid fluid style={{ padding: 0 }}>
         <h3>{this.props.title}</h3>
         <Row>
-          <Col key="cpu-utilization-pane" xs={12} sm={6} md={6} lg={6}>
+          <Col key="cpu-utilization-pane" xs={12} sm={12} md={12} lg={6}>
             <UtilizationAreaChart
               title="CPU usage (MHz)"
               data={data.cpu}
@@ -32,7 +32,7 @@ class StatsSet extends Component {
               items={CPUItems}
             />
           </Col>
-          <Col key="memory-utilization-pane" xs={12} sm={6} md={6} lg={6}>
+          <Col key="memory-utilization-pane" xs={12} sm={12} md={12} lg={6}>
             <UtilizationAreaChart
               title="RAM usage (MB)"
               data={data.memory}
