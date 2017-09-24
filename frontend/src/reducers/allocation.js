@@ -103,16 +103,16 @@ export function AllocStatsReducer(state = {}, action) {
 function computeResourceStats(state = {}, resource) {
   let cpu = {
     name: format(new Date(), "H:mm:ss"),
-    Used: resource.CpuStats.TotalTicks,
-    System: resource.CpuStats.SystemMode,
-    User: resource.CpuStats.UserMode
+    Used: formatNumber(resource.CpuStats.TotalTicks),
+    System: formatNumber(resource.CpuStats.SystemMode),
+    User: formatNumber(resource.CpuStats.UserMode)
   }
 
   let mem = {
     name: format(new Date(), "H:mm:ss"),
-    RSS: resource.MemoryStats.RSS / 1024 / 1024,
-    Cache: resource.MemoryStats.Cache / 1024 / 1024,
-    Swap: resource.MemoryStats.Swap / 1024 / 1024
+    RSS: formatNumber(resource.MemoryStats.RSS / 1024 / 1024),
+    Cache: formatNumber(resource.MemoryStats.Cache / 1024 / 1024),
+    Swap: formatNumber(resource.MemoryStats.Swap / 1024 / 1024)
   }
 
   if (!state.cpu) {
@@ -146,4 +146,8 @@ function prefillData(data) {
   }
 
   return data
+}
+
+function formatNumber(i) {
+  return i.toFixed(0)
 }
