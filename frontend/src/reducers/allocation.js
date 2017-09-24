@@ -123,7 +123,13 @@ function computeResourceStats(state = {}, resource) {
   state.cpu.push(cpu)
   state.memory.push(mem)
 
-  if (state.cpu.length > 120) {
+  if (state.cpu.length > 300) {
+    state.cpu.splice(0, 1)
+    state.memory.splice(0, 1)
+  }
+
+  // remove the intiial prefill data
+  if (state.cpu.filter(v => v.name == "").length > 0) {
     state.cpu.splice(0, 1)
     state.memory.splice(0, 1)
   }
@@ -132,7 +138,7 @@ function computeResourceStats(state = {}, resource) {
 }
 
 function prefillData(data) {
-  for (let i = 0; i < 120; i++) {
+  for (let i = 0; i < 30; i++) {
     data.cpu.push({ name: "", Used: 0 })
     data.memory.push({ name: "", RSS: 0, Cache: 0, Swap: 0 })
   }
