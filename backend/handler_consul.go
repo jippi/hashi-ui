@@ -6,18 +6,15 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	consul "github.com/hashicorp/consul/api"
+	nomad "github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/config"
 	consul_helper "github.com/jippi/hashi-ui/backend/consul/helper"
-	nomad_helper "github.com/jippi/hashi-ui/backend/nomad/helper"
 	"github.com/jippi/hashi-ui/backend/structs"
 	uuid "github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
 )
 
-func ConsulHandler(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
-	nomadClient, _ := nomad_helper.NewRegionClient(cfg, "")
-	consulClient, _ := consul_helper.NewDatacenterClient(cfg, "")
-
+func ConsulHandler(cfg *config.Config, nomadClient *nomad.Client, consulClient *consul.Client) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		connectionID := uuid.NewV4()
 		logger := log.WithField("connection_id", connectionID.String()[:8])

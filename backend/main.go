@@ -8,12 +8,16 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	consul "github.com/hashicorp/consul/api"
+	nomad "github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/config"
+	consul_helper "github.com/jippi/hashi-ui/backend/consul/helper"
+	nomad_helper "github.com/jippi/hashi-ui/backend/nomad/helper"
 	log "github.com/sirupsen/logrus"
 )
 
 var (
-	GitCommit   string  // Filled in by the compiler
+	GitCommit string // Filled in by the compiler
 )
 
 func startLogging(logLevel string) {
@@ -84,19 +88,42 @@ func main() {
 	myAssetFS := assetFS()
 	router := mux.NewRouter()
 
+	var nomadClient *nomad.Client
+	var consulClient *consul.Client
+
 	if cfg.NomadEnable {
+		log.Info("Connecting to Nomad ...")
+		nomadClient, err := nomad_helper.NewRegionClient(cfg, "")
+		if err != nil {
+			log.Fatalf("Unable to create Nomad client: %s", err)
+		}
+		if _, err := nomadClient.Status().Leader(); err != nil {
+			log.Fatalf("Unable to communicate with Nomad: %s", err)
+		}
+		log.Info("done!")
+
 		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			log.Infof("Redirecting / to /nomad")
 			w.Write([]byte("<script>document.location.href='" + cfg.ProxyAddress + "/nomad'</script>"))
 			return
 		})
 
-		router.HandleFunc("/ws/nomad", NomadHandler(cfg))
-		router.HandleFunc("/ws/nomad/{region}", NomadHandler(cfg))
+		router.HandleFunc("/ws/nomad", NomadHandler(cfg, nomadClient, consulClient))
+		router.HandleFunc("/ws/nomad/{region}", NomadHandler(cfg, nomadClient, consulClient))
 		router.HandleFunc("/nomad/{region}/download/{path:.*}", NomadDownloadFile(cfg))
 	}
 
 	if cfg.ConsulEnable {
+		log.Info("Connecting to Consul ...")
+		consulClient, err := consul_helper.NewDatacenterClient(cfg, "")
+		if err != nil {
+			log.Fatalf("Unable to create Consul client: %s", err)
+		}
+		if _, err := consulClient.Status().Leader(); err != nil {
+			log.Fatalf("Unable to communicate with Consul: %s", err)
+		}
+		log.Info("done!")
+
 		if !cfg.NomadEnable {
 			router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 				log.Infof("Redirecting / to /consul")
@@ -104,8 +131,8 @@ func main() {
 			})
 		}
 
-		router.HandleFunc("/ws/consul", ConsulHandler(cfg))
-		router.HandleFunc("/ws/consul/{region}", ConsulHandler(cfg))
+		router.HandleFunc("/ws/consul", ConsulHandler(cfg, nomadClient, consulClient))
+		router.HandleFunc("/ws/consul/{region}", ConsulHandler(cfg, nomadClient, consulClient))
 	}
 
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
