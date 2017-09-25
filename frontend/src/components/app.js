@@ -143,18 +143,26 @@ class App extends Component {
             <NotificationsBar />
             {uncaughtExceptionBar}
           </div>
-          <div>
-            {topbar}
-          </div>
+          <div>{topbar}</div>
           <div>
             <div style={{ float: "left", width: "200px" }}>
               {navbar}
               <Divider />
               {changeAppBar}
+              <div
+                style={{
+                  fontSize: "small",
+                  position: "absolute",
+                  bottom: 0,
+                  color: "grey",
+                  width: 200,
+                  textAlign: "center"
+                }}
+              >
+                version: {window.GIT_HASH || "webpack-dev"}
+              </div>
             </div>
-            <div style={{ float: "right", width: this.state.width }}>
-              {this.props.children}
-            </div>
+            <div style={{ float: "right", width: this.state.width }}>{this.props.children}</div>
           </div>
         </div>
       </MuiThemeProvider>
