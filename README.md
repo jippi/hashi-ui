@@ -136,9 +136,11 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | `CONSUL_CLIENT_CERT`    | `<empty>`                 | `<empty>` 	                | (optional) path to a client cert file (remember to set `CONSUL_HTTP_SSL` to true)                                |
 | `CONSUL_CLIENT_KEY`  	  | `<empty>`                 | `<empty>` 	                | (optional) path to a client key file (remember to set `CONSUL_HTTP_SSL` to true)          	                   |
 
-## Running in AWS
+## Running behind a Load Balancer
 
 When Running Hashi UI behind AWS ELB (even with Nginx/Traefik in between), ELB should be configured with TCP not HTTP Listeners (HTTP Listener doesn't support websockets)
+
+Hashi-UI exposes a `/_status` endpoint that can be used to check the health of Nomad and Consul endpoints.
 
 ## Running in Docker Compose
 
