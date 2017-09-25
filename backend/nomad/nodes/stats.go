@@ -74,11 +74,13 @@ func (w *stats) work(client *api.Client, send chan *structs.Action, subscribeCh 
 	taksResult.MemoryAllocated = 0
 
 	for _, allocation := range allocations {
-		if allocation.ClientStatus == "running" {
-			for _, resources := range allocation.TaskResources {
-				taksResult.MemoryAllocated += int64(*resources.MemoryMB)
-				taksResult.CPUAllocatedMHz += int64(*resources.CPU)
-			}
+		if allocation.DesiredStatus != "run" {
+			continue
+		}
+
+		for _, resources := range allocation.TaskResources {
+			taksResult.MemoryAllocated += int64(*resources.MemoryMB)
+			taksResult.CPUAllocatedMHz += int64(*resources.CPU)
 		}
 	}
 
