@@ -141,6 +141,10 @@ func worker(payload *workerPayload) {
 			taksResult.MemoryAllocated = 0
 
 			for _, allocation := range allocations {
+				if allocation.DesiredStatus != "run" {
+					continue
+				}
+
 				for _, resources := range allocation.TaskResources {
 					taksResult.MemoryAllocated += int64(*resources.MemoryMB)
 					taksResult.CPUAllocatedMHz += int64(*resources.CPU)
