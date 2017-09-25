@@ -88,12 +88,15 @@ func main() {
 	myAssetFS := assetFS()
 	router := mux.NewRouter()
 
+	// create clients
 	var nomadClient *nomad.Client
 	var consulClient *consul.Client
 
 	if cfg.NomadEnable {
+		var err error
+
 		log.Info("Connecting to Nomad ...")
-		nomadClient, err := nomad_helper.NewRegionClient(cfg, "")
+		nomadClient, err = nomad_helper.NewRegionClient(cfg, "")
 		if err != nil {
 			log.Fatalf("Unable to create Nomad client: %s", err)
 		}
@@ -101,7 +104,25 @@ func main() {
 			log.Fatalf("Unable to communicate with Nomad: %s", err)
 		}
 		log.Info("done!")
+	}
 
+	if cfg.ConsulEnable {
+		var err error
+
+		log.Info("Connecting to Consul ...")
+		consulClient, err = consul_helper.NewDatacenterClient(cfg, "")
+		if err != nil {
+			log.Fatalf("Unable to create Consul client: %s", err)
+		}
+		if _, err := consulClient.Status().Leader(); err != nil {
+			log.Fatalf("Unable to communicate with Consul: %s", err)
+		}
+		log.Info("done!")
+	}
+
+	// setup http handlers
+
+	if cfg.NomadEnable {
 		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			log.Infof("Redirecting / to /nomad")
 			w.Write([]byte("<script>document.location.href='" + cfg.ProxyAddress + "/nomad'</script>"))
@@ -114,16 +135,6 @@ func main() {
 	}
 
 	if cfg.ConsulEnable {
-		log.Info("Connecting to Consul ...")
-		consulClient, err := consul_helper.NewDatacenterClient(cfg, "")
-		if err != nil {
-			log.Fatalf("Unable to create Consul client: %s", err)
-		}
-		if _, err := consulClient.Status().Leader(); err != nil {
-			log.Fatalf("Unable to communicate with Consul: %s", err)
-		}
-		log.Info("done!")
-
 		if !cfg.NomadEnable {
 			router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 				log.Infof("Redirecting / to /consul")
@@ -134,6 +145,8 @@ func main() {
 		router.HandleFunc("/ws/consul", ConsulHandler(cfg, nomadClient, consulClient))
 		router.HandleFunc("/ws/consul/{region}", ConsulHandler(cfg, nomadClient, consulClient))
 	}
+
+	router.HandleFunc("/_status", StatusHandler(cfg, nomadClient, consulClient))
 
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		responseFile := "/index.html"
