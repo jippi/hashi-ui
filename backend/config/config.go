@@ -65,6 +65,12 @@ var (
 
 	flagServerKey = flag.String("server-key", "",
 		"Server key to use when https protocol is enabled. "+FlagDefault(defaultConfig.ServerKey))
+
+	flagNomadColor = flag.String("nomad-color", "",
+		"Set the color for the top bar in nomad related screens. "+FlagDefault(defaultConfig.NomadColor))
+
+	flagConsulColor = flag.String("consul-color", "",
+		"Set the color for the top bar in consul related screens. "+FlagDefault(defaultConfig.ConsulColor))
 )
 
 // Config for the hashi-ui server
@@ -288,6 +294,10 @@ func ParseNomadFlagConfig(c *Config) {
 	if *flagNomadAllowStale {
 		c.NomadAllowStale = *flagNomadAllowStale
 	}
+
+	if *flagNomadColor != "" {
+		c.NomadColor = *flagNomadColor
+	}
 }
 
 // ParseConsulEnvConfig ...
@@ -334,5 +344,9 @@ func ParseConsulFlagConfig(c *Config) {
 
 	if *flagConsulACLToken != "" {
 		c.ConsulACLToken = *flagConsulACLToken
+	}
+
+	if *flagConsulColor != "" {
+		c.ConsulColor = *flagConsulColor
 	}
 }
