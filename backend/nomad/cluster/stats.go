@@ -116,9 +116,11 @@ func worker(payload *workerPayload) {
 				continue
 			}
 
-			if (node.Drain || node.Status != "ready") {
+			if node.Drain || node.Status != "ready" {
+				payload.wg.Done()
 				continue // skip drained nodes
 			}
+
 			stats, err := payload.client.Nodes().Stats(task.NodeID, nil)
 			if err != nil {
 				payload.wg.Done()
