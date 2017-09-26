@@ -400,7 +400,12 @@ func (c *connection) newConsulQueryOptions() *consul.QueryOptions {
 
 // watch will start a subscription watcher in a new Go routine
 func (c *connection) watch(w subscriber.Watcher) {
-	if c.config.NomadReadOnly && w.IsMutable() {
+	if c.config.NomadReadOnly && w.IsMutable() && w.BackendType() == "nomad" {
+		c.readOnlyError(w.Key())
+		return
+	}
+
+	if c.config.ConsulReadOnly && w.IsMutable() && w.BackendType() == "consul" {
 		c.readOnlyError(w.Key())
 		return
 	}
@@ -410,7 +415,12 @@ func (c *connection) watch(w subscriber.Watcher) {
 
 // once will start a one-off execution of a watcher in a new Go routine
 func (c *connection) once(w subscriber.Watcher) {
-	if c.config.NomadReadOnly && w.IsMutable() {
+	if c.config.NomadReadOnly && w.IsMutable() && w.BackendType() == "nomad" {
+		c.readOnlyError(w.Key())
+		return
+	}
+
+	if c.config.ConsulReadOnly && w.IsMutable() && w.BackendType() == "consul" {
 		c.readOnlyError(w.Key())
 		return
 	}
@@ -420,7 +430,12 @@ func (c *connection) once(w subscriber.Watcher) {
 
 // stream will start a subscription streamer, delegating all handling to the stream routine
 func (c *connection) stream(s subscriber.Streamer) {
-	if c.config.NomadReadOnly && s.IsMutable() {
+	if c.config.NomadReadOnly && s.IsMutable() && s.BackendType() == "nomad" {
+		c.readOnlyError(s.Key())
+		return
+	}
+
+	if c.config.ConsulReadOnly && s.IsMutable() && s.BackendType() == "consul" {
 		c.readOnlyError(s.Key())
 		return
 	}

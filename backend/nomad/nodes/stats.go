@@ -110,6 +110,10 @@ func (w *stats) IsMutable() bool {
 	return false
 }
 
+func (w *stats) BackendType() string {
+	return "nomad"
+}
+
 // result is struct for the result of a finished client statistics task
 type result struct {
 	CPUCores        int

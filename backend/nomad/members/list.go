@@ -81,6 +81,10 @@ func (w *list) IsMutable() bool {
 	return false
 }
 
+func (w *list) BackendType() string {
+	return "nomad"
+}
+
 func membersWithID(client *api.Client, cfg *config.Config) (string, []*AgentMemberWithID, error) {
 	members, err := client.Agent().Members()
 	if err != nil {

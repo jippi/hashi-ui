@@ -68,6 +68,10 @@ func (w *changeStatus) IsMutable() bool {
 	return true
 }
 
+func (w *changeStatus) BackendType() string {
+	return "nomad"
+}
+
 func (w *changeStatus) parse() {
 	payload := w.action.Payload.(map[string]interface{})
 

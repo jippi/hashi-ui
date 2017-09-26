@@ -48,6 +48,10 @@ func (w *info) IsMutable() bool {
 	return false
 }
 
+func (w *info) BackendType() string {
+	return "nomad"
+}
+
 func (w *info) id() string {
 	return w.action.Payload.(string)
 }

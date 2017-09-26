@@ -39,3 +39,7 @@ func (w *stop) Key() string {
 func (w *stop) IsMutable() bool {
 	return true
 }
+
+func (w *stop) BackendType() string {
+	return "nomad"
+}

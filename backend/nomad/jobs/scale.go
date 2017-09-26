@@ -100,6 +100,10 @@ func (w *scale) IsMutable() bool {
 	return true
 }
 
+func (w *scale) BackendType() string {
+	return "nomad"
+}
+
 // IntToPtr returns the pointer to an int
 func IntToPtr(i int) *int {
 	return &i

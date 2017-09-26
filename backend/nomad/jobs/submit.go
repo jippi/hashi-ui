@@ -50,3 +50,7 @@ func (w *submit) Key() string {
 func (w *submit) IsMutable() bool {
 	return true
 }
+
+func (w *submit) BackendType() string {
+	return "nomad"
+}

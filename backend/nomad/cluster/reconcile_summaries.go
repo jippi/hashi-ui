@@ -37,3 +37,7 @@ func (w *reconsileSummaries) Key() string {
 func (w *reconsileSummaries) IsMutable() bool {
 	return true
 }
+
+func (w *reconsileSummaries) BackendType() string {
+	return "nomad"
+}

@@ -59,6 +59,10 @@ func (w *drain) IsMutable() bool {
 	return true
 }
 
+func (w *drain) BackendType() string {
+	return "nomad"
+}
+
 func (w *drain) parse() {
 	payload := w.action.Payload.(map[string]interface{})
 

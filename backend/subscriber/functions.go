@@ -10,6 +10,7 @@ type Watcher interface {
 	Do() (*structs.Response, error)
 	Key() string
 	IsMutable() bool
+	BackendType() string
 }
 
 // Streamer interface
@@ -17,6 +18,7 @@ type Streamer interface {
 	Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Response, error)
 	Key() string
 	IsMutable() bool
+	BackendType() string
 }
 
 // Keyer interface

@@ -49,3 +49,7 @@ func (w *info) Key() string {
 func (w *info) IsMutable() bool {
 	return false
 }
+
+func (w *info) BackendType() string {
+	return "consul"
+}

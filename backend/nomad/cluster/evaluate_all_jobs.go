@@ -51,3 +51,7 @@ func (w *evaluateAllJobs) Key() string {
 func (w *evaluateAllJobs) IsMutable() bool {
 	return false
 }
+
+func (w *evaluateAllJobs) BackendType() string {
+	return "nomad"
+}

@@ -66,3 +66,7 @@ func (w *set) Key() string {
 func (w *set) IsMutable() bool {
 	return false
 }
+
+func (w *set) BackendType() string {
+	return "consul"
+}

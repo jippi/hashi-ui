@@ -53,3 +53,7 @@ func (w *versions) Key() string {
 func (w *versions) IsMutable() bool {
 	return false
 }
+
+func (w *versions) BackendType() string {
+	return "nomad"
+}

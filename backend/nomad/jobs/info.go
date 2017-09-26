@@ -77,6 +77,10 @@ func (w *info) IsMutable() bool {
 	return false
 }
 
+func (w *info) BackendType() string {
+	return "nomad"
+}
+
 func (w *info) parse() {
 	payload := w.action.Payload.(map[string]interface{})
 	w.id = payload["id"].(string)

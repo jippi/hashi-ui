@@ -64,6 +64,10 @@ func (w *stats) IsMutable() bool {
 	return false
 }
 
+func (w *stats) BackendType() string {
+	return "nomad"
+}
+
 // task is meta data about a client when passed into the cluster statistics worker
 type task struct {
 	NodeID   string

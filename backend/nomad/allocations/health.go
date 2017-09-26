@@ -115,6 +115,10 @@ func (w *health) IsMutable() bool {
 	return false
 }
 
+func (w *health) BackendType() string {
+	return "nomad"
+}
+
 func (w *health) parse() {
 	params := w.action.Payload.(map[string]interface{})
 	w.allocationID = params["id"].(string)

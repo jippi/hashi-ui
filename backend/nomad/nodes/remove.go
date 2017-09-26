@@ -39,3 +39,7 @@ func (w *remove) Key() string {
 func (w *remove) IsMutable() bool {
 	return true
 }
+
+func (w *remove) BackendType() string {
+	return "nomad"
+}
