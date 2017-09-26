@@ -102,3 +102,7 @@ func (w *stats) parse() {
 func (w *stats) IsMutable() bool {
 	return false
 }
+
+func (w *stats) BackendType() string {
+	return "nomad"
+}

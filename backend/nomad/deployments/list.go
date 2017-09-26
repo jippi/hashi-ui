@@ -46,3 +46,7 @@ func (w *list) Key() string {
 func (w *list) IsMutable() bool {
 	return false
 }
+
+func (w *list) BackendType() string {
+	return "nomad"
+}

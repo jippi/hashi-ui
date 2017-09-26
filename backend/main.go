@@ -8,8 +8,16 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	consul "github.com/hashicorp/consul/api"
+	nomad "github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/config"
+	consul_helper "github.com/jippi/hashi-ui/backend/consul/helper"
+	nomad_helper "github.com/jippi/hashi-ui/backend/nomad/helper"
 	log "github.com/sirupsen/logrus"
+)
+
+var (
+	GitCommit string // Filled in by the compiler
 )
 
 func startLogging(logLevel string) {
@@ -80,6 +88,40 @@ func main() {
 	myAssetFS := assetFS()
 	router := mux.NewRouter()
 
+	// create clients
+	var nomadClient *nomad.Client
+	var consulClient *consul.Client
+
+	if cfg.NomadEnable {
+		var err error
+
+		log.Info("Connecting to Nomad ...")
+		nomadClient, err = nomad_helper.NewRegionClient(cfg, "")
+		if err != nil {
+			log.Fatalf("Unable to create Nomad client: %s", err)
+		}
+		if _, err := nomadClient.Status().Leader(); err != nil {
+			log.Fatalf("Unable to communicate with Nomad: %s", err)
+		}
+		log.Info("done!")
+	}
+
+	if cfg.ConsulEnable {
+		var err error
+
+		log.Info("Connecting to Consul ...")
+		consulClient, err = consul_helper.NewDatacenterClient(cfg, "")
+		if err != nil {
+			log.Fatalf("Unable to create Consul client: %s", err)
+		}
+		if _, err := consulClient.Status().Leader(); err != nil {
+			log.Fatalf("Unable to communicate with Consul: %s", err)
+		}
+		log.Info("done!")
+	}
+
+	// setup http handlers
+
 	if cfg.NomadEnable {
 		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			log.Infof("Redirecting / to /nomad")
@@ -87,8 +129,8 @@ func main() {
 			return
 		})
 
-		router.HandleFunc("/ws/nomad", NomadHandler(cfg))
-		router.HandleFunc("/ws/nomad/{region}", NomadHandler(cfg))
+		router.HandleFunc("/ws/nomad", NomadHandler(cfg, nomadClient, consulClient))
+		router.HandleFunc("/ws/nomad/{region}", NomadHandler(cfg, nomadClient, consulClient))
 		router.HandleFunc("/nomad/{region}/download/{path:.*}", NomadDownloadFile(cfg))
 	}
 
@@ -100,9 +142,11 @@ func main() {
 			})
 		}
 
-		router.HandleFunc("/ws/consul", ConsulHandler(cfg))
-		router.HandleFunc("/ws/consul/{region}", ConsulHandler(cfg))
+		router.HandleFunc("/ws/consul", ConsulHandler(cfg, nomadClient, consulClient))
+		router.HandleFunc("/ws/consul/{region}", ConsulHandler(cfg, nomadClient, consulClient))
 	}
+
+	router.HandleFunc("/_status", StatusHandler(cfg, nomadClient, consulClient))
 
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		responseFile := "/index.html"
@@ -117,6 +161,8 @@ func main() {
 
 		if idx := strings.Index(r.URL.Path, "config.js"); idx != -1 {
 			response := make([]string, 0)
+			response = append(response, fmt.Sprintf("window.GIT_HASH='%s'", GitCommit))
+
 			response = append(response, fmt.Sprintf("window.CONSUL_ENABLED=%s", strconv.FormatBool(cfg.ConsulEnable)))
 			response = append(response, fmt.Sprintf("window.CONSUL_READ_ONLY=%s", strconv.FormatBool(cfg.ConsulReadOnly)))
 

@@ -166,3 +166,7 @@ func (w *file) parse() {
 	w.id = params["allocID"].(string)
 	w.path = params["path"].(string)
 }
+
+func (w *file) BackendType() string {
+	return "nomad"
+}

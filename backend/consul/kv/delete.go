@@ -60,3 +60,7 @@ func (w *delete) Key() string {
 func (w *delete) IsMutable() bool {
 	return true
 }
+
+func (w *delete) BackendType() string {
+	return "consul"
+}

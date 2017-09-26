@@ -39,3 +39,7 @@ func (w *forceEvaluate) Key() string {
 func (w *forceEvaluate) IsMutable() bool {
 	return true
 }
+
+func (w *forceEvaluate) BackendType() string {
+	return "nomad"
+}

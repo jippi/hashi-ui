@@ -48,3 +48,7 @@ func (w *allocations) Key() string {
 func (w *allocations) IsMutable() bool {
 	return false
 }
+
+func (w *allocations) BackendType() string {
+	return "nomad"
+}

@@ -68,6 +68,10 @@ func (w *list) IsMutable() bool {
 	return false
 }
 
+func (w *list) BackendType() string {
+	return "nomad"
+}
+
 func (w *list) filter(q *api.QueryOptions) {
 	if payload, ok := w.action.Payload.(map[string]interface{}); ok {
 		if prefix, ok := payload["prefix"]; ok {

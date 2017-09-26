@@ -67,6 +67,10 @@ func (w *list) IsMutable() bool {
 	return false
 }
 
+func (w *list) BackendType() string {
+	return "nomad"
+}
+
 func nodeStats(client *api.Client, nodes []*api.NodeListStub) []*customClient {
 	var wg sync.WaitGroup
 	res := make([]*customClient, len(nodes))

@@ -48,3 +48,7 @@ func (w *deployments) Key() string {
 func (w *deployments) IsMutable() bool {
 	return false
 }
+
+func (w *deployments) BackendType() string {
+	return "nomad"
+}

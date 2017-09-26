@@ -39,3 +39,7 @@ func (w *deleteTree) Key() string {
 func (w *deleteTree) IsMutable() bool {
 	return true
 }
+
+func (w *deleteTree) BackendType() string {
+	return "consul"
+}

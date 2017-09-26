@@ -4,6 +4,10 @@ EXTERNAL_TOOLS=\
 	github.com/jteeuwen/go-bindata/... \
 	github.com/elazarl/go-bindata-assetfs/...
 
+GIT_COMMIT := $(shell git describe --tags)
+GIT_DIRTY := $(if $(shell git status --porcelain),+CHANGES)
+GO_LDFLAGS := "-X main.GitCommit=$(GIT_COMMIT)$(GIT_DIRTY)"
+
 GOFILES_NOVENDOR = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 BUILD_DIR ?= $(abspath build)
@@ -19,7 +23,7 @@ GET_GOARCH = $(word 2,$(subst -, ,$1))
 BINARIES = $(addprefix $(BUILD_DIR)/hashi-ui-, $(GOBUILD))
 $(BINARIES): $(BUILD_DIR)/hashi-ui-%: $(BUILD_DIR) bindata_assetfs.go
 	@echo "=> building $@ ..."
-	GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 govendor build -o $@
+	GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 govendor build -o $@ -ldflags $(GO_LDFLAGS)
 
 .PHONY: install
 install:

@@ -39,3 +39,7 @@ func (w *periodicForce) Key() string {
 func (w *periodicForce) IsMutable() bool {
 	return true
 }
+
+func (w *periodicForce) BackendType() string {
+	return "nomad"
+}

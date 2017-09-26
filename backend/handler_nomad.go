@@ -7,9 +7,9 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
-	"github.com/hashicorp/nomad/api"
+	consul "github.com/hashicorp/consul/api"
+	nomad "github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/config"
-	consul_helper "github.com/jippi/hashi-ui/backend/consul/helper"
 	nomad_helper "github.com/jippi/hashi-ui/backend/nomad/helper"
 	"github.com/jippi/hashi-ui/backend/structs"
 	uuid "github.com/satori/go.uuid"
@@ -23,10 +23,7 @@ const (
 )
 
 // NomadHandler establishes the websocket connection and calls the connection handler.
-func NomadHandler(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
-	nomadClient, _ := nomad_helper.NewRegionClient(cfg, "")
-	consulClient, _ := consul_helper.NewDatacenterClient(cfg, "")
-
+func NomadHandler(cfg *config.Config, nomadClient *nomad.Client, consulClient *consul.Client) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		connectionID := uuid.NewV4()
 		logger := log.WithField("connection_id", connectionID.String()[:8])
@@ -54,7 +51,7 @@ func NomadHandler(cfg *config.Config) func(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-func requireNomadRegion(socket *websocket.Conn, client *api.Client, logger *log.Entry) {
+func requireNomadRegion(socket *websocket.Conn, client *nomad.Client, logger *log.Entry) {
 	var action structs.Action
 
 	regions, _ := client.Regions().List()
@@ -85,7 +82,7 @@ func requireNomadRegion(socket *websocket.Conn, client *api.Client, logger *log.
 	}
 }
 
-// DownloadFile ...
+// NomadDownloadFile ...
 func NomadDownloadFile(cfg *config.Config) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		connectionID := uuid.NewV4()

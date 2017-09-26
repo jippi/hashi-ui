@@ -37,3 +37,7 @@ func (w *forceGC) Key() string {
 func (w *forceGC) IsMutable() bool {
 	return true
 }
+
+func (w *forceGC) BackendType() string {
+	return "nomad"
+}

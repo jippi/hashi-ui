@@ -65,3 +65,7 @@ func (w *deregisterCheck) Key() string {
 func (w *deregisterCheck) IsMutable() bool {
 	return true
 }
+
+func (w *deregisterCheck) BackendType() string {
+	return "consul"
+}

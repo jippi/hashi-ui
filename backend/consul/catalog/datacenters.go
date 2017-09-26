@@ -38,3 +38,7 @@ func (w *datacenters) Key() string {
 func (w *datacenters) IsMutable() bool {
 	return false
 }
+
+func (w *datacenters) BackendType() string {
+	return "consul"
+}

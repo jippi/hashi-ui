@@ -70,3 +70,7 @@ func (w *dir) parse() {
 	w.id = params["allocID"].(string)
 	w.path = params["path"].(string)
 }
+
+func (w *dir) BackendType() string {
+	return "nomad"
+}
