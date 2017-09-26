@@ -85,11 +85,13 @@ type Config struct {
 	NomadSkipVerify  bool
 	NomadHideEnvData bool
 	NomadAllowStale  bool
+	NomadColor       string
 
 	ConsulEnable   bool
 	ConsulReadOnly bool
 	ConsulAddress  string
 	ConsulACLToken string
+	ConsulColor    string
 }
 
 // Parse the env and cli flags and store the outcome in a Config struct
@@ -116,9 +118,11 @@ func DefaultConfig() *Config {
 		NomadReadOnly:    false,
 		NomadAddress:     "http://127.0.0.1:4646",
 		NomadHideEnvData: false,
+		NomadColor:       "#4b9a7d",
 
 		ConsulReadOnly: false,
 		ConsulAddress:  "127.0.0.1:8500",
+		ConsulColor:    "#694a9c",
 	}
 }
 
@@ -240,6 +244,11 @@ func ParseNomadEnvConfig(c *Config) {
 	if ok {
 		c.NomadAllowStale = nomadAllowStale != "true"
 	}
+
+	nomadColor, ok := syscall.Getenv("NOMAD_COLOR")
+	if ok {
+		c.NomadColor = nomadColor
+	}
 }
 
 // ParseNomadFlagConfig ...
@@ -301,6 +310,11 @@ func ParseConsulEnvConfig(c *Config) {
 	aclToken, ok := syscall.Getenv("CONSUL_ACL_TOKEN")
 	if ok {
 		c.ConsulACLToken = aclToken
+	}
+
+	consulColor, ok := syscall.Getenv("CONSUL_COLOR")
+	if ok {
+		c.ConsulColor = consulColor
 	}
 }
 

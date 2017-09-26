@@ -15,9 +15,11 @@ func TestConfig_correctDefaulValues(t *testing.T) {
 		NomadReadOnly:    false,
 		NomadAddress:     "http://127.0.0.1:4646",
 		NomadHideEnvData: false,
+		NomadColor:       "#4b9a7d",
 
 		ConsulReadOnly: false,
 		ConsulAddress:  "127.0.0.1:8500",
+		ConsulColor:    "#694a9c",
 	}
 
 	if !reflect.DeepEqual(config, expected) {
