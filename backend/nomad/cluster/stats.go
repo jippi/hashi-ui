@@ -110,13 +110,16 @@ func worker(payload *workerPayload) {
 				return // channel closed
 			}
 
-			stats, err := payload.client.Nodes().Stats(task.NodeID, nil)
+			node, _, err := payload.client.Nodes().Info(task.NodeID, nil)
 			if err != nil {
 				payload.wg.Done()
 				continue
 			}
 
-			node, _, err := payload.client.Nodes().Info(task.NodeID, nil)
+			if (node.Drain || node.Status != "ready") {
+				continue // skip drained nodes
+			}
+			stats, err := payload.client.Nodes().Stats(task.NodeID, nil)
 			if err != nil {
 				payload.wg.Done()
 				continue
