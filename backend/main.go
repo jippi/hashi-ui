@@ -67,7 +67,7 @@ func main() {
 	} else {
 		log.Infof("| nomad-skip-verify    : %-50s |", "No")
 	}
-	log.Infof("| nomad-top-bar-color  : %-50s |", cfg.NomadColor)
+	log.Infof("| nomad-color          : %-50s |", cfg.NomadColor)
 
 	// Consul
 	log.Infof("| consul-enable     	  : %-50t |", cfg.ConsulEnable)
@@ -78,7 +78,7 @@ func main() {
 	}
 	log.Infof("| consul-address       : %-50s |", cfg.ConsulAddress)
 	log.Infof("| consul.acl-token     : %-50s |", cfg.ConsulACLToken)
-	log.Infof("| consul-top-bar-color : %-50s |", cfg.ConsulColor)
+	log.Infof("| consul-color         : %-50s |", cfg.ConsulColor)
 
 	log.Infof("-----------------------------------------------------------------------------")
 	log.Infof("")
