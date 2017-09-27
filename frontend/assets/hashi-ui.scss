@@ -1,7 +1,7 @@
 $queued: lightGrey;
 $starting: desaturate(lighten(#fa8e23, 25%), 50%);
-$running: desaturate(lighten(#25ba81, 10%), 10%);
-$complete: desaturate(lighten(#25ba81, 30%), 10%);
+$running: desaturate(lighten(#25ba81, 30%), 10%);
+$complete: desaturate(lighten(#25ba81, 10%), 10%);
 $failed: desaturate(lighten(#bd362f, 10%), 10%);
 $placed: #25ba81;
 $healthy: #25ba81;
