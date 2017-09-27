@@ -130,7 +130,8 @@ const config = {
       window: {
         HASHI_ENDPOINT: "http://127.0.0.1:3000",
         HASHI_ENDPOINT_PORT: 3000,
-        HASHI_ASSETS_ROOT: "http://127.0.0.1:3333"
+        HASHI_ASSETS_ROOT: "http://127.0.0.1:3333",
+        HASHI_DEV: true
       }
     })
   ]

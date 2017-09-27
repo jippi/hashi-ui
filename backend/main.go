@@ -163,6 +163,7 @@ func main() {
 
 		if idx := strings.Index(r.URL.Path, "config.js"); idx != -1 {
 			response := make([]string, 0)
+			response = append(response, "window.HASHI_DEV=false")
 			response = append(response, fmt.Sprintf("window.GIT_HASH='%s'", GitCommit))
 
 			response = append(response, fmt.Sprintf("window.CONSUL_ENABLED=%s", strconv.FormatBool(cfg.ConsulEnable)))
