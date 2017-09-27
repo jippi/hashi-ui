@@ -3,21 +3,39 @@ const { resolve } = require("path")
 const webpack = require("webpack")
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
+const LodashModuleReplacementPlugin = require("lodash-webpack-plugin")
 
 const config = {
   devtool: "inline-source-map",
 
-  entry: [
-    "babel-polyfill",
-    "react-hot-loader/patch",
-    "webpack-dev-server/client?http://localhost:3333",
-    "webpack/hot/only-dev-server",
-    "./src/main.js"
-  ],
+  entry: {
+    app: [
+      "babel-polyfill",
+      "react-hot-loader/patch",
+      "webpack-dev-server/client?http://localhost:3333",
+      "webpack/hot/only-dev-server",
+      "./src/main.js"
+    ],
+    recharts: ["recharts"],
+    vendor: [
+      "core-js",
+      "date-fns",
+      "deepmerge",
+      "fixed-data-table-2",
+      "lodash",
+      "material-ui",
+      "react-ace",
+      "react-append-to-body",
+      "react-flexbox-grid",
+      "react-helmet",
+      "react-tooltip"
+    ]
+  },
 
   output: {
-    filename: "bundle.js",
-    sourceMapFilename: "static/bundle.map",
+    filename: "static/[name].[hash].js",
+    chunkFilename: "static/[name].[hash].chunks.js",
+    sourceMapFilename: "static/[name].[hash].map",
     path: resolve(__dirname, "dist"),
     publicPath: "/"
   },
@@ -43,6 +61,7 @@ const config = {
               [
                 "env",
                 {
+                  modules: false,
                   targets: {
                     browsers: ["last 2 versions"]
                   }
@@ -56,7 +75,8 @@ const config = {
               "babel-plugin-transform-object-rest-spread",
               "babel-plugin-transform-react-constant-elements",
               "syntax-dynamic-import",
-              "transform-runtime"
+              "transform-runtime",
+              "lodash"
             ]
           }
         }
@@ -84,12 +104,13 @@ const config = {
   },
 
   plugins: [
+    new LodashModuleReplacementPlugin(),
     new webpack.DefinePlugin({ "process.env.NODE_ENV": '"development"' }),
     new webpack.DefinePlugin({ "process.env.GO_PORT": process.env.GO_PORT || 3000 }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.optimize.CommonsChunkPlugin({ name: "vendor", filename: "vendor.bundle.js" }),
+    new webpack.optimize.CommonsChunkPlugin({ names: ["vendor", "recharts"], minChunks: 2 }),
     new webpack.LoaderOptionsPlugin({
       test: /\.js$/,
       options: {

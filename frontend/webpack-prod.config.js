@@ -2,16 +2,33 @@ const { resolve } = require("path")
 const webpack = require("webpack")
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
+const LodashModuleReplacementPlugin = require("lodash-webpack-plugin")
 
 const config = {
   devtool: "source-map",
 
-  entry: ["babel-polyfill", "./src/main.js"],
+  entry: {
+    app: ["babel-polyfill", "./src/main.js"],
+    recharts: ["recharts"],
+    vendor: [
+      "core-js",
+      "date-fns",
+      "deepmerge",
+      "fixed-data-table-2",
+      "lodash",
+      "material-ui",
+      "react-ace",
+      "react-append-to-body",
+      "react-flexbox-grid",
+      "react-helmet",
+      "react-tooltip"
+    ]
+  },
 
   output: {
     filename: "static/[name].[chunkhash].js",
-    sourceMapFilename: "static/[name].[chunkhash].map",
     chunkFilename: "static/[name].[chunkhash].chunks.js",
+    sourceMapFilename: "static/[name].[chunkhash].map",
     path: resolve(__dirname, "build/"),
     publicPath: ""
   },
@@ -34,6 +51,7 @@ const config = {
               [
                 "env",
                 {
+                  modules: false,
                   targets: {
                     browsers: ["last 2 versions"]
                   }
@@ -48,7 +66,8 @@ const config = {
               "babel-plugin-transform-class-properties",
               "babel-plugin-transform-object-rest-spread",
               "babel-plugin-transform-react-constant-elements",
-              "syntax-dynamic-import"
+              "syntax-dynamic-import",
+              "lodash"
             ]
           }
         }
@@ -76,8 +95,9 @@ const config = {
   },
 
   plugins: [
+    new LodashModuleReplacementPlugin(),
     new webpack.DefinePlugin({ "process.env": { NODE_ENV: JSON.stringify("production") } }),
-    new webpack.optimize.CommonsChunkPlugin({ name: "vendor", filename: "vendor.bundle.js" }),
+    new webpack.optimize.CommonsChunkPlugin({ names: ["recharts", "vendor"], minChunks: 2 }),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       debug: false
