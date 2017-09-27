@@ -6,177 +6,179 @@ import App from "./components/app"
 
 const Allocation = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "Allocation" */ "./containers/allocation")
+  loader: () => import(/* webpackChunkName: "nomad-allocation" */ "./containers/allocation")
 })
 const Allocations = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "Allocations" */ "./containers/allocations")
+  loader: () => import(/* webpackChunkName: "nomad-allocation-list" */ "./containers/allocations")
 })
 const AllocFiles = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "AllocFiles" */ "./components/AllocationFiles/AllocationFiles")
+  loader: () => import(/* webpackChunkName: "nomad-allocation-files" */ "./components/AllocationFiles/AllocationFiles")
 })
 const AllocInfo = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "AllocInfo" */ "./components/AllocationInfo/AllocationInfo")
+  loader: () => import(/* webpackChunkName: "nomad-allocation-info" */ "./components/AllocationInfo/AllocationInfo")
 })
 const AllocRaw = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "AllocRaw" */ "./components/AllocationRaw/AllocationRaw")
+  loader: () => import(/* webpackChunkName: "nomad-allocation-raw" */ "./components/AllocationRaw/AllocationRaw")
 })
 const AllocStats = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "AllocStats" */ "./components/AllocationStats/AllocationStats")
+  loader: () => import(/* webpackChunkName: "nomad-allocation-stats" */ "./components/AllocationStats/AllocationStats")
 })
 const Client = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "Client" */ "./containers/client")
+  loader: () => import(/* webpackChunkName: "nomad-client" */ "./containers/client")
 })
 const ClientAllocations = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "ClientAllocations" */ "./components/ClientAllocations/ClientAllocations")
+  loader: () =>
+    import(/* webpackChunkName: "nomad-client-allocations" */ "./components/ClientAllocations/ClientAllocations")
 })
 const ClientEvaluations = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "ClientEvaluations" */ "./components/ClientEvaluations/ClientEvaluations")
+  loader: () =>
+    import(/* webpackChunkName: "nomad-client-evaluations" */ "./components/ClientEvaluations/ClientEvaluations")
 })
 const ClientInfo = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "ClientInfo" */ "./components/ClientInfo/ClientInfo")
+  loader: () => import(/* webpackChunkName: "nomad-client-info" */ "./components/ClientInfo/ClientInfo")
 })
 const ClientRaw = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "ClientRaw" */ "./components/ClientRaw/ClientRaw")
+  loader: () => import(/* webpackChunkName: "nomad-client-raw" */ "./components/ClientRaw/ClientRaw")
 })
 const Clients = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "Clients" */ "./containers/clients")
+  loader: () => import(/* webpackChunkName: "nomad-clients" */ "./containers/clients")
 })
 const ClientStats = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "ClientStats" */ "./components/ClientStats/ClientStats")
+  loader: () => import(/* webpackChunkName: "nomad-client-stats" */ "./components/ClientStats/ClientStats")
 })
 const Cluster = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "Cluster" */ "./containers/cluster")
+  loader: () => import(/* webpackChunkName: "nomad-cluster" */ "./containers/cluster")
 })
 const ConsulKV = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "ConsulKV" */ "./containers/consul_kv")
+  loader: () => import(/* webpackChunkName: "consul-kv" */ "./containers/consul_kv")
 })
 const ConsulNodes = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "ConsulNodes" */ "./containers/consul_nodes")
+  loader: () => import(/* webpackChunkName: "consul-nodes" */ "./containers/consul_nodes")
 })
 const ConsulServices = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "ConsulServices" */ "./containers/consul_services")
+  loader: () => import(/* webpackChunkName: "consul-services" */ "./containers/consul_services")
 })
 const Deployment = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "Deployment" */ "./containers/deployment")
+  loader: () => import(/* webpackChunkName: "nomad-deployment" */ "./containers/deployment")
 })
 const DeploymentAllocations = Loadable({
   loading: () => <div>Loading resources</div>,
   loader: () =>
-    import(/* webpackChunkName: "DeploymentAllocations" */ "./components/DeploymentAllocations/DeploymentAllocations")
+    import(/* webpackChunkName: "nomad-deployment-allocations" */ "./components/DeploymentAllocations/DeploymentAllocations")
 })
 const DeploymentInfo = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "DeploymentInfo" */ "./components/DeploymentInfo/DeploymentInfo")
+  loader: () => import(/* webpackChunkName: "nomad-deployment-info" */ "./components/DeploymentInfo/DeploymentInfo")
 })
 const DeploymentRaw = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "DeploymentRaw" */ "./components/DeploymentRaw/DeploymentRaw")
+  loader: () => import(/* webpackChunkName: "nomad-deployment-raw" */ "./components/DeploymentRaw/DeploymentRaw")
 })
 const Deployments = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "Deployments" */ "./containers/deployments")
+  loader: () => import(/* webpackChunkName: "nomad-deployments" */ "./containers/deployments")
 })
 const EvalAllocations = Loadable({
   loading: () => <div>Loading resources</div>,
   loader: () =>
-    import(/* webpackChunkName: "EvalAllocations" */ "./components/EvaluationAllocations/EvaluationAllocations")
+    import(/* webpackChunkName: "nomad-evaluation-allocation" */ "./components/EvaluationAllocations/EvaluationAllocations")
 })
 const EvalInfo = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "EvalInfo" */ "./components/EvaluationInfo/EvaluationInfo")
+  loader: () => import(/* webpackChunkName: "nomad-evaluation-info" */ "./components/EvaluationInfo/EvaluationInfo")
 })
 const EvalRaw = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "EvalRaw" */ "./components/EvaluationRaw/EvaluationRaw")
+  loader: () => import(/* webpackChunkName: "nomad-evaluation-raw" */ "./components/EvaluationRaw/EvaluationRaw")
 })
 const Evaluation = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "Evaluation" */ "./containers/evaluation")
+  loader: () => import(/* webpackChunkName: "nomad-evaluation" */ "./containers/evaluation")
 })
 const Evaluations = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "Evaluations" */ "./containers/evaluations")
+  loader: () => import(/* webpackChunkName: "nomad-evaluations" */ "./containers/evaluations")
 })
 const Job = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "Job" */ "./containers/job")
+  loader: () => import(/* webpackChunkName: "nomad-job" */ "./containers/job")
 })
 const JobAllocs = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "JobAllocs" */ "./components/JobAllocations/JobAllocations")
+  loader: () => import(/* webpackChunkName: "nomad-job-allocations" */ "./components/JobAllocations/JobAllocations")
 })
 const JobChildren = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "JobChildren" */ "./components/JobChildren/JobChildren")
+  loader: () => import(/* webpackChunkName: "nomad-job-children" */ "./components/JobChildren/JobChildren")
 })
 const JobDeployments = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "JobDeployments" */ "./components/JobDeployments/JobDeployments")
+  loader: () => import(/* webpackChunkName: "nomad-job-deployments" */ "./components/JobDeployments/JobDeployments")
 })
 const JobEvals = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "JobEvals" */ "./components/JobEvaluations/JobEvaluations")
+  loader: () => import(/* webpackChunkName: "nomad-job-evaluations" */ "./components/JobEvaluations/JobEvaluations")
 })
 const JobInfo = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "JobInfo" */ "./components/JobInfo/JobInfo")
+  loader: () => import(/* webpackChunkName: "nomad-job-info" */ "./components/JobInfo/JobInfo")
 })
 const JobRaw = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "JobRaw" */ "./components/JobRaw/JobRaw")
+  loader: () => import(/* webpackChunkName: "nomad-job-raw" */ "./components/JobRaw/JobRaw")
 })
 const Jobs = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "Jobs" */ "./containers/jobs")
+  loader: () => import(/* webpackChunkName: "nomad-jobs" */ "./containers/jobs")
 })
 const JobTaskGroups = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "JobTaskGroups" */ "./components/JobTaskGroups/JobTaskGroups")
+  loader: () => import(/* webpackChunkName: "nomad-job-taskgroups" */ "./components/JobTaskGroups/JobTaskGroups")
 })
 const SelectConsulRegion = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "SelectConsulRegion" */ "./containers/select_consul_region")
+  loader: () => import(/* webpackChunkName: "consul-select-region" */ "./containers/select_consul_region")
 })
 const SelectNomadRegion = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "SelectNomadRegion" */ "./containers/select_nomad_region")
+  loader: () => import(/* webpackChunkName: "nomad-select-region" */ "./containers/select_nomad_region")
 })
 const Server = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "Server" */ "./containers/server")
+  loader: () => import(/* webpackChunkName: "nomad-server" */ "./containers/server")
 })
 const ServerInfo = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "ServerInfo" */ "./components/ServerInfo/ServerInfo")
+  loader: () => import(/* webpackChunkName: "nomad-server-info" */ "./components/ServerInfo/ServerInfo")
 })
 const ServerRaw = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "ServerRaw" */ "./components/ServerRaw/ServerRaw")
+  loader: () => import(/* webpackChunkName: "nomad-server-raw" */ "./components/ServerRaw/ServerRaw")
 })
 const Servers = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "Servers" */ "./containers/servers")
+  loader: () => import(/* webpackChunkName: "nomad-servers" */ "./containers/servers")
 })
 const SystemX = Loadable({
   loading: () => <div>Loading resources</div>,
-  loader: () => import(/* webpackChunkName: "System" */ "./containers/system")
+  loader: () => import(/* webpackChunkName: "nomad-system" */ "./containers/system")
 })
 
 const AppRouter = ({ history }) => (

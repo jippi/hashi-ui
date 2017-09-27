@@ -110,7 +110,7 @@ const config = {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.optimize.CommonsChunkPlugin({ names: ["vendor", "recharts"], minChunks: 2 }),
+    new webpack.optimize.CommonsChunkPlugin({ names: ["app", "vendor", "recharts"], minChunks: 2 }),
     new webpack.LoaderOptionsPlugin({
       test: /\.js$/,
       options: {
