@@ -318,6 +318,7 @@ export default function eventSaga() {
       .replace(window.HASHI_ENDPOINT, "")
       // http://hashi-ui.service.consul:3000/nomad/region/cluster
       .split("/")
+      .filter(v => v != "")
       // ["nomad", "region", "cluster"]
       .slice(0, 3)
 
