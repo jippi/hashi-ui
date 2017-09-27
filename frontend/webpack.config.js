@@ -15,20 +15,6 @@ const config = {
       "webpack-dev-server/client?http://localhost:3333",
       "webpack/hot/only-dev-server",
       "./src/main.js"
-    ],
-    recharts: ["recharts"],
-    vendor: [
-      "core-js",
-      "date-fns",
-      "deepmerge",
-      "fixed-data-table-2",
-      "lodash",
-      "material-ui",
-      "react-ace",
-      "react-append-to-body",
-      "react-flexbox-grid",
-      "react-helmet",
-      "react-tooltip"
     ]
   },
 
@@ -109,7 +95,37 @@ const config = {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.optimize.CommonsChunkPlugin({ names: ["recharts", "vendor", "app"], minChunks: 2 }),
+    // https://medium.com/@adamrackis/vendor-and-code-splitting-in-webpack-2-6376358f1923
+    // generic vendor bundle
+    new webpack.optimize.CommonsChunkPlugin({
+      name: "vendor",
+      minChunks(module, count) {
+        var context = module.context
+        return context && context.indexOf("node_modules") >= 0
+      }
+    }),
+    // webpack manifest file
+    new webpack.optimize.CommonsChunkPlugin({ name: "manifest" }),
+    // catch all - anything used in more than one place
+    new webpack.optimize.CommonsChunkPlugin({
+      async: "common",
+      minChunks(module, count) {
+        return count >= 2
+      }
+    }),
+    // specifically bundle recharts on its own
+    new webpack.optimize.CommonsChunkPlugin({
+      async: "recharts",
+      minChunks(module, count) {
+        var context = module.context
+        var targets = ["recharts"]
+        return (
+          context &&
+          context.indexOf("node_modules") >= 0 &&
+          targets.find(t => new RegExp("\\\\" + t + "\\\\", "i").test(context))
+        )
+      }
+    }),
     new webpack.LoaderOptionsPlugin({
       test: /\.js$/,
       options: {

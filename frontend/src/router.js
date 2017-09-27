@@ -4,180 +4,245 @@ import { Router, Route, Redirect, IndexRedirect, browserHistory } from "react-ro
 import Loadable from "react-loadable"
 import App from "./components/app"
 
-const Allocation = Loadable({
-  loading: () => <div>Loading resources</div>,
+const MyLoadingComponent = props => {
+  if (props.isLoading) {
+    // While our other component is loading...
+    if (props.timedOut) {
+      // In case we've timed out loading our other component.
+      return <div>Loader timed out!</div>
+    } else if (props.pastDelay) {
+      // Display a loading screen after a set delay.
+      return <div>Loading...</div>
+    } else {
+      // Don't flash "Loading..." when we don't need to.
+      return null
+    }
+  } else if (props.error) {
+    // If we aren't loading, maybe
+    return <div>Error! Component failed to load</div>
+  } else {
+    // This case shouldn't happen... but we'll return null anyways.
+    return null
+  }
+}
+
+const NomadAllocation = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-allocation" */ "./containers/allocation")
 })
-const Allocations = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadAllocations = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-allocation-list" */ "./containers/allocations")
 })
-const AllocFiles = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadAllocationFiles = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-allocation-files" */ "./components/AllocationFiles/AllocationFiles")
 })
-const AllocInfo = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadAllocationInfo = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-allocation-info" */ "./components/AllocationInfo/AllocationInfo")
 })
-const AllocRaw = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadAllocationRaw = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-allocation-raw" */ "./components/AllocationRaw/AllocationRaw")
 })
-const AllocStats = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadAllocationStats = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-allocation-stats" */ "./components/AllocationStats/AllocationStats")
 })
-const Client = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadClient = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-client" */ "./containers/client")
 })
-const ClientAllocations = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadClientAllocations = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () =>
     import(/* webpackChunkName: "nomad-client-allocations" */ "./components/ClientAllocations/ClientAllocations")
 })
-const ClientEvaluations = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadClientEvaluations = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () =>
     import(/* webpackChunkName: "nomad-client-evaluations" */ "./components/ClientEvaluations/ClientEvaluations")
 })
-const ClientInfo = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadClientInfo = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-client-info" */ "./components/ClientInfo/ClientInfo")
 })
-const ClientRaw = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadClientRaw = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-client-raw" */ "./components/ClientRaw/ClientRaw")
 })
-const Clients = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadClients = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-clients" */ "./containers/clients")
 })
-const ClientStats = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadClientStats = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-client-stats" */ "./components/ClientStats/ClientStats")
 })
-const Cluster = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadCluster = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-cluster" */ "./containers/cluster")
 })
 const ConsulKV = Loadable({
-  loading: () => <div>Loading resources</div>,
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "consul-kv" */ "./containers/consul_kv")
 })
 const ConsulNodes = Loadable({
-  loading: () => <div>Loading resources</div>,
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "consul-nodes" */ "./containers/consul_nodes")
 })
 const ConsulServices = Loadable({
-  loading: () => <div>Loading resources</div>,
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "consul-services" */ "./containers/consul_services")
 })
-const Deployment = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadDeployment = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-deployment" */ "./containers/deployment")
 })
-const DeploymentAllocations = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadDeploymentAllocations = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () =>
     import(/* webpackChunkName: "nomad-deployment-allocations" */ "./components/DeploymentAllocations/DeploymentAllocations")
 })
-const DeploymentInfo = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadDeploymentInfo = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-deployment-info" */ "./components/DeploymentInfo/DeploymentInfo")
 })
-const DeploymentRaw = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadDeploymentRaw = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-deployment-raw" */ "./components/DeploymentRaw/DeploymentRaw")
 })
-const Deployments = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadDeployments = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-deployments" */ "./containers/deployments")
 })
-const EvalAllocations = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadEvaluationAllocations = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () =>
     import(/* webpackChunkName: "nomad-evaluation-allocation" */ "./components/EvaluationAllocations/EvaluationAllocations")
 })
-const EvalInfo = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadEvaluationInfo = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-evaluation-info" */ "./components/EvaluationInfo/EvaluationInfo")
 })
-const EvalRaw = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadEvaluationRaw = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-evaluation-raw" */ "./components/EvaluationRaw/EvaluationRaw")
 })
-const Evaluation = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadEvaluation = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-evaluation" */ "./containers/evaluation")
 })
-const Evaluations = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadEvaluations = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-evaluations" */ "./containers/evaluations")
 })
-const Job = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadJob = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-job" */ "./containers/job")
 })
-const JobAllocs = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadJobAllocations = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-job-allocations" */ "./components/JobAllocations/JobAllocations")
 })
-const JobChildren = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadJobChildren = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-job-children" */ "./components/JobChildren/JobChildren")
 })
-const JobDeployments = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadJobDeployments = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-job-deployments" */ "./components/JobDeployments/JobDeployments")
 })
-const JobEvals = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadJobEvaluations = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-job-evaluations" */ "./components/JobEvaluations/JobEvaluations")
 })
-const JobInfo = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadJobInfo = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-job-info" */ "./components/JobInfo/JobInfo")
 })
-const JobRaw = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadJobRaw = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-job-raw" */ "./components/JobRaw/JobRaw")
 })
-const Jobs = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadJobs = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-jobs" */ "./containers/jobs")
 })
-const JobTaskGroups = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadJobTaskGroups = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-job-taskgroups" */ "./components/JobTaskGroups/JobTaskGroups")
 })
-const SelectConsulRegion = Loadable({
-  loading: () => <div>Loading resources</div>,
+const ConsulSelectRegion = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "consul-select-region" */ "./containers/select_consul_region")
 })
-const SelectNomadRegion = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadSelectRegion = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-select-region" */ "./containers/select_nomad_region")
 })
-const Server = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadServer = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-server" */ "./containers/server")
 })
-const ServerInfo = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadServerInfo = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-server-info" */ "./components/ServerInfo/ServerInfo")
 })
-const ServerRaw = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadServerRaw = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-server-raw" */ "./components/ServerRaw/ServerRaw")
 })
-const Servers = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadServers = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-servers" */ "./containers/servers")
 })
-const SystemX = Loadable({
-  loading: () => <div>Loading resources</div>,
+const NomadSystem = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-system" */ "./containers/system")
 })
 
@@ -186,7 +251,7 @@ const AppRouter = ({ history }) => (
     <Route path="/" component={App}>
       <IndexRedirect to="/nomad" />
       // Consul
-      <Route path="/consul" component={SelectConsulRegion} />
+      <Route path="/consul" component={ConsulSelectRegion} />
       <Redirect from="/consul/:region" to="/consul/:region/services" />
       <Route path="/consul/:region/kv" component={ConsulKV} />
       <Route path="/consul/:region/kv/*" component={ConsulKV} />
@@ -195,70 +260,70 @@ const AppRouter = ({ history }) => (
       <Route path="/consul/:region/services" component={ConsulServices} />
       <Route path="/consul/:region/services/:name" component={ConsulServices} />
       // Nomad
-      <Route path="/nomad" component={SelectNomadRegion} />
+      <Route path="/nomad" component={NomadSelectRegion} />
       <Redirect from="/nomad/:region" to="/nomad/:region/cluster" />
-      <Route path="/nomad/:region/cluster" component={Cluster} />
+      <Route path="/nomad/:region/cluster" component={NomadCluster} />
       /* servers */
-      <Route path="/nomad/:region/servers" component={Servers} />
-      <Route path="/nomad/:region/servers/:memberId" component={Server}>
+      <Route path="/nomad/:region/servers" component={NomadServers} />
+      <Route path="/nomad/:region/servers/:memberId" component={NomadServer}>
         <IndexRedirect to="/nomad/:region/servers/:memberId/info" />
-        <Route path="/nomad/:region/servers/:memberId/info" component={ServerInfo} />
-        <Route path="/nomad/:region/servers/:memberId/raw" component={ServerRaw} />
+        <Route path="/nomad/:region/servers/:memberId/info" component={NomadServerInfo} />
+        <Route path="/nomad/:region/servers/:memberId/raw" component={NomadServerRaw} />
       </Route>
       /* jobs */
-      <Route path="/nomad/:region/jobs" component={Jobs} />
-      <Route path="/nomad/:region/jobs/:jobId" component={Job}>
+      <Route path="/nomad/:region/jobs" component={NomadJobs} />
+      <Route path="/nomad/:region/jobs/:jobId" component={NomadJob}>
         <IndexRedirect to="/nomad/:region/jobs/:jobId/info" />
-        <Route path="/nomad/:region/jobs/:jobId/info" component={JobInfo} />
-        <Route path="/nomad/:region/jobs/:jobId/allocations" component={JobAllocs} />
-        <Route path="/nomad/:region/jobs/:jobId/children" component={JobChildren} />
-        <Route path="/nomad/:region/jobs/:jobId/deployments" component={JobDeployments} />
-        <Route path="/nomad/:region/jobs/:jobId/evaluations" component={JobEvals} />
-        <Route path="/nomad/:region/jobs/:jobId/groups" component={JobTaskGroups} />
-        <Route path="/nomad/:region/jobs/:jobId/raw" component={JobRaw} />
+        <Route path="/nomad/:region/jobs/:jobId/info" component={NomadJobInfo} />
+        <Route path="/nomad/:region/jobs/:jobId/allocations" component={NomadJobAllocations} />
+        <Route path="/nomad/:region/jobs/:jobId/children" component={NomadJobChildren} />
+        <Route path="/nomad/:region/jobs/:jobId/deployments" component={NomadJobDeployments} />
+        <Route path="/nomad/:region/jobs/:jobId/evaluations" component={NomadJobEvaluations} />
+        <Route path="/nomad/:region/jobs/:jobId/groups" component={NomadJobTaskGroups} />
+        <Route path="/nomad/:region/jobs/:jobId/raw" component={NomadJobRaw} />
       </Route>
       /* clients */
-      <Route path="/nomad/:region/clients" component={Clients} />
-      <Route path="/nomad/:region/clients/:nodeId" component={Client}>
+      <Route path="/nomad/:region/clients" component={NomadClients} />
+      <Route path="/nomad/:region/clients/:nodeId" component={NomadClient}>
         <IndexRedirect to="/nomad/:region/clients/:nodeId/info" />
-        <Route path="/nomad/:region/clients/:nodeId/info" component={ClientInfo} />
-        <Route path="/nomad/:region/clients/:nodeId/stats" component={ClientStats} />
-        <Route path="/nomad/:region/clients/:nodeId/allocations" component={ClientAllocations} />
-        <Route path="/nomad/:region/clients/:nodeId/evaluations" component={ClientEvaluations} />
-        <Route path="/nomad/:region/clients/:nodeId/raw" component={ClientRaw} />
+        <Route path="/nomad/:region/clients/:nodeId/info" component={NomadClientInfo} />
+        <Route path="/nomad/:region/clients/:nodeId/stats" component={NomadClientStats} />
+        <Route path="/nomad/:region/clients/:nodeId/allocations" component={NomadClientAllocations} />
+        <Route path="/nomad/:region/clients/:nodeId/evaluations" component={NomadClientEvaluations} />
+        <Route path="/nomad/:region/clients/:nodeId/raw" component={NomadClientRaw} />
       </Route>
       /* deployments */
-      <Route path="/nomad/:region/deployments" component={Deployments} />
-      <Route path="/nomad/:region/deployments/:id" component={Deployment}>
+      <Route path="/nomad/:region/deployments" component={NomadDeployments} />
+      <Route path="/nomad/:region/deployments/:id" component={NomadDeployment}>
         <IndexRedirect to="/nomad/:region/deployments/:id/info" />
-        <Route path="/nomad/:region/deployments/:id/info" component={DeploymentInfo} />
-        <Route path="/nomad/:region/deployments/:id/allocations" component={DeploymentAllocations} />
-        <Route path="/nomad/:region/deployments/:id/raw" component={DeploymentRaw} />
+        <Route path="/nomad/:region/deployments/:id/info" component={NomadDeploymentInfo} />
+        <Route path="/nomad/:region/deployments/:id/allocations" component={NomadDeploymentAllocations} />
+        <Route path="/nomad/:region/deployments/:id/raw" component={NomadDeploymentRaw} />
       </Route>
       /* allocations */
-      <Route path="/nomad/:region/allocations" component={Allocations} />
-      <Route path="/nomad/:region/allocations/:allocId" component={Allocation}>
+      <Route path="/nomad/:region/allocations" component={NomadAllocations} />
+      <Route path="/nomad/:region/allocations/:allocId" component={NomadAllocation}>
         <IndexRedirect to="/nomad/:region/allocations/:allocId/info" />
-        <Route path="/nomad/:region/allocations/:allocId/info" component={AllocInfo} />
-        <Route path="/nomad/:region/allocations/:allocId/stats" component={AllocStats} />
+        <Route path="/nomad/:region/allocations/:allocId/info" component={NomadAllocationInfo} />
+        <Route path="/nomad/:region/allocations/:allocId/stats" component={NomadAllocationStats} />
         <Redirect
           from="/nomad/:region/allocations/:allocId/logs"
           to="/nomad/:region/allocations/:allocId/files"
           query={{ path: "/alloc/logs/" }}
         />
-        <Route path="/nomad/:region/allocations/:allocId/files" component={AllocFiles} query={{ path: "" }} />
-        <Route path="/nomad/:region/allocations/:allocId/raw" component={AllocRaw} />
+        <Route path="/nomad/:region/allocations/:allocId/files" component={NomadAllocationFiles} query={{ path: "" }} />
+        <Route path="/nomad/:region/allocations/:allocId/raw" component={NomadAllocationRaw} />
       </Route>
       /* evaluations */
-      <Route path="/nomad/:region/evaluations" component={Evaluations} />
-      <Route path="/nomad/:region/evaluations/:evalId" component={Evaluation}>
+      <Route path="/nomad/:region/evaluations" component={NomadEvaluations} />
+      <Route path="/nomad/:region/evaluations/:evalId" component={NomadEvaluation}>
         <IndexRedirect to="/nomad/:region/evaluations/:evalId/info" />
-        <Route path="/nomad/:region/evaluations/:evalId/info" component={EvalInfo} />
-        <Route path="/nomad/:region/evaluations/:evalId/allocations" component={EvalAllocations} />
-        <Route path="/nomad/:region/evaluations/:evalId/raw" component={EvalRaw} />
+        <Route path="/nomad/:region/evaluations/:evalId/info" component={NomadEvaluationInfo} />
+        <Route path="/nomad/:region/evaluations/:evalId/allocations" component={NomadEvaluationAllocations} />
+        <Route path="/nomad/:region/evaluations/:evalId/raw" component={NomadEvaluationRaw} />
       </Route>
       /* system */
-      <Route path="/nomad/:region/system" component={SystemX} />
+      <Route path="/nomad/:region/system" component={NomadSystem} />
     </Route>
   </Router>
 )

@@ -14,9 +14,6 @@
   <link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
   <% } %>
 
-  <% if (htmlWebpackPlugin.options.baseHref) { %>
-  <base href="<%= htmlWebpackPlugin.options.baseHref %>" />
-  <% } %>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
@@ -42,7 +39,6 @@
   <% } else { %>
   <script type="text/javascript" src="config.js"></script>
   <% } %>
-
   <script type="text/javascript">
     document.write('<base href="' + HASHI_ASSETS_ROOT + '" />');
   </script>
