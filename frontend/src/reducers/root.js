@@ -3,7 +3,6 @@ import { combineReducers } from "redux"
 import {
   AppDrawer,
   AppErrorReducer,
-  // ClusterStatisticsReducer,
   ErrorNotificationReducer,
   SuccessNotificationReducer
 } from "./app"
