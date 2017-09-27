@@ -1,9 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import { Provider } from "react-redux"
-// import injectTapEventPlugin from "react-tap-event-plugin"
-
-// import Perf from 'react-addons-perf'
+import injectTapEventPlugin from "react-tap-event-plugin"
 
 import browserHistory from "./history"
 import AppRouter from "./router"
@@ -14,15 +12,13 @@ import "../assets/hashi-ui.scss"
 import "../assets/data-table.css"
 import ErrorApp from "./components/error_app"
 
-// Perf.start()
-
 let retries = 0
 let retryInterval
 let tapsEventInjected = false
 
 function injectTapEvents() {
   if (!tapsEventInjected) {
-    // injectTapEventPlugin()
+    injectTapEventPlugin()
     tapsEventInjected = true
   }
 }
@@ -64,5 +60,3 @@ function bootApp() {
 }
 
 bootApp()
-
-// window.Perf = Perf

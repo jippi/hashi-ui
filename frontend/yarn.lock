@@ -5046,8 +5046,8 @@ react-event-listener@^0.4.5:
     warning "^3.0.0"
 
 react-flexbox-grid@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/react-flexbox-grid/-/react-flexbox-grid-1.1.3.tgz#4e61c7ff68d1eb1ae131c01a7c29b39803c54a0e"
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/react-flexbox-grid/-/react-flexbox-grid-1.1.5.tgz#405fea87eb735d54d161be9bb09c7930910bf8cc"
   dependencies:
     flexboxgrid "^6.3.0"
     prop-types "^15.5.8"
