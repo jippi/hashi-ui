@@ -319,7 +319,7 @@ export default function eventSaga() {
       // http://hashi-ui.service.consul:3000/nomad/region/cluster
       .split("/")
       // ["nomad", "region", "cluster"]
-      .slice(3)
+      .slice(0, 3)
 
     // should only happen in developer mode
     if (relParts.length == 0) {
