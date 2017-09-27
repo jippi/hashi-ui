@@ -67,10 +67,10 @@ var (
 		"Server key to use when https protocol is enabled. "+FlagDefault(defaultConfig.ServerKey))
 
 	flagNomadColor = flag.String("nomad-color", "",
-		"Set the color for the top bar in nomad related screens. "+FlagDefault(defaultConfig.NomadColor))
+		"Set the main color for nomad related screens. "+FlagDefault(defaultConfig.NomadColor))
 
 	flagConsulColor = flag.String("consul-color", "",
-		"Set the color for the top bar in consul related screens. "+FlagDefault(defaultConfig.ConsulColor))
+		"Set the main color for consul related screens. "+FlagDefault(defaultConfig.ConsulColor))
 )
 
 // Config for the hashi-ui server

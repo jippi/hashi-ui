@@ -112,7 +112,7 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | Environment        	  |CLI (`--flag`)    	      | Default                 	| Description                                                                                                      |
 |-------------------------|---------------------------|-----------------------------|------------------------------------------------------------------------------------------------------------------|
 | `NOMAD_ENABLE`          | `nomad-enable`      	  | `false` 	                | Use `--nomad.enable` or env `NOMAD_ENABLE=1` to enable Nomad backend                                             |
-| `NOMAD_ADDR`            | `nomad-address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your Nomad instance                                                                               |
+| `NOMAD_ADDR`            | `nomad-address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your Nomad instance                                                                   |
 | `NOMAD_READ_ONLY`    	  | `nomad-read-only`   	  | `false` 		        	| Should hash-ui allowed to modify Nomad state (stop/start jobs and so forth)	                                   |
 | `NOMAD_CACERT`      	  | `nomad-ca-cert`      	  | `<empty>`   	            | (optional) path to a CA Cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)                 |
 | `NOMAD_CLIENT_CERT`  	  | `nomad-client-cert`       | `<empty>` 	                | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
@@ -120,6 +120,7 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | `NOMAD_PORT_http` 	  | `<none>` 	              | `0.0.0.0:3000`          	| The IP + PORT to listen on (will overwrite `LISTEN_ADDRESS`)                                                     |
 | `NOMAD_HIDE_ENV_DATA`   | `nomad-hide-env-data` 	  | `false`          	        | Whether Nomad env{} values should be hidden (will prevent updating jobs in the UI)                               |
 | `NOMAD_ALLOW_STALE`     | `nomad-allow-stale` 	  | `true`          	        | Whether Hashi-UI should use stale mode when connecting to the nomad-api servers                                  |
+| `NOMAD_COLOR`           | `nomad-color` 	          | `#4b9a7d`          	        | Set the main color for nomad related screens.                                                                    |
 
 ## Consul Configuration
 
@@ -135,6 +136,7 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | `CONSUL_CACERT`      	  | `<empty>`      	          | `<empty>`   	            | (optional) path to a CA Cert file (remember to set `CONSUL_HTTP_SSL` to true)                                    |
 | `CONSUL_CLIENT_CERT`    | `<empty>`                 | `<empty>` 	                | (optional) path to a client cert file (remember to set `CONSUL_HTTP_SSL` to true)                                |
 | `CONSUL_CLIENT_KEY`  	  | `<empty>`                 | `<empty>` 	                | (optional) path to a client key file (remember to set `CONSUL_HTTP_SSL` to true)          	                   |
+| `CONSUL_COLOR`          | `consul-color` 	          | `#694a9c`          	        | Set the main color for consul related screens.                                                                   |
 
 ## Running behind a Load Balancer
 
