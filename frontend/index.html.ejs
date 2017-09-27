@@ -14,9 +14,6 @@
   <link href="<%= htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
   <% } %>
 
-  <% if (htmlWebpackPlugin.options.baseHref) { %>
-  <base href="<%= htmlWebpackPlugin.options.baseHref %>" />
-  <% } %>
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
@@ -38,18 +35,25 @@
   <% } %>
 
   <% if (htmlWebpackPlugin.options.window) { %>
-  <script src="//<%= htmlWebpackPlugin.options.window['NOMAD_ENDPOINT']%>:<%= htmlWebpackPlugin.options.window['NOMAD_ENDPOINT_PORT']%>/config.js"></script>
+  <script src="<%= htmlWebpackPlugin.options.window['HASHI_ENDPOINT']%>/config.js"></script>
   <% } else { %>
   <script type="text/javascript" src="config.js"></script>
   <% } %>
+  <script type="text/javascript">
+    document.write('<base href="' + HASHI_ASSETS_ROOT + '" />');
+  </script>
 </head>
 <body>
+    <script type="text/javascript">
+        document.head.innerHTML = document.head.innerHTML + "<base href='" + HASHI_ENDPOINT + "' />";
+    </script>
     <div id="app"></div>
     <!-- This script adds the Roboto font to our project. For more detail go to this site:  http://www.google.com/fonts#UsePlace:use/Collection:Roboto:400,300,500 -->
     <script>
     var WebFontConfig = {
       google: { families: [ 'Roboto:400,300,500:latin' ] }
     };
+
     (function() {
       var wf = document.createElement('script');
       wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
@@ -61,7 +65,18 @@
     </script>
 
     <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
-    <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+    <script>
+    (function() {
+        var script = document.createElement('script');
+        var src = window.HASHI_ASSETS_ROOT + ("/<%= htmlWebpackPlugin.files.chunks[chunk].entry %>").replace("//", "/")
+        script.src = src
+        script.type = 'text/javascript';
+        script.async = false
+
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.appendChild(script, s);
+    })();
+    </script>
     <% } %>
 
     <% if (htmlWebpackPlugin.options.devServer) { %>

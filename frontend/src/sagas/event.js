@@ -299,37 +299,43 @@ function* events(socket) {
 
 export default function eventSaga() {
   return new Promise((resolve, reject) => {
-    const parser = document.createElement("a")
-    parser.href = window.NOMAD_ENDPOINT
+    const wsRoot = document.location.href
+      // dev mode is port 3000, replace with whatever port the backend said it want to use
+      .replace(":3333", ":" + window.HASHI_ENDPOINT_PORT)
+      // https:// would connect to wss://
+      .replace("http://", "ws://")
+      // http:// would connec to ws://
+      .replace("https://", "wss://")
+      // http://hashi-ui.service.consul:3000/nomad/region/cluster
+      .split("/")
+      // ["http":, "", "", "hashi-ui.service.consul:3000"]
+      .slice(0, 3)
+      // http://hashi-ui.service.consul:3000
+      .join("/")
 
-    const host = parser.host ? parser.host : document.location.host
-    const protocol = location.protocol === "https:" ? "wss:" : "ws:"
-    let relPath = document.location.pathname.replace(parser.pathname, "/").replace("//", "/")
-    let wsRoot = `${protocol}//${host}`
-    let wsURL = `/${parser.pathname}/ws`.replace("//", "/")
+    const relParts = document.location.href
+      // remove whatever is in the endpoint config
+      .replace(HASHI_DEV ? HASHI_ASSETS_ROOT : window.HASHI_ENDPOINT, "")
+      // http://hashi-ui.service.consul:3000/nomad/region/cluster
+      .split("/")
+      .filter(v => v != "")
+      // ["nomad", "region", "cluster"]
+      .slice(0, 3)
 
-    // inside nomad scope
-    if (relPath.indexOf("/nomad") === 0) {
-      wsURL = wsURL + "/nomad"
-      relPath = relPath.replace("/nomad/", "").split("/")[0]
-      if (relPath) {
-        wsURL = wsURL + "/" + relPath
-      }
+    // should only happen in developer mode
+    if (relParts.length == 0) {
+      throw Error("Missing backend type in URL, please go to /nomad or /consul")
     }
 
-    // inside consul scope
-    if (relPath.indexOf("/consul") === 0) {
-      wsURL = wsURL + "/consul"
-      relPath = relPath.replace("/consul/", "").split("/")[0]
-      if (relPath) {
-        wsURL = wsURL + "/" + relPath
-      }
-    }
+    const wsPath = relParts
+      // take the two first chunks of the path
+      .splice(0, 2)
+      // remove any trailing slashes
+      .filter(v => v != "")
+      // join back to a path
+      .join("/")
 
-    // cleanup double slashes, yes, dirty hack :)
-    wsURL = wsURL.replace("//", "/")
-
-    const p = connectTo(wsRoot + wsURL)
+    const p = connectTo(wsRoot + "/ws/" + wsPath)
 
     return p
       .then(socket => {

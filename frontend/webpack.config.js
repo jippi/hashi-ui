@@ -15,20 +15,6 @@ const config = {
       "webpack-dev-server/client?http://localhost:3333",
       "webpack/hot/only-dev-server",
       "./src/main.js"
-    ],
-    recharts: ["recharts"],
-    vendor: [
-      "core-js",
-      "date-fns",
-      "deepmerge",
-      "fixed-data-table-2",
-      "lodash",
-      "material-ui",
-      "react-ace",
-      "react-append-to-body",
-      "react-flexbox-grid",
-      "react-helmet",
-      "react-tooltip"
     ]
   },
 
@@ -106,11 +92,36 @@ const config = {
   plugins: [
     new LodashModuleReplacementPlugin(),
     new webpack.DefinePlugin({ "process.env.NODE_ENV": '"development"' }),
-    new webpack.DefinePlugin({ "process.env.GO_PORT": process.env.GO_PORT || 3000 }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.optimize.CommonsChunkPlugin({ names: ["app", "vendor", "recharts"], minChunks: 2 }),
+    // https://medium.com/@adamrackis/vendor-and-code-splitting-in-webpack-2-6376358f1923
+    // generic vendor bundle
+    new webpack.optimize.CommonsChunkPlugin({
+      name: "vendor",
+      minChunks(module, count) {
+        var context = module.context
+        return context && context.indexOf("node_modules") >= 0
+      }
+    }),
+    // webpack manifest file
+    new webpack.optimize.CommonsChunkPlugin({ name: "manifest" }),
+    // catch all - anything used in more than one place
+    new webpack.optimize.CommonsChunkPlugin({
+      async: "common",
+      minChunks(module, count) {
+        return count >= 2
+      }
+    }),
+    // specifically bundle recharts on its own
+    new webpack.optimize.CommonsChunkPlugin({
+      async: "recharts",
+      minChunks(module, count) {
+        var context = module.context
+        var targets = ["recharts"]
+        return context && context.indexOf("node_modules") >= 0 && targets.find(t => context.indexOf(t) >= 0)
+      }
+    }),
     new webpack.LoaderOptionsPlugin({
       test: /\.js$/,
       options: {
@@ -129,8 +140,10 @@ const config = {
       favicon: "./assets/img/favicon.png",
       appMountId: "app",
       window: {
-        NOMAD_ENDPOINT: process.env.GO_HOST || "127.0.0.1",
-        NOMAD_ENDPOINT_PORT: process.env.GO_PORT || 3000
+        HASHI_ENDPOINT: "http://127.0.0.1:3000",
+        HASHI_ENDPOINT_PORT: 3000,
+        HASHI_ASSETS_ROOT: "http://127.0.0.1:3333",
+        HASHI_DEV: true
       }
     })
   ]
