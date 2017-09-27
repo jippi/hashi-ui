@@ -68,7 +68,6 @@ class ClientStats extends Component {
   }
 
   render() {
-    console.log(this.props)
     if (!this.props.nodeStats.data) {
       return <div>Loading ...</div>
     }
