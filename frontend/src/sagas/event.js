@@ -314,10 +314,9 @@ export default function eventSaga() {
       .join("/")
 
     const relParts = document.location.href
-      // remove whatever is in the endpoint config
-      .replace(HASHI_DEV ? HASHI_ASSETS_ROOT : window.HASHI_ENDPOINT, "")
       // http://hashi-ui.service.consul:3000/nomad/region/cluster
       .split("/")
+      .slice(3)
       .filter(v => v != "")
       // ["nomad", "region", "cluster"]
       .slice(0, 3)
