@@ -192,7 +192,7 @@ func main() {
 			}
 
 			response = append(response, fmt.Sprintf("window.HASHI_ENDPOINT=%s;", endpointURL))
-			response = append(response, "window.HASHI_ASSETS_ROOT=window.HASHI_ASSETS_ROOT || window.HASHI_ENDPOINT;")
+			response = append(response, "window.HASHI_ASSETS_ROOT=window.HASHI_ASSETS_ROOT || window.HASHI_ENDPOINT")
 
 			w.Header().Set("Content-Type", "application/javascript")
 			w.Write([]byte(strings.Join(response, "\n")))

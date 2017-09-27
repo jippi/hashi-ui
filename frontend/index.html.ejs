@@ -65,7 +65,8 @@
     <script>
     (function() {
         var script = document.createElement('script');
-        script.src = window.HASHI_ASSETS_ROOT + "<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"
+        var src = window.HASHI_ASSETS_ROOT + ("/<%= htmlWebpackPlugin.files.chunks[chunk].entry %>").replace("//", "/")
+        script.src = src
         script.type = 'text/javascript';
         script.async = false
 
