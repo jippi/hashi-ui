@@ -16,6 +16,7 @@ const config = {
       "webpack/hot/only-dev-server",
       "./src/main.js"
     ],
+    recharts: ["recharts"],
     vendor: [
       "core-js",
       "date-fns",
@@ -28,8 +29,7 @@ const config = {
       "react-flexbox-grid",
       "react-helmet",
       "react-tooltip"
-    ],
-    recharts: ["recharts"]
+    ]
   },
 
   output: {

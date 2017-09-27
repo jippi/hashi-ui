@@ -97,7 +97,7 @@ const config = {
   plugins: [
     new LodashModuleReplacementPlugin(),
     new webpack.DefinePlugin({ "process.env": { NODE_ENV: JSON.stringify("production") } }),
-    new webpack.optimize.CommonsChunkPlugin({ names: ["recharts", "vendor"], minChunks: 2 }),
+    new webpack.optimize.CommonsChunkPlugin({ names: ["recharts", "vendor", "app"], minChunks: 2 }),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       debug: false

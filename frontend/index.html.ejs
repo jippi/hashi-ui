@@ -62,7 +62,6 @@
     </script>
 
     <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
-        <%if (chunk != "recharts") { %>
     <script>
     (function() {
         var script = document.createElement('script');
@@ -74,7 +73,6 @@
         s.parentNode.appendChild(script, s);
     })();
     </script>
-        <% } %>
     <% } %>
 
     <% if (htmlWebpackPlugin.options.devServer) { %>
