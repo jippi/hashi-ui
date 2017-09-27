@@ -30,7 +30,7 @@ const config = {
     chunkFilename: "static/[name].[chunkhash].chunks.js",
     sourceMapFilename: "static/[name].[chunkhash].map",
     path: resolve(__dirname, "build/"),
-    publicPath: ""
+    publicPath: "/"
   },
 
   performance: {
@@ -119,19 +119,7 @@ const config = {
       favicon: "./assets/img/favicon.png",
       template: "./index.html.ejs",
       appMountId: "app",
-      production: true,
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeRedundantAttributes: true,
-        useShortDoctype: true,
-        removeEmptyAttributes: true,
-        removeStyleLinkTypeAttributes: true,
-        keepClosingSlash: true,
-        minifyJS: true,
-        minifyCSS: true,
-        minifyURLs: true
-      }
+      production: true
     })
   ]
 }
