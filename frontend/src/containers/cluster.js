@@ -2,12 +2,14 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Helmet } from "react-helmet"
-import { green500, blue500, amber500, yellow800 } from "material-ui/styles/colors"
+import { green500, blue500, yellow800 } from "material-ui/styles/colors"
+import { green200, blue200, yellow200 } from "material-ui/styles/colors"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import Progressbar from "../components/Progressbar/Progressbar"
-import UtilizationPieChart from "../components/UtilizationPieChart/UtilizationPieChart"
 import ClusterEvents from "../components/ClusterEvents/ClusterEvents"
 import ClusterStatistics from "../components/ClusterStatistics/ClusterStatistics"
+import UtilizationAreaChart from "../components/UtilizationAreaChart/UtilizationAreaChart"
+
 import {
   NOMAD_WATCH_JOBS,
   NOMAD_UNWATCH_JOBS,
@@ -76,87 +78,44 @@ class Cluster extends Component {
   }
 
   render() {
+    console.log(this.props)
     const data = this.getChartData()
 
-    const UsedMemory = this.props.clusterStatistics.MemoryUsed / 1024 / 1024 / 1024
-    const TotalMemory = this.props.clusterStatistics.MemoryTotal / 1024 / 1024 / 1024
-    const FreeMemory = TotalMemory - UsedMemory
-    const AllocatedMemory = this.props.clusterStatistics.MemoryAllocated / 1024
+    let clusterStats = ''
+    if (this.props.clusterStatistics.data) {
+      const CPUItems = [
+        { name: "Idle", stroke: blue500, fill: blue200 },
+        { name: "Allocated", stroke: yellow800, fill: yellow200 },
+        { name: "Used", stroke: green500, fill: green200 },
+      ]
 
-    let CompensatedAllocatedMemory = 0
-    let CompensatedFreeMemory = 0
+      const MemoryItems = [
+        { name: "Free", stroke: blue500, fill: blue200 },
+        { name: "Allocated", stroke: yellow800, fill: yellow200 },
+        { name: "Used", stroke: green500, fill: green200 },
+      ]
 
-    let UsedMemoryColor = green500
-
-    if (UsedMemory < AllocatedMemory) {
-      CompensatedAllocatedMemory = AllocatedMemory - UsedMemory
-      CompensatedFreeMemory = TotalMemory - AllocatedMemory
-    } else {
-      // over use of Memory
-      UsedMemoryColor = amber500
-      CompensatedAllocatedMemory = 0
-      CompensatedFreeMemory = TotalMemory - UsedMemory
+      clusterStats =
+        <Row>
+        <Col key="cpu-utilization-pane" xs={12} sm={12} md={12} lg={6}>
+          <UtilizationAreaChart
+            title="CPU usage (%)"
+            data={this.props.clusterStatistics.data.cpu}
+            items={CPUItems}
+            min={0}
+            max={100}
+          />
+        </Col>
+          <Col key="memory-utilization-pane" xs={12} sm={12} md={12} lg={6}>
+          <UtilizationAreaChart
+            title="RAM usage (GB)"
+            data={this.props.clusterStatistics.data.memory}
+            items={MemoryItems}
+            min={0}
+            />
+          </Col>
+        </Row>
     }
-    const memoryChart = [
-      {
-        name: "Used",
-        value: UsedMemory,
-        humanValue: UsedMemory.toFixed(2) + " GB",
-        color: UsedMemoryColor
-      },
-      {
-        name: "Allocated",
-        value: CompensatedAllocatedMemory,
-        humanValue: AllocatedMemory.toFixed(2) + " GB",
-        color: yellow800
-      },
-      {
-        name: "Available",
-        value: CompensatedFreeMemory,
-        humanValue: FreeMemory.toFixed(2) + " GB",
-        color: blue500
-      }
-    ]
-
-    const AllocatedCPU = this.props.clusterStatistics.CPUAllocatedMHz / this.props.clusterStatistics.CPUTotalMHz * 100
-    const IdleCPU = this.props.clusterStatistics.CPUIdleTime / this.props.clusterStatistics.CPUCores
-    const UsedCPU = 100 - IdleCPU
-
-    let CompensatedAllocatedCPU = 0
-    let CompensatedIdleCPU = 0
-
-    let UsedCPUColor = green500
-
-    if (UsedCPU < AllocatedCPU) {
-      CompensatedAllocatedCPU = AllocatedCPU - UsedCPU
-      CompensatedIdleCPU = 100 - AllocatedCPU
-    } else {
-      // over use of CPU
-      UsedCPUColor = amber500
-      CompensatedAllocatedCPU = 0
-      CompensatedIdleCPU = 100 - UsedCPU
-    }
-
-    const cpuChart = [
-      {
-        name: "Used",
-        value: UsedCPU,
-        humanValue: UsedCPU.toFixed(0) + " %",
-        color: UsedCPUColor
-      },
-      {
-        name: "Allocated",
-        value: CompensatedAllocatedCPU,
-        humanValue: AllocatedCPU.toFixed(0) + " %",
-        color: yellow800
-      },
-      {
-        name: "Idle",
-        value: CompensatedIdleCPU,
-        humanValue: IdleCPU.toFixed(0) + " %",
-        color: blue500
-      }
-    ]
 
     return (
       <span>
@@ -165,14 +124,7 @@ class Cluster extends Component {
         </Helmet>
 
         <Grid fluid style={{ padding: 0 }}>
-          <Row>
-            <Col key="cpu-status-pane" xs={12} sm={4} md={4} lg={4}>
-              <UtilizationPieChart title="Cluster CPU usage" data={cpuChart} />
-            </Col>
-            <Col key="memory-type-pane" xs={12} sm={4} md={4} lg={4}>
-              <UtilizationPieChart title="Cluster RAM usage (GB)" data={memoryChart} />
-            </Col>
-          </Row>
+          {clusterStats}
           <Row style={{ marginTop: "1rem" }}>
             <Col key="job-status-pane" xs={12} sm={4} md={4} lg={4}>
               <Progressbar title="Job Status" data={data.jobStatus} />

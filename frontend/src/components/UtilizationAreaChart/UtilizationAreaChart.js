@@ -32,6 +32,11 @@ class UtilizationAreaChart extends Component {
       ]
     }
 
+    let min = 'auto'
+    let max = 'auto'
+    if (this.props.max) { max = this.props.max }
+    if (this.props.min) { min = this.props.min }
+
     return (
       <Card>
         <CardTitle title={this.props.title} />
@@ -39,7 +44,7 @@ class UtilizationAreaChart extends Component {
           <ResponsiveContainer height={230}>
             <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <XAxis dataKey="name" />
-              <YAxis />
+              <YAxis type="number" domain={[min, max]}/>
               <CartesianGrid strokeDasharray="3 3" />
               <Tooltip />
               {reference}
