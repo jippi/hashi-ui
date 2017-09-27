@@ -1,7 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import { Provider } from "react-redux"
-import injectTapEventPlugin from "react-tap-event-plugin"
+// import injectTapEventPlugin from "react-tap-event-plugin"
 
 // import Perf from 'react-addons-perf'
 
@@ -22,7 +22,7 @@ let tapsEventInjected = false
 
 function injectTapEvents() {
   if (!tapsEventInjected) {
-    injectTapEventPlugin()
+    // injectTapEventPlugin()
     tapsEventInjected = true
   }
 }

@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react"
+import React, { Component } from "react"
 import PropTypes from "prop-types"
 import ReactTooltip from "react-tooltip"
 import AppendedReactTooltip from "../AppendedReactTooltip/AppendedReactTooltip"
@@ -55,7 +55,7 @@ const clientStatusColor = {
   }
 }
 
-class AllocationStatusIcon extends PureComponent {
+class AllocationStatusIcon extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     return (
       // id must be the same

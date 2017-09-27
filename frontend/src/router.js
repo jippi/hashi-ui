@@ -1,76 +1,161 @@
 import React from "react"
 import PropTypes from "prop-types"
 import { Router, Route, Redirect, IndexRedirect, browserHistory } from "react-router"
-
+import Loadable from "react-loadable"
 import App from "./components/app"
-import Cluster from "./containers/cluster"
 
-import Jobs from "./containers/jobs"
-import Job from "./containers/job"
-import JobInfo from "./components/JobInfo/JobInfo"
-import JobAllocs from "./components/JobAllocations/JobAllocations"
-import JobChildren from "./components/JobChildren/JobChildren"
-import JobDeployments from "./components/JobDeployments/JobDeployments"
-import JobEvals from "./components/JobEvaluations/JobEvaluations"
-import JobTaskGroups from "./components/JobTaskGroups/JobTaskGroups"
-import JobRaw from "./components/JobRaw/JobRaw"
-
-import Allocations from "./containers/allocations"
-import Allocation from "./containers/allocation"
-import AllocInfo from "./components/AllocationInfo/AllocationInfo"
-import AllocStats from "./components/AllocationStats/AllocationStats"
-import AllocFiles from "./components/AllocationFiles/AllocationFiles"
-import AllocRaw from "./components/AllocationRaw/AllocationRaw"
-
-import Evaluations from "./containers/evaluations"
-import Evaluation from "./containers/evaluation"
-import EvalInfo from "./components/EvaluationInfo/EvaluationInfo"
-import EvalAllocations from "./components/EvaluationAllocations/EvaluationAllocations"
-import EvalRaw from "./components/EvaluationRaw/EvaluationRaw"
-
-import Deployments from "./containers/deployments"
-import Deployment from "./containers/deployment"
-import DeploymentInfo from "./components/DeploymentInfo/DeploymentInfo"
-import DeploymentAllocations from "./components/DeploymentAllocations/DeploymentAllocations"
-import DeploymentRaw from "./components/DeploymentRaw/DeploymentRaw"
-
-import Clients from "./containers/clients"
-import Client from "./containers/client"
-import ClientInfo from "./components/ClientInfo/ClientInfo"
-import ClientStats from "./components/ClientStats/ClientStats"
-import ClientAllocations from "./components/ClientAllocations/ClientAllocations"
-import ClientEvaluations from "./components/ClientEvaluations/ClientEvaluations"
-import ClientRaw from "./components/ClientRaw/ClientRaw"
-
-import Servers from "./containers/servers"
-import Server from "./containers/server"
-import ServerInfo from "./components/ServerInfo/ServerInfo"
-import ServerRaw from "./components/ServerRaw/ServerRaw"
-
-import SelectNomadRegion from "./containers/select_nomad_region"
-
-import ConsulKV from "./containers/consul_kv"
-import ConsulServices from "./containers/consul_services"
-import ConsulNodes from "./containers/consul_nodes"
-import SelectConsulRegion from "./containers/select_consul_region"
-
-import System from "./containers/system"
+const Allocation = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./containers/allocation")
+})
+const Allocations = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./containers/allocations")
+})
+const AllocFiles = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/AllocationFiles/AllocationFiles")
+})
+const AllocInfo = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/AllocationInfo/AllocationInfo")
+})
+const AllocRaw = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/AllocationRaw/AllocationRaw")
+})
+const AllocStats = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/AllocationStats/AllocationStats")
+})
+const Client = Loadable({ loading: () => <div>Loading resources</div>, loader: () => import("./containers/client") })
+const ClientAllocations = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/ClientAllocations/ClientAllocations")
+})
+const ClientEvaluations = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/ClientEvaluations/ClientEvaluations")
+})
+const ClientInfo = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/ClientInfo/ClientInfo")
+})
+const ClientRaw = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/ClientRaw/ClientRaw")
+})
+const Clients = Loadable({ loading: () => <div>Loading resources</div>, loader: () => import("./containers/clients") })
+const ClientStats = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/ClientStats/ClientStats")
+})
+const Cluster = Loadable({ loading: () => <div>Loading resources</div>, loader: () => import("./containers/cluster") })
+const ConsulKV = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./containers/consul_kv")
+})
+const ConsulNodes = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./containers/consul_nodes")
+})
+const ConsulServices = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./containers/consul_services")
+})
+const Deployment = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./containers/deployment")
+})
+const DeploymentAllocations = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/DeploymentAllocations/DeploymentAllocations")
+})
+const DeploymentInfo = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/DeploymentInfo/DeploymentInfo")
+})
+const DeploymentRaw = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/DeploymentRaw/DeploymentRaw")
+})
+const Deployments = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./containers/deployments")
+})
+const EvalAllocations = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/EvaluationAllocations/EvaluationAllocations")
+})
+const EvalInfo = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/EvaluationInfo/EvaluationInfo")
+})
+const EvalRaw = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/EvaluationRaw/EvaluationRaw")
+})
+const Evaluation = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./containers/evaluation")
+})
+const Evaluations = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./containers/evaluations")
+})
+const Job = Loadable({ loading: () => <div>Loading resources</div>, loader: () => import("./containers/job") })
+const JobAllocs = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/JobAllocations/JobAllocations")
+})
+const JobChildren = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/JobChildren/JobChildren")
+})
+const JobDeployments = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/JobDeployments/JobDeployments")
+})
+const JobEvals = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/JobEvaluations/JobEvaluations")
+})
+const JobInfo = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/JobInfo/JobInfo")
+})
+const JobRaw = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/JobRaw/JobRaw")
+})
+const Jobs = Loadable({ loading: () => <div>Loading resources</div>, loader: () => import("./containers/jobs") })
+const JobTaskGroups = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/JobTaskGroups/JobTaskGroups")
+})
+const SelectConsulRegion = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./containers/select_consul_region")
+})
+const SelectNomadRegion = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./containers/select_nomad_region")
+})
+const Server = Loadable({ loading: () => <div>Loading resources</div>, loader: () => import("./containers/server") })
+const ServerInfo = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/ServerInfo/ServerInfo")
+})
+const ServerRaw = Loadable({
+  loading: () => <div>Loading resources</div>,
+  loader: () => import("./components/ServerRaw/ServerRaw")
+})
+const Servers = Loadable({ loading: () => <div>Loading resources</div>, loader: () => import("./containers/servers") })
+const SystemX = Loadable({ loading: () => <div>Loading resources</div>, loader: () => import("./containers/system") })
 
 const AppRouter = ({ history }) => (
   <Router history={history}>
     <Route path="/" component={App}>
-      // Legacy routes
-      <Redirect from="/cluster" to="/nomad" />
-      <Redirect from="/servers" to="/nomad" />
-      <Redirect from="/servers/**" to="/nomad" />
-      <Redirect from="/clients" to="/nomad" />
-      <Redirect from="/clients/**" to="/nomad" />
-      <Redirect from="/jobs" to="/nomad" />
-      <Redirect from="/jobs/**" to="/nomad" />
-      <Redirect from="/allocations" to="/nomad" />
-      <Redirect from="/allocations/**" to="/nomad" />
-      <Redirect from="/evaluations/" to="/nomad" />
-      <Redirect from="/evaluations/**" to="/nomad" />
       <IndexRedirect to="/nomad" />
       // Consul
       <Route path="/consul" component={SelectConsulRegion} />
@@ -145,7 +230,7 @@ const AppRouter = ({ history }) => (
         <Route path="/nomad/:region/evaluations/:evalId/raw" component={EvalRaw} />
       </Route>
       /* system */
-      <Route path="/nomad/:region/system" component={System} />
+      <Route path="/nomad/:region/system" component={SystemX} />
     </Route>
   </Router>
 )
