@@ -3,8 +3,6 @@ import ReactDOM from "react-dom"
 import { Provider } from "react-redux"
 import injectTapEventPlugin from "react-tap-event-plugin"
 
-// import Perf from 'react-addons-perf'
-
 import browserHistory from "./history"
 import AppRouter from "./router"
 import configureStore from "./store"
@@ -13,8 +11,6 @@ import "../assets/hashi-ui.css"
 import "../assets/hashi-ui.scss"
 import "../assets/data-table.css"
 import ErrorApp from "./components/error_app"
-
-// Perf.start()
 
 let retries = 0
 let retryInterval
@@ -64,5 +60,3 @@ function bootApp() {
 }
 
 bootApp()
-
-// window.Perf = Perf
