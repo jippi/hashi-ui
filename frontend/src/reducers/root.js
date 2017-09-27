@@ -3,10 +3,11 @@ import { combineReducers } from "redux"
 import {
   AppDrawer,
   AppErrorReducer,
-  ClusterStatisticsReducer,
+  // ClusterStatisticsReducer,
   ErrorNotificationReducer,
   SuccessNotificationReducer
 } from "./app"
+import { ClusterStatisticsReducer } from "./cluster"
 import { MemberInfoReducer, MemberListReducer } from "./member"
 import {
   JobInfoReducer,

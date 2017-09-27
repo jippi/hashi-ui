@@ -78,7 +78,6 @@ class Cluster extends Component {
   }
 
   render() {
-    console.log(this.props)
     const data = this.getChartData()
 
     let clusterStats = ''
