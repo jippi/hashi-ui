@@ -16,3 +16,6 @@ build
 
 # Vagrant
 .vagrant
+
+.DS_Store
+stats.json

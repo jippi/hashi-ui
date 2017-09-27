@@ -6,17 +6,7 @@ import {
   APP_ERROR_NOTIFICATION,
   APP_ERROR,
   APP_SUCCESS_NOTIFICATION,
-  NOMAD_FETCHED_CLUSTER_STATISTICS
 } from "../sagas/event"
-
-export function ClusterStatisticsReducer(state = {}, action) {
-  switch (action.type) {
-    case NOMAD_FETCHED_CLUSTER_STATISTICS:
-      return action.payload
-    default:
-  }
-  return state
-}
 
 export function ErrorNotificationReducer(state = {}, action) {
   switch (action.type) {

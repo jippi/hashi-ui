@@ -237,42 +237,44 @@ class AllocationFiles extends Component {
     } else if (bytes > 1) {
       bytes = bytes + " bytes"
     } else if (bytes === 1) {
-      bytes = bytes + " byte"
+      bytes = "1 byte"
     } else {
-      bytes = "0 byte"
+      bytes = "0 bytes"
     }
     return bytes
   }
 
   collectFiles() {
     const files = this.props.directory.map(file => {
-      const a = file.IsDir ? "/" : ""
-      const b = file.Name + a
-      const c = file.IsDir ? "" : this.formatSizeUnits(file.Size)
-      const i = file.IsDir
-        ? <FontIcon className="material-icons">folder</FontIcon>
-        : <FontIcon className="material-icons">attachment</FontIcon>
+      const pathSuffix = file.IsDir ? "/" : ""
+      const primaryText = file.Name + pathSuffix
+      const secondaryText = file.IsDir ? "" : this.formatSizeUnits(file.Size)
+      const leftIcon = file.IsDir ? (
+        <FontIcon className="material-icons">folder</FontIcon>
+      ) : (
+        <FontIcon className="material-icons">attachment</FontIcon>
+      )
 
       return (
         <MenuItem
           key={file.Name}
           innerDivStyle={{ paddingRight: 0 }}
           onTouchTap={() => this.handleClick(file)}
-          leftIcon={i}
-          primaryText={b}
-          secondaryText={c}
+          leftIcon={leftIcon}
+          primaryText={primaryText}
+          secondaryText={secondaryText}
         />
       )
     })
 
     if ((this.props.location.query.path || "/") !== "/") {
-      const x = <FontIcon className="material-icons">arrow_upward</FontIcon>
+      const leftIcon = <FontIcon className="material-icons">arrow_upward</FontIcon>
 
       files.unshift(
         <MenuItem
           key="back"
           onTouchTap={() => this.handleClick({ Name: "back", IsDir: true })}
-          leftIcon={x}
+          leftIcon={leftIcon}
           primaryText=".."
         />
       )
@@ -290,41 +292,45 @@ class AllocationFiles extends Component {
       fileName = "<please select a file>"
     }
 
-    const oversizedWarning = !this.props.file.Oversized
-      ? ""
-      : <span
-          style={{
-            display: "inline-block",
-            position: "relative",
-            top: 7,
-            right: 6
-          }}
-        >
-          <FontIcon className="material-icons" data-tip data-for={`tooltip-${this.props.file.File}`}>
-            report_problem
-          </FontIcon>
-          <span>
-            <ReactTooltip id={`tooltip-${this.props.file.File}`}>
-              <span className="file-size-warning">
-                The file you are trying to view is too large.<br />
-                Tailing has started from the last 250 lines. <br />
-                Please download the file for the entire contents.
-              </span>
-            </ReactTooltip>
-          </span>
+    const oversizedWarning = !this.props.file.Oversized ? (
+      ""
+    ) : (
+      <span
+        style={{
+          display: "inline-block",
+          position: "relative",
+          top: 7,
+          right: 6
+        }}
+      >
+        <FontIcon className="material-icons" data-tip data-for={`tooltip-${this.props.file.File}`}>
+          report_problem
+        </FontIcon>
+        <span>
+          <ReactTooltip id={`tooltip-${this.props.file.File}`}>
+            <span className="file-size-warning">
+              The file you are trying to view is too large.<br />
+              Tailing has started from the last 250 lines. <br />
+              Please download the file for the entire contents.
+            </span>
+          </ReactTooltip>
         </span>
+      </span>
+    )
 
     const downloadPath = `nomad/${this.props.router.params.region}/download${this.props.file.File}`
 
     const downloadBtn =
-      this.props.file.File.indexOf("<") >= 0
-        ? ""
-        : <form method="get" action={`${window.NOMAD_ENDPOINT}/${downloadPath}`}>
-            <input type="hidden" name="client" value={this.props.node.HTTPAddr} />
-            <input type="hidden" name="allocID" value={this.props.allocation.ID} />
-            {oversizedWarning}
-            <RaisedButton label="Download" type="submit" className="btn-download" />
-          </form>
+      this.props.file.File.indexOf("<") >= 0 ? (
+        ""
+      ) : (
+        <form method="get" action={`${window.HASHI_ENDPOINT}/${downloadPath}`}>
+          <input type="hidden" name="client" value={this.props.node.HTTPAddr} />
+          <input type="hidden" name="allocID" value={this.props.allocation.ID} />
+          {oversizedWarning}
+          <RaisedButton label="Download" type="submit" className="btn-download" />
+        </form>
+      )
 
     const title = (
       <span>
@@ -361,8 +367,8 @@ class AllocationFiles extends Component {
                 key="contents"
                 style={padding}
                 className="content-file"
-                ref={c => {
-                  this.content = c
+                ref={content => {
+                  this.content = content
                 }}
               >
                 {this.state.contents}

@@ -1,14 +1,8 @@
 import { createHistory } from "history"
 import { useRouterHistory } from "react-router"
 
-const getBasename = function() {
-  const parser = document.createElement("a")
-  parser.href = window.NOMAD_ENDPOINT
-  return parser.pathname !== "/" ? parser.pathname : ""
-}
-
 const browserHistory = useRouterHistory(createHistory)({
-  basename: getBasename(),
+  basename: HASHI_ASSETS_ROOT
 })
 
 export default browserHistory

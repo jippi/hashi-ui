@@ -64,14 +64,14 @@ func (w *stats) work(client *api.Client, send chan *structs.Action, subscribeCh 
 		return
 	}
 
-	taksResult := &result{}
-	taksResult.CPUCores = len(stats.CPU)
-	taksResult.CPUIdleTime = 0
-	taksResult.CPUAllocatedMHz = 0
-	taksResult.CPUTotalMHz = 0
-	taksResult.MemoryUsed = 0
-	taksResult.MemoryTotal = 0
-	taksResult.MemoryAllocated = 0
+	taskResult := &result{}
+	taskResult.CPUCores = len(stats.CPU)
+	taskResult.CPUIdleTime = 0
+	taskResult.CPUAllocatedMHz = 0
+	taskResult.CPUTotalMHz = 0
+	taskResult.MemoryUsed = 0
+	taskResult.MemoryTotal = 0
+	taskResult.MemoryAllocated = 0
 
 	for _, allocation := range allocations {
 		if allocation.DesiredStatus != "run" {
@@ -79,27 +79,27 @@ func (w *stats) work(client *api.Client, send chan *structs.Action, subscribeCh 
 		}
 
 		for _, resources := range allocation.TaskResources {
-			taksResult.MemoryAllocated += int64(*resources.MemoryMB)
-			taksResult.CPUAllocatedMHz += int64(*resources.CPU)
+			taskResult.MemoryAllocated += int64(*resources.MemoryMB)
+			taskResult.CPUAllocatedMHz += int64(*resources.CPU)
 		}
 	}
 
 	for _, core := range stats.CPU {
-		taksResult.CPUIdleTime = taksResult.CPUIdleTime + core.Idle
+		taskResult.CPUIdleTime = taskResult.CPUIdleTime + core.Idle
 	}
 
-	taksResult.CPUTotalMHz += int64(*node.Resources.CPU)
+	taskResult.CPUTotalMHz += int64(*node.Resources.CPU)
 
 	if stats.Memory != nil {
-		taksResult.MemoryUsed = stats.Memory.Used
-		taksResult.MemoryTotal = stats.Memory.Total
+		taskResult.MemoryUsed = stats.Memory.Used
+		taskResult.MemoryTotal = stats.Memory.Total
 	}
 
-	taksResult.Uptime = stats.Uptime
-	taksResult.HostDiskStats = stats.DiskStats
-	taksResult.nodeStats = *stats
+	taskResult.Uptime = stats.Uptime
+	taskResult.HostDiskStats = stats.DiskStats
+	taskResult.nodeStats = *stats
 
-	send <- &structs.Action{Type: fetchedClientStats, Payload: &taksResult}
+	send <- &structs.Action{Type: fetchedClientStats, Payload: &taskResult}
 }
 
 func (w *stats) Key() string {

@@ -8,21 +8,7 @@ const config = {
   devtool: "source-map",
 
   entry: {
-    app: ["babel-polyfill", "./src/main.js"],
-    recharts: ["recharts"],
-    vendor: [
-      "core-js",
-      "date-fns",
-      "deepmerge",
-      "fixed-data-table-2",
-      "lodash",
-      "material-ui",
-      "react-ace",
-      "react-append-to-body",
-      "react-flexbox-grid",
-      "react-helmet",
-      "react-tooltip"
-    ]
+    app: ["babel-polyfill", "./src/main.js"]
   },
 
   output: {
@@ -30,7 +16,7 @@ const config = {
     chunkFilename: "static/[name].[chunkhash].chunks.js",
     sourceMapFilename: "static/[name].[chunkhash].map",
     path: resolve(__dirname, "build/"),
-    publicPath: ""
+    publicPath: "/"
   },
 
   performance: {
@@ -97,7 +83,33 @@ const config = {
   plugins: [
     new LodashModuleReplacementPlugin(),
     new webpack.DefinePlugin({ "process.env": { NODE_ENV: JSON.stringify("production") } }),
-    new webpack.optimize.CommonsChunkPlugin({ names: ["recharts", "vendor"], minChunks: 2 }),
+    // https://medium.com/@adamrackis/vendor-and-code-splitting-in-webpack-2-6376358f1923
+    // generic vendor bundle
+    new webpack.optimize.CommonsChunkPlugin({
+      name: "vendor",
+      minChunks(module, count) {
+        var context = module.context
+        return context && context.indexOf("node_modules") >= 0
+      }
+    }),
+    // webpack manifest file
+    new webpack.optimize.CommonsChunkPlugin({ name: "manifest" }),
+    // catch all - anything used in more than one place
+    new webpack.optimize.CommonsChunkPlugin({
+      async: "common",
+      minChunks(module, count) {
+        return count >= 2
+      }
+    }),
+    // specifically bundle recharts on its own
+    new webpack.optimize.CommonsChunkPlugin({
+      async: "recharts",
+      minChunks(module, count) {
+        var context = module.context
+        var targets = ["recharts"]
+        return context && context.indexOf("node_modules") >= 0 && targets.find(t => context.indexOf(t) >= 0)
+      }
+    }),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       debug: false
@@ -119,19 +131,7 @@ const config = {
       favicon: "./assets/img/favicon.png",
       template: "./index.html.ejs",
       appMountId: "app",
-      production: true,
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeRedundantAttributes: true,
-        useShortDoctype: true,
-        removeEmptyAttributes: true,
-        removeStyleLinkTypeAttributes: true,
-        keepClosingSlash: true,
-        minifyJS: true,
-        minifyCSS: true,
-        minifyURLs: true
-      }
+      production: true
     })
   ]
 }
