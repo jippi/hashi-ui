@@ -237,19 +237,19 @@ class AllocationFiles extends Component {
     } else if (bytes > 1) {
       bytes = bytes + " bytes"
     } else if (bytes === 1) {
-      bytes = bytes + " byte"
+      bytes = "1 byte"
     } else {
-      bytes = "0 byte"
+      bytes = "0 bytes"
     }
     return bytes
   }
 
   collectFiles() {
     const files = this.props.directory.map(file => {
-      const a = file.IsDir ? "/" : ""
-      const b = file.Name + a
-      const c = file.IsDir ? "" : this.formatSizeUnits(file.Size)
-      const i = file.IsDir ? (
+      const pathSuffix = file.IsDir ? "/" : ""
+      const primaryText = file.Name + pathSuffix
+      const secondaryText = file.IsDir ? "" : this.formatSizeUnits(file.Size)
+      const leftIcon = file.IsDir ? (
         <FontIcon className="material-icons">folder</FontIcon>
       ) : (
         <FontIcon className="material-icons">attachment</FontIcon>
@@ -260,21 +260,21 @@ class AllocationFiles extends Component {
           key={file.Name}
           innerDivStyle={{ paddingRight: 0 }}
           onTouchTap={() => this.handleClick(file)}
-          leftIcon={i}
-          primaryText={b}
-          secondaryText={c}
+          leftIcon={leftIcon}
+          primaryText={primaryText}
+          secondaryText={secondaryText}
         />
       )
     })
 
     if ((this.props.location.query.path || "/") !== "/") {
-      const x = <FontIcon className="material-icons">arrow_upward</FontIcon>
+      const leftIcon = <FontIcon className="material-icons">arrow_upward</FontIcon>
 
       files.unshift(
         <MenuItem
           key="back"
           onTouchTap={() => this.handleClick({ Name: "back", IsDir: true })}
-          leftIcon={x}
+          leftIcon={leftIcon}
           primaryText=".."
         />
       )
@@ -367,8 +367,8 @@ class AllocationFiles extends Component {
                 key="contents"
                 style={padding}
                 className="content-file"
-                ref={c => {
-                  this.content = c
+                ref={content => {
+                  this.content = content
                 }}
               >
                 {this.state.contents}
