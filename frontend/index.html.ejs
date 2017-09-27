@@ -38,7 +38,7 @@
   <% } %>
 
   <% if (htmlWebpackPlugin.options.window) { %>
-  <script src="//<%= htmlWebpackPlugin.options.window['NOMAD_ENDPOINT']%>:<%= htmlWebpackPlugin.options.window['NOMAD_ENDPOINT_PORT']%>/config.js"></script>
+  <script src="<%= htmlWebpackPlugin.options.window['HASHI_ENDPOINT']%>/config.js"></script>
   <% } else { %>
   <script type="text/javascript" src="config.js"></script>
   <% } %>
@@ -50,6 +50,7 @@
     var WebFontConfig = {
       google: { families: [ 'Roboto:400,300,500:latin' ] }
     };
+
     (function() {
       var wf = document.createElement('script');
       wf.src = 'https://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
@@ -61,7 +62,19 @@
     </script>
 
     <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
-    <script src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+        <%if (chunk != "recharts") { %>
+    <script>
+    (function() {
+        var script = document.createElement('script');
+        script.src = window.HASHI_ASSETS_ROOT + "<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"
+        script.type = 'text/javascript';
+        script.async = false
+
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.appendChild(script, s);
+    })();
+    </script>
+        <% } %>
     <% } %>
 
     <% if (htmlWebpackPlugin.options.devServer) { %>

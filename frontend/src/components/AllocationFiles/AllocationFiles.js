@@ -249,9 +249,11 @@ class AllocationFiles extends Component {
       const a = file.IsDir ? "/" : ""
       const b = file.Name + a
       const c = file.IsDir ? "" : this.formatSizeUnits(file.Size)
-      const i = file.IsDir
-        ? <FontIcon className="material-icons">folder</FontIcon>
-        : <FontIcon className="material-icons">attachment</FontIcon>
+      const i = file.IsDir ? (
+        <FontIcon className="material-icons">folder</FontIcon>
+      ) : (
+        <FontIcon className="material-icons">attachment</FontIcon>
+      )
 
       return (
         <MenuItem
@@ -290,41 +292,45 @@ class AllocationFiles extends Component {
       fileName = "<please select a file>"
     }
 
-    const oversizedWarning = !this.props.file.Oversized
-      ? ""
-      : <span
-          style={{
-            display: "inline-block",
-            position: "relative",
-            top: 7,
-            right: 6
-          }}
-        >
-          <FontIcon className="material-icons" data-tip data-for={`tooltip-${this.props.file.File}`}>
-            report_problem
-          </FontIcon>
-          <span>
-            <ReactTooltip id={`tooltip-${this.props.file.File}`}>
-              <span className="file-size-warning">
-                The file you are trying to view is too large.<br />
-                Tailing has started from the last 250 lines. <br />
-                Please download the file for the entire contents.
-              </span>
-            </ReactTooltip>
-          </span>
+    const oversizedWarning = !this.props.file.Oversized ? (
+      ""
+    ) : (
+      <span
+        style={{
+          display: "inline-block",
+          position: "relative",
+          top: 7,
+          right: 6
+        }}
+      >
+        <FontIcon className="material-icons" data-tip data-for={`tooltip-${this.props.file.File}`}>
+          report_problem
+        </FontIcon>
+        <span>
+          <ReactTooltip id={`tooltip-${this.props.file.File}`}>
+            <span className="file-size-warning">
+              The file you are trying to view is too large.<br />
+              Tailing has started from the last 250 lines. <br />
+              Please download the file for the entire contents.
+            </span>
+          </ReactTooltip>
         </span>
+      </span>
+    )
 
     const downloadPath = `nomad/${this.props.router.params.region}/download${this.props.file.File}`
 
     const downloadBtn =
-      this.props.file.File.indexOf("<") >= 0
-        ? ""
-        : <form method="get" action={`${window.NOMAD_ENDPOINT}/${downloadPath}`}>
-            <input type="hidden" name="client" value={this.props.node.HTTPAddr} />
-            <input type="hidden" name="allocID" value={this.props.allocation.ID} />
-            {oversizedWarning}
-            <RaisedButton label="Download" type="submit" className="btn-download" />
-          </form>
+      this.props.file.File.indexOf("<") >= 0 ? (
+        ""
+      ) : (
+        <form method="get" action={`${window.HASHI_ENDPOINT}/${downloadPath}`}>
+          <input type="hidden" name="client" value={this.props.node.HTTPAddr} />
+          <input type="hidden" name="allocID" value={this.props.allocation.ID} />
+          {oversizedWarning}
+          <RaisedButton label="Download" type="submit" className="btn-download" />
+        </form>
+      )
 
     const title = (
       <span>

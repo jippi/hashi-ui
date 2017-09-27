@@ -16,7 +16,6 @@ const config = {
       "webpack/hot/only-dev-server",
       "./src/main.js"
     ],
-    recharts: ["recharts"],
     vendor: [
       "core-js",
       "date-fns",
@@ -29,7 +28,8 @@ const config = {
       "react-flexbox-grid",
       "react-helmet",
       "react-tooltip"
-    ]
+    ],
+    recharts: ["recharts"]
   },
 
   output: {
@@ -106,11 +106,10 @@ const config = {
   plugins: [
     new LodashModuleReplacementPlugin(),
     new webpack.DefinePlugin({ "process.env.NODE_ENV": '"development"' }),
-    new webpack.DefinePlugin({ "process.env.GO_PORT": process.env.GO_PORT || 3000 }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.optimize.CommonsChunkPlugin({ names: ["app", "vendor", "recharts"], minChunks: 2 }),
+    new webpack.optimize.CommonsChunkPlugin({ names: ["recharts", "vendor", "app"], minChunks: 2 }),
     new webpack.LoaderOptionsPlugin({
       test: /\.js$/,
       options: {
@@ -129,8 +128,9 @@ const config = {
       favicon: "./assets/img/favicon.png",
       appMountId: "app",
       window: {
-        NOMAD_ENDPOINT: process.env.GO_HOST || "127.0.0.1",
-        NOMAD_ENDPOINT_PORT: process.env.GO_PORT || 3000
+        HASHI_ENDPOINT: "http://127.0.0.1:3000",
+        HASHI_ENDPOINT_PORT: 3000,
+        HASHI_ASSETS_ROOT: "http://127.0.0.1:3333"
       }
     })
   ]
