@@ -1,12 +1,12 @@
 import format from "date-fns/format"
 
-export function calculateNodeStats(state, payload, AmountDataPoints) {
+export function calculateNodeStats(state, payload, maxLength) {
   if (!state.data) {
     state.data = {
       cpu: [],
       memory: [],
     }
-    state.data = prefillData(state.data, AmountDataPoints)
+    state.data = prefillData(state.data, maxLength)
   }
 
   const AllocatedCPU = payload.CPUAllocatedMHz / payload.CPUTotalMHz * 100
@@ -32,7 +32,7 @@ export function calculateNodeStats(state, payload, AmountDataPoints) {
     Free: FreeMemory
   })
 
-  if (state.data.cpu.length > AmountDataPoints) {
+  if (state.data.cpu.length > maxLength) {
     state.data.cpu.splice(0, 1)
     state.data.memory.splice(0, 1)
   }
