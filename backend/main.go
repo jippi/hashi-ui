@@ -191,7 +191,7 @@ func main() {
 				endpointURL = "document.location.protocol + '//' + document.location.hostname + ':' + (window.HASHI_ENDPOINT_PORT || document.location.port)"
 			}
 
-			response = append(response, fmt.Sprintf("window.HASHI_WS_ENDPOINT=%s;", endpointURL))
+			response = append(response, fmt.Sprintf("window.HASHI_ENDPOINT=%s;", endpointURL))
 			response = append(response, "window.HASHI_ASSETS_ROOT=window.HASHI_ASSETS_ROOT || window.HASHI_ENDPOINT;")
 
 			w.Header().Set("Content-Type", "application/javascript")

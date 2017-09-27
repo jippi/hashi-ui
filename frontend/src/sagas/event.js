@@ -315,7 +315,7 @@ export default function eventSaga() {
 
     const relParts = document.location.href
       // remove whatever is in the endpoint config
-      .replace(window.HASHI_WS_ENDPOINT, "")
+      .replace(window.HASHI_ENDPOINT, "")
       // http://hashi-ui.service.consul:3000/nomad/region/cluster
       .split("/")
       // ["nomad", "region", "cluster"]
