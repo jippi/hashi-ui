@@ -42,8 +42,15 @@
   <% } else { %>
   <script type="text/javascript" src="config.js"></script>
   <% } %>
+
+  <script type="text/javascript">
+    document.write('<base href="' + HASHI_ASSETS_ROOT + '" />');
+  </script>
 </head>
 <body>
+    <script type="text/javascript">
+        document.head.innerHTML = document.head.innerHTML + "<base href='" + HASHI_ENDPOINT + "' />";
+    </script>
     <div id="app"></div>
     <!-- This script adds the Roboto font to our project. For more detail go to this site:  http://www.google.com/fonts#UsePlace:use/Collection:Roboto:400,300,500 -->
     <script>
