@@ -58,7 +58,7 @@ class JobActionMenu extends Component {
           />
           <MenuItem
             primaryText="Restart job"
-            rightIcon={<FontIcon className="material-icons">refresh</FontIcon>}
+            rightIcon={<FontIcon className="material-icons">loop</FontIcon>}
             onTouchTap={this.handleClick("restart")}
           />
         </IconMenu>
