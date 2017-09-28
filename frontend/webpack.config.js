@@ -3,7 +3,6 @@ const { resolve } = require("path")
 const webpack = require("webpack")
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
-const LodashModuleReplacementPlugin = require("lodash-webpack-plugin")
 
 const config = {
   devtool: "inline-source-map",
@@ -90,7 +89,6 @@ const config = {
   },
 
   plugins: [
-    new LodashModuleReplacementPlugin(),
     new webpack.DefinePlugin({ "process.env.NODE_ENV": '"development"' }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(),
@@ -111,6 +109,15 @@ const config = {
       async: "common",
       minChunks(module, count) {
         return count >= 2
+      }
+    }),
+    // specifically bundle recharts on its own
+    new webpack.optimize.CommonsChunkPlugin({
+      async: "recharts",
+      minChunks(module, count) {
+        var context = module.context
+        var targets = ["recharts"]
+        return context && context.indexOf("node_modules") >= 0 && targets.find(t => context.indexOf(t) >= 0)
       }
     }),
     new webpack.LoaderOptionsPlugin({
