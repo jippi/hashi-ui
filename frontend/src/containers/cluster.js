@@ -2,8 +2,8 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Helmet } from "react-helmet"
-import { green500, blue500, yellow800 } from "material-ui/styles/colors"
-import { green200, blue200, yellow200 } from "material-ui/styles/colors"
+import { red500, green500, blue500 } from "material-ui/styles/colors"
+import { red200, green200, blue200 } from "material-ui/styles/colors"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import Progressbar from "../components/Progressbar/Progressbar"
 import ClusterEvents from "../components/ClusterEvents/ClusterEvents"
@@ -83,15 +83,15 @@ class Cluster extends Component {
     let clusterStats = ''
     if (this.props.clusterStatistics.data) {
       const CPUItems = [
-        { name: "Idle", stroke: blue500, fill: blue200 },
-        { name: "Allocated", stroke: yellow800, fill: yellow200 },
-        { name: "Used", stroke: green500, fill: green200 },
+        { name: "Idle", stackId: "1", stroke: blue500, fill: blue200 },
+        { name: "Allocated", stackId: "2", stroke: red500, fill: red200 },
+        { name: "Used", stackId: "1", stroke: green500, fill: green200 },
       ]
 
       const MemoryItems = [
-        { name: "Free", stroke: blue500, fill: blue200 },
-        { name: "Allocated", stroke: yellow800, fill: yellow200 },
-        { name: "Used", stroke: green500, fill: green200 },
+        { name: "Free", stackId: "1", stroke: blue500, fill: blue200 },
+        { name: "Allocated", stackId: "2", stroke: red500, fill: red500 },
+        { name: "Used", stackId: "1", stroke: green500, fill: green200 },
       ]
 
       clusterStats =
