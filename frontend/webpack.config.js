@@ -113,15 +113,6 @@ const config = {
         return count >= 2
       }
     }),
-    // specifically bundle recharts on its own
-    new webpack.optimize.CommonsChunkPlugin({
-      async: "recharts",
-      minChunks(module, count) {
-        var context = module.context
-        var targets = ["recharts"]
-        return context && context.indexOf("node_modules") >= 0 && targets.find(t => context.indexOf(t) >= 0)
-      }
-    }),
     new webpack.LoaderOptionsPlugin({
       test: /\.js$/,
       options: {
