@@ -1,13 +1,10 @@
 package jobs
 
 import (
+	"encoding/json"
 	"fmt"
-
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/structs"
-	//"encoding/json"
-	//"log"
-	"encoding/json"
 	"log"
 )
 
