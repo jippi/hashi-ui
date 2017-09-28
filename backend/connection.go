@@ -274,6 +274,8 @@ func (c *connection) process(action structs.Action) {
 		c.unwatch(nomad_jobs.NewAllocations(action, nil, nil))
 	case nomad_jobs.Stop:
 		c.once(nomad_jobs.NewStop(action, c.nomadClient))
+	case nomad_jobs.Restart:
+		c.once(nomad_jobs.NewRestart(action, c.nomadClient))
 	case nomad_jobs.PeriodicForce:
 		c.once(nomad_jobs.NewPeriodicForce(action, c.nomadClient))
 	case nomad_jobs.Submit:
