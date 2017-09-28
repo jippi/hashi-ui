@@ -49,7 +49,7 @@ func (w *evaluateAllJobs) Key() string {
 }
 
 func (w *evaluateAllJobs) IsMutable() bool {
-	return false
+	return true
 }
 
 func (w *evaluateAllJobs) BackendType() string {
