@@ -96,7 +96,7 @@ const config = {
     new webpack.optimize.CommonsChunkPlugin({ name: "manifest" }),
     // catch all - anything used in more than one place
     new webpack.optimize.CommonsChunkPlugin({
-      async: "common",
+      name: "common",
       minChunks(module, count) {
         return count >= 2
       }
@@ -106,15 +106,8 @@ const config = {
       debug: false
     }),
     new webpack.optimize.UglifyJsPlugin({
-      beautify: false,
-      mangle: {
-        screw_ie8: true,
-        keep_fnames: true
-      },
-      compress: {
-        screw_ie8: true
-      },
-      comments: false
+      parallel: true,
+      sourceMap: true
     }),
     new HtmlWebpackPlugin({
       title: "Hashi-UI",
