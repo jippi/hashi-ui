@@ -3,8 +3,8 @@ import PropTypes from "prop-types"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import { connect } from "react-redux"
 import { NOMAD_WATCH_CLIENT_STATS, NOMAD_UNWATCH_CLIENT_STATS } from "../../sagas/event"
-import { green500, blue500, red500 } from "material-ui/styles/colors"
-import { green200, blue200, red200 } from "material-ui/styles/colors"
+import { green500, blue500 } from "material-ui/styles/colors"
+import { green200, blue200 } from "material-ui/styles/colors"
 import { Card, CardTitle, CardText } from "material-ui/Card"
 import DiskUtilizationTable from "../DiskUtilizationTable/DiskUtilizationTable"
 import UtilizationAreaChart from "../UtilizationAreaChart/UtilizationAreaChart"
@@ -75,15 +75,13 @@ class ClientStats extends Component {
     let clusterStats = ''
     if (this.props.nodeStats.data) {
       const CPUItems = [
-        { name: "Idle", stackId: "1", stroke: blue500, fill: blue200 },
-        { name: "Allocated", stackId: "2", stroke: red500, fill: red200 },
-        { name: "Used", stackId: "1", stroke: green500, fill: green200 },
+        { name: "Idle", stroke: blue500, fill: blue200 },
+        { name: "Used", stroke: green500, fill: green200 },
       ]
 
       const MemoryItems = [
-        { name: "Free", stackId: "1", stroke: blue500, fill: blue200 },
-        { name: "Allocated", stackId: "2", stroke: red500, fill: red200 },
-        { name: "Used", stackId: "1", stroke: green500, fill: green200 },
+        { name: "Free", stroke: blue500, fill: blue200 },
+        { name: "Used", stroke: green500, fill: green200 },
       ]
 
       clusterStats =
@@ -93,6 +91,7 @@ class ClientStats extends Component {
               title="CPU usage (%)"
               data={this.props.nodeStats.data.cpu}
               items={CPUItems}
+              allocated={true}
               min={0}
               max={100}
             />
@@ -102,6 +101,7 @@ class ClientStats extends Component {
               title="RAM usage (GB)"
               data={this.props.nodeStats.data.memory}
               items={MemoryItems}
+              allocated={true}
               min={0}
             />
           </Col>

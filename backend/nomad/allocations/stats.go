@@ -72,12 +72,17 @@ func (w *stats) work(client *api.Client, send chan *structs.Action, subscribeCh 
 		return err
 	}
 
+
 	response := struct {
-		Stats *api.AllocResourceUsage
-		ID    string
+		Stats           *api.AllocResourceUsage
+		Resources       *api.Resources
+		TaskResources   map[string]*api.Resources
+		ID              string
 	}{
-		Stats: stats,
-		ID:    w.allocation.ID,
+		Stats:           stats,
+		Resources:       w.allocation.Resources,
+		TaskResources:   w.allocation.TaskResources,
+		ID:              w.allocation.ID,
 	}
 
 	send <- &structs.Action{
