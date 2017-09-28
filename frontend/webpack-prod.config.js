@@ -94,13 +94,6 @@ const config = {
     }),
     // webpack manifest file
     new webpack.optimize.CommonsChunkPlugin({ name: "manifest" }),
-    // catch all - anything used in more than one place
-    new webpack.optimize.CommonsChunkPlugin({
-      name: "common",
-      minChunks(module, count) {
-        return count >= 2
-      }
-    }),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       debug: false

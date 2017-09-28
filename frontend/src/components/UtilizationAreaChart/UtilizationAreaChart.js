@@ -16,9 +16,9 @@ const formatNumber = i => i.toLocaleString(undefined, { maximumFractionDigits: 0
 class UtilizationAreaChart extends Component {
   render() {
     let data = []
-    this.props.data.map((item, index) => data.push(item))
+    this.props.data.map((item, index) => { data.push(item) })
 
-    let reference,
+      let reference,
       label = null
     if (this.props.allocated) {
       reference = <ReferenceLine alwaysShow isFront y={this.props.allocated} stroke="red" strokeDasharray="3 3" />
@@ -54,7 +54,7 @@ class UtilizationAreaChart extends Component {
                   isAnimationActive={false}
                   type="monotone"
                   dataKey={item.name}
-                  stackId="1"
+                  stackId={item.stackId}
                   stroke={item.stroke}
                   fill={item.fill}
                 />
@@ -65,10 +65,11 @@ class UtilizationAreaChart extends Component {
           <div style={{ marginTop: "1rem", margin: "0 auto", display: "table" }}>
             <dl className="metrics" style={{ width: 250 }}>
               {this.props.items.map(item => {
+                let value = data[data.length - 1][item.name]
                 return [
                   <dt style={{ color: item.stroke }}>{item.name}</dt>,
                   <dd style={{ color: item.stroke, textAlign: "right" }}>
-                    {formatNumber(this.props.data[this.props.data.length - 1][item.name])}
+                    {formatNumber(value)}
                   </dd>
                 ]
               })}
