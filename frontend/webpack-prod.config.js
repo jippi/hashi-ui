@@ -96,18 +96,9 @@ const config = {
     new webpack.optimize.CommonsChunkPlugin({ name: "manifest" }),
     // catch all - anything used in more than one place
     new webpack.optimize.CommonsChunkPlugin({
-      async: "common",
+      name: "common",
       minChunks(module, count) {
         return count >= 2
-      }
-    }),
-    // specifically bundle recharts on its own
-    new webpack.optimize.CommonsChunkPlugin({
-      async: "recharts",
-      minChunks(module, count) {
-        var context = module.context
-        var targets = ["recharts"]
-        return context && context.indexOf("node_modules") >= 0 && targets.find(t => context.indexOf(t) >= 0)
       }
     }),
     new webpack.LoaderOptionsPlugin({
@@ -115,15 +106,8 @@ const config = {
       debug: false
     }),
     new webpack.optimize.UglifyJsPlugin({
-      beautify: false,
-      mangle: {
-        screw_ie8: true,
-        keep_fnames: true
-      },
-      compress: {
-        screw_ie8: true
-      },
-      comments: false
+      parallel: true,
+      sourceMap: true
     }),
     new HtmlWebpackPlugin({
       title: "Hashi-UI",
