@@ -8,6 +8,7 @@ import MenuItem from "material-ui/MenuItem"
 import { green500 } from "material-ui/styles/colors"
 import JobEditRawJSON from "../JobEditRawJSON/JobEditRawJSON"
 import JobActionStop from "../JobActionStop/JobActionStop"
+import JobActionRestart from "../JobActionRestart/JobActionRestart"
 import JobActionEvaluate from "../JobActionEvaluate/JobActionEvaluate"
 import { NOMAD_JOB_SHOW_DIALOG } from "../../sagas/event"
 
@@ -31,6 +32,7 @@ class JobActionMenu extends Component {
       <span>
         <JobEditRawJSON />
         <JobActionStop />
+        <JobActionRestart />
         <JobActionEvaluate />
 
         <IconMenu
@@ -53,6 +55,11 @@ class JobActionMenu extends Component {
             primaryText="Stop job"
             rightIcon={<FontIcon className="material-icons">stop</FontIcon>}
             onTouchTap={this.handleClick("stop")}
+          />
+          <MenuItem
+            primaryText="Restart job"
+            rightIcon={<FontIcon className="material-icons">refresh</FontIcon>}
+            onTouchTap={this.handleClick("restart")}
           />
         </IconMenu>
       </span>
