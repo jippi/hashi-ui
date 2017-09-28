@@ -1,11 +1,9 @@
 package jobs
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/structs"
-	"log"
 )
 
 const (
@@ -24,6 +22,11 @@ func NewRestart(action structs.Action, client *api.Client) *restart {
 	}
 }
 
+// boolToPtr returns the pointer to a bool
+func boolToPtr(b bool) *bool {
+	return &b
+}
+
 func (w *restart) Do() (*structs.Response, error) {
 	origJob, _, err := w.client.Jobs().Info(w.action.Payload.(string), nil)
 	if err != nil {
@@ -37,27 +40,9 @@ func (w *restart) Do() (*structs.Response, error) {
 	}
 
 	// start
-	// do some json-dancing to modify the structure to make sure the job is in to-be-started-state
-	jobJson, err := json.Marshal(origJob)
-	if err != nil {
-		return structs.NewErrorResponse(err)
-	}
+	origJob.Stop = boolToPtr(false) // enforce starting the job, even if it was stopped originally
 
-	var job_struct map[string]interface{}
-	err = json.Unmarshal(jobJson, &job_struct)
-	if err != nil {
-		return structs.NewErrorResponse(err)
-	}
-
-	job_struct["Stop"] = false
-
-	// dance backwards
-	startJob := api.Job{}
-	start_json, _ := json.Marshal(job_struct)
-	log.Println(string(start_json))
-	json.Unmarshal(start_json, &startJob)
-
-	_, _, err = w.client.Jobs().Register(&startJob, nil)
+	_, _, err = w.client.Jobs().Register(origJob, nil)
 	if err != nil {
 		return structs.NewErrorResponse(err)
 	}
