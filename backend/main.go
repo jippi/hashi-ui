@@ -188,6 +188,12 @@ func main() {
 			response = append(response, "window.HASHI_ENDPOINT_PORT=window.HASHI_ENDPOINT_PORT || document.location.port")
 
 			w.Header().Set("Content-Type", "application/javascript")
+
+			// never ever cache config.js
+			w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+			w.Header().Set("Pragma", "no-cache")
+			w.Header().Set("Expires", "0")
+
 			w.Write([]byte(strings.Join(response, "\n")))
 			return
 		}
@@ -197,6 +203,7 @@ func main() {
 		} else {
 			stat, err := bs.Stat()
 			if err != nil {
+				w.WriteHeader(http.StatusNotFound)
 				log.Errorf("Failed to stat %s: %s", responseFile, err)
 			} else {
 				http.ServeContent(w, r, responseFile[1:], stat.ModTime(), bs)

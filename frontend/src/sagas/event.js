@@ -302,7 +302,7 @@ function* events(socket) {
 export default function eventSaga() {
   return new Promise((resolve, reject) => {
     const wsRoot =
-      (document.location.protocol == "https" ? "wss://" : "ws://") +
+      (document.location.protocol == "https:" ? "wss://" : "ws://") +
       document.location.hostname +
       ":" +
       HASHI_ENDPOINT_PORT +
