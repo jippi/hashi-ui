@@ -321,10 +321,12 @@ export default function eventSaga() {
     if (relParts.length == 0) {
       if (NOMAD_ENABLED) {
         document.location.href = HASHI_PATH_PREFIX + "nomad"
+        return
       }
 
       if (CONSUL_ENABLED) {
         document.location.href = HASHI_PATH_PREFIX + "consul"
+        return
       }
 
       throw Error("Missing backend type in URL, please go to /nomad or /consul")

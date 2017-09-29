@@ -16,12 +16,17 @@ const formatNumber = i => i.toLocaleString(undefined, { maximumFractionDigits: 0
 class UtilizationAreaChart extends Component {
   render() {
     let data = []
-    this.props.data.map((item, index) => { data.push(item) })
+    this.props.data.map((item, index) => {
+      data.push(item)
+    })
 
-      let reference,
+    let reference,
       label = null
+
     if (this.props.allocated) {
-      reference = <Line isAnimationActive={false} dot={false} strokeWidth={2} dataKey="Allocated" stroke="red" stackId="2" />
+      reference = (
+        <Line isAnimationActive={false} dot={false} strokeWidth={2} dataKey="Allocated" stroke="red" stackId="2" />
+      )
       label = [
         <dt key="allocated-dt" style={{ color: "red" }}>
           Allocated
@@ -32,10 +37,14 @@ class UtilizationAreaChart extends Component {
       ]
     }
 
-    let min = 'auto'
-    let max = 'auto'
-    if (this.props.max) { max = this.props.max }
-    if (this.props.min) { min = this.props.min }
+    let min = "auto"
+    let max = "auto"
+    if (this.props.max) {
+      max = this.props.max
+    }
+    if (this.props.min) {
+      min = this.props.min
+    }
 
     return (
       <Card>
@@ -44,7 +53,7 @@ class UtilizationAreaChart extends Component {
           <ResponsiveContainer height={230}>
             <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <XAxis dataKey="name" />
-              <YAxis type="number" domain={[min, max]}/>
+              <YAxis type="number" domain={[min, max]} />
               <CartesianGrid strokeDasharray="3 3" />
               <Tooltip />
               {reference}
@@ -68,9 +77,7 @@ class UtilizationAreaChart extends Component {
                 let value = data[data.length - 1][item.name]
                 return [
                   <dt style={{ color: item.stroke }}>{item.name}</dt>,
-                  <dd style={{ color: item.stroke, textAlign: "right" }}>
-                    {formatNumber(value)}
-                  </dd>
+                  <dd style={{ color: item.stroke, textAlign: "right" }}>{formatNumber(value)}</dd>
                 ]
               })}
               {label}

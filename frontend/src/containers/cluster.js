@@ -80,40 +80,41 @@ class Cluster extends Component {
   render() {
     const data = this.getChartData()
 
-    let clusterStats = ''
+    let clusterStats = ""
     if (this.props.clusterStatistics.data) {
       const CPUItems = [
         { name: "Idle", stroke: blue500, fill: blue200 },
-        { name: "Used", stroke: green500, fill: green200 },
+        { name: "Used", stroke: green500, fill: green200 }
       ]
 
       const MemoryItems = [
         { name: "Free", stroke: blue500, fill: blue200 },
-        { name: "Used", stroke: green500, fill: green200 },
+        { name: "Used", stroke: green500, fill: green200 }
       ]
 
-      clusterStats =
+      clusterStats = (
         <Row>
-        <Col key="cpu-utilization-pane" xs={12} sm={12} md={12} lg={6}>
-          <UtilizationAreaChart
-            title="CPU usage (%)"
-            data={this.props.clusterStatistics.data.cpu}
-            items={CPUItems}
-            allocated={true}
-            min={0}
-            max={100}
-          />
-        </Col>
+          <Col key="cpu-utilization-pane" xs={12} sm={12} md={12} lg={6}>
+            <UtilizationAreaChart
+              title="CPU usage (%)"
+              data={this.props.clusterStatistics.data.cpu}
+              items={CPUItems}
+              allocated={true}
+              min={0}
+              max={100}
+            />
+          </Col>
           <Col key="memory-utilization-pane" xs={12} sm={12} md={12} lg={6}>
-          <UtilizationAreaChart
-            title="RAM usage (GB)"
-            data={this.props.clusterStatistics.data.memory}
-            items={MemoryItems}
-            allocated={true}
-            min={0}
+            <UtilizationAreaChart
+              title="RAM usage (GB)"
+              data={this.props.clusterStatistics.data.memory}
+              items={MemoryItems}
+              allocated={true}
+              min={0}
             />
           </Col>
         </Row>
+      )
     }
 
     return (
