@@ -324,7 +324,7 @@ class AllocationFiles extends Component {
       this.props.file.File.indexOf("<") >= 0 ? (
         ""
       ) : (
-        <form method="get" action={`${window.HASHI_ENDPOINT}/${downloadPath}`}>
+        <form method="get" action={`${window.HASHI_PATH_PREFIX}/${downloadPath}`}>
           <input type="hidden" name="client" value={this.props.node.HTTPAddr} />
           <input type="hidden" name="allocID" value={this.props.allocation.ID} />
           {oversizedWarning}
