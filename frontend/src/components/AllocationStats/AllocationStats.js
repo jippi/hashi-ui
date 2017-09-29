@@ -28,7 +28,7 @@ class StatsSet extends Component {
             <UtilizationAreaChart
               title="CPU usage (MHz)"
               data={data.cpu}
-              allocated={this.props.allocatedCPU}
+              allocated={true}
               items={CPUItems}
             />
           </Col>
@@ -36,7 +36,7 @@ class StatsSet extends Component {
             <UtilizationAreaChart
               title="RAM usage (MB)"
               data={data.memory}
-              allocated={this.props.allocatedMemory}
+              allocated={true}
               items={MemoryItems}
             />
           </Col>
