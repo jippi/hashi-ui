@@ -3,7 +3,10 @@ package config
 import (
 	"flag"
 	"fmt"
+	"log"
+	"net/url"
 	"strconv"
+	"strings"
 	"syscall"
 )
 
@@ -77,6 +80,7 @@ var (
 type Config struct {
 	LogLevel      string
 	ProxyAddress  string
+	ProxyPath     string
 	ListenAddress string
 	HttpsEnable   bool
 	ServerCert    string
@@ -112,6 +116,21 @@ func (c *Config) Parse() {
 
 	ParseConsulFlagConfig(c)
 	ParseConsulEnvConfig(c)
+
+	if c.ProxyAddress != "" {
+		r, err := url.Parse(c.ProxyAddress)
+		if err != nil {
+			log.Fatal("Invalid Proxy Address, must be a valid URL")
+		}
+		c.ProxyPath = r.Path
+
+		// ensure the proxy path always end with a slash
+		if !strings.HasSuffix(c.ProxyPath, "/") {
+			c.ProxyPath = c.ProxyPath + "/"
+		}
+	} else {
+		c.ProxyPath = "/"
+	}
 }
 
 // DefaultConfig is the basic out-of-the-box configuration for hashi-ui

@@ -66,6 +66,8 @@ func NewConnection(socket *websocket.Conn, nomadClient *nomad.Client, consulClie
 // Handle monitors the websocket connection for incoming actions. It sends
 // out actions on state changes.
 func (c *connection) Handle() {
+	c.logger.Info("Starting connection handler")
+
 	go c.keepAlive()
 	go c.writePump()
 	go c.subscriptionPublisher()

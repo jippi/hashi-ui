@@ -301,30 +301,32 @@ function* events(socket) {
 
 export default function eventSaga() {
   return new Promise((resolve, reject) => {
-    const wsRoot = document.location.href
-      // dev mode is port 3000, replace with whatever port the backend said it want to use
-      .replace(":3333", ":" + window.HASHI_ENDPOINT_PORT)
-      // https:// would connect to wss://
-      .replace("http://", "ws://")
-      // http:// would connec to ws://
-      .replace("https://", "wss://")
-      // http://hashi-ui.service.consul:3000/nomad/region/cluster
-      .split("/")
-      // ["http":, "", "", "hashi-ui.service.consul:3000"]
-      .slice(0, 3)
-      // http://hashi-ui.service.consul:3000
-      .join("/")
+    const wsRoot =
+      (document.location.protocol == "https" ? "wss://" : "ws://") +
+      document.location.hostname +
+      ":" +
+      HASHI_ENDPOINT_PORT +
+      HASHI_PATH_PREFIX
 
-    const relParts = document.location.href
+    const relParts = document.location.pathname
+      // http://hashi-ui.service.consul:3000/derp/nomad/region/cluster
+      .replace(HASHI_PATH_PREFIX, "/")
       // http://hashi-ui.service.consul:3000/nomad/region/cluster
       .split("/")
-      .slice(3)
       .filter(v => v != "")
       // ["nomad", "region", "cluster"]
       .slice(0, 3)
 
     // should only happen in developer mode
     if (relParts.length == 0) {
+      if (NOMAD_ENABLED) {
+        document.location.href = HASHI_PATH_PREFIX + "nomad"
+      }
+
+      if (CONSUL_ENABLED) {
+        document.location.href = HASHI_PATH_PREFIX + "consul"
+      }
+
       throw Error("Missing backend type in URL, please go to /nomad or /consul")
     }
 
@@ -336,7 +338,7 @@ export default function eventSaga() {
       // join back to a path
       .join("/")
 
-    const p = connectTo(wsRoot + "/ws/" + wsPath)
+    const p = connectTo(wsRoot + "ws/" + wsPath)
 
     return p
       .then(socket => {

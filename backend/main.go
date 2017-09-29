@@ -127,7 +127,7 @@ func main() {
 	if cfg.NomadEnable {
 		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			log.Infof("Redirecting / to /nomad")
-			w.Write([]byte("<script>document.location.href='" + cfg.ProxyAddress + "/nomad'</script>"))
+			w.Write([]byte("<script>document.location.href='" + cfg.ProxyPath + "nomad'</script>"))
 			return
 		})
 
@@ -140,7 +140,7 @@ func main() {
 		if !cfg.NomadEnable {
 			router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 				log.Infof("Redirecting / to /consul")
-				http.Redirect(w, r, cfg.ProxyAddress+"/consul", 302)
+				http.Redirect(w, r, cfg.ProxyPath+"consul", 302)
 			})
 		}
 
@@ -189,10 +189,12 @@ func main() {
 			if cfg.ProxyAddress != "" {
 				endpointURL = fmt.Sprintf("'%s'", strings.TrimSuffix(cfg.ProxyAddress, "/"))
 			} else {
-				endpointURL = "document.location.protocol + '//' + document.location.hostname + ':' + (window.HASHI_ENDPOINT_PORT || document.location.port)"
+				endpointURL = "'/' + (window.HASHI_ENDPOINT_PORT || document.location.port)"
 			}
 
 			response = append(response, fmt.Sprintf("window.HASHI_ENDPOINT=%s;", endpointURL))
+			response = append(response, fmt.Sprintf("window.HASHI_PATH_PREFIX='%s';", cfg.ProxyPath))
+			response = append(response, "window.HASHI_ENDPOINT_PORT=window.HASHI_ENDPOINT_PORT || document.location.port")
 			response = append(response, "window.HASHI_ASSETS_ROOT=window.HASHI_ASSETS_ROOT || window.HASHI_ENDPOINT")
 
 			w.Header().Set("Content-Type", "application/javascript")

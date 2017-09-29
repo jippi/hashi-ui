@@ -27,6 +27,7 @@ func NomadHandler(cfg *config.Config, nomadClient *nomad.Client, consulClient *c
 	return func(w http.ResponseWriter, r *http.Request) {
 		connectionID := uuid.NewV4()
 		logger := log.WithField("connection_id", connectionID.String()[:8])
+		logger.Info("transport: connection created")
 
 		socket, err := websocketUpgrader.Upgrade(w, r, nil)
 		if err != nil {

@@ -19,11 +19,11 @@ import {
 export function ChangeConsulRegionReducer(state = {}, action) {
   switch (action.type) {
     case CONSUL_SET_REGION:
-      document.location.href = window.HASHI_ENDPOINT + "/consul/" + action.payload + "/services"
+      document.location.href = HASHI_PATH_PREFIX + "consul/" + action.payload + "/services"
       return {}
 
     case CONSUL_UNKNOWN_REGION:
-      document.location.href = window.HASHI_ENDPOINT + "/consul"
+      document.location.href = HASHI_PATH_PREFIX + "consul"
       return {}
   }
 

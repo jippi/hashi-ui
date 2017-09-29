@@ -15,7 +15,7 @@ const config = {
     chunkFilename: "static/[name].[chunkhash].chunks.js",
     sourceMapFilename: "static/[name].[chunkhash].map",
     path: resolve(__dirname, "build/"),
-    publicPath: "/"
+    publicPath: ""
   },
 
   performance: {
