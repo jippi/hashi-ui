@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts"
+import { Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, ComposedChart } from "recharts"
 import { Card, CardTitle, CardText } from "material-ui/Card"
 
 //
@@ -21,13 +21,13 @@ class UtilizationAreaChart extends Component {
       let reference,
       label = null
     if (this.props.allocated) {
-      reference = <ReferenceLine alwaysShow isFront y={this.props.allocated} stroke="red" strokeDasharray="3 3" />
+      reference = <Line isAnimationActive={false} dot={false} strokeWidth={2} dataKey="Allocated" stroke="red" stackId="2" />
       label = [
         <dt key="allocated-dt" style={{ color: "red" }}>
           Allocated
         </dt>,
         <dd key="allocated-dd" style={{ color: "red", textAlign: "right" }}>
-          {formatNumber(this.props.allocated)}
+          {formatNumber(data[data.length - 1].Allocated)}
         </dd>
       ]
     }
@@ -42,7 +42,7 @@ class UtilizationAreaChart extends Component {
         <CardTitle title={this.props.title} />
         <CardText>
           <ResponsiveContainer height={230}>
-            <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <ComposedChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
               <XAxis dataKey="name" />
               <YAxis type="number" domain={[min, max]}/>
               <CartesianGrid strokeDasharray="3 3" />
@@ -54,12 +54,12 @@ class UtilizationAreaChart extends Component {
                   isAnimationActive={false}
                   type="monotone"
                   dataKey={item.name}
-                  stackId={item.stackId}
+                  stackId="1"
                   stroke={item.stroke}
                   fill={item.fill}
                 />
               ))}
-            </AreaChart>
+            </ComposedChart>
           </ResponsiveContainer>
 
           <div style={{ marginTop: "1rem", margin: "0 auto", display: "table" }}>
@@ -86,7 +86,7 @@ UtilizationAreaChart.propTypes = {
   data: PropTypes.array.isRequired,
   items: PropTypes.array.isRequired,
   title: PropTypes.string.isRequired,
-  allocated: PropTypes.number
+  allocated: PropTypes.bool
 }
 
 export default UtilizationAreaChart

@@ -74,7 +74,11 @@ export function AllocStatsReducer(state = {}, action) {
         }
       }
 
-      state[allocationID].Global = computeResourceStats(state[allocationID].Global, payload.Stats.ResourceUsage)
+      state[allocationID].Global = computeResourceStats(
+        state[allocationID].Global,
+        payload.Stats.ResourceUsage,
+        payload.Resources,
+      )
 
       // only bother with per-task resources if there is more than one
       const tasks = Object.keys(payload.Stats.Tasks)
@@ -82,7 +86,8 @@ export function AllocStatsReducer(state = {}, action) {
         tasks.map((key, index) => {
           state[allocationID].Task[key] = computeResourceStats(
             state[allocationID].Task[key],
-            payload.Stats.Tasks[key].ResourceUsage
+            payload.Stats.Tasks[key].ResourceUsage,
+            payload.TaskResources[key]
           )
         })
       }
@@ -100,19 +105,21 @@ export function AllocStatsReducer(state = {}, action) {
   return state
 }
 
-function computeResourceStats(state = {}, resource) {
+function computeResourceStats(state = {}, stats, resources) {
   let cpu = {
     name: format(new Date(), "H:mm:ss"),
-    Used: formatNumber(resource.CpuStats.TotalTicks),
-    System: formatNumber(resource.CpuStats.SystemMode),
-    User: formatNumber(resource.CpuStats.UserMode)
+    Used: formatNumber(stats.CpuStats.TotalTicks),
+    System: formatNumber(stats.CpuStats.SystemMode),
+    User: formatNumber(stats.CpuStats.UserMode),
+    Allocated: formatNumber(resources.CPU)
   }
 
   let mem = {
     name: format(new Date(), "H:mm:ss"),
-    RSS: formatNumber(resource.MemoryStats.RSS / 1024 / 1024),
-    Cache: formatNumber(resource.MemoryStats.Cache / 1024 / 1024),
-    Swap: formatNumber(resource.MemoryStats.Swap / 1024 / 1024)
+    RSS: formatNumber(stats.MemoryStats.RSS / 1024 / 1024),
+    Cache: formatNumber(stats.MemoryStats.Cache / 1024 / 1024),
+    Swap: formatNumber(stats.MemoryStats.Swap / 1024 / 1024),
+    Allocated: formatNumber(resources.MemoryMB)
   }
 
   if (!state.cpu) {
@@ -140,7 +147,7 @@ function computeResourceStats(state = {}, resource) {
 }
 
 function prefillData(data) {
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 60; i++) {
     data.cpu.push({ name: "", Used: 0, System: 0, User: 0 })
     data.memory.push({ name: "", RSS: 0, Cache: 0, Swap: 0 })
   }
