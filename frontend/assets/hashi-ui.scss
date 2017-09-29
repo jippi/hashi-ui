@@ -1,8 +1,12 @@
 $queued: lightGrey;
 $starting: desaturate(lighten(#fa8e23, 25%), 50%);
-$running: desaturate(lighten(#fa8e23, 10%), 10%);
-$complete: #25ba81;
+$running: desaturate(lighten(#25ba81, 30%), 10%);
+$complete: desaturate(lighten(#25ba81, 10%), 10%);
 $failed: desaturate(lighten(#bd362f, 10%), 10%);
+$placed: #25ba81;
+$healthy: #25ba81;
+$desired: desaturate(lighten(#fa8e23, 10%), 10%);
+$pending: desaturate(lighten(#fa8e23, 10%), 10%);
 
 .chart {
   position: relative;
@@ -21,6 +25,18 @@ $failed: desaturate(lighten(#bd362f, 10%), 10%);
   }
   .failed {
     fill: $failed;
+  }
+  .placed {
+    fill: $placed;
+  }
+  .healthy {
+    fill: $healthy;
+  }
+  .desired {
+    fill: $desired;
+  }
+  .pending {
+    fill: $pending;
   }
 
   .color-swatch {
@@ -52,6 +68,18 @@ $failed: desaturate(lighten(#bd362f, 10%), 10%);
     }
     &.failed {
       background: $failed;
+    }
+    &.placed {
+      background: $placed;
+    }
+    &.healthy {
+      background: $healthy;
+    }
+    &.desired {
+      background: $desired;
+    }
+    &.pending {
+      background: $pending;
     }
   }
 

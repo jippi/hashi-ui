@@ -63,13 +63,13 @@ class DeploymentDistribution extends Component {
           {
             label: "Placed",
             value: progress,
-            className: "complete",
+            className: "placed",
             tooltip: counter.PlacedCanaries + " (" + parseInt(progress) + "% complete)"
           },
           {
             label: "Desired",
             value: remaining,
-            className: "running",
+            className: "desired",
             tooltip: counter.DesiredCanaries + " (" + parseInt(100 - progress) + "% remaining)"
           }
         ]
@@ -79,9 +79,9 @@ class DeploymentDistribution extends Component {
         sum = counter.DesiredTotal
 
         data = [
-          { label: "Healthy", value: counter.HealthyAllocs, className: "complete" },
+          { label: "Healthy", value: counter.HealthyAllocs, className: "healthy" },
           { label: "Unhealthy", value: counter.UnhealthyAllocs, className: "failed" },
-          { label: "Pending", value: sum - (counter.UnhealthyAllocs + counter.HealthyAllocs), className: "running" }
+          { label: "Pending", value: sum - (counter.UnhealthyAllocs + counter.HealthyAllocs), className: "pending" }
         ]
         break
 
@@ -103,13 +103,13 @@ class DeploymentDistribution extends Component {
           {
             label: "Placed",
             value: progress,
-            className: "complete",
+            className: "placed",
             tooltip: counter.PlacedAllocs + " (" + parseInt(progress) + "% complete)"
           },
           {
             label: "Desired",
             value: remaining,
-            className: "running",
+            className: "desired",
             tooltip: counter.DesiredTotal + " (" + parseInt(100 - progress) + "% remaining)"
           }
         ]
