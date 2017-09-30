@@ -28,8 +28,6 @@ function renderApp(store) {
   retryInterval = undefined
   retries = 0
 
-  injectTapEvents()
-
   ReactDOM.render(
     <Provider store={store}>
       <AppRouter history={browserHistory} />
@@ -39,13 +37,13 @@ function renderApp(store) {
 }
 
 function bootApp() {
+  injectTapEvents()
+
   configureStore()
     .then(store => {
       renderApp(store)
     })
     .catch(err => {
-      injectTapEvents()
-
       // Start a retry loop if none exist
       if (!retryInterval) {
         retryInterval = window.setInterval(bootApp, 5000)
@@ -53,7 +51,10 @@ function bootApp() {
 
       retries++
 
-      ReactDOM.render(<ErrorApp uncaughtException={err} retryCount={retries} />, document.getElementById("app"))
+      ReactDOM.render(
+        <ErrorApp uncaughtException={err} retryCount={retries} maxRetries={10} />,
+        document.getElementById("app")
+      )
 
       throw err
     })

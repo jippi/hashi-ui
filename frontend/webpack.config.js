@@ -61,7 +61,8 @@ const config = {
               "babel-plugin-transform-react-constant-elements",
               "syntax-dynamic-import",
               "transform-runtime",
-              "lodash"
+              "lodash",
+              "recharts"
             ]
           }
         }
