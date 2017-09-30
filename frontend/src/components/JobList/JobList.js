@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "../Table"
 import JobLink from "../JobLink/JobLink"
 import AllocationDistribution from "../AllocationDistribution/AllocationDistribution"
+import JobHealth from "../JobHealth/JobHealth"
 
 const columnFormat = {
   width: 50,
@@ -68,6 +69,7 @@ class JobList extends Component {
             <TableHeaderColumn style={columnFormat}>Type</TableHeaderColumn>
             <TableHeaderColumn style={columnFormat}>Priority</TableHeaderColumn>
             <TableHeaderColumn style={columnFormat}>Status</TableHeaderColumn>
+            <TableHeaderColumn style={columnFormat}>In Sync</TableHeaderColumn>
             <TableHeaderColumn style={columnFormat}>Groups</TableHeaderColumn>
             {getJobStatisticsHeader()}
             <TableHeaderColumn style={columnFormat}># Lost</TableHeaderColumn>
@@ -80,22 +82,15 @@ class JobList extends Component {
                 <TableRowColumn style={flexibleWidth}>
                   <JobLink jobId={job.ID} />
                 </TableRowColumn>
+                <TableRowColumn style={columnFormat}>{job.Type}</TableRowColumn>
+                <TableRowColumn style={columnFormat}>{job.Priority}</TableRowColumn>
+                <TableRowColumn style={columnFormat}>{job.Status}</TableRowColumn>
                 <TableRowColumn style={columnFormat}>
-                  {job.Type}
+                  <JobHealth job={job} />
                 </TableRowColumn>
-                <TableRowColumn style={columnFormat}>
-                  {job.Priority}
-                </TableRowColumn>
-                <TableRowColumn style={columnFormat}>
-                  {job.Status}
-                </TableRowColumn>
-                <TableRowColumn style={columnFormat}>
-                  {this.taskGroupCount(job)}
-                </TableRowColumn>
+                <TableRowColumn style={columnFormat}>{this.taskGroupCount(job)}</TableRowColumn>
                 {getJobStatisticsRow(job)}
-                <TableRowColumn style={columnFormat}>
-                  {this.failedTaskCount(job)}
-                </TableRowColumn>
+                <TableRowColumn style={columnFormat}>{this.failedTaskCount(job)}</TableRowColumn>
               </TableRow>
             )
           })}

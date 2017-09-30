@@ -6,9 +6,12 @@ export function ClusterStatisticsReducer(state = {}, action) {
     case NOMAD_FETCHED_CLUSTER_STATISTICS:
       state = calculateNodeStats(state, action.payload, 60)
       return Object.assign({}, state)
+
     case NOMAD_UNWATCH_CLUSTER_STATISTICS:
       return {}
+
     default:
   }
+
   return state
 }

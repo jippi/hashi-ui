@@ -12,7 +12,9 @@ import {
   NOMAD_UNWATCH_JOB_DEPLOYMENTS,
   NOMAD_UNWATCH_JOB_VERSIONS,
   NOMAD_UNWATCH_JOB,
-  NOMAD_UNWATCH_JOBS_FILTERED
+  NOMAD_UNWATCH_JOBS_FILTERED,
+  NOMAD_FETCHED_JOB_HEALTH,
+  NOMAD_UNWATCH_JOB_HEALTH
 } from "../sagas/event"
 
 export function JobInfoReducer(state = {}, action) {
@@ -45,6 +47,26 @@ export function JobDeploymentsReducer(state = [], action) {
       return []
     default:
   }
+  return state
+}
+
+export function JobHealthReducer(state = {}, action) {
+  switch (action.type) {
+    case NOMAD_FETCHED_JOB_HEALTH:
+      state[action.payload.Job] = action.payload
+      return Object.assign({}, state)
+
+    case NOMAD_UNWATCH_JOB_HEALTH:
+      if (action.payload.id in state) {
+        delete state[action.payload.ID]
+        return Object.assign({}, state)
+      }
+
+      return state
+
+    default:
+  }
+
   return state
 }
 

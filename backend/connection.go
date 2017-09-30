@@ -282,6 +282,12 @@ func (c *connection) process(action structs.Action) {
 		c.once(nomad_jobs.NewPeriodicForce(action, c.nomadClient))
 	case nomad_jobs.Submit:
 		c.once(nomad_jobs.NewSubmit(action, c.nomadClient, c.config))
+	case nomad_jobs.FetchHealth:
+		c.once(nomad_jobs.NewHealth(action, c.nomadClient, c.newNomadQueryOptions(), c.newNomadQueryOptions()))
+	case nomad_jobs.WatchHealth:
+		c.watch(nomad_jobs.NewHealth(action, c.nomadClient, c.newNomadQueryOptions(), c.newNomadQueryOptions()))
+	case nomad_jobs.UnwatchHealth:
+		c.unwatch(nomad_jobs.NewHealth(action, nil, nil, nil))
 
 	//
 	// Nomad Allocations
@@ -374,7 +380,6 @@ func (c *connection) process(action structs.Action) {
 		c.stream(nomad_cluster.NewStats(action, c.nomadClient))
 	case nomad_cluster.UnwatchStats:
 		c.unwatch(nomad_cluster.NewStats(action, c.nomadClient))
-
 	case fetchNomadRegions:
 		// go c.fetchRegions()
 

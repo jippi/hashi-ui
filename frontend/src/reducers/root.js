@@ -1,11 +1,6 @@
 import { combineReducers } from "redux"
 
-import {
-  AppDrawer,
-  AppErrorReducer,
-  ErrorNotificationReducer,
-  SuccessNotificationReducer
-} from "./app"
+import { AppDrawer, AppErrorReducer, ErrorNotificationReducer, SuccessNotificationReducer } from "./app"
 import { ClusterStatisticsReducer } from "./cluster"
 import { MemberInfoReducer, MemberListReducer } from "./member"
 import {
@@ -15,6 +10,7 @@ import {
   jobAllocationsReducer,
   JobVersionsReducer,
   JobDialogReducer,
+  JobHealthReducer,
   FilteredJobsReducer
 } from "./job"
 import { AllocInfoReducer, AllocStatsReducer, AllocListReducer, AllocHealthReducer } from "./allocation"
@@ -72,7 +68,8 @@ const rootReducer = combineReducers({
   nodes: NodeListReducer,
   nodeStats: NodeStatsReducer,
   nomadRegions: NomadRegionsReducer,
-  successNotification: SuccessNotificationReducer
+  successNotification: SuccessNotificationReducer,
+  jobHealth: JobHealthReducer
 })
 
 export default rootReducer

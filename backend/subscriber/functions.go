@@ -55,6 +55,7 @@ func Watch(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Acti
 			return
 
 		default:
+			logger.Debugf("[%s] Running task", watchKey)
 			response, err := w.Do()
 			if err != nil {
 				logger.Errorf("connection: unable to fetch %s: %s", watchKey, err)
@@ -68,7 +69,11 @@ func Watch(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Acti
 			}
 
 			if response != nil {
-				replies(response.Actions(), send)
+				actions := response.Actions()
+				logger.Debugf("[%s] Sending %d replies", watchKey, len(actions))
+				replies(actions, send)
+			} else {
+				logger.Debugf("[%s] No actions taken", watchKey)
 			}
 		}
 	}
