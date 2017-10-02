@@ -2,6 +2,7 @@ package allocations
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
 	consul "github.com/hashicorp/consul/api"
@@ -16,14 +17,23 @@ const (
 	WatchHealth   = "NOMAD_WATCH_ALLOCATION_HEALTH"
 )
 
+type allocationHealthResponse struct {
+	ID      string
+	Checks  map[string]string
+	Count   map[string]int
+	Total   int
+	Healthy *bool
+}
+
 type health struct {
-	action       structs.Action
-	nomad        *nomad.Client
-	consul       *consul.Client
-	consulQuery  *consul.QueryOptions
-	clientID     string
-	allocationID string
-	clientName   string
+	action           structs.Action
+	nomad            *nomad.Client
+	consul           *consul.Client
+	consulQuery      *consul.QueryOptions
+	previousResponse *allocationHealthResponse
+	clientID         string
+	allocationID     string
+	clientName       string
 }
 
 func NewHealth(action structs.Action, nomad *nomad.Client, consul *consul.Client, consulQuery *consul.QueryOptions) *health {
@@ -88,19 +98,19 @@ func (w *health) Do() (*structs.Response, error) {
 		}
 	}
 
-	response := struct {
-		ID      string
-		Checks  map[string]string
-		Count   map[string]int
-		Total   int
-		Healthy *bool
-	}{
+	response := &allocationHealthResponse{
 		ID:      w.allocationID,
 		Checks:  result,
 		Count:   status,
 		Total:   total,
 		Healthy: healthy,
 	}
+
+	if responseChanged(response, w.previousResponse) {
+		return nil, nil
+	}
+
+	w.previousResponse = response
 
 	return structs.NewResponseWithIndex(fetchedHealth, response, meta.LastIndex)
 }
@@ -127,4 +137,36 @@ func (w *health) parse() {
 
 func boolToPtr(b bool) *bool {
 	return &b
+}
+
+func responseChanged(new, old *allocationHealthResponse) bool {
+	if new == nil || old == nil {
+		return false
+	}
+
+	if new.ID != old.ID {
+		return true
+	}
+
+	if new.Total != old.Total {
+		return true
+	}
+
+	if new.Healthy != old.Healthy {
+		return true
+	}
+
+	if len(new.Checks) != len(old.Checks) {
+		return true
+	}
+
+	if !reflect.DeepEqual(new.Checks, old.Checks) {
+		return true
+	}
+
+	if !reflect.DeepEqual(new.Count, old.Count) {
+		return true
+	}
+
+	return false
 }

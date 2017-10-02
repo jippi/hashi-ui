@@ -16,6 +16,7 @@ import FilterFreetext from "../FilterFreetext/FilterFreetext"
 import JobLink from "../JobLink/JobLink"
 import ClientLink from "../ClientLink/ClientLink"
 import FormatTime from "../FormatTime/FormatTime"
+import FormatBoolean from "../FormatBoolean/FormatBoolean"
 import AllocationConsulHealth, { AllocationConsulHealthCell } from "../AllocationConsulHealth/AllocationConsulHealth"
 
 const nodeIdToNameCache = {}
@@ -50,9 +51,22 @@ const AllocationLinkCell = ({ rowIndex, data, ...props }) => (
 
 const JobLinkCell = ({ rowIndex, data, ...props }) => (
   <Cell {...props}>
-    <JobLink jobId={data[rowIndex].JobID} />
+    <JobLink jobId={data[rowIndex].JobID} version={data[rowIndex].JobVersion}>
+      {data[rowIndex].JobID} (v{data[rowIndex].JobVersion})
+    </JobLink>
   </Cell>
 )
+const DeploymentHealthCell = ({ rowIndex, data, ...props }) => {
+  if (!data[rowIndex].DeploymentStatus) {
+    return null
+  }
+
+  return (
+    <Cell {...props}>
+      <FormatBoolean value={data[rowIndex].DeploymentStatus.Healthy} />
+    </Cell>
+  )
+}
 
 const JobTaskGroupLinkCell = ({ rowIndex, data, ...props }) => (
   <Cell {...props}>
@@ -115,9 +129,14 @@ const clientColumn = (allocations, display, clients) =>
 const consulHealthColumn = (allocations, allocationHealth, dispatch) =>
   CONSUL_ENABLED ? (
     <Column
-      header={<Cell>Health</Cell>}
+      align="center"
+      header={
+        <Cell>
+          <img src="/assets/img/consul.png" height={20} width={20} title="Consul Health" />
+        </Cell>
+      }
       cell={<AllocationConsulHealthCell data={allocations} dispatch={dispatch} allocationHealth={allocationHealth} />}
-      width={75}
+      width={30}
     />
   ) : null
 
@@ -286,8 +305,14 @@ class AllocationList extends Component {
                 flexGrow={2}
                 width={200}
               />
-              <Column header={<Cell>Status</Cell>} cell={<StatusCell data={allocations} />} width={200} />
+              <Column header={<Cell>Status</Cell>} cell={<StatusCell data={allocations} />} width={100} />
               {consulHealthColumn(allocations, this.props.allocationHealth, this.props.dispatch)}
+              <Column
+                align="center"
+                header={<Cell>Deployment</Cell>}
+                cell={<DeploymentHealthCell data={allocations} />}
+                width={75}
+              />
               {clientColumn(allocations, this.props.showClientColumn, this.props.nodes)}
               <Column header={<Cell>Age</Cell>} cell={<AgeCell data={allocations} />} width={100} />
               <Column header={<Cell>Actions</Cell>} cell={<ActionsCell data={allocations} />} width={100} />
