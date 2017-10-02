@@ -15,7 +15,7 @@ export { JobHealthCell }
 
 class JobHealth extends Component {
   componentDidMount() {
-    if (this.props.job.Type != "service" || this.props.job.Status != "running") {
+    if (this.props.job.Type != "service") {
       return
     }
 
@@ -28,7 +28,7 @@ class JobHealth extends Component {
   }
 
   componentWillUnmount() {
-    if (this.props.job.Type != "service" || this.props.job.Status != "running") {
+    if (this.props.job.Type != "service") {
       return
     }
 
@@ -44,7 +44,7 @@ class JobHealth extends Component {
     const jobID = this.props.job.ID
     const health = this.props.jobHealth[jobID]
 
-    if (this.props.job.Type != "service" || this.props.job.Status != "running") {
+    if (this.props.job.Type != "service") {
       return null
     }
 
