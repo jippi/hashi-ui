@@ -35,7 +35,7 @@ func NewList(action structs.Action, cfg *config.Config, client *api.Client) *lis
 	}
 }
 
-func (w *list) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Response, error) {
+func (w *list) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan interface{}) (*structs.Response, error) {
 	ticker := time.NewTicker(5 * time.Second)
 	timer := time.NewTimer(0 * time.Second)
 

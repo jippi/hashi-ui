@@ -41,7 +41,7 @@ type connection struct {
 	consulClient  *consul.Client
 	config        *config.Config
 	connectionID  uuid.UUID
-	destroyCh     chan struct{}
+	destroyCh     chan interface{}
 	logger        *log.Entry
 	sendCh        chan *structs.Action
 	socket        *websocket.Conn
@@ -54,10 +54,10 @@ func NewConnection(socket *websocket.Conn, nomadClient *nomad.Client, consulClie
 		config:        cfg,
 		nomadClient:   nomadClient,
 		consulClient:  consulClient,
-		destroyCh:     make(chan struct{}),
+		destroyCh:     make(chan interface{}),
 		connectionID:  connectionID,
 		logger:        logger,
-		sendCh:        make(chan *structs.Action, 10),
+		sendCh:        make(chan *structs.Action, 100),
 		socket:        socket,
 		subscriptions: &subscriber.Manager{},
 	}

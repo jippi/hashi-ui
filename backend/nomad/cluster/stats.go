@@ -26,7 +26,7 @@ func NewStats(action structs.Action, client *api.Client) *stats {
 	}
 }
 
-func (w *stats) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Response, error) {
+func (w *stats) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan interface{}) (*structs.Response, error) {
 	ticker := time.NewTicker(2 * time.Second) // fetch stats once in a while
 	timer := time.NewTimer(0 * time.Second)   // fetch stats right away
 

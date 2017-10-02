@@ -41,7 +41,7 @@ func NewFile(action structs.Action, client *api.Client) *file {
 }
 
 // Do will watch the /job/:id endpoint for changes
-func (w *file) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Response, error) {
+func (w *file) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan interface{}) (*structs.Response, error) {
 	alloc, _, err := w.client.Allocations().Info(w.id, nil)
 	if err != nil {
 		return structs.NewErrorResponse(err)

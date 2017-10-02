@@ -15,7 +15,7 @@ type Watcher interface {
 
 // Streamer interface
 type Streamer interface {
-	Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan struct{}) (*structs.Response, error)
+	Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan interface{}) (*structs.Response, error)
 	Key() string
 	IsMutable() bool
 	BackendType() string
@@ -27,7 +27,7 @@ type Keyer interface {
 }
 
 // Watch is a generic watcher for Nomad
-func Watch(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Action, destroyCh chan struct{}) {
+func Watch(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Action, destroyCh chan interface{}) {
 	watchKey := w.Key()
 
 	// Check if we are already subscribed
@@ -93,7 +93,7 @@ func Unwatch(w Keyer, s Subscription, logger *log.Entry) error {
 }
 
 // Once is a generic one-off query for Nomad
-func Once(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Action, destroyCh chan struct{}) {
+func Once(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Action, destroyCh chan interface{}) {
 	watchKey := w.Key()
 
 	// Check if we are already subscribed
@@ -137,7 +137,7 @@ func replies(actions []*structs.Action, sendCh chan *structs.Action) {
 }
 
 // Stream is a generic one-off query for Nomad
-func Stream(w Streamer, s Subscription, logger *log.Entry, send chan *structs.Action, destroyCh chan struct{}) {
+func Stream(w Streamer, s Subscription, logger *log.Entry, send chan *structs.Action, destroyCh chan interface{}) {
 	watchKey := w.Key()
 
 	// Check if we are already subscribed
