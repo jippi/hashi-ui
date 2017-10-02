@@ -53,9 +53,7 @@ class DeploymentAction extends Component {
         >
           {iconConfig[0]}
         </FontIcon>
-        <span style={{ verticalAlign: "top", paddingLeft: "10px" }}>
-          {iconConfig[2]}
-        </span>
+        <span style={{ verticalAlign: "top", paddingLeft: "5px" }}>{iconConfig[2]}</span>
       </span>
     )
   }

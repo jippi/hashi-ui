@@ -33,8 +33,20 @@ const DeploymentDistributionCell = ({ rowIndex, data, type, ...props }) => (
 )
 
 const ActionsCell = ({ id, action, rowIndex, data, ...props }) => {
-  return (
-    <Cell {...props}>
+  if (data[rowIndex].Status == "failed" || data[rowIndex].Status == "completed") {
+    return null
+  }
+
+  let actions = []
+  const summary = data[rowIndex].TaskGroups
+  let c = 0
+
+  Object.keys(summary).forEach(taskGroupID => {
+    c += summary[taskGroupID].DesiredCanaries
+  })
+
+  if (c > 0) {
+    actions.push(
       <DeploymentAction
         key="promote"
         action="promote"
@@ -42,6 +54,8 @@ const ActionsCell = ({ id, action, rowIndex, data, ...props }) => {
         id={data[rowIndex].ID}
         status={data[rowIndex].Status}
       />
+    )
+    actions.push(
       <DeploymentAction
         key="fail"
         action="fail"
@@ -49,6 +63,12 @@ const ActionsCell = ({ id, action, rowIndex, data, ...props }) => {
         id={data[rowIndex].ID}
         status={data[rowIndex].Status}
       />
+    )
+  }
+
+  return (
+    <Cell {...props}>
+      {actions}
       <DeploymentAction
         key="pause"
         action="pause"
@@ -165,7 +185,12 @@ class DeploymentList extends Component {
                 width={80}
               />
               <Column header={<Cell>Status</Cell>} cell={<TextCell data={deployments} col="Status" />} width={130} />
-              <Column header={<Cell>Action</Cell>} cell={<ActionsCell data={deployments} />} width={110} />
+              <Column
+                align="right"
+                header={<Cell>Action</Cell>}
+                cell={<ActionsCell data={deployments} />}
+                width={110}
+              />
               <Column
                 header={<Cell>Canary</Cell>}
                 cell={<DeploymentDistributionCell data={deployments} type="canary" />}

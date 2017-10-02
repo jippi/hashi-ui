@@ -42,6 +42,10 @@ class DeploymentDistribution extends Component {
 
     switch (this.props.type) {
       case "canary":
+        if (counter.DesiredCanaries == 0) {
+          return null
+        }
+
         sum = 100
 
         progress = counter.PlacedCanaries / counter.DesiredCanaries * 100
@@ -131,6 +135,10 @@ class DeploymentDistribution extends Component {
 
   render() {
     let data = this.data()
+    if (data == null) {
+      return null
+    }
+
     let percentSum = 0
     let self = this
     let tt = ""
@@ -150,9 +158,7 @@ class DeploymentDistribution extends Component {
                     <span className={`color-swatch ${x.className}`} />
                     {x.label}
                   </span>
-                  <span className="value">
-                    {x.tooltip || x.value}
-                  </span>
+                  <span className="value">{x.tooltip || x.value}</span>
                 </li>
               )
             })}
