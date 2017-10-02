@@ -9,13 +9,7 @@ import JobLink from "../components/JobLink/JobLink"
 import AllocationLink from "../components/AllocationLink/AllocationLink"
 import ClientLink from "../components/ClientLink/ClientLink"
 import { Link, withRouter } from "react-router"
-import {
-  NOMAD_WATCH_ALLOC,
-  NOMAD_UNWATCH_ALLOC,
-  NOMAD_WATCH_ALLOCS,
-  NOMAD_UNWATCH_ALLOCS,
-  NOMAD_FETCH_NODE
-} from "../sagas/event"
+import { NOMAD_WATCH_ALLOC, NOMAD_UNWATCH_ALLOC, NOMAD_FETCH_NODE } from "../sagas/event"
 import { default as shortenUUID } from "../helpers/uuid"
 
 class Allocation extends Component {
@@ -31,21 +25,9 @@ class Allocation extends Component {
       type: NOMAD_UNWATCH_ALLOC,
       payload: this.props.params.allocId
     })
-
-    this.props.dispatch({
-      type: NOMAD_UNWATCH_ALLOCS
-    })
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.allocation.DesiredStatus && this.props.allocation.DesiredStatus != "run") {
-      if (this.props.allocations.length === 0) {
-        this.props.dispatch({ type: NOMAD_WATCH_ALLOCS })
-      } else {
-        this.props.dispatch({ type: NOMAD_UNWATCH_ALLOCS })
-      }
-    }
-
     if (prevProps.params.allocId == this.props.params.allocId) {
       return
     }
@@ -72,36 +54,6 @@ class Allocation extends Component {
     const name = this.props.allocation.Name
 
     return name.substring(name.indexOf("[") + 1, name.indexOf("]"))
-  }
-
-  derp() {
-    if (this.props.allocation.DesiredStatus == "run") {
-      return
-    }
-
-    if (this.props.allocations.length == 0) {
-      return
-    }
-
-    let alt = this.props.allocations.filter(
-      a => a.Name == this.props.allocation.Name && a.ID != this.props.allocation.ID && a.DesiredStatus == "run"
-    )
-
-    if (alt.length == 0) {
-      return
-    }
-
-    alt = alt[0]
-    return (
-      <div className="warning-bar" style={{ backgroundColor: orange500 }}>
-        <FontIcon className="material-icons" color="white">
-          info
-        </FontIcon>
-        <div>
-          <AllocationLink allocationId={alt.ID}>View replacement allocation</AllocationLink>
-        </div>
-      </div>
-    )
   }
 
   breadcrumb() {
@@ -230,8 +182,6 @@ class Allocation extends Component {
         </Helmet>
         <div style={{ padding: 10, paddingBottom: 0 }}>
           <h3 style={{ marginTop: "10px", marginBottom: "15px" }}>{this.breadcrumb()}</h3>
-
-          {this.derp()}
 
           <AllocationTopbar {...this.props} />
 
