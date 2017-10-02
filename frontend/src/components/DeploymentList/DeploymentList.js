@@ -68,7 +68,6 @@ const ActionsCell = ({ id, action, rowIndex, data, ...props }) => {
 
   return (
     <Cell {...props}>
-      {actions}
       <DeploymentAction
         key="pause"
         action="pause"
@@ -76,6 +75,7 @@ const ActionsCell = ({ id, action, rowIndex, data, ...props }) => {
         id={data[rowIndex].ID}
         status={data[rowIndex].Status}
       />
+      {actions}
     </Cell>
   )
 }
@@ -185,12 +185,7 @@ class DeploymentList extends Component {
                 width={80}
               />
               <Column header={<Cell>Status</Cell>} cell={<TextCell data={deployments} col="Status" />} width={130} />
-              <Column
-                align="right"
-                header={<Cell>Action</Cell>}
-                cell={<ActionsCell data={deployments} />}
-                width={110}
-              />
+              <Column header={<Cell>Action</Cell>} cell={<ActionsCell data={deployments} />} width={110} />
               <Column
                 header={<Cell>Canary</Cell>}
                 cell={<DeploymentDistributionCell data={deployments} type="canary" />}
