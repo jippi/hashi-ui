@@ -1,5 +1,5 @@
 html {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -111,10 +111,10 @@ th {
 }
 
 .breadcrumb:before {
-  content: '\E5CC';
+  content: "\E5CC";
   vertical-align: top;
   display: inline-block;
-  font-family: 'Material Icons';
+  font-family: "Material Icons";
   font-weight: normal;
   font-style: normal;
   font-size: 20px;
@@ -123,7 +123,7 @@ th {
 }
 
 .breadcrumb.no-icon:before {
-  content: '';
+  content: "";
 }
 
 .warning-bar {
@@ -147,13 +147,25 @@ th {
 }
 
 .consul-logo {
-  background: url('img/consul.png');
+  background: url("img/consul.png");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.consul-logo-small {
+  background: url("img/consul-small.png");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.consul-logo-medium {
+  background: url("img/consul-medium.png");
   background-repeat: no-repeat;
   background-position: center;
 }
 
 .nomad-logo {
-  background: url('img/nomad.png');
+  background: url("img/nomad.png");
   background-repeat: no-repeat;
   background-position: center;
 }

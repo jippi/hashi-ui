@@ -132,7 +132,7 @@ const consulHealthColumn = (allocations, allocationHealth, dispatch) =>
       align="center"
       header={
         <Cell>
-          <img src="/assets/img/consul.png" height={20} width={20} title="Consul Health" />
+          <div style={{ height: 25, width: 25 }} title="Consul Health" className="consul-logo-small" />
         </Cell>
       }
       cell={<AllocationConsulHealthCell data={allocations} dispatch={dispatch} allocationHealth={allocationHealth} />}
