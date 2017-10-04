@@ -44,12 +44,19 @@ type connection struct {
 	destroyCh     chan interface{}
 	logger        *log.Entry
 	sendCh        chan *structs.Action
-	socket        *websocket.Conn
+	socket        socket
 	subscriptions *subscriber.Manager
 }
 
+type socket interface {
+	Close() error
+	WriteMessage(messageType int, data []byte) error
+	WriteJSON(v interface{}) error
+	ReadJSON(v interface{}) error
+}
+
 // NewConnection creates a new connection.
-func NewConnection(socket *websocket.Conn, nomadClient *nomad.Client, consulClient *consul.Client, logger *log.Entry, connectionID uuid.UUID, cfg *config.Config) *connection {
+func NewConnection(socket socket, nomadClient *nomad.Client, consulClient *consul.Client, logger *log.Entry, connectionID uuid.UUID, cfg *config.Config) *connection {
 	return &connection{
 		config:        cfg,
 		nomadClient:   nomadClient,
@@ -77,15 +84,19 @@ func (c *connection) Handle() {
 	c.logger.Debugf("Connection closing down")
 	c.socket.Close()
 
+	c.logger.Info("Closing destroyCh")
 	close(c.destroyCh)
 
 	c.logger.Infof("Waiting for subscriptions to finish up")
 	c.subscriptions.Wait()
+
+	c.logger.Info("All shutdown events completed")
 }
 
 // keepAlive will send a NOOP package over the websocket every 10s to ensure
 // the connection does not time out through proxies
 func (c *connection) keepAlive() {
+	defer c.logger.Info("keepAlive stopped")
 	c.logger.Debugf("Starting keep-alive packer sender")
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
@@ -107,13 +118,12 @@ func (c *connection) keepAlive() {
 
 // writePump will send actions to the browser throug the ws to the browser
 func (c *connection) writePump() {
-	defer c.socket.Close()
+	defer c.logger.Info("writePump stopped")
 
 	for {
 		select {
 
 		case <-c.destroyCh:
-			c.logger.Infof("Stopping writePump")
 			return
 
 		case action, ok := <-c.sendCh:
@@ -141,6 +151,8 @@ func (c *connection) writePump() {
 
 // subscriptionPublisher will output the connection subscriptions every 10s
 func (c *connection) subscriptionPublisher() {
+	defer c.logger.Info("subscriptionPublisher stopped")
+
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 
@@ -157,12 +169,13 @@ func (c *connection) subscriptionPublisher() {
 
 // readPump consume messages from the browser, and turns it into actions for the Go server to take
 func (c *connection) readPump() {
+	defer c.logger.Info("readPump stopped")
 	for {
 		var action structs.Action
 		err := c.socket.ReadJSON(&action)
 		if err != nil {
 			c.logger.Errorf("Could not read payload: %s", err)
-			break
+			return
 		}
 
 		c.process(action)

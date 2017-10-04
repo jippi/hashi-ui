@@ -133,6 +133,7 @@ func main() {
 
 		router.HandleFunc("/ws/nomad", NomadHandler(cfg, nomadClient, consulClient))
 		router.HandleFunc("/ws/nomad/{region}", NomadHandler(cfg, nomadClient, consulClient))
+		router.HandleFunc("/api/nomad/{region}", NomadAPIHandler(cfg, nomadClient, consulClient))
 		router.HandleFunc("/nomad/{region}/download/{path:.*}", NomadDownloadFile(cfg))
 	}
 

@@ -34,17 +34,15 @@ func NomadHandler(cfg *config.Config, nomadClient *nomad.Client, consulClient *c
 			logger.Errorf("transport: websocket upgrade failed: %s", err)
 			return
 		}
+		defer socket.Close()
 
 		params := mux.Vars(r)
-
 		region, ok := params["region"]
 		if !ok {
 			logger.Errorf("No region provided")
 			requireNomadRegion(socket, nomadClient, logger)
 			return
 		}
-
-		defer socket.Close()
 
 		client, _ := nomad_helper.NewRegionClient(cfg, region)
 		c := NewConnection(socket, client, consulClient, logger, connectionID, cfg)
