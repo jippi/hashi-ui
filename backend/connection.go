@@ -73,7 +73,7 @@ func NewConnection(socket socket, nomadClient *nomad.Client, consulClient *consu
 // Handle monitors the websocket connection for incoming actions. It sends
 // out actions on state changes.
 func (c *connection) Handle() {
-	c.logger.Info("Starting connection handler")
+	c.logger.Debugf("Starting connection handler")
 
 	go c.keepAlive()
 	go c.writePump()
@@ -84,19 +84,20 @@ func (c *connection) Handle() {
 	c.logger.Debugf("Connection closing down")
 	c.socket.Close()
 
-	c.logger.Info("Closing destroyCh")
+	c.logger.Debugf("Closing destroyCh")
 	close(c.destroyCh)
 
-	c.logger.Infof("Waiting for subscriptions to finish up")
+	c.logger.Debugf("Waiting for subscriptions to finish up")
 	c.subscriptions.Wait()
 
-	c.logger.Info("All shutdown events completed")
+	c.logger.Debugf("All shutdown events completed")
 }
 
 // keepAlive will send a NOOP package over the websocket every 10s to ensure
 // the connection does not time out through proxies
 func (c *connection) keepAlive() {
-	defer c.logger.Info("keepAlive stopped")
+	defer c.logger.Debugf("keepAlive stopped")
+
 	c.logger.Debugf("Starting keep-alive packer sender")
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
@@ -118,7 +119,7 @@ func (c *connection) keepAlive() {
 
 // writePump will send actions to the browser throug the ws to the browser
 func (c *connection) writePump() {
-	defer c.logger.Info("writePump stopped")
+	defer c.logger.Debugf("writePump stopped")
 
 	for {
 		select {
@@ -151,7 +152,7 @@ func (c *connection) writePump() {
 
 // subscriptionPublisher will output the connection subscriptions every 10s
 func (c *connection) subscriptionPublisher() {
-	defer c.logger.Info("subscriptionPublisher stopped")
+	defer c.logger.Debugf("subscriptionPublisher stopped")
 
 	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
@@ -169,7 +170,8 @@ func (c *connection) subscriptionPublisher() {
 
 // readPump consume messages from the browser, and turns it into actions for the Go server to take
 func (c *connection) readPump() {
-	defer c.logger.Info("readPump stopped")
+	defer c.logger.Debugf("readPump stopped")
+
 	for {
 		var action structs.Action
 		err := c.socket.ReadJSON(&action)

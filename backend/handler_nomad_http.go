@@ -69,10 +69,7 @@ func (hs *httpSocket) drain() error {
 }
 
 func (hs *httpSocket) Close() error {
-	hs.logger.Info("closing socket(?)")
-	// conn, _, _ := hs.w.(http.Hijacker).Hijack()
-	// conn.Close()
-	// close()
+	hs.logger.Debugf("Calling fake Close() on httpSocket")
 	return nil
 }
 
@@ -84,7 +81,7 @@ func (hs *httpSocket) stop(err error) {
 	}
 
 	hs.qc <- err
-	hs.logger.Info("send stop signal")
+	hs.logger.Debugf("sent stop signal")
 }
 
 func (hs *httpSocket) WriteMessage(messageType int, data []byte) error {
@@ -118,7 +115,6 @@ func (hs *httpSocket) ReadJSON(v interface{}) error {
 		x.Index = msg.Index
 	}
 
-	hs.logger.Info("finished readJSON")
 	return nil
 }
 
@@ -127,7 +123,7 @@ func NomadAPIHandler(cfg *config.Config, nomadClient *nomad.Client, consulClient
 	return func(w http.ResponseWriter, r *http.Request) {
 		connectionID := uuid.NewV4()
 		logger := log.WithField("connection_id", connectionID.String()[:8])
-		logger.Info("transport: connection created")
+		logger.Debugf("transport: connection created")
 
 		params := mux.Vars(r)
 		region, _ := params["region"]
@@ -144,6 +140,6 @@ func NomadAPIHandler(cfg *config.Config, nomadClient *nomad.Client, consulClient
 		c := NewConnection(socket, client, consulClient, logger.WithField("source", "connection"), connectionID, cfg)
 		c.Handle()
 
-		logger.Info("connection ended")
+		logger.Debugf("connection ended")
 	}
 }

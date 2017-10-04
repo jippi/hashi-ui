@@ -44,6 +44,39 @@ func Watch(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Acti
 	}()
 	logger.Infof("Started watching %s", watchKey)
 
+	// spin up the actual worker in a Go routine to not block outer loop
+	go func() {
+		for {
+			select {
+			case <-destroyCh:
+				return
+			case <-subscribeCh:
+				return
+			default:
+				logger.Debugf("[%s] Running task", watchKey)
+				response, err := w.Do()
+				if err != nil {
+					logger.Errorf("connection: unable to fetch %s: %s", watchKey, err)
+					send <- &structs.Action{Type: structs.ErrorNotification, Payload: err.Error()}
+					return
+				}
+
+				if !s.Subscribed(watchKey) {
+					logger.Errorf("No longer subscribed to %s", watchKey)
+					return
+				}
+
+				if response != nil {
+					actions := response.Actions()
+					logger.Debugf("[%s] Sending %d replies", watchKey, len(actions))
+					replies(actions, send)
+				} else {
+					logger.Debugf("[%s] No actions taken", watchKey)
+				}
+			}
+		}
+	}()
+
 	for {
 		select {
 		case <-subscribeCh:
@@ -53,28 +86,6 @@ func Watch(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Acti
 		case <-destroyCh:
 			logger.Errorf("[%s] Shutting down due to closed destroyCh", watchKey)
 			return
-
-		default:
-			logger.Debugf("[%s] Running task", watchKey)
-			response, err := w.Do()
-			if err != nil {
-				logger.Errorf("connection: unable to fetch %s: %s", watchKey, err)
-				send <- &structs.Action{Type: structs.ErrorNotification, Payload: err.Error()}
-				return
-			}
-
-			if !s.Subscribed(watchKey) {
-				logger.Errorf("No longer subscribed to %s", watchKey)
-				return
-			}
-
-			if response != nil {
-				actions := response.Actions()
-				logger.Debugf("[%s] Sending %d replies", watchKey, len(actions))
-				replies(actions, send)
-			} else {
-				logger.Debugf("[%s] No actions taken", watchKey)
-			}
 		}
 	}
 }
