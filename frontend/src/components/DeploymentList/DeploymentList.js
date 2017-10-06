@@ -55,19 +55,11 @@ const ActionsCell = ({ id, action, rowIndex, data, ...props }) => {
         status={data[rowIndex].Status}
       />
     )
-    actions.push(
-      <DeploymentAction
-        key="fail"
-        action="fail"
-        showText={false}
-        id={data[rowIndex].ID}
-        status={data[rowIndex].Status}
-      />
-    )
   }
 
   return (
     <Cell {...props}>
+      {actions}
       <DeploymentAction
         key="pause"
         action="pause"
@@ -75,7 +67,13 @@ const ActionsCell = ({ id, action, rowIndex, data, ...props }) => {
         id={data[rowIndex].ID}
         status={data[rowIndex].Status}
       />
-      {actions}
+      <DeploymentAction
+        key="fail"
+        action="fail"
+        showText={false}
+        id={data[rowIndex].ID}
+        status={data[rowIndex].Status}
+      />
     </Cell>
   )
 }
