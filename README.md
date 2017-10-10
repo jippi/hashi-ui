@@ -140,7 +140,8 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 
 ## Running behind a Load Balancer
 
-When Running Hashi UI behind AWS ELB (even with Nginx/Traefik in between), ELB should be configured with TCP not HTTP Listeners (HTTP Listener doesn't support websockets)
+When Running Hashi UI behind AWS, an ALB is preferable as it supports HTTP websockets. Alternatively a NLB or ELB in 'TCP' mode will suffice.
+
 
 Hashi-UI exposes a `/_status` endpoint that can be used to check the health of Nomad and Consul endpoints.
 
