@@ -36,7 +36,7 @@ class MetaPayload extends Component {
       }
 
       meta.push(
-        <dd key={`${key}dd`} style={{ overflow: "scroll" }}>
+        <dd key={`${key}dd`} style={{ overflow: "auto" }}>
           {v}
         </dd>
       )
