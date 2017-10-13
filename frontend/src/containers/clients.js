@@ -44,7 +44,7 @@ class Clients extends Component {
                   return (
                     <TableRow key={node.ID}>
                       <TableRowColumn>
-                        <ClientLink clientId={node.ID} />
+                        <ClientLink clientId={node.ID} clients={this.props.nodes} />
                       </TableRowColumn>
                       <TableRowColumn>{node.Name}</TableRowColumn>
                       <TableRowColumn>
