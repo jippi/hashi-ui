@@ -99,14 +99,14 @@ class AllocationStatusIcon extends Component {
     // check if there is a healthy version of this failed allocation and convert the error into a warning
     if (["failed", "lost"].indexOf(allocation.ClientStatus) >= 0 && this.props.allocations.length > 1) {
       // only check allocations *before* the current allocation for healthy allocations
-      for (let i = 0; i <= this.props.rowIndex; i++) {
+      for (let i = this.props.rowIndex; i >= 0; i--) {
         // the allocation name must be the same
         if (this.props.allocations[i].Name != this.props.allocation.Name) {
           continue
         }
 
         // the replacement allocation must be healthy
-        if (["failed", "lost"].indexOf(this.props.allocations[i].ClientStatus) == -1) {
+        if (this.props.allocations[i].ClientStatus != "running") {
           continue
         }
 
