@@ -1,8 +1,14 @@
-# Formation
+# HTTP API
 
 All requests need the same format in the payload: `{"type":"NOMAD_WATCH_NODES"}`
 
 Some requests all take arguments, those belong in JSON field called `payload`: `{"type":"NOMAD_WATCH_NODES", "payload": "something_here"}`
+
+## Example
+
+`curl -i -X POST localhost:3000/api/nomad/$region -d '{"type":"NOMAD_WATCH_NODES"}'`
+
+`curl -i -X POST localhost:3000/api/nomad/$region -d '{"type":"NOMAD_WATCH_JOBS", "payload:" { "prefix": "app-"}}'`
 
 ## Nomad
 
