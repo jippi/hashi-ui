@@ -7,6 +7,7 @@ import FontIcon from "material-ui/FontIcon"
 import AllocationTopbar from "../components/AllocationTopbar/AllocationTopbar"
 import JobLink from "../components/JobLink/JobLink"
 import AllocationLink from "../components/AllocationLink/AllocationLink"
+import AllocationConsulHealth from "../components/AllocationConsulHealth/AllocationConsulHealth"
 import ClientLink from "../components/ClientLink/ClientLink"
 import { Link, withRouter } from "react-router"
 import { NOMAD_WATCH_ALLOC, NOMAD_UNWATCH_ALLOC, NOMAD_FETCH_NODE } from "../sagas/event"
@@ -108,6 +109,7 @@ class Allocation extends Component {
         </Link>
       </span>
     )
+    out.push(<AllocationConsulHealth key="consul-health" allocation={this.props.allocation} header />)
     out.push(" > ")
 
     if (end.startsWith("info")) {

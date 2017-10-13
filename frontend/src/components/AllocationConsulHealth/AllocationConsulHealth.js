@@ -1,19 +1,8 @@
 import React, { Component } from "react"
+import { connect } from "react-redux"
 import FontIcon from "material-ui/FontIcon"
-import { Column, Cell } from "fixed-data-table-2"
 import { NOMAD_WATCH_ALLOCATION_HEALTH, NOMAD_UNWATCH_ALLOCATION_HEALTH } from "../../sagas/event"
 import { green500, red500, grey200 } from "material-ui/styles/colors"
-
-const AllocationConsulHealthCell = ({ rowIndex, dispatch, allocationHealth, nodes, data, ...props }) => (
-  <Cell rowIndex={rowIndex} data={data} {...props}>
-    <AllocationConsulHealth
-      dispatch={dispatch}
-      allocation={data[rowIndex]}
-      allocationHealth={allocationHealth[data[rowIndex].ID]}
-    />
-  </Cell>
-)
-export { AllocationConsulHealthCell }
 
 class AllocationConsulHealth extends Component {
   componentDidMount() {
@@ -69,11 +58,16 @@ class AllocationConsulHealth extends Component {
       return null
     }
 
-    const health = this.props.allocationHealth
+    const health = this.props.health
+
+    let style = {}
+    if (this.props.header) {
+      style = { fontSize: "1.5em", verticalAlign: "middle", marginTop: -5 }
+    }
 
     if (!health) {
       return (
-        <FontIcon title="Unknown Consul Health" color={grey200} className="material-icons">
+        <FontIcon style={style} title="Unknown Consul Health" color={grey200} className="material-icons">
           help_outline
         </FontIcon>
       )
@@ -83,7 +77,7 @@ class AllocationConsulHealth extends Component {
 
     if (health.Healthy) {
       icon = (
-        <FontIcon title="All Consul Health checks OK" color={green500} className="material-icons">
+        <FontIcon style={style} title="All Consul Health checks OK" color={green500} className="material-icons">
           {health.Total > 1 ? "done_all" : "done"}
         </FontIcon>
       )
@@ -91,7 +85,7 @@ class AllocationConsulHealth extends Component {
 
     if (health.Healthy == false) {
       icon = (
-        <FontIcon color={red500} className="material-icons">
+        <FontIcon style={style} color={red500} className="material-icons">
           clear
         </FontIcon>
       )
@@ -101,4 +95,11 @@ class AllocationConsulHealth extends Component {
   }
 }
 
-export default AllocationConsulHealth
+function mapStateToProps({ allocationHealth }, { allocation }) {
+  return {
+    allocation,
+    health: allocationHealth[allocation.ID]
+  }
+}
+
+export default connect(mapStateToProps)(AllocationConsulHealth)
