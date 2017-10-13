@@ -6,7 +6,11 @@ import { green500, red500, grey200 } from "material-ui/styles/colors"
 
 const AllocationConsulHealthCell = ({ rowIndex, dispatch, allocationHealth, nodes, data, ...props }) => (
   <Cell rowIndex={rowIndex} data={data} {...props}>
-    <AllocationConsulHealth dispatch={dispatch} allocation={data[rowIndex]} allocationHealth={allocationHealth} />
+    <AllocationConsulHealth
+      dispatch={dispatch}
+      allocation={data[rowIndex]}
+      allocationHealth={allocationHealth[data[rowIndex].ID]}
+    />
   </Cell>
 )
 export { AllocationConsulHealthCell }
@@ -40,10 +44,6 @@ class AllocationConsulHealth extends Component {
   }
 
   unwatch(props) {
-    if (props.allocation.ClientStatus != "running") {
-      return
-    }
-
     this.props.dispatch({
       type: NOMAD_UNWATCH_ALLOCATION_HEALTH,
       payload: {
@@ -54,10 +54,6 @@ class AllocationConsulHealth extends Component {
   }
 
   watch(props) {
-    if (props.allocation.ClientStatus != "running") {
-      return
-    }
-
     this.props.dispatch({
       type: NOMAD_WATCH_ALLOCATION_HEALTH,
       payload: {
@@ -73,12 +69,11 @@ class AllocationConsulHealth extends Component {
       return null
     }
 
-    const allocID = this.props.allocation.ID
-    const health = this.props.allocationHealth[allocID]
+    const health = this.props.allocationHealth
 
     if (!health) {
       return (
-        <FontIcon color={grey200} className="material-icons">
+        <FontIcon title="Unknown Consul Health" color={grey200} className="material-icons">
           help_outline
         </FontIcon>
       )
@@ -88,7 +83,7 @@ class AllocationConsulHealth extends Component {
 
     if (health.Healthy) {
       icon = (
-        <FontIcon color={green500} className="material-icons">
+        <FontIcon title="All Consul Health checks OK" color={green500} className="material-icons">
           {health.Total > 1 ? "done_all" : "done"}
         </FontIcon>
       )
