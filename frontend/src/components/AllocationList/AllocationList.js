@@ -39,7 +39,7 @@ const AllocationStatusIconCell = ({ rowIndex, data, ...props }) => (
       ReactTooltip.hide()
     }}
   >
-    <AllocationStatusIcon allocation={data[rowIndex]} />
+    <AllocationStatusIcon allocation={data[rowIndex]} allocations={data} rowIndex={rowIndex} />
   </Cell>
 )
 

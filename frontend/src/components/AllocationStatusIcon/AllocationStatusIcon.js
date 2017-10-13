@@ -1,9 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
-import ReactTooltip from "react-tooltip"
-import AppendedReactTooltip from "../AppendedReactTooltip/AppendedReactTooltip"
 import FontIcon from "material-ui/FontIcon"
-import { amber500, green500, red500 } from "material-ui/styles/colors"
+import { amber500, green500, red500, orange500 } from "material-ui/styles/colors"
 
 //
 // map of ClientStatus and nested below the DesiredStatus
@@ -12,35 +10,53 @@ import { amber500, green500, red500 } from "material-ui/styles/colors"
 const clientStatusColor = {
   pending: {
     run: (
-      <FontIcon color={amber500} className="material-icons">
+      <FontIcon title="Pending -> run" color={amber500} className="material-icons">
         schedule
       </FontIcon>
     ),
-    default: <FontIcon className="material-icons">schedule</FontIcon>
+    default: (
+      <FontIcon title="Pending" className="material-icons">
+        schedule
+      </FontIcon>
+    )
   },
   running: {
     stop: (
-      <FontIcon color={amber500} className="material-icons">
+      <FontIcon title="Running but been told to stop" color={amber500} className="material-icons">
         stop
       </FontIcon>
     ),
     run: (
-      <FontIcon color={green500} className="material-icons">
+      <FontIcon title="Running" color={green500} className="material-icons">
         play_arrow
       </FontIcon>
     ),
-    default: <FontIcon className="material-icons">play_arrow</FontIcon>
+    default: (
+      <FontIcon title="Running but is transitioning to another state" className="material-icons">
+        play_arrow
+      </FontIcon>
+    )
   },
   failed: {
     default: (
-      <FontIcon color={red500} className="material-icons">
+      <FontIcon title="Failed and not replaced" color={red500} className="material-icons">
+        error
+      </FontIcon>
+    ),
+    replaced: (
+      <FontIcon title="Failed and was replaced with a healthy allocation" color={orange500} className="material-icons">
         error
       </FontIcon>
     )
   },
   lost: {
     default: (
-      <FontIcon color={red500} className="material-icons">
+      <FontIcon title="Lost and not replaced" color={red500} className="material-icons">
+        cached
+      </FontIcon>
+    ),
+    replaced: (
+      <FontIcon title="Lost and was replaced with a healhy allocation" color={orange500} className="material-icons">
         cached
       </FontIcon>
     )
@@ -63,7 +79,9 @@ class AllocationStatusIcon extends Component {
       // client status must be the same
       this.props.allocation.ClientStatus != nextProps.allocation.ClientStatus ||
       // desired status must be the same
-      this.props.allocation.DesiredStatus != nextProps.allocation.DesiredStatus
+      this.props.allocation.DesiredStatus != nextProps.allocation.DesiredStatus ||
+      // rowIndex must be the same
+      this.props.rowIndex != this.props.rowIndex
     )
   }
 
@@ -78,6 +96,25 @@ class AllocationStatusIcon extends Component {
       icon = statusConfig.default
     }
 
+    // check if there is a healthy version of this failed allocation and convert the error into a warning
+    if (["failed", "lost"].indexOf(allocation.ClientStatus) >= 0 && this.props.allocations.length > 1) {
+      // only check allocations *before* the current allocation for healthy allocations
+      for (let i = 0; i <= this.props.rowIndex; i++) {
+        // the allocation name must be the same
+        if (this.props.allocations[i].Name != this.props.allocation.Name) {
+          continue
+        }
+
+        // the replacement allocation must be healthy
+        if (["failed", "lost"].indexOf(this.props.allocations[i].ClientStatus) == -1) {
+          continue
+        }
+
+        // replace the state
+        icon = statusConfig["replaced"]
+      }
+    }
+
     let tt = allocation.ClientStatus + " -> " + allocation.DesiredStatus
 
     return (
@@ -88,10 +125,15 @@ class AllocationStatusIcon extends Component {
   }
 }
 
-AllocationStatusIcon.defaultProps = {}
+AllocationStatusIcon.defaultProps = {
+  allocations: [],
+  rowIndex: -1
+}
 
 AllocationStatusIcon.propTypes = {
-  allocation: PropTypes.object.isRequired
+  allocation: PropTypes.object.isRequired,
+  allocations: PropTypes.array,
+  rowIndex: PropTypes.number
 }
 
 export default AllocationStatusIcon

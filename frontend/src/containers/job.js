@@ -37,6 +37,13 @@ class Job extends Component {
     const curQuery = this.props.location.query || {}
     const newQuery = nextProps.location.query || {}
 
+    // check if we are linking to a job version that happens to be the current
+    if (newQuery["version"] && newQuery["version"] == nextProps.jobVersions[0]) {
+      const path = ["", "nomad", nextProps.router.params.region, "jobs", nextProps.params.jobId, "info"]
+      nextProps.router.push(path.map(encodeURIComponent).join("/"))
+      return
+    }
+
     if (this.props.params.jobId != nextProps.params.jobId) {
       // Watch new job verions
       if (this.props.params.jobId) {
@@ -379,6 +386,18 @@ class Job extends Component {
     )
   }
 
+  oldVersion() {
+    if (!this.props.location.query["version"]) {
+      return null
+    }
+
+    return (
+      <span style={{ paddingLeft: 10, fontSize: 14 }}>
+        (this is a previous version of the job, some features are not available)
+      </span>
+    )
+  }
+
   render() {
     if (this.props.job.ID == null) {
       return <div>Loading ...</div>
@@ -396,7 +415,10 @@ class Job extends Component {
         </Helmet>
 
         <div style={{ float: "left" }}>
-          <h3 style={{ marginTop: "10px" }}>{this.breadcrumb()}</h3>
+          <h3 style={{ marginTop: "10px" }}>
+            {this.breadcrumb()}
+            {this.oldVersion()}
+          </h3>
         </div>
 
         <span style={{ float: "right" }}>

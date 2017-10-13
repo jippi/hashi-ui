@@ -111,6 +111,10 @@ class JobActionMenu extends PureComponent {
   }
 
   render() {
+    if (this.props.location.query["version"]) {
+      return null
+    }
+
     return (
       <span>
         <JobEditRawJSON />
