@@ -1,25 +1,8 @@
 import React, { PureComponent } from "react"
 import PropTypes from "prop-types"
+import { connect } from "react-redux"
 import { Link, withRouter } from "react-router"
 import shortUUID from "../../helpers/uuid"
-
-const clientLookupCache = {}
-
-const findClientNameById = (clientId, clients) => {
-  if (clientId in clientLookupCache) {
-    return clientLookupCache[clientId]
-  }
-
-  const r = Object.keys(clients).filter(node => clients[node].ID === clientId)
-
-  if (r.length !== 0) {
-    clientLookupCache[clientId] = clients[r].Name
-  } else {
-    clientLookupCache[clientId] = false
-  }
-
-  return clientLookupCache[clientId]
-}
 
 class ClientLink extends PureComponent {
   render() {
@@ -30,8 +13,6 @@ class ClientLink extends PureComponent {
     if (children === undefined) {
       if (this.props.client.Name) {
         children = this.props.client.Name
-      } else if (this.props.clients.length > 0) {
-        children = findClientNameById(clientId, this.props.clients)
       }
 
       if (!children) {
@@ -56,7 +37,6 @@ class ClientLink extends PureComponent {
 }
 
 ClientLink.defaultProps = {
-  clients: [],
   client: {},
   shortUUID: true,
   linkAppend: ""
@@ -65,11 +45,37 @@ ClientLink.defaultProps = {
 ClientLink.propTypes = {
   children: PropTypes.array,
   clientId: PropTypes.string.isRequired,
-  clients: PropTypes.array.isRequired,
   client: PropTypes.object,
   linkAppend: PropTypes.string,
   shortUUID: PropTypes.bool.isRequired,
   router: PropTypes.object.isRequired
 }
 
-export default withRouter(ClientLink)
+const clientLookupCache = {}
+const findClientById = (clientId, clients) => {
+  if (clientId in clientLookupCache) {
+    return clientLookupCache[clientId]
+  }
+
+  const r = Object.keys(clients).filter(node => clients[node].ID === clientId)
+
+  if (r.length !== 0) {
+    clientLookupCache[clientId] = clients[r]
+  } else {
+    clientLookupCache[clientId] = false
+  }
+
+  return clientLookupCache[clientId]
+}
+
+function mapStateToProps({}, { clients, client, clientId, ...ownProps }) {
+  let resp = { client, clientId, ...ownProps }
+
+  if (!client && clientId && clients.length > 0) {
+    resp["client"] = findClientById(clientId, clients)
+  }
+
+  return resp
+}
+
+export default connect(mapStateToProps)(withRouter(ClientLink))
