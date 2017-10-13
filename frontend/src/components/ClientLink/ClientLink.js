@@ -68,10 +68,10 @@ const findClientById = (clientId, clients) => {
   return clientLookupCache[clientId]
 }
 
-function mapStateToProps({}, { clients, client, clientId, ...ownProps }) {
-  let resp = { client, clientId, ...ownProps }
+function mapStateToProps({}, { clients, client, clientId, children, ...ownProps }) {
+  let resp = { client, clientId, children, ...ownProps }
 
-  if (!client && clientId && clients.length > 0) {
+  if (!children && !client && (clientId && clients.length > 0)) {
     resp["client"] = findClientById(clientId, clients)
   }
 
