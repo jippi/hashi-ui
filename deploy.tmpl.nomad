@@ -15,7 +15,7 @@ job "hashi-ui" {
 
   constraint {
     attribute   = "${meta.env_type}"
-    value       = "<ENV_TYPE>" # [ test | live ]
+    value       = "test" # [ test | live ]
   }
 
   group "ui" {
@@ -30,11 +30,6 @@ job "hashi-ui" {
     task "nomad" {
       driver = "docker"
 
-      env {
-        // "NOMAD_ENABLE" = "1"
-        // "NOMAD_ADDR"   = "http://nomad.service.owf-live:4646"
-      }
-
       config {
         image = "jippi/hashi-ui"
         port_map {
@@ -45,12 +40,12 @@ job "hashi-ui" {
             "local/secrets/hashi-ui.env:/etc/hashi-ui/vault.env"
         ]
 
-        logging {
-          type = "syslog"
-          config {
-            tag = "nomad-ui"
-          }
-        }
+        // logging {
+        //   type = "syslog"
+        //   config {
+        //     tag = "nomad-ui"
+        //   }
+        // }
       }
 
       service {
