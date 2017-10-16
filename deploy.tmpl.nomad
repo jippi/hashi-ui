@@ -15,7 +15,7 @@ job "hashi-ui" {
 
   constraint {
     attribute   = "${meta.env_type}"
-    value       = "<ENV_TYPE>" # [ test | live ]
+    value       = "test" # [ test | live ]
   }
 
   group "ui" {
@@ -40,12 +40,12 @@ job "hashi-ui" {
             "local/secrets/hashi-ui.env:/etc/hashi-ui/vault.env"
         ]
 
-        logging {
-          type = "syslog"
-          config {
-            tag = "nomad-ui"
-          }
-        }
+        // logging {
+        //   type = "syslog"
+        //   config {
+        //     tag = "nomad-ui"
+        //   }
+        // }
       }
 
       service {
