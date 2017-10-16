@@ -19,7 +19,7 @@ job "hashi-ui" {
   }
 
   group "ui" {
-    count = 3
+    count = 1
 
     vault {
         change_mode = "noop"
