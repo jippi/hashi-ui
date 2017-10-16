@@ -1,13 +1,13 @@
 #!/bin/bash
 
-echo "Looking for the secure.properties file"
+echo "Looking for the vault.env file"
 
-if [ -e /etc/hashi-ui/vault.properties ];
+if [ -e /etc/hashi-ui/vault.env ];
 then
     echo "File exists, executing..."
-    source /etc/hashi-ui/vault.properties
+    source /etc/hashi-ui/vault.env
 else
-    echo "secure.properties does not exist."
+    echo "vault.env file does not exist."
 fi
 
 echo "Starting the HASHI-UI..."

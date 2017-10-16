@@ -15,7 +15,7 @@ job "hashi-ui" {
 
   constraint {
     attribute   = "${meta.env_type}"
-    value       = "live" # [ test | live ]
+    value       = "<ENV_TYPE>" # [ test | live ]
   }
 
   group "ui" {
@@ -42,7 +42,7 @@ job "hashi-ui" {
         }
 
         volumes = [
-            "local/secrets/hashi-ui.env:/etc/hashi-ui.env"
+            "local/secrets/hashi-ui.env:/etc/hashi-ui/vault.env"
         ]
 
         logging {
