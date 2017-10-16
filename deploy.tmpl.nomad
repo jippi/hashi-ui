@@ -15,18 +15,24 @@ job "hashi-ui" {
 
   constraint {
     attribute   = "${meta.env_type}"
-    value       = "<ENV_TYPE>" # [ test | live ]
+    value       = "live" # [ test | live ]
   }
 
-  group "nomad-ui" {
-    count = 1
+  group "ui" {
+    count = 3
 
-    task "nomad-hashi-ui" {
+    vault {
+        change_mode = "noop"
+        env = false
+        policies = ["read-secrets"]
+    }
+
+    task "nomad" {
       driver = "docker"
 
       env {
-        "NOMAD_ENABLE" = "1"
-        "NOMAD_ADDR"   = "http://nomad.service.owf-dev:4646"
+        // "NOMAD_ENABLE" = "1"
+        // "NOMAD_ADDR"   = "http://nomad.service.owf-live:4646"
       }
 
       config {
@@ -34,6 +40,11 @@ job "hashi-ui" {
         port_map {
             nomad  = 3000 # container port: static
         }
+
+        volumes = [
+            "local/secrets/hashi-ui.env:/etc/hashi-ui.env"
+        ]
+
         logging {
           type = "syslog"
           config {
@@ -43,7 +54,7 @@ job "hashi-ui" {
       }
 
       service {
-        name = "nomad-${JOB}"
+        name = "${TASK}-ui"
         port = "nomad"
         check {
           type     = "http"
@@ -52,6 +63,19 @@ job "hashi-ui" {
           timeout  = "3s"
         }
       }
+
+      template {
+          data = <<EOF
+{{ with printf "secret/%s" (env "NOMAD_JOB_NAME") | secret }}
+export NOMAD_ADDR="{{.Data.NOMAD_ADDR}}"
+export NOMAD_ENABLE="{{.Data.NOMAD_ENABLE}}"
+{{ end }}
+EOF
+          destination = "local/secrets/hashi-ui.env"
+          # Send a configurable signal to the task
+          change_mode   = "signal"
+          change_signal = "SIGINT"
+  }
 
       resources {
         cpu     = 500  # MHz
