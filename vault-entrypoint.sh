@@ -11,5 +11,5 @@ else
 fi
 
 echo "Starting the HASHI-UI..."
-exec /hashi-ui
-#exit $?
+exec /hashi-ui $@
+exit $?
