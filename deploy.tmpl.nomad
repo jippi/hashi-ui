@@ -30,11 +30,6 @@ job "hashi-ui" {
     task "nomad" {
       driver = "docker"
 
-      env {
-        // "NOMAD_ENABLE" = "1"
-        // "NOMAD_ADDR"   = "http://nomad.service.owf-live:4646"
-      }
-
       config {
         image = "jippi/hashi-ui"
         port_map {
