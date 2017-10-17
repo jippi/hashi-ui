@@ -46,11 +46,11 @@ job "hashi-ui" {
             tag = "nomad-ui"
           }
         }
+      }
 
-        env {
-          "NOMAD_ENABLE" = "1"
-          "NOMAD_ADDR"   = "http://nomad.service.owf-dev:4646"
-        }
+      env {
+        "NOMAD_ENABLE" = "1"
+        "NOMAD_ADDR"   = "http://nomad.service.owf-dev:4646"
       }
 
       service {
