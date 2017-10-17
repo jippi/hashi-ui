@@ -19,7 +19,7 @@ job "hashi-ui" {
   }
 
   group "ui" {
-    count = 1
+    count = 3
 
     vault {
         change_mode = "noop"
@@ -40,12 +40,17 @@ job "hashi-ui" {
             "local/secrets/hashi-ui.env:/etc/hashi-ui/vault.env"
         ]
 
-        // logging {
-        //   type = "syslog"
-        //   config {
-        //     tag = "nomad-ui"
-        //   }
-        // }
+        logging {
+          type = "syslog"
+          config {
+            tag = "nomad-ui"
+          }
+        }
+      }
+
+      env {
+        "NOMAD_ENABLE" = "1"
+        "NOMAD_ADDR"   = "http://nomad.service.owf-dev:4646"
       }
 
       service {
