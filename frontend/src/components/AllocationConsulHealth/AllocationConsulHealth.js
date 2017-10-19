@@ -33,6 +33,10 @@ class AllocationConsulHealth extends Component {
   }
 
   unwatch(props) {
+    if (!window.CONSUL_ENABLED) {
+      return
+    }
+
     this.props.dispatch({
       type: NOMAD_UNWATCH_ALLOCATION_HEALTH,
       payload: {
@@ -43,6 +47,10 @@ class AllocationConsulHealth extends Component {
   }
 
   watch(props) {
+    if (!window.CONSUL_ENABLED) {
+      return
+    }
+
     this.props.dispatch({
       type: NOMAD_WATCH_ALLOCATION_HEALTH,
       payload: {
@@ -54,7 +62,7 @@ class AllocationConsulHealth extends Component {
 
   render() {
     // can't be any health status for non-running jobs
-    if (this.props.allocation.ClientStatus != "running") {
+    if (!window.CONSUL_ENABLED || this.props.allocation.ClientStatus != "running") {
       return null
     }
 

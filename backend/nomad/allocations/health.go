@@ -44,6 +44,10 @@ func NewHealth(action structs.Action, nomad *nomad.Client, consul *consul.Client
 }
 
 func (w *health) Do() (*structs.Response, error) {
+	if w.consul == nil {
+		return nil, fmt.Errorf("")
+	}
+
 	// find the client name (we assume it matches the consul name)
 	if w.clientName == "" {
 		node, _, err := w.nomad.Nodes().Info(w.clientID, nil)
@@ -54,8 +58,8 @@ func (w *health) Do() (*structs.Response, error) {
 
 		// make sure to query the right Consul DC
 		datacenter, ok := node.Attributes["consul.datacenter"]
-		if !ok {
-			return structs.NewErrorResponse("node is not linked to Consul")
+		if !ok || datacenter == "" {
+			return structs.NewErrorResponse("Node is not linked to a Consul DC")
 		}
 
 		w.consulQuery.Datacenter = datacenter

@@ -172,6 +172,11 @@ func ParseAppEnvConfig(c *Config) {
 		c.ListenAddress = listenAddress
 	}
 
+	listenPort, ok := syscall.Getenv("PORT")
+	if ok {
+		c.ListenAddress = "0.0.0.0:" + listenPort
+	}
+
 	httpsEnable, ok := syscall.Getenv("HTTPS_ENABLE")
 	if ok {
 		c.HttpsEnable = httpsEnable != "0"
