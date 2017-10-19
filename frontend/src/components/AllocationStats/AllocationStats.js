@@ -57,7 +57,6 @@ class AllocStats extends Component {
 
   render() {
     const stats = this.props.allocStats
-
     if (!stats) {
       return <div>Loading ...</div>
     }
@@ -94,7 +93,7 @@ function mapStateToProps({ allocation, allocStats }) {
 
 AllocStats.propTypes = {
   allocation: PropTypes.object.isRequired,
-  allocStats: PropTypes.object.isRequired,
+  allocStats: PropTypes.object,
   dispatch: PropTypes.func.isRequired
 }
 

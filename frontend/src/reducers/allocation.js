@@ -6,6 +6,7 @@ import {
   NOMAD_UNWATCH_ALLOC,
   NOMAD_UNWATCH_ALLOCATION_HEALTH,
   NOMAD_FETCHED_ALLOC_STATS,
+  NOMAD_FETCHED_ALLOC_STATS_SIMPLE,
   NOMAD_UNWATCH_ALLOC_STATS
 } from "../sagas/event"
 
@@ -62,11 +63,42 @@ export function AllocHealthReducer(state = {}, action) {
 }
 
 export function AllocStatsReducer(state = {}, action) {
-  switch (action.type) {
-    case NOMAD_FETCHED_ALLOC_STATS:
-      const payload = action.payload
-      const allocationID = payload.ID
+  let payload,
+    allocationID = undefined
 
+  if (action.payload) {
+    payload = action.payload
+    allocationID = payload.ID
+  }
+
+  switch (action.type) {
+    case NOMAD_FETCHED_ALLOC_STATS_SIMPLE:
+      if (!(allocationID in state)) {
+        state[allocationID] = {
+          CPU: { Used: 0, Allocated: 0 },
+          Memory: { Used: 0, Allocated: 0 }
+        }
+      }
+
+      state[allocationID] = {
+        CPU: {
+          Used: payload.Stats.ResourceUsage.CpuStats.TotalTicks,
+          Allocated: payload.Resources.CPU
+        },
+        Memory: {
+          Used:
+            (payload.Stats.ResourceUsage.MemoryStats.RSS +
+              payload.Stats.ResourceUsage.MemoryStats.Cache +
+              payload.Stats.ResourceUsage.MemoryStats.Swap) /
+            1024 /
+            1024,
+          Allocated: payload.Resources.MemoryMB
+        }
+      }
+
+      return Object.assign({}, state)
+
+    case NOMAD_FETCHED_ALLOC_STATS:
       if (!(allocationID in state)) {
         state[allocationID] = {
           Global: {},
@@ -77,7 +109,7 @@ export function AllocStatsReducer(state = {}, action) {
       state[allocationID].Global = computeResourceStats(
         state[allocationID].Global,
         payload.Stats.ResourceUsage,
-        payload.Resources,
+        payload.Resources
       )
 
       // only bother with per-task resources if there is more than one
@@ -92,6 +124,7 @@ export function AllocStatsReducer(state = {}, action) {
         })
       }
 
+      state[allocationID] = Object.assign({}, state[allocationID])
       return Object.assign({}, state)
 
     case NOMAD_UNWATCH_ALLOC_STATS:

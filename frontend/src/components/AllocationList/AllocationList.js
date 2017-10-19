@@ -17,6 +17,7 @@ import ClientLink from "../ClientLink/ClientLink"
 import FormatTime from "../FormatTime/FormatTime"
 import FormatBoolean from "../FormatBoolean/FormatBoolean"
 import AllocationConsulHealthCell from "../AllocationConsulHealthCell/AllocationConsulHealthCell"
+import AllocationStatsCell from "../AllocationStatsCell/AllocationStatsCell"
 
 const nodeIdToNameCache = {}
 const allocIdRegexp = /\[(\d+)\]/
@@ -105,6 +106,12 @@ const ActionsCell = ({ rowIndex, data, ...props }) => (
     <AllocationLink allocationId={data[rowIndex].ID} linkAppend="/files" linkQuery={{ path: "/alloc/logs/" }}>
       <FontIcon className="material-icons">format_align_left</FontIcon>
     </AllocationLink>
+  </Cell>
+)
+
+const AllocationStatsCell2 = ({ rowIndex, data, type, passive, ...props }) => (
+  <Cell>
+    <AllocationStatsCell allocation={data[rowIndex]} type={type} passive={passive} />
   </Cell>
 )
 
@@ -317,10 +324,21 @@ class AllocationList extends Component {
                 width={75}
               />
               {clientColumn(allocations, this.props.showClientColumn, this.props.nodes)}
+              <Column
+                align="center"
+                header={<Cell>CPU</Cell>}
+                cell={<AllocationStatsCell2 data={allocations} type="cpu" passive={false} />}
+                width={75}
+              />
+              <Column
+                align="center"
+                header={<Cell>Memory</Cell>}
+                cell={<AllocationStatsCell2 data={allocations} type="memory" passive={true} />}
+                width={75}
+              />
               <Column header={<Cell>Age</Cell>} cell={<AgeCell data={allocations} />} width={100} />
               <Column header={<Cell>Actions</Cell>} cell={<ActionsCell data={allocations} />} width={100} />
             </Table>
-            <ReactTooltip />
           </CardText>
         </Card>
       </div>

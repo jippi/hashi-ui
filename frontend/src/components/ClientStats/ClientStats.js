@@ -72,19 +72,19 @@ class ClientStats extends Component {
       return <div>Loading ...</div>
     }
 
-    let clusterStats = ''
+    let clusterStats = ""
     if (this.props.nodeStats.data) {
       const CPUItems = [
         { name: "Idle", stroke: blue500, fill: blue200 },
-        { name: "Used", stroke: green500, fill: green200 },
+        { name: "Used", stroke: green500, fill: green200 }
       ]
 
       const MemoryItems = [
         { name: "Free", stroke: blue500, fill: blue200 },
-        { name: "Used", stroke: green500, fill: green200 },
+        { name: "Used", stroke: green500, fill: green200 }
       ]
 
-      clusterStats =
+      clusterStats = (
         <Row>
           <Col key="cpu-utilization-pane" xs={12} sm={12} md={12} lg={6}>
             <UtilizationAreaChart
@@ -106,6 +106,7 @@ class ClientStats extends Component {
             />
           </Col>
         </Row>
+      )
     }
 
     return (

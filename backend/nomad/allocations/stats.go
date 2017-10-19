@@ -10,9 +10,10 @@ import (
 )
 
 const (
-	fetchedStats = "NOMAD_FETCHED_ALLOC_STATS"
-	WatchStats   = "NOMAD_WATCH_ALLOC_STATS"
-	UnwatchStats = "NOMAD_UNWATCH_ALLOC_STATS"
+	fetchedStats       = "NOMAD_FETCHED_ALLOC_STATS"
+	fetchedStatsSimple = "NOMAD_FETCHED_ALLOC_STATS_SIMPLE"
+	WatchStats         = "NOMAD_WATCH_ALLOC_STATS"
+	UnwatchStats       = "NOMAD_UNWATCH_ALLOC_STATS"
 )
 
 type stats struct {
@@ -21,6 +22,8 @@ type stats struct {
 	query  *api.QueryOptions
 
 	id         string
+	simple     bool
+	interval   *time.Duration
 	allocation *api.Allocation
 }
 
@@ -33,8 +36,8 @@ func NewStats(action structs.Action, client *api.Client, query *api.QueryOptions
 }
 
 func (w *stats) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan interface{}) (*structs.Response, error) {
-	ticker := time.NewTicker(1 * time.Second) // fetch stats once in a while
-	timer := time.NewTimer(0 * time.Second)   // fetch stats right away
+	ticker := time.NewTicker(*w.interval)   // fetch stats once in a while
+	timer := time.NewTimer(0 * time.Second) // fetch stats right away
 
 	for {
 		select {
@@ -84,8 +87,13 @@ func (w *stats) work(client *api.Client, send chan *structs.Action, subscribeCh 
 		ID:            w.allocation.ID,
 	}
 
+	eventType := fetchedStats
+	if w.simple {
+		eventType = fetchedStatsSimple
+	}
+
 	send <- &structs.Action{
-		Type:    fetchedStats,
+		Type:    eventType,
 		Payload: response,
 	}
 
@@ -95,12 +103,26 @@ func (w *stats) work(client *api.Client, send chan *structs.Action, subscribeCh 
 func (w *stats) Key() string {
 	w.parse()
 
-	return fmt.Sprintf("/allocation/%s/stats", w.id)
+	return fmt.Sprintf("/allocation/%s/stats?simple=%v&interval=%v", w.id, w.simple, w.interval)
 }
 
 func (w *stats) parse() {
 	params := w.action.Payload.(map[string]interface{})
 	w.id = params["ID"].(string)
+	if simple, ok := params["simple"]; ok {
+		w.simple = simple.(bool)
+	}
+	if interval, ok := params["interval"]; ok {
+		interval, err := time.ParseDuration(interval.(string))
+		if err == nil {
+			w.interval = &interval
+		}
+	}
+
+	if w.interval == nil {
+		v := 1 * time.Second
+		w.interval = &v
+	}
 }
 
 func (w *stats) IsMutable() bool {
