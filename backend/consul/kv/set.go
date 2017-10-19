@@ -64,7 +64,7 @@ func (w *set) Key() string {
 }
 
 func (w *set) IsMutable() bool {
-	return false
+	return true
 }
 
 func (w *set) BackendType() string {
