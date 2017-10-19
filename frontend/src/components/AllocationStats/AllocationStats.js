@@ -25,20 +25,10 @@ class StatsSet extends Component {
         <h3>{this.props.title}</h3>
         <Row>
           <Col key="cpu-utilization-pane" xs={12} sm={12} md={12} lg={6}>
-            <UtilizationAreaChart
-              title="CPU usage (MHz)"
-              data={data.cpu}
-              allocated={true}
-              items={CPUItems}
-            />
+            <UtilizationAreaChart title="CPU usage (MHz)" data={data.cpu} allocated={true} items={CPUItems} />
           </Col>
           <Col key="memory-utilization-pane" xs={12} sm={12} md={12} lg={6}>
-            <UtilizationAreaChart
-              title="RAM usage (MB)"
-              data={data.memory}
-              allocated={true}
-              items={MemoryItems}
-            />
+            <UtilizationAreaChart title="RAM usage (MB)" data={data.memory} allocated={true} items={MemoryItems} />
           </Col>
         </Row>
       </Grid>
@@ -66,11 +56,11 @@ class AllocStats extends Component {
   }
 
   render() {
-    const allocationID = this.props.allocation.ID
-    if (!(allocationID in this.props.allocStats)) {
+    const stats = this.props.allocStats
+
+    if (!stats) {
       return <div>Loading ...</div>
     }
-    const stats = this.props.allocStats[allocationID]
 
     let statsSets = [
       <StatsSet
@@ -99,7 +89,7 @@ class AllocStats extends Component {
 }
 
 function mapStateToProps({ allocation, allocStats }) {
-  return { allocation, allocStats }
+  return { allocation, allocStats: allocStats[allocation.ID] }
 }
 
 AllocStats.propTypes = {
