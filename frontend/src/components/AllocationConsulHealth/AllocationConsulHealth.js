@@ -16,8 +16,8 @@ class AllocationConsulHealth extends Component {
   componentWillReceiveProps(nextProps) {
     // if we get a new allocation, unsubscribe from the old and subscribe to the new
     if (this.props.allocation.ID != nextProps.allocation.ID) {
-      this.unwatch(this.props)
       this.watch(nextProps)
+      this.unwatch(this.props)
       return
     }
 

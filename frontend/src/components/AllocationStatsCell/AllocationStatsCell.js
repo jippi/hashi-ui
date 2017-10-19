@@ -1,4 +1,4 @@
-import React, { Component, PureComponent } from "react"
+import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import ReactTooltip from "react-tooltip"
@@ -114,7 +114,7 @@ class AllocationStatsUnit extends Component {
   }
 }
 
-class AllocationStats extends PureComponent {
+class AllocationStats extends Component {
   componentDidMount() {
     this.watch(this.props)
   }
@@ -126,8 +126,8 @@ class AllocationStats extends PureComponent {
   componentWillReceiveProps(nextProps) {
     // if we get a new allocation, unsubscribe from the old and subscribe to the new
     if (this.props.allocationID != nextProps.allocationID) {
-      this.unwatch(this.props)
       this.watch(nextProps)
+      this.unwatch(this.props)
       return
     }
 
