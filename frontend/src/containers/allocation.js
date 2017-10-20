@@ -123,7 +123,18 @@ class Allocation extends Component {
       )
     }
 
-    if ("path" in query && query["path"].startsWith("/alloc/logs")) {
+    if (end.startsWith("stats")) {
+      out.push(
+        <Link
+          key="stats"
+          to={{ pathname: `/nomad/${this.props.router.params.region}/allocations/${this.props.allocation.ID}/stats` }}
+        >
+          Stats
+        </Link>
+      )
+    }
+
+    if (end.startsWith("files") && "path" in query && query["path"].indexOf("logs") != -1) {
       out.push(
         <Link
           key="logs"
