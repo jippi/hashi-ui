@@ -74,7 +74,7 @@ func (w *stats) work(client *api.Client, send chan *structs.Action, subscribeCh 
 	taskResult.MemoryAllocated = 0
 
 	for _, allocation := range allocations {
-		if allocation.DesiredStatus != "run" {
+		if allocation.DesiredStatus != "run" || allocation.ClientStatus != "running" {
 			continue
 		}
 
