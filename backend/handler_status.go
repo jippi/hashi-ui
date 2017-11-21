@@ -23,7 +23,7 @@ func StatusHandler(cfg *config.Config, nomadClient *nomad.Client, consulClient *
 			Nomad:  make(map[string]interface{}),
 		}
 
-		healthy = newBool(false)
+		healthy = nil
 		if nomadClient != nil {
 			leader, err := nomadClient.Status().Leader()
 			status.Nomad["enabled"] = true
@@ -39,7 +39,6 @@ func StatusHandler(cfg *config.Config, nomadClient *nomad.Client, consulClient *
 			}
 		} else {
 			status.Nomad["enabled"] = false
-			healthy = newBool(true)
 		}
 
 		if consulClient != nil {
@@ -52,14 +51,21 @@ func StatusHandler(cfg *config.Config, nomadClient *nomad.Client, consulClient *
 
 			if err != nil {
 				healthy = newBool(false)
-			} else if healthy != nil {
-				healthy = newBool(*healthy && true)
+			} else {
+				if healthy != nil {
+					healthy = newBool(*healthy && true)
+				} else {
+					healthy = newBool(true)
+				}
 			}
 		} else {
 			status.Consul["enabled"] = false
 		}
-
-		status.Healty = healthy
+		if healthy != nil {
+			status.Healty = healthy
+		} else {
+			status.Healty = newBool(false)
+		}
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 		if *healthy {
