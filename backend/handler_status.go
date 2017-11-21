@@ -23,6 +23,7 @@ func StatusHandler(cfg *config.Config, nomadClient *nomad.Client, consulClient *
 			Nomad:  make(map[string]interface{}),
 		}
 
+		healthy = newBool(true)
 		if nomadClient != nil {
 			leader, err := nomadClient.Status().Leader()
 			status.Nomad["enabled"] = true
@@ -33,8 +34,6 @@ func StatusHandler(cfg *config.Config, nomadClient *nomad.Client, consulClient *
 
 			if err != nil {
 				healthy = newBool(false)
-			} else {
-				healthy = newBool(true)
 			}
 		} else {
 			status.Nomad["enabled"] = false
