@@ -64,7 +64,7 @@ class System extends Component {
             </Col>
             <Col key="evaluate-all" xs={4} sm={4} md={4} lg={4}>
               <Card>
-                <CardTitle title="Force evaluate all jobs" style={{ textAlign: "center" }} />
+                <CardTitle title="Force evaluate system/service jobs" style={{ textAlign: "center" }} />
                 <CardText style={{ textAlign: "center" }}>
                   <FontIcon
                     className="material-icons"
