@@ -31,6 +31,11 @@ func (w *evaluateAllJobs) Do() (*structs.Response, error) {
 
 	var wg sync.WaitGroup
 	for _, job := range jobs {
+		// don't trigger batch jobs
+		if job.Type == api.JobTypeBatch {
+			continue
+		}
+
 		wg.Add(1)
 
 		go func(job *api.JobListStub) {
