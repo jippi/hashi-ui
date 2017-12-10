@@ -249,9 +249,9 @@ const NomadSystem = Loadable({
 const AppRouter = ({ history }) => (
   <Router history={history}>
     <Route path="/" component={App}>
-      <IndexRedirect to="/nomad/" />
+      <IndexRedirect to="/nomad" />
       // Consul
-      <Route path="/consul/" component={ConsulSelectRegion} />
+      <Route path="/consul" component={ConsulSelectRegion} />
       <Redirect from="/consul/:region" to="/consul/:region/services" />
       <Route path="/consul/:region/kv" component={ConsulKV} />
       <Route path="/consul/:region/kv/*" component={ConsulKV} />
@@ -260,7 +260,7 @@ const AppRouter = ({ history }) => (
       <Route path="/consul/:region/services" component={ConsulServices} />
       <Route path="/consul/:region/services/:name" component={ConsulServices} />
       // Nomad
-      <Route path="/nomad/" component={NomadSelectRegion} />
+      <Route path="/nomad" component={NomadSelectRegion} />
       <Redirect from="/nomad/:region" to="/nomad/:region/cluster" />
       <Route path="/nomad/:region/cluster" component={NomadCluster} />
       /* servers */
