@@ -57,6 +57,18 @@ class ConsulSessions extends Component {
     return sessions;
   }
 
+  getPrimaryText(session) {
+    return session.ID;
+  }
+
+  getSecondaryText(session) {
+    var text = "Node: " + session.Node;
+    if ("Name" in session && "" !== session.Name) {
+      text += "; Name: " + session.Name;
+    }
+    return text;
+  }
+
   render() {
     let listStyle = {};
 
@@ -86,9 +98,10 @@ class ConsulSessions extends Component {
                 {this.filteredSessions().map(session => {
                   return (
                     <ListItem
-                      key={session.Name}
+                      key={session.ID}
                       onTouchTap={() => this._onClickSession(session.ID)}
-                      primaryText={session.Name}
+                      primaryText={this.getPrimaryText(session)}
+                      secondaryText={this.getSecondaryText(session)}
                     />
                   )
                 })}
@@ -99,9 +112,37 @@ class ConsulSessions extends Component {
             <Subheader>
               {this.props.routeParams.id ? `Session: ${this.props.routeParams.id}` : "Please select a session"}
             </Subheader>
-            <Card key={`${this.props.consulSession.Name} - ${this.props.consulSession.ID}`} style={{ marginTop: "1em"}}>
-              <CardHeader title={`${this.props.consulSession.Name} - ${this.props.consulSession.ID}`} />
-            </Card>
+            {undefined !== this.props.consulSession.Name &&
+              <Card key={`${this.props.consulSession.ID}`} style={{ marginTop: "1em"}}>
+                <CardHeader title={`${this.props.consulSession.ID}`} />
+                <CardText>
+                  <strong>Name:</strong>
+                  <br />
+                  <div className="content-file small">
+                    {this.props.consulSession.Name}
+                  </div>
+                  <br />
+                  <strong>Node:</strong>
+                  <br />
+                  <div className="content-file small">
+                    {this.props.consulSession.Node}
+                  </div>
+                  <br />
+                  <strong>TTL:</strong>
+                  <br />
+                  <div className="content-file small">
+                    {this.props.consulSession.TTL}
+                  </div>
+                  <br />
+                  <strong>Behavior:</strong>
+                  <br />
+                  <div className="content-file small">
+                    {this.props.consulSession.Behavior}
+                  </div>
+                  <br />
+                </CardText>
+              </Card>
+            }
           </Col>
         </Row>
       </Grid>
