@@ -79,7 +79,7 @@ EOF
 
       resources {
         cpu     = 500  # MHz
-        memory  = 256  # MB
+        memory  = 512  # MB
         network {
           mbits = 10
           port "nomad" {} # host port: dynamic
