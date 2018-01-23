@@ -15,6 +15,7 @@ import (
 	consul_kv "github.com/jippi/hashi-ui/backend/consul/kv"
 	consul_nodes "github.com/jippi/hashi-ui/backend/consul/nodes"
 	consul_services "github.com/jippi/hashi-ui/backend/consul/services"
+	consul_sessions "github.com/jippi/hashi-ui/backend/consul/sessions"
 	nomad_allocations "github.com/jippi/hashi-ui/backend/nomad/allocations"
 	nomad_cluster "github.com/jippi/hashi-ui/backend/nomad/cluster"
 	nomad_deployments "github.com/jippi/hashi-ui/backend/nomad/deployments"
@@ -25,7 +26,7 @@ import (
 	nomad_nodes "github.com/jippi/hashi-ui/backend/nomad/nodes"
 	"github.com/jippi/hashi-ui/backend/structs"
 	"github.com/jippi/hashi-ui/backend/subscriber"
-	uuid "github.com/satori/go.uuid"
+	"github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -239,6 +240,12 @@ func (c *connection) process(action structs.Action) {
 	//
 	case consul_catalog.Datacenters:
 		c.once(consul_catalog.NewDatacenters(action, c.consulClient))
+
+	case consul_sessions.FetchList:
+		c.once(consul_sessions.NewList(action, c.consulClient, c.newConsulQueryOptions()))
+
+	case consul_sessions.FetchInfo:
+		c.once(consul_sessions.NewInfo(action, c.consulClient, c.newConsulQueryOptions()))
 
 	//
 	// Nomad Deployments

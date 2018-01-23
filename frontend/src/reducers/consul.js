@@ -13,7 +13,9 @@ import {
   CONSUL_UNWATCH_NODES,
   CONSUL_UNWATCH_SERVICE,
   CONSUL_UNWATCH_SERVICES,
-  CONSUL_CLEAR_KV_PAIR
+  CONSUL_CLEAR_KV_PAIR,
+  CONSUL_FETCHED_SESSIONS,
+  CONSUL_FETCHED_SESSION
 } from "../sagas/event"
 
 export function ChangeConsulRegionReducer(state = {}, action) {
@@ -114,4 +116,24 @@ export function ConsulKVPair(state = {}, action) {
   }
 
   return state
+}
+
+export function ConsulSessions(state = [], action) {
+  switch (action.type) {
+    case CONSUL_FETCHED_SESSIONS:
+      return action.payload;
+
+    default:
+      return state;
+  }
+}
+
+export function ConsulSession(state = {}, action) {
+  switch (action.type) {
+    case CONSUL_FETCHED_SESSION:
+      return action.payload;
+
+    default:
+      return state;
+  }
 }
