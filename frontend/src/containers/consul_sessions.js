@@ -50,8 +50,11 @@ class ConsulSessions extends Component {
   filteredSessions() {
     let sessions = this.props.consulSessions;
 
-    if ("session_name" in this.state) {
-      sessions = sessions.filter(session => session.Name.indexOf(this.state.session_name) !== -1)
+    if ("search_name" in this.state) {
+      sessions = sessions.filter(session =>
+        session.Name.indexOf(this.state.search_name) !== -1
+        || session.Node.indexOf(this.state.search_name) !== -1
+      )
     }
 
     return sessions;
@@ -85,10 +88,10 @@ class ConsulSessions extends Component {
               <CardHeader title="Filter list" actsAsExpander showExpandableButton />
               <CardText style={{ paddingTop: 0 }} expandable>
                 <TextField
-                  hintText="Session name"
-                  value={this.state.id}
+                  hintText="Session or Node name"
+                  value={this.state.search_name}
                   onChange={(proxy, value) => {
-                    this.setState({ id: value })
+                    this.setState({ search_name: value })
                   }}
                 />
               </CardText>
