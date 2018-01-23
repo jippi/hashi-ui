@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	FetchList   = "CONSUL_GET_SESSIONS"
 	fetchedList = "CONSUL_FETCHED_SESSIONS"
+	WatchList   = "CONSUL_WATCH_SESSIONS"
+	UnwatchList = "CONSUL_UNWATCH_SESSIONS"
 )
 
 type list struct {

@@ -43,3 +43,9 @@ func DefaultQuery(allowStale bool) *api.QueryOptions {
 		WaitTime:   2 * time.Minute,
 	}
 }
+
+func DefaultWriteOptions() *api.WriteOptions {
+	return &api.WriteOptions{
+	// nothing yet
+	}
+}

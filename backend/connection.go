@@ -202,7 +202,7 @@ func (c *connection) process(action structs.Action) {
 		c.watch(consul_services.NewInfo(action, c.consulClient, c.newConsulQueryOptions()))
 	case consul_services.UnwatchInfo:
 		c.unwatch(consul_services.NewInfo(action, nil, nil))
-	case consul_services.Dereigster:
+	case consul_services.Deregister:
 		c.once(consul_services.NewDeregister(action, c.config, c.consulClient))
 	case consul_services.DeregisterCheck:
 		c.once(consul_services.NewDeregisterCheck(action, c.config, c.consulClient))
@@ -241,11 +241,19 @@ func (c *connection) process(action structs.Action) {
 	case consul_catalog.Datacenters:
 		c.once(consul_catalog.NewDatacenters(action, c.consulClient))
 
-	case consul_sessions.FetchList:
-		c.once(consul_sessions.NewList(action, c.consulClient, c.newConsulQueryOptions()))
-
-	case consul_sessions.FetchInfo:
-		c.once(consul_sessions.NewInfo(action, c.consulClient, c.newConsulQueryOptions()))
+	//
+	// Consul Sessions
+	//
+	case consul_sessions.WatchList:
+		c.watch(consul_sessions.NewList(action, c.consulClient, c.newConsulQueryOptions()))
+	case consul_sessions.UnwatchList:
+		c.unwatch(consul_sessions.NewList(action, nil, nil))
+	case consul_sessions.WatchInfo:
+		c.watch(consul_sessions.NewInfo(action, c.consulClient, c.newConsulQueryOptions()))
+	case consul_sessions.UnwatchInfo:
+		c.unwatch(consul_sessions.NewInfo(action, nil, nil))
+	case consul_sessions.DestroySession:
+		c.once(consul_sessions.NewDestroy(action, c.config, c.consulClient, c.newConsulWriteOptions()))
 
 	//
 	// Nomad Deployments
@@ -427,6 +435,10 @@ func (c *connection) newNomadQueryOptions() *nomad.QueryOptions {
 // on hashi-ui configuration
 func (c *connection) newConsulQueryOptions() *consul.QueryOptions {
 	return consul_helper.DefaultQuery(true)
+}
+
+func (connection) newConsulWriteOptions() *consul.WriteOptions {
+	return consul_helper.DefaultWriteOptions()
 }
 
 // watch will start a subscription watcher in a new Go routine

@@ -6,11 +6,17 @@ import { List, ListItem } from "material-ui/List"
 import { Card, CardHeader, CardText } from "material-ui/Card"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import Subheader from "material-ui/Subheader"
+import RaisedButton from "material-ui/RaisedButton"
 import Paper from "material-ui/Paper"
 import TextField from "material-ui/TextField"
+import { red500 } from "material-ui/styles/colors"
 import {
-  CONSUL_GET_SESSION,
-  CONSUL_GET_SESSIONS
+  CONSUL_WATCH_SESSIONS,
+  CONSUL_UNWATCH_SESSIONS,
+  CONSUL_WATCH_SESSION,
+  CONSUL_UNWATCH_SESSION,
+  CONSUL_DESTROY_SESSION,
+  CONSUL_DESTROYED_SESSION
 } from "../sagas/event"
 
 class ConsulSessions extends Component {
@@ -21,21 +27,46 @@ class ConsulSessions extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatch({ type: CONSUL_GET_SESSIONS });
+    this.props.dispatch({ type: CONSUL_WATCH_SESSIONS });
     if (this.props.routeParams.id) {
       this.props.dispatch({
-        type: CONSUL_GET_SESSION,
+        type: CONSUL_WATCH_SESSION,
         payload: this.props.routeParams.id,
       });
     }
   }
 
+  componentWillUnmount() {
+    this.props.dispatch({ type: CONSUL_UNWATCH_SESSIONS });
+    if (this.props.routeParams.id) {
+      this.props.dispatch({
+        type: CONSUL_UNWATCH_SESSION,
+        payload: this.props.routeParams.id
+      });
+    }
+  }
+
   componentDidUpdate(prevProps) {
+    if (!this.props.routeParams.id) {
+      if (prevProps.routeParams.id) {
+        this.props.dispatch({
+          type: CONSUL_UNWATCH_SESSION,
+          payload: prevProps.routeParams.id
+        });
+      }
+      return;
+    }
     if (prevProps.routeParams.id === this.props.routeParams.id) {
       return;
     }
+    if (prevProps.routeParams.id) {
+      this.props.dispatch({
+        type: CONSUL_UNWATCH_SESSION,
+        payload: prevProps.routeParams.id
+      });
+    }
     this.props.dispatch({
-      type: CONSUL_GET_SESSION,
+      type: CONSUL_WATCH_SESSION,
       payload: this.props.routeParams.id
     });
   }
@@ -49,15 +80,28 @@ class ConsulSessions extends Component {
 
   filteredSessions() {
     let sessions = this.props.consulSessions;
-
     if ("search_name" in this.state) {
       sessions = sessions.filter(session =>
         session.Name.indexOf(this.state.search_name) !== -1
         || session.Node.indexOf(this.state.search_name) !== -1
       )
     }
-
     return sessions;
+  }
+
+  destroySession(nodeAddress, sessionID) {
+    // TODO: This is super hacky.  The view should be made aware of action type.
+    window.scrollTo(0, document.getElementById("value-pane").offsetTop);
+    this.props.router.push({
+      pathname: `/consul/${this.props.router.params.region}/sessions`
+    });
+    this.props.dispatch({
+      type: CONSUL_DESTROY_SESSION,
+      payload: {
+        "nodeAddress": nodeAddress,
+        "sessionID": sessionID
+      }
+    });
   }
 
   getPrimaryText(session) {
@@ -65,7 +109,7 @@ class ConsulSessions extends Component {
   }
 
   getSecondaryText(session) {
-    var text = "Node: " + session.Node;
+    let text = "Node: " + session.Node;
     if ("Name" in session && "" !== session.Name) {
       text += "; Name: " + session.Name;
     }
@@ -117,7 +161,21 @@ class ConsulSessions extends Component {
             </Subheader>
             {undefined !== this.props.consulSession.Name &&
               <Card key={`${this.props.consulSession.ID}`} style={{ marginTop: "1em"}}>
-                <CardHeader title={`${this.props.consulSession.ID}`} />
+                <CardHeader title={`${this.props.consulSession.ID}`}>
+                  <div style={{ float: "right" }}>
+                    <RaisedButton
+                      label="Destroy"
+                      labelColor="#fff"
+                      backgroundColor={red500}
+                      style={{ marginRight: 12 }}
+                      onClick={() => {
+                        if (confirm("Destroy Session \"" + this.props.consulSession.ID + "\" on Node \"" + this.props.consulSession.Node + "\"?")) {
+                          this.destroySession(this.props.consulSession.Node, this.props.consulSession.ID);
+                        }
+                      }}
+                    />
+                  </div>
+                </CardHeader>
                 <CardText>
                   <strong>Name:</strong>
                   <br />
@@ -159,7 +217,7 @@ function mapStateToProps({ consulSessions, consulSession }) {
 
 ConsulSessions.defaultProps = {
   consulSessions: [],
-  ConsulSession: {},
+  consulSession: {},
 };
 
 ConsulSessions.propTypes = {

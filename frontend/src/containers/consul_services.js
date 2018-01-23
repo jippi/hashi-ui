@@ -334,7 +334,7 @@ function mapStateToProps({ consulServices, consulService }) {
 
 ConsulServices.defaultProps = {
   consulServices: [],
-  ConsulService: []
+  consulService: []
 }
 
 ConsulServices.propTypes = {
