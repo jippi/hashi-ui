@@ -67,6 +67,11 @@ func main() {
 	} else {
 		log.Infof("| nomad-skip-verify    : %-50s |", "No")
 	}
+	if cfg.NomadAllowStale {
+		log.Infof("| nomad-allow-stale    : %-50s |", "Yes")
+	} else {
+		log.Infof("| nomad-allow-stale    : %-50s |", "No")
+	}
 	log.Infof("| nomad-color          : %-50s |", cfg.NomadColor)
 
 	// Consul
