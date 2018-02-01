@@ -5,6 +5,7 @@ import (
 	"encoding/base32"
 	"fmt"
 	"io"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -46,6 +47,7 @@ var (
 	clientNameMap, _             = lru.New(128)
 	allocationHashes, _          = lru.New(512)
 	b32                          = base32.NewEncoding(strings.ToLower("abcdefghijklmnopqrstuvwxyz234567"))
+	allocIndex                   = regexp.MustCompile(`\[(\d+)\]$`)
 )
 
 func NewHealth(action structs.Action, nomad *nomad.Client, consul *consul.Client, consulQuery *consul.QueryOptions) *health {
@@ -120,7 +122,7 @@ func (w *health) Do() (*structs.Response, error) {
 
 				for _, task := range taskGroup.Tasks {
 					for _, service := range task.Services {
-						sHash := serviceHash(w.allocationID, task.Name, service)
+						sHash := serviceHash(allocation.ID, task.Name, service, allocation)
 						for _, serviceCheck := range service.Checks {
 							for _, consulCheck := range consulChecks {
 								if !strings.Contains(consulCheck.ServiceID, sHash) {
@@ -255,15 +257,15 @@ func checkHash(serviceID string, sc nomad.ServiceCheck) string {
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
-func serviceHash(allocID, taskName string, s *nomad.Service) string {
+func serviceHash(allocID, taskName string, s *nomad.Service, a *nomad.Allocation) string {
 	h := sha1.New()
 	io.WriteString(h, allocID)
-	io.WriteString(h, taskName)
-	io.WriteString(h, s.Name)
+	io.WriteString(h, simlpeInterpolation(taskName, a))
+	io.WriteString(h, simlpeInterpolation(s.Name, a))
 	io.WriteString(h, s.PortLabel)
 	io.WriteString(h, s.AddressMode)
 	for _, tag := range s.Tags {
-		io.WriteString(h, tag)
+		io.WriteString(h, simlpeInterpolation(tag, a))
 	}
 
 	// Base32 is used for encoding the hash as sha1 hashes can always be
@@ -271,4 +273,20 @@ func serviceHash(allocID, taskName string, s *nomad.Service) string {
 	// 8 bytes vs hex. Since these hashes are used in Consul URLs it's nice
 	// to have a reasonably compact URL-safe representation.
 	return b32.EncodeToString(h.Sum(nil))
+}
+
+func simlpeInterpolation(s string, a *nomad.Allocation) string {
+	for k, v := range interpolations(a) {
+		s = strings.Replace(s, fmt.Sprintf("${%s}", k), v, -1)
+	}
+	return s
+}
+
+func interpolations(a *nomad.Allocation) map[string]string {
+	res := make(map[string]string)
+	res["NOMAD_ALLOC_ID"] = a.ID
+	res["NOMAD_JOB_NAME"] = *a.Job.Name
+	res["NOMAD_GROUP_NAME"] = a.TaskGroup
+	res["NOMAD_ALLOC_INDEX"] = allocIndex.FindStringSubmatch(a.Name)[1]
+	return res
 }
