@@ -25,6 +25,9 @@ var (
 	flagNomadAddress = flag.String("nomad-address", "", "The address of the Nomad server. "+
 		"Overrides the NOMAD_ADDR environment variable if set. "+FlagDefault(defaultConfig.NomadAddress))
 
+	flagNomadACLToken = flag.String("nomad-acl-token", "", "An ACL token to use when talking to Nomad. "+
+		"Overrides the NOMAD_ACL_TOKEN environment variable if set. "+FlagDefault(defaultConfig.NomadACLToken))
+
 	flagNomadCACert = flag.String("nomad-ca-cert", "", "Path to the Nomad TLS CA Cert File. "+
 		"Overrides the NOMAD_CACERT environment variable if set. "+FlagDefault(defaultConfig.NomadCACert))
 
@@ -48,7 +51,7 @@ var (
 	flagConsulAddress = flag.String("consul-address", "", "The address of the Consul server. "+
 		"Overrides the CONSUL_ADDR environment variable if set. "+FlagDefault(defaultConfig.ConsulAddress))
 
-	flagConsulACLToken = flag.String("consul.acl-token", "", "A ACL token to use when talking to Consul. "+
+	flagConsulACLToken = flag.String("consul-acl-token", "", "An ACL token to use when talking to Consul. "+
 		"Overrides the CONSUL_ACL_TOKEN environment variable if set. "+FlagDefault(defaultConfig.ConsulACLToken))
 
 	flagLogLevel = flag.String("log-level", "",
@@ -88,6 +91,7 @@ type Config struct {
 
 	NomadEnable      bool
 	NomadAddress     string
+	NomadACLToken    string
 	NomadCACert      string
 	NomadClientCert  string
 	NomadClientKey   string
@@ -238,6 +242,11 @@ func ParseNomadEnvConfig(c *Config) {
 		c.NomadAddress = nomadAddress
 	}
 
+	nomadAclToken, ok := syscall.Getenv("NOMAD_ACL_TOKEN")
+	if ok {
+		c.NomadACLToken = nomadAclToken
+	}
+
 	listenPort, ok := syscall.Getenv("NOMAD_PORT_http")
 	if ok {
 		c.ListenAddress = fmt.Sprintf("0.0.0.0:%s", listenPort)
@@ -303,6 +312,10 @@ func ParseNomadFlagConfig(c *Config) {
 		c.NomadAddress = *flagNomadAddress
 	}
 
+	if *flagNomadACLToken != "" {
+		c.NomadACLToken = *flagNomadACLToken
+	}
+
 	if *flagNomadCACert != "" {
 		c.NomadCACert = *flagNomadCACert
 	}
@@ -341,9 +354,9 @@ func ParseConsulEnvConfig(c *Config) {
 		c.ConsulAddress = consulAddress
 	}
 
-	aclToken, ok := syscall.Getenv("CONSUL_ACL_TOKEN")
+	consulAclToken, ok := syscall.Getenv("CONSUL_ACL_TOKEN")
 	if ok {
-		c.ConsulACLToken = aclToken
+		c.ConsulACLToken = consulAclToken
 	}
 
 	consulColor, ok := syscall.Getenv("CONSUL_COLOR")

@@ -113,6 +113,7 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 |-------------------------|---------------------------|-----------------------------|------------------------------------------------------------------------------------------------------------------|
 | `NOMAD_ENABLE`          | `nomad-enable`      	  | `false` 	                | Use `--nomad.enable` or env `NOMAD_ENABLE=1` to enable Nomad backend                                             |
 | `NOMAD_ADDR`            | `nomad-address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your Nomad instance                                                                   |
+| `NOMAD_ACL_TOKEN`  	  | `nomad-acl-token`   	  | `<empty>` 		          	| The Nomad access token to use (optional)                                                                        |
 | `NOMAD_READ_ONLY`    	  | `nomad-read-only`   	  | `false` 		        	| Should hash-ui allowed to modify Nomad state (stop/start jobs and so forth)	                                   |
 | `NOMAD_CACERT`      	  | `nomad-ca-cert`      	  | `<empty>`   	            | (optional) path to a CA Cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)                 |
 | `NOMAD_CLIENT_CERT`  	  | `nomad-client-cert`       | `<empty>` 	                | (optional) path to a client cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)             |
@@ -129,7 +130,7 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | `CONSUL_ENABLE`         | `consul-enable`      	  | `false` 	                | Use `--consul-enable` or env `CONSUL_ENABLE=1` to enable Consul backend                                          |
 | `CONSUL_ADDR`           | `consul-address`    	  | `127.0.0.1:8500`            | Host + Port for your Consul server, e.g. localhost:8500` (Do not include protocol)                               |
 | `CONSUL_READ_ONLY`  	  | `consul-read-only`   	  | `false` 		            | Should hash-ui be allowed to modify Consul state (modify KV, Services and so forth)                              |
-| `CONSUL_ACL_TOKEN`  	  | `consul.acl-token`   	  | `<empty>` 		          	| The Consul access token to use (optional)                                                                        |
+| `CONSUL_ACL_TOKEN`  	  | `consul-acl-token`   	  | `<empty>` 		          	| The Consul access token to use (optional)                                                                        |
 | `CONSUL_HTTP_TOKEN`     | `<empty>`                 | `<empty>`                   | Synonym for `CONSUL_ACL_TOKEN`                                                                                   |
 | `CONSUL_HTTP_SSL_VERIFY`| `<empty>`                 | `true`                      | Choose if you want your certificate to be verified (Likely to choose false if you have a custom SSL certificate) |
 | `CONSUL_HTTP_SSL`       | `<empty>`                 | `false`                     | Enable HTTPS client to consul                                                                                    |
