@@ -27,7 +27,7 @@ class AllocationStatsUnit extends Component {
     let max = this.props.resource.Allocated
     if (this.props.resource.Used > max) {
       max = this.props.resource.Used
-      data[1].label = "Overtage"
+      data[1].label = "Overallocation"
       data[1].className = "failed"
       data[1].value = this.props.resource.Used - this.props.resource.Allocated
     }
