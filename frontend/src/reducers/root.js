@@ -27,6 +27,8 @@ import {
   ConsulNode,
   ConsulKVPath,
   ConsulKVPair,
+  ConsulSession,
+  ConsulSessions,
   ChangeConsulRegionReducer
 } from "./consul"
 
@@ -47,6 +49,8 @@ const rootReducer = combineReducers({
   consulRegions: ConsulRegionsReducer,
   consulService: ConsulService,
   consulServices: ConsulServiceList,
+  consulSession: ConsulSession,
+  consulSessions: ConsulSessions,
   deployment: DeploymentInfoReducer,
   deploymentAllocations: DeploymentAllocsReducer,
   deployments: DeploymentListReducer,

@@ -113,6 +113,11 @@ const ConsulServices = Loadable({
   loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "consul-services" */ "./containers/consul_services")
 })
+const ConsulSessions = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
+  loader: () => import(/* webpackChunkName: "consul-sessions" */ "./containers/consul_sessions")
+});
 const NomadDeployment = Loadable({
   delay: 200,
   loading: MyLoadingComponent,
@@ -259,6 +264,8 @@ const AppRouter = ({ history }) => (
       <Route path="/consul/:region/nodes/:name" component={ConsulNodes} />
       <Route path="/consul/:region/services" component={ConsulServices} />
       <Route path="/consul/:region/services/:name" component={ConsulServices} />
+      <Route path="/consul/:region/sessions" component={ConsulSessions} />
+      <Route path="/consul/:region/sessions/:id" component={ConsulSessions} />
       // Nomad
       <Route path="/nomad" component={NomadSelectRegion} />
       <Redirect from="/nomad/:region" to="/nomad/:region/cluster" />

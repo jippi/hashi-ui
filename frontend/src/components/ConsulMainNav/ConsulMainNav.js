@@ -24,6 +24,10 @@ class ConsulMainNav extends PureComponent {
         route = `${prefix}/nodes`
         break
 
+      case "sessions":
+        route = `${prefix}/sessions`;
+        break;
+
       default:
         route = `${prefix}/services`
     }
@@ -50,6 +54,10 @@ class ConsulMainNav extends PureComponent {
 
     if (location.pathname.startsWith(prefix + "/nodes")) {
       return "nodes"
+    }
+
+    if (location.pathname.startsWith(prefix + "/sessions")) {
+      return "sessions";
     }
 
     return "services"
@@ -94,6 +102,13 @@ class ConsulMainNav extends PureComponent {
           value="nodes"
           href={this.getRoute("nodes")}
           onClick={clickHandler("nodes")}
+        />
+        <ListItem
+          key="sessions"
+          primaryText="Sessions"
+          value="sessions"
+          href={this.getRoute("sessions")}
+          onClick={clickHandler("sessions")}
         />
       </SelectableList>
     )

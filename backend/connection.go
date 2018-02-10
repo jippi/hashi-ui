@@ -15,6 +15,7 @@ import (
 	consul_kv "github.com/jippi/hashi-ui/backend/consul/kv"
 	consul_nodes "github.com/jippi/hashi-ui/backend/consul/nodes"
 	consul_services "github.com/jippi/hashi-ui/backend/consul/services"
+	consul_sessions "github.com/jippi/hashi-ui/backend/consul/sessions"
 	nomad_allocations "github.com/jippi/hashi-ui/backend/nomad/allocations"
 	nomad_cluster "github.com/jippi/hashi-ui/backend/nomad/cluster"
 	nomad_deployments "github.com/jippi/hashi-ui/backend/nomad/deployments"
@@ -25,7 +26,7 @@ import (
 	nomad_nodes "github.com/jippi/hashi-ui/backend/nomad/nodes"
 	"github.com/jippi/hashi-ui/backend/structs"
 	"github.com/jippi/hashi-ui/backend/subscriber"
-	uuid "github.com/satori/go.uuid"
+	"github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -201,7 +202,7 @@ func (c *connection) process(action structs.Action) {
 		c.watch(consul_services.NewInfo(action, c.consulClient, c.newConsulQueryOptions()))
 	case consul_services.UnwatchInfo:
 		c.unwatch(consul_services.NewInfo(action, nil, nil))
-	case consul_services.Dereigster:
+	case consul_services.Deregister:
 		c.once(consul_services.NewDeregister(action, c.config, c.consulClient))
 	case consul_services.DeregisterCheck:
 		c.once(consul_services.NewDeregisterCheck(action, c.config, c.consulClient))
@@ -239,6 +240,20 @@ func (c *connection) process(action structs.Action) {
 	//
 	case consul_catalog.Datacenters:
 		c.once(consul_catalog.NewDatacenters(action, c.consulClient))
+
+	//
+	// Consul Sessions
+	//
+	case consul_sessions.WatchList:
+		c.watch(consul_sessions.NewList(action, c.consulClient, c.newConsulQueryOptions()))
+	case consul_sessions.UnwatchList:
+		c.unwatch(consul_sessions.NewList(action, nil, nil))
+	case consul_sessions.WatchInfo:
+		c.watch(consul_sessions.NewInfo(action, c.consulClient, c.newConsulQueryOptions()))
+	case consul_sessions.UnwatchInfo:
+		c.unwatch(consul_sessions.NewInfo(action, nil, nil))
+	case consul_sessions.DestroySession:
+		c.once(consul_sessions.NewDestroy(action, c.config, c.consulClient, c.newConsulWriteOptions()))
 
 	//
 	// Nomad Deployments
@@ -420,6 +435,10 @@ func (c *connection) newNomadQueryOptions() *nomad.QueryOptions {
 // on hashi-ui configuration
 func (c *connection) newConsulQueryOptions() *consul.QueryOptions {
 	return consul_helper.DefaultQuery(true)
+}
+
+func (connection) newConsulWriteOptions() *consul.WriteOptions {
+	return consul_helper.DefaultWriteOptions()
 }
 
 // watch will start a subscription watcher in a new Go routine

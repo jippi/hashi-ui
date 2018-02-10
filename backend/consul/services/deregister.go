@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	Dereigster = "CONSUL_DEREGISTER_SERVICE"
+	Deregister = "CONSUL_DEREGISTER_SERVICE"
 )
 
 type deregister struct {
