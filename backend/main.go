@@ -57,6 +57,7 @@ func main() {
 		log.Infof("| nomad-read-only      : %-50s |", "No (Hashi-UI can change Nomad state)")
 	}
 	log.Infof("| nomad-address        : %-50s |", cfg.NomadAddress)
+	log.Infof("| nomad-acl-token     : %-50s |", cfg.NomadACLToken)
 	log.Infof("| nomad-ca-cert        : %-50s |", cfg.NomadCACert)
 	log.Infof("| nomad-client-cert    : %-50s |", cfg.NomadClientCert)
 	log.Infof("| nomad-client-key     : %-50s |", cfg.NomadClientKey)
@@ -66,6 +67,11 @@ func main() {
 		log.Infof("| nomad-skip-verify    : %-50s |", "Yes")
 	} else {
 		log.Infof("| nomad-skip-verify    : %-50s |", "No")
+	}
+	if cfg.NomadAllowStale {
+		log.Infof("| nomad-allow-stale    : %-50s |", "Yes")
+	} else {
+		log.Infof("| nomad-allow-stale    : %-50s |", "No")
 	}
 	log.Infof("| nomad-color          : %-50s |", cfg.NomadColor)
 
@@ -77,7 +83,7 @@ func main() {
 		log.Infof("| consul-read-only     : %-50s |", "No (Hashi-UI can change Consul state)")
 	}
 	log.Infof("| consul-address       : %-50s |", cfg.ConsulAddress)
-	log.Infof("| consul.acl-token     : %-50s |", cfg.ConsulACLToken)
+	log.Infof("| consul-acl-token     : %-50s |", cfg.ConsulACLToken)
 	log.Infof("| consul-color         : %-50s |", cfg.ConsulColor)
 
 	log.Infof("-----------------------------------------------------------------------------")

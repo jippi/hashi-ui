@@ -68,12 +68,9 @@ func (w *file) Do(send chan *structs.Action, subscribeCh chan interface{}, destr
 	}
 
 	cancel := make(chan struct{})
-	frames, err := allocClient.AllocFS().Stream(alloc, w.path, origin, offset, cancel, nil)
-	if err != nil {
-		return structs.NewErrorResponse("Unable to stream file: %s", err)
-	}
+	frames, errCh := allocClient.AllocFS().Stream(alloc, w.path, origin, offset, cancel, nil)
 
-	frameReader := api.NewFrameReader(frames, cancel)
+	frameReader := api.NewFrameReader(frames, errCh, cancel)
 	frameReader.SetUnblockTime(500 * time.Millisecond)
 	r := NewLineLimitReader(frameReader, int(defaultTailLines), int(defaultTailLines*bytesToLines), 1*time.Second)
 	defer r.Close()
@@ -85,6 +82,9 @@ func (w *file) Do(send chan *structs.Action, subscribeCh chan interface{}, destr
 	go func() {
 		for {
 			select {
+			case <-errCh:
+				return
+
 			case <-cancel:
 				return
 

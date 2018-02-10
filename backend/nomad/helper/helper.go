@@ -11,6 +11,7 @@ import (
 func NewRegionClient(c *config.Config, region string) (*api.Client, error) {
 	config := api.DefaultConfig()
 	config.Address = c.NomadAddress
+	config.SecretID = c.NomadACLToken
 	config.WaitTime = 1 * time.Minute
 	config.Region = region
 	config.TLSConfig = &api.TLSConfig{

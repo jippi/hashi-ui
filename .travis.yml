@@ -33,9 +33,9 @@ script:
 after_success:
   - export PR=https://api.github.com/repos/$TRAVIS_REPO_SLUG/pulls/$TRAVIS_PULL_REQUEST
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo `curl -s $PR | jq -r .head.ref`; fi)
-  - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then make -j docker DOCKER_USER=$DOCKER_USER DOCKER_PASS=$DOCKER_PASS DOCKER_EMAIL=$DOCKER_EMAIL TAG=pr-$TRAVIS_PULL_REQUEST COMMIT=$TRAVIS_COMMIT; fi
-  - if [[ "$TRAVIS_TAG" =~ ^v.*$ ]]; then make -j docker DOCKER_USER=$DOCKER_USER DOCKER_PASS=$DOCKER_PASS DOCKER_EMAIL=$DOCKER_EMAIL TAG=$TRAVIS_TAG COMMIT=$TRAVIS_COMMIT; fi
-  - if [[ "$BRANCH" == "master" ]]; then make -j docker DOCKER_USER=$DOCKER_USER DOCKER_PASS=$DOCKER_PASS DOCKER_EMAIL=$DOCKER_EMAIL TAG=latest COMMIT=$TRAVIS_COMMIT; fi
+  - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then make -j docker DOCKER_USER=$DOCKER_USER DOCKER_PASS=$DOCKER_PASS TAG=pr-$TRAVIS_PULL_REQUEST COMMIT=$TRAVIS_COMMIT; fi
+  - if [[ "$TRAVIS_TAG" =~ ^v.*$ ]]; then make -j docker DOCKER_USER=$DOCKER_USER DOCKER_PASS=$DOCKER_PASS TAG=$TRAVIS_TAG COMMIT=$TRAVIS_COMMIT; fi
+  - if [[ "$BRANCH" == "master" ]]; then make -j docker DOCKER_USER=$DOCKER_USER DOCKER_PASS=$DOCKER_PASS TAG=latest COMMIT=$TRAVIS_COMMIT; fi
 
 deploy:
   - provider: releases
