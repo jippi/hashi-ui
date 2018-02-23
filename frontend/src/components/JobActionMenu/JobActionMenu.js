@@ -9,10 +9,10 @@ import MenuItem from "material-ui/MenuItem"
 import { green500 } from "material-ui/styles/colors"
 import JobEditRawJSON from "../JobEditRawJSON/JobEditRawJSON"
 import JobActionStop from "../JobActionStop/JobActionStop"
-import JobActionRestart from "../JobActionRestart/JobActionRestart"
+import JobActionStopStart from "../JobActionStopStart/JobActionStopStart"
+import JobActionRollingRestart from "../JobActionRollingRestart/JobActionRollingRestart"
 import JobActionEvaluate from "../JobActionEvaluate/JobActionEvaluate"
 import { NOMAD_JOB_SHOW_DIALOG } from "../../sagas/event"
-
 class JobActionMenu extends PureComponent {
   handleClick = key => {
     return () => {
@@ -59,14 +59,27 @@ class JobActionMenu extends PureComponent {
           icon={<FontIcon className="material-icons">stop</FontIcon>}
           style={style}
         />,
-        <RaisedButton
-          key="restart"
-          onTouchTap={this.handleClick("restart")}
-          label={showLabel ? "Restart" : undefined}
-          title="Restart job"
-          icon={<FontIcon className="material-icons">loop</FontIcon>}
-          style={style}
-        />
+        <IconMenu
+          key="restart_menu"
+          iconButtonElement={
+            <RaisedButton
+              key="restart"
+              label={showLabel ? "Restart" : undefined}
+              title="Restart job"
+              icon={<FontIcon className="material-icons">loop</FontIcon>}
+              style={style}
+            />
+          }
+        >
+          <MenuItem
+            primaryText="Stop / start"
+            onTouchTap={this.handleClick("stop_start")}
+          />
+          <MenuItem
+            primaryText="Rolling restart"
+            onTouchTap={this.handleClick("rolling_restart")}
+          />
+        </IconMenu>
       ]
     }
 
@@ -104,7 +117,16 @@ class JobActionMenu extends PureComponent {
         <MenuItem
           primaryText="Restart job"
           rightIcon={<FontIcon className="material-icons">loop</FontIcon>}
-          onTouchTap={this.handleClick("restart")}
+          menuItems={[
+            <MenuItem
+              primaryText="Stop / start"
+              onTouchTap={this.handleClick("stop_start")}
+            />,
+            <MenuItem
+              primaryText="Rolling restart"
+              onTouchTap={this.handleClick("rolling_restart")}
+            />
+            ]}
         />
       </IconMenu>
     )
@@ -119,8 +141,9 @@ class JobActionMenu extends PureComponent {
       <span>
         <JobEditRawJSON />
         <JobActionStop />
-        <JobActionRestart />
         <JobActionEvaluate />
+        <JobActionStopStart />
+        <JobActionRollingRestart />
 
         {this.menu()}
       </span>
