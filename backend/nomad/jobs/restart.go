@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/structs"
-	"time"
 )
 
 const (
@@ -34,19 +33,21 @@ func (w *restart) Do() (*structs.Response, error) {
 		return structs.NewErrorResponse(err)
 	}
 
-	timestamp := time.Now()
-	if origJob.Meta == nil {
-		origJob.Meta = make(map[string]string)
+	// stop
+	_, _, err = w.client.Jobs().Deregister(w.action.Payload.(string), false, nil)
+	if err != nil {
+		return structs.NewErrorResponse(err)
 	}
-	origJob.Meta["restarted"] = timestamp.String()
-	origJob.Stop = boolToPtr(false) // force start
+
+	// start
+	origJob.Stop = boolToPtr(false) // enforce starting the job, even if it was stopped originally
 
 	_, _, err = w.client.Jobs().Register(origJob, nil)
 	if err != nil {
 		return structs.NewErrorResponse(err)
 	}
 
-	return structs.NewSuccessResponse("Successfully restarted origJob")
+	return structs.NewSuccessResponse("Successfully restarted job")
 }
 
 func (w *restart) Key() string {
