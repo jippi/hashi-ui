@@ -8,27 +8,22 @@ import (
 )
 
 const (
-	Restart = "NOMAD_RESTART_JOB"
+	RollingRestart = "NOMAD_ROLLING_RESTART_JOB"
 )
 
-type restart struct {
+type rollingRestart struct {
 	action structs.Action
 	client *api.Client
 }
 
-func NewRestart(action structs.Action, client *api.Client) *restart {
-	return &restart{
+func NewRollingRestart(action structs.Action, client *api.Client) *rollingRestart {
+	return &rollingRestart{
 		action: action,
 		client: client,
 	}
 }
 
-// boolToPtr returns the pointer to a bool
-func boolToPtr(b bool) *bool {
-	return &b
-}
-
-func (w *restart) Do() (*structs.Response, error) {
+func (w *rollingRestart) Do() (*structs.Response, error) {
 	origJob, _, err := w.client.Jobs().Info(w.action.Payload.(string), nil)
 	if err != nil {
 		return structs.NewErrorResponse(err)
@@ -46,17 +41,17 @@ func (w *restart) Do() (*structs.Response, error) {
 		return structs.NewErrorResponse(err)
 	}
 
-	return structs.NewSuccessResponse("Successfully restarted job")
+	return structs.NewSuccessResponse("Successfully rolling restarted job")
 }
 
-func (w *restart) Key() string {
-	return fmt.Sprintf("/job/%s/restart", w.action.Payload.(string))
+func (w *rollingRestart) Key() string {
+	return fmt.Sprintf("/job/%s/rolling-restart", w.action.Payload.(string))
 }
 
-func (w *restart) IsMutable() bool {
+func (w *rollingRestart) IsMutable() bool {
 	return true
 }
 
-func (w *restart) BackendType() string {
+func (w *rollingRestart) BackendType() string {
 	return "nomad"
 }
