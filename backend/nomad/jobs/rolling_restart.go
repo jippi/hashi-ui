@@ -33,7 +33,7 @@ func (w *rollingRestart) Do() (*structs.Response, error) {
 	if origJob.Meta == nil {
 		origJob.Meta = make(map[string]string)
 	}
-	origJob.Meta["restarted"] = timestamp.String()
+	origJob.Meta["hashi-ui.restarted"] = timestamp.String()
 	origJob.Stop = boolToPtr(false) // force start
 
 	_, _, err = w.client.Jobs().Register(origJob, nil)
