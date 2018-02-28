@@ -47,7 +47,7 @@ func (w *restart) Do() (*structs.Response, error) {
 		return structs.NewErrorResponse(err)
 	}
 
-	return structs.NewSuccessResponse("Successfully restarted origJob")
+	return structs.NewSuccessResponse("Successfully restarted job")
 }
 
 func (w *restart) Key() string {

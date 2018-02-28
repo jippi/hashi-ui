@@ -308,6 +308,8 @@ func (c *connection) process(action structs.Action) {
 		c.once(nomad_jobs.NewStop(action, c.nomadClient))
 	case nomad_jobs.Restart:
 		c.once(nomad_jobs.NewRestart(action, c.nomadClient))
+	case nomad_jobs.RollingRestart:
+		c.once(nomad_jobs.NewRollingRestart(action, c.nomadClient))
 	case nomad_jobs.PeriodicForce:
 		c.once(nomad_jobs.NewPeriodicForce(action, c.nomadClient))
 	case nomad_jobs.Submit:
