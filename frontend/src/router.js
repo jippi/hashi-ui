@@ -98,6 +98,11 @@ const NomadCluster = Loadable({
   loading: MyLoadingComponent,
   loader: () => import(/* webpackChunkName: "nomad-cluster" */ "./containers/cluster")
 })
+const NomadClusterContention = Loadable({
+  delay: 200,
+  loading: MyLoadingComponent,
+  loader: () => import(/* webpackChunkName: "nomad-cluster" */ "./containers/cluster_contention")
+})
 const ConsulKV = Loadable({
   delay: 200,
   loading: MyLoadingComponent,
@@ -269,7 +274,9 @@ const AppRouter = ({ history }) => (
       // Nomad
       <Route path="/nomad" component={NomadSelectRegion} />
       <Redirect from="/nomad/:region" to="/nomad/:region/cluster" />
-      <Route path="/nomad/:region/cluster" component={NomadCluster} />
+      <Route path="/nomad/:region/cluster" component={NomadCluster}/>
+      <Route path="/nomad/:region/contention" component={NomadClusterContention}/>
+      <Route path="/nomad/:region/contention/:nodeClass" component={NomadClusterContention}/>
       /* servers */
       <Route path="/nomad/:region/servers" component={NomadServers} />
       <Route path="/nomad/:region/servers/:memberId" component={NomadServer}>

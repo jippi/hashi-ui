@@ -91,8 +91,31 @@ func nodeStats(client *api.Client, nodes []*api.NodeListStub) []*customClient {
 				return
 			}
 
+			allocations, _, err := client.Nodes().Allocations(node.ID, nil)
+			if err != nil {
+				return
+			}
+
+			var allocs []*api.Allocation
+			for _, alloc := range allocations {
+				if alloc.DesiredStatus == "run" {allocs = append(allocs, alloc)}
+			}
+
+
+			info, _, err := client.Nodes().Info(node.ID, nil)
+			if err != nil {
+				return
+			}
+
+			res[i].NodeClass = info.NodeClass
+			res[i].Drain = info.Drain
+
 			comp := make(map[string]interface{})
 			comp["cpu"] = cpu(stats.CPU)
+			comp["cpuAllocated"] = cpuAllocated(allocs, *info.Resources.CPU)
+			comp["memAllocated"] = memAllocated(allocs, *info.Resources.MemoryMB)
+			comp["diskAllocated"] = diskAllocated(allocs, *info.Resources.DiskMB)
+			comp["allocations"] = len(allocs)
 
 			res[i].Stats = comp
 		}(i, node)
@@ -101,6 +124,36 @@ func nodeStats(client *api.Client, nodes []*api.NodeListStub) []*customClient {
 	wg.Wait()
 
 	return res
+}
+
+func cpuAllocated(allocs []*api.Allocation, total int) int {
+	var sum int
+
+	for _, alloc := range allocs {
+		sum = sum + *alloc.Resources.CPU
+	}
+
+	return 100 * sum / total
+}
+
+func memAllocated(allocs []*api.Allocation, total int) int {
+	var sum int
+
+	for _, alloc := range allocs {
+		sum = sum + *alloc.Resources.MemoryMB
+	}
+
+	return 100 * sum / total
+}
+
+func diskAllocated(allocs []*api.Allocation, total int) int {
+	var sum int
+
+	for _, alloc := range allocs {
+		sum = sum + *alloc.Resources.DiskMB
+	}
+
+	return 100 * sum / total
 }
 
 func cpu(cpus []*api.HostCPUStats) int {
