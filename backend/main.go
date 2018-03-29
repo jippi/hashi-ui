@@ -73,6 +73,9 @@ func main() {
 	} else {
 		log.Infof("| nomad-allow-stale    : %-50s |", "No")
 	}
+	if cfg.NomadRegion != "" {
+		log.Infof("| nomad-region         : %-50s |", cfg.NomadRegion)
+	}
 	log.Infof("| nomad-color          : %-50s |", cfg.NomadColor)
 
 	// Consul
@@ -131,9 +134,16 @@ func main() {
 	// setup http handlers
 
 	if cfg.NomadEnable {
+		var regionPath string
+
 		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			log.Infof("Redirecting / to /nomad")
-			w.Write([]byte("<script>document.location.href='" + cfg.ProxyPath + "nomad'</script>"))
+			if cfg.NomadRegion != "" {
+				regionPath = "/" + cfg.NomadRegion
+			} else {
+				regionPath = ""
+			}
+			log.Infof("Redirecting / to /nomad" + regionPath)
+			w.Write([]byte("<script>document.location.href='" + cfg.ProxyPath + "nomad" + regionPath + "'</script>"))
 			return
 		})
 

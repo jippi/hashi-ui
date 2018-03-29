@@ -42,6 +42,9 @@ var (
 	flagNomadAllowStale = flag.Bool("nomad-allow-stale", true, "Whether Hashi-UI should use stale mode when connecting to the nomad-api servers"+
 		"Overrides the NOMAD_ALLOW_STALE environment variable if set. "+FlagDefault(strconv.FormatBool(defaultConfig.NomadAllowStale)))
 
+    flagNomadRegion = flag.String("nomad-region", "", "Always show the given region and disable the region selector. "+
+        "Overrides the NOMAD_REGION environment variable if set. "+FlagDefault(defaultConfig.NomadRegion))
+
 	flagConsulEnable = flag.Bool("consul-enable", false, "Whether Consul engine should be started. "+
 		"Overrides the CONSUL_ENABLE environment variable if set. "+FlagDefault(strconv.FormatBool(defaultConfig.ConsulEnable)))
 
@@ -99,6 +102,7 @@ type Config struct {
 	NomadSkipVerify  bool
 	NomadHideEnvData bool
 	NomadAllowStale  bool
+    NomadRegion      string
 	NomadColor       string
 
 	ConsulEnable   bool
@@ -284,6 +288,11 @@ func ParseNomadEnvConfig(c *Config) {
 		c.NomadAllowStale = nomadAllowStale != "true"
 	}
 
+    nomadRegion, ok := syscall.Getenv("NOMAD_REGION")
+    if ok {
+        c.NomadRegion = nomadRegion
+    }
+
 	nomadColor, ok := syscall.Getenv("NOMAD_COLOR")
 	if ok {
 		c.NomadColor = nomadColor
@@ -331,6 +340,10 @@ func ParseNomadFlagConfig(c *Config) {
 	if *flagNomadAllowStale {
 		c.NomadAllowStale = *flagNomadAllowStale
 	}
+
+    if *flagNomadRegion != "" {
+        c.NomadRegion = *flagNomadRegion
+    }
 
 	if *flagNomadColor != "" {
 		c.NomadColor = *flagNomadColor
