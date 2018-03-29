@@ -20,6 +20,8 @@ import {
   NOMAD_UNWATCH_NODES
 } from "../../sagas/event"
 
+const MAX_OUTPUT_LENGTH = 50000
+
 class AllocationFiles extends Component {
   constructor(props) {
     super(props)
@@ -78,8 +80,13 @@ class AllocationFiles extends Component {
     }
 
     if (this.state.fileWatching && nextProps.file.Data) {
-      nextState.contents = this.state.contents + nextProps.file.Data
       stateHaveChanged = true
+      nextState.contents = this.state.contents + nextProps.file.Data
+
+      // ensure we keep small amount of text output in the browser
+      if (nextState.contents.length > MAX_OUTPUT_LENGTH) {
+        nextState.contents = nextState.contents.slice(MAX_OUTPUT_LENGTH * -1)
+      }
 
       this.props.dispatch({
         type: NOMAD_CLEAR_RECEIVED_FILE_DATA,
