@@ -77,7 +77,7 @@ class _JobTopbar extends PureComponent {
   render() {
     let options = []
     options.push(
-      <BottomNavigationItem key="info" label="Info" icon={infoIcon} onTouchTap={() => this.handleActive("info")} />
+      <BottomNavigationItem key="info" label="Info" icon={infoIcon} onClick={() => this.handleActive("info")} />
     )
 
     options.push(
@@ -85,7 +85,7 @@ class _JobTopbar extends PureComponent {
         key="groups"
         label="Groups"
         icon={taskGroupIcon}
-        onTouchTap={() => this.handleActive("groups")}
+        onClick={() => this.handleActive("groups")}
       />
     )
 
@@ -95,7 +95,7 @@ class _JobTopbar extends PureComponent {
           key="children"
           label="Children"
           icon={executionIcon}
-          onTouchTap={() => this.handleActive("children")}
+          onClick={() => this.handleActive("children")}
         />
       )
     }
@@ -106,7 +106,7 @@ class _JobTopbar extends PureComponent {
           key="deployments"
           label="Deployments"
           icon={deploymentIcon}
-          onTouchTap={() => this.handleActive("deployments")}
+          onClick={() => this.handleActive("deployments")}
         />
       )
 
@@ -116,7 +116,7 @@ class _JobTopbar extends PureComponent {
             key="allocations"
             label="Allocations"
             icon={allocationIcon}
-            onTouchTap={() => this.handleActive("allocations")}
+            onClick={() => this.handleActive("allocations")}
           />
         )
 
@@ -125,14 +125,14 @@ class _JobTopbar extends PureComponent {
             key="evaluations"
             label="Evaluations"
             icon={evaluationIcon}
-            onTouchTap={() => this.handleActive("evaluations")}
+            onClick={() => this.handleActive("evaluations")}
           />
         )
       }
     }
 
     options.push(
-      <BottomNavigationItem key="raw" label="Raw" icon={rawIcon} onTouchTap={() => this.handleActive("raw")} />
+      <BottomNavigationItem key="raw" label="Raw" icon={rawIcon} onClick={() => this.handleActive("raw")} />
     )
 
     return (

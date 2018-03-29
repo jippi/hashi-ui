@@ -259,7 +259,7 @@ class AllocationFiles extends Component {
         <MenuItem
           key={file.Name}
           innerDivStyle={{ paddingRight: 0 }}
-          onTouchTap={() => this.handleClick(file)}
+          onClick={() => this.handleClick(file)}
           leftIcon={leftIcon}
           primaryText={primaryText}
           secondaryText={secondaryText}
@@ -273,7 +273,7 @@ class AllocationFiles extends Component {
       files.unshift(
         <MenuItem
           key="back"
-          onTouchTap={() => this.handleClick({ Name: "back", IsDir: true })}
+          onClick={() => this.handleClick({ Name: "back", IsDir: true })}
           leftIcon={leftIcon}
           primaryText=".."
         />

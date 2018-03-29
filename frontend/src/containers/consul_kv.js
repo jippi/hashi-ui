@@ -340,11 +340,11 @@ class ConsulKV extends Component {
 
   confirmDeleteAction(key, title, confirmText, okAction) {
     const actions = [
-      <FlatButton label="Cancel" onTouchTap={() => this.handleCloseDeleteDialog(key)} />,
+      <FlatButton label="Cancel" onClick={() => this.handleCloseDeleteDialog(key)} />,
       <FlatButton
         label={confirmText}
         primary
-        onTouchTap={() => {
+        onClick={() => {
           okAction.bind(this)()
           this.handleCloseDeleteDialog(key)
         }}
@@ -461,7 +461,7 @@ class ConsulKV extends Component {
                   {this.props.routeParams.splat
                     ? <ListItem
                         key=".."
-                        onTouchTap={() => this._onClickPath("..")}
+                        onClick={() => this._onClickPath("..")}
                         leftIcon={<FontIcon className="material-icons">arrow_upward</FontIcon>}
                         primaryText={".."}
                       />
@@ -473,7 +473,7 @@ class ConsulKV extends Component {
                       return (
                         <ListItem
                           key={`folder-${path}`}
-                          onTouchTap={() => this._onClickPath(path)}
+                          onClick={() => this._onClickPath(path)}
                           leftIcon={<FontIcon className="material-icons">folder</FontIcon>}
                           primaryText={this.getHumanPathName(path)}
                         />
@@ -482,7 +482,7 @@ class ConsulKV extends Component {
                       return (
                         <ListItem
                           key={`file-${path}`}
-                          onTouchTap={() => this._onClickFIle(path)}
+                          onClick={() => this._onClickFIle(path)}
                           leftIcon={<FontIcon className="material-icons">insert_drive_file</FontIcon>}
                           primaryText={this.getHumanFileName(path)}
                         />

@@ -47,7 +47,7 @@ class UtilizationAreaChart extends Component {
     }
 
     return (
-      <Card>
+      <Card key={this.props.title}>
         <CardTitle title={this.props.title} />
         <CardText>
           <ResponsiveContainer height={230}>
@@ -72,7 +72,7 @@ class UtilizationAreaChart extends Component {
           </ResponsiveContainer>
 
           <div style={{ marginTop: "1rem", margin: "0 auto", display: "table" }}>
-            <dl className="metrics" style={{ width: 250 }}>
+            <dl key={this.props.title} className="metrics" style={{ width: 250 }}>
               {this.props.items.map(item => {
                 let value = data[data.length - 1][item.name]
                 return [

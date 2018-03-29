@@ -38,14 +38,14 @@ class JobActionMenu extends PureComponent {
       return [
         <RaisedButton
           key="edit"
-          onTouchTap={this.handleClick("edit")}
+          onClick={this.handleClick("edit")}
           label={showLabel ? "Edit" : undefined}
           title="Edit job"
           icon={<FontIcon className="material-icons">edit</FontIcon>}
         />,
         <RaisedButton
           key="evaluate"
-          onTouchTap={this.handleClick("evaluate")}
+          onClick={this.handleClick("evaluate")}
           label={showLabel ? "Evaluate" : undefined}
           title="Evaluate job"
           icon={<FontIcon className="material-icons">refresh</FontIcon>}
@@ -53,7 +53,7 @@ class JobActionMenu extends PureComponent {
         />,
         <RaisedButton
           key="stop"
-          onTouchTap={this.handleClick("stop")}
+          onClick={this.handleClick("stop")}
           label={showLabel ? "Stop" : undefined}
           title="Stop job"
           icon={<FontIcon className="material-icons">stop</FontIcon>}
@@ -73,11 +73,11 @@ class JobActionMenu extends PureComponent {
         >
           <MenuItem
             primaryText="Stop / start"
-            onTouchTap={this.handleClick("stop_start")}
+            onClick={this.handleClick("stop_start")}
           />
           <MenuItem
             primaryText="Rolling restart"
-            onTouchTap={this.handleClick("rolling_restart")}
+            onClick={this.handleClick("rolling_restart")}
           />
         </IconMenu>
       ]
@@ -102,17 +102,17 @@ class JobActionMenu extends PureComponent {
           primary
           primaryText="Edit job"
           rightIcon={<FontIcon className="material-icons">edit</FontIcon>}
-          onTouchTap={this.handleClick("edit")}
+          onClick={this.handleClick("edit")}
         />
         <MenuItem
           primaryText="Re-evaluate job"
           rightIcon={<FontIcon className="material-icons">refresh</FontIcon>}
-          onTouchTap={this.handleClick("evaluate")}
+          onClick={this.handleClick("evaluate")}
         />
         <MenuItem
           primaryText="Stop job"
           rightIcon={<FontIcon className="material-icons">stop</FontIcon>}
-          onTouchTap={this.handleClick("stop")}
+          onClick={this.handleClick("stop")}
         />
         <MenuItem
           primaryText="Restart job"
@@ -120,11 +120,11 @@ class JobActionMenu extends PureComponent {
           menuItems={[
             <MenuItem
               primaryText="Stop / start"
-              onTouchTap={this.handleClick("stop_start")}
+              onClick={this.handleClick("stop_start")}
             />,
             <MenuItem
               primaryText="Rolling restart"
-              onTouchTap={this.handleClick("rolling_restart")}
+              onClick={this.handleClick("rolling_restart")}
             />
             ]}
         />

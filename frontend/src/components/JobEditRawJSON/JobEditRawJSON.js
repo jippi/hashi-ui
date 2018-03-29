@@ -117,12 +117,12 @@ class JobEditRawJSON extends Component {
 
   render() {
     const actions = [
-      <FlatButton label="Cancel" primary onTouchTap={this.handleCancel} />,
+      <FlatButton label="Cancel" primary onClick={this.handleCancel} />,
       <FlatButton
         label="Submit job"
         primary
         disabled={this.state.jobOutOfSync || this.state.submittingJob}
-        onTouchTap={this.handleSubmit}
+        onClick={this.handleSubmit}
       />
     ]
 

@@ -53,19 +53,19 @@ class _ClientTopbar extends PureComponent {
   render() {
     return (
       <BottomNavigation selectedIndex={this.getActiveTab()} style={this.getStyle()}>
-        <BottomNavigationItem label="Info" icon={infoIcon} onTouchTap={() => this.handleActive("info")} />
-        <BottomNavigationItem label="Stats" icon={statsIcon} onTouchTap={() => this.handleActive("stats")} />
+        <BottomNavigationItem label="Info" icon={infoIcon} onClick={() => this.handleActive("info")} />
+        <BottomNavigationItem label="Stats" icon={statsIcon} onClick={() => this.handleActive("stats")} />
         <BottomNavigationItem
           label="Allocations"
           icon={allocationIcon}
-          onTouchTap={() => this.handleActive("allocations")}
+          onClick={() => this.handleActive("allocations")}
         />
         <BottomNavigationItem
           label="Evaluations"
           icon={evaluationIcon}
-          onTouchTap={() => this.handleActive("evaluations")}
+          onClick={() => this.handleActive("evaluations")}
         />
-        <BottomNavigationItem label="Raw" icon={rawIcon} onTouchTap={() => this.handleActive("raw")} />
+        <BottomNavigationItem label="Raw" icon={rawIcon} onClick={() => this.handleActive("raw")} />
       </BottomNavigation>
     )
   }
