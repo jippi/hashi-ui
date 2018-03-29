@@ -45,13 +45,13 @@ class _DeploymentTopbar extends PureComponent {
   render() {
     return (
       <BottomNavigation selectedIndex={this.getActiveTab()} style={this.getStyle()}>
-        <BottomNavigationItem label="Info" icon={infoIcon} onTouchTap={() => this.handleActive("info")} />
+        <BottomNavigationItem label="Info" icon={infoIcon} onClick={() => this.handleActive("info")} />
         <BottomNavigationItem
           label="Allocations"
           icon={allocationIcon}
-          onTouchTap={() => this.handleActive("allocations")}
+          onClick={() => this.handleActive("allocations")}
         />
-        <BottomNavigationItem label="Raw" icon={rawIcon} onTouchTap={() => this.handleActive("raw")} />
+        <BottomNavigationItem label="Raw" icon={rawIcon} onClick={() => this.handleActive("raw")} />
       </BottomNavigation>
     )
   }

@@ -178,7 +178,7 @@ class ConsulNodes extends Component {
                   return (
                     <ListItem
                       key={node.Node}
-                      onTouchTap={() => this._onClickNode(node.Node)}
+                      onClick={() => this._onClickNode(node.Node)}
                       primaryText={node.Node}
                       secondaryText={secondaryText}
                       leftIcon={icon}

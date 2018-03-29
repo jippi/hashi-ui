@@ -53,11 +53,11 @@ class _AllocationTopbar extends PureComponent {
   render() {
     return (
       <BottomNavigation selectedIndex={this.getActiveTab()} style={this.getStyle()}>
-        <BottomNavigationItem label="Info" icon={infoIcon} onTouchTap={() => this.handleActive("info")} />
-        <BottomNavigationItem label="Stats" icon={statsIcon} onTouchTap={() => this.handleActive("stats")} />
-        <BottomNavigationItem label="Files" icon={filesIcon} onTouchTap={() => this.handleActive("files")} />
-        <BottomNavigationItem label="Logs" icon={logsIcon} onTouchTap={() => this.handleActive("logs")} />
-        <BottomNavigationItem label="Raw" icon={rawIcon} onTouchTap={() => this.handleActive("raw")} />
+        <BottomNavigationItem label="Info" icon={infoIcon} onClick={() => this.handleActive("info")} />
+        <BottomNavigationItem label="Stats" icon={statsIcon} onClick={() => this.handleActive("stats")} />
+        <BottomNavigationItem label="Files" icon={filesIcon} onClick={() => this.handleActive("files")} />
+        <BottomNavigationItem label="Logs" icon={logsIcon} onClick={() => this.handleActive("logs")} />
+        <BottomNavigationItem label="Raw" icon={rawIcon} onClick={() => this.handleActive("raw")} />
       </BottomNavigation>
     )
   }

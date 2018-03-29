@@ -53,7 +53,7 @@ class ClientActionMenu extends Component {
               check_box
             </FontIcon>
           }
-          onTouchTap={this.handleClick("drain_off")}
+          onClick={this.handleClick("drain_off")}
         />
       )
     }
@@ -66,7 +66,7 @@ class ClientActionMenu extends Component {
             check_box
           </FontIcon>
         }
-        onTouchTap={this.handleClick("drain_on")}
+        onClick={this.handleClick("drain_on")}
       />
     )
   }
@@ -84,7 +84,7 @@ class ClientActionMenu extends Component {
             remove_circle
           </FontIcon>
         }
-        onTouchTap={this.handleClick("remove")}
+        onClick={this.handleClick("remove")}
       />
     )
   }
