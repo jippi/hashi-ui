@@ -29,11 +29,11 @@ class _AllocationTopbar extends PureComponent {
     }
 
     if (end.startsWith("files")) {
-      return 2
-    }
+      if (location.query.path && location.query.path.indexOf("alloc/logs") !== -1) {
+        return 3
+      }
 
-    if (location.query.path && location.query.path.indexOf("alloc/logs") !== -1) {
-      return 3
+      return 2
     }
 
     if (end.startsWith("raw")) {
