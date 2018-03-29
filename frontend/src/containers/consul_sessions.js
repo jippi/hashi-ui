@@ -146,7 +146,7 @@ class ConsulSessions extends Component {
                   return (
                     <ListItem
                       key={session.ID}
-                      onTouchTap={() => this._onClickSession(session.ID)}
+                      onClick={() => this._onClickSession(session.ID)}
                       primaryText={this.getPrimaryText(session)}
                       secondaryText={this.getSecondaryText(session)}
                     />

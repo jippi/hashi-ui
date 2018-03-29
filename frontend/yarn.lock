@@ -621,7 +621,7 @@ babel-plugin-check-es2015-constants@^6.22.0:
   dependencies:
     babel-runtime "^6.22.0"
 
-babel-plugin-lodash@^3.2.11:
+babel-plugin-lodash@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/babel-plugin-lodash/-/babel-plugin-lodash-3.3.2.tgz#da3a5b49ba27447f54463f6c4fa81396ccdd463f"
   dependencies:
@@ -631,7 +631,7 @@ babel-plugin-lodash@^3.2.11:
     lodash "^4.17.4"
     require-package-name "^2.0.1"
 
-babel-plugin-recharts@^1.1.0:
+babel-plugin-recharts@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/babel-plugin-recharts/-/babel-plugin-recharts-1.1.1.tgz#44fedb9250eaf0073455b06248441bc12e64ed18"
   dependencies:
@@ -1055,7 +1055,7 @@ babel-preset-env@^1.6.0:
     invariant "^2.2.2"
     semver "^5.3.0"
 
-babel-preset-es2015@^6.18.0, babel-preset-es2015@^6.24.1, babel-preset-es2015@^6.9.0:
+babel-preset-es2015@^6.18.0, babel-preset-es2015@^6.9.0:
   version "6.24.1"
   resolved "https://registry.yarnpkg.com/babel-preset-es2015/-/babel-preset-es2015-6.24.1.tgz#d44050d6bc2c9feea702aaf38d727a0210538939"
   dependencies:
@@ -1084,32 +1084,17 @@ babel-preset-es2015@^6.18.0, babel-preset-es2015@^6.24.1, babel-preset-es2015@^6
     babel-plugin-transform-es2015-unicode-regex "^6.24.1"
     babel-plugin-transform-regenerator "^6.24.1"
 
-babel-preset-es2016@^6.16.0, babel-preset-es2016@^6.24.1:
+babel-preset-es2016@^6.16.0:
   version "6.24.1"
   resolved "https://registry.yarnpkg.com/babel-preset-es2016/-/babel-preset-es2016-6.24.1.tgz#f900bf93e2ebc0d276df9b8ab59724ebfd959f8b"
   dependencies:
     babel-plugin-transform-exponentiation-operator "^6.24.1"
-
-babel-preset-es2017@^6.24.1:
-  version "6.24.1"
-  resolved "https://registry.yarnpkg.com/babel-preset-es2017/-/babel-preset-es2017-6.24.1.tgz#597beadfb9f7f208bcfd8a12e9b2b29b8b2f14d1"
-  dependencies:
-    babel-plugin-syntax-trailing-function-commas "^6.22.0"
-    babel-plugin-transform-async-to-generator "^6.24.1"
 
 babel-preset-flow@^6.23.0:
   version "6.23.0"
   resolved "https://registry.yarnpkg.com/babel-preset-flow/-/babel-preset-flow-6.23.0.tgz#e71218887085ae9a24b5be4169affb599816c49d"
   dependencies:
     babel-plugin-transform-flow-strip-types "^6.22.0"
-
-babel-preset-latest@^6.24.1:
-  version "6.24.1"
-  resolved "https://registry.yarnpkg.com/babel-preset-latest/-/babel-preset-latest-6.24.1.tgz#677de069154a7485c2d25c577c02f624b85b85e8"
-  dependencies:
-    babel-preset-es2015 "^6.24.1"
-    babel-preset-es2016 "^6.24.1"
-    babel-preset-es2017 "^6.24.1"
 
 babel-preset-react-optimize@^1.0.1:
   version "1.0.1"
@@ -1618,7 +1603,7 @@ chardet@^0.4.0:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.4.2.tgz#b5473b33dc97c424e5d98dc87d55d4d8a29c8bf2"
 
-chart.js@^2.7.0:
+chart.js@^2.7.2:
   version "2.7.2"
   resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-2.7.2.tgz#3c9fde4dc5b95608211bdefeda7e5d33dffa5714"
   dependencies:
@@ -2050,14 +2035,6 @@ create-react-class@^15.5.1, create-react-class@^15.5.2:
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
-create-react-class@^15.6.0:
-  version "15.6.2"
-  resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.2.tgz#cf1ed15f12aad7f14ef5f2dfe05e6c42f91ef02a"
-  dependencies:
-    fbjs "^0.8.9"
-    loose-envify "^1.3.1"
-    object-assign "^4.1.1"
-
 cross-env@^5.1.3:
   version "5.1.4"
   resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-5.1.4.tgz#f61c14291f7cc653bb86457002ea80a04699d022"
@@ -2293,7 +2270,7 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-date-fns@^1.27.2, date-fns@^1.28.5:
+date-fns@^1.27.2, date-fns@^1.29.0:
   version "1.29.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.29.0.tgz#12e609cdcb935127311d04d33334e2960a2a54e6"
 
@@ -2343,9 +2320,9 @@ deep-is@~0.1.3:
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
 
-deepmerge@^1.5.1:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-1.5.2.tgz#10499d868844cdad4fee0842df8c7f6f0c95a753"
+deepmerge@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-2.1.0.tgz#511a54fff405fc346f0240bb270a3e9533a31102"
 
 define-properties@^1.1.2:
   version "1.1.2"
@@ -3062,18 +3039,6 @@ fbjs@^0.8.1, fbjs@^0.8.16, fbjs@^0.8.9:
     setimmediate "^1.0.5"
     ua-parser-js "^0.7.9"
 
-fbjs@^0.8.6:
-  version "0.8.12"
-  resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.12.tgz#10b5d92f76d45575fd63a217d4ea02bea2f8ed04"
-  dependencies:
-    core-js "^1.0.0"
-    isomorphic-fetch "^2.1.1"
-    loose-envify "^1.0.0"
-    object-assign "^4.1.0"
-    promise "^7.1.1"
-    setimmediate "^1.0.5"
-    ua-parser-js "^0.7.9"
-
 figures@^1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/figures/-/figures-1.7.0.tgz#cbe1e3affcf1cd44b80cadfed28dc793a9701d2e"
@@ -3170,7 +3135,7 @@ first-chunk-stream@^2.0.0:
   dependencies:
     readable-stream "^2.0.2"
 
-fixed-data-table-2@^0.8.0:
+fixed-data-table-2@^0.8.11:
   version "0.8.11"
   resolved "https://registry.yarnpkg.com/fixed-data-table-2/-/fixed-data-table-2-0.8.11.tgz#c92dae458167dc15ed5e47ead17ca88fe3539c90"
   dependencies:
@@ -3875,10 +3840,6 @@ ignore@^3.3.3:
   version "3.3.7"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.7.tgz#612289bfb3c220e186a58118618d5be8c1bab021"
 
-import-inspector@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/import-inspector/-/import-inspector-2.0.0.tgz#ce75fdb6a277d2800effe097e2295bc8690b2923"
-
 import-local@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/import-local/-/import-local-1.0.0.tgz#5e4ffdc03f4fe6c009c6729beb29631c2f8227bc"
@@ -3931,7 +3892,7 @@ ini@^1.3.4, ini@~1.3.0:
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.5.tgz#eee25f56db1c9ec6085e0c22778083f596abf927"
 
-inline-style-prefixer@^3.0.2:
+inline-style-prefixer@^3.0.8:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/inline-style-prefixer/-/inline-style-prefixer-3.0.8.tgz#8551b8e5b4d573244e66a34b04f7d32076a2b534"
   dependencies:
@@ -4277,10 +4238,6 @@ is-typedarray@~1.0.0:
 is-utf8@^0.2.0:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/is-utf8/-/is-utf8-0.2.1.tgz#4b0da1442104d1b336340e80797e865cf39f7d72"
-
-is-webpack-bundle@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/is-webpack-bundle/-/is-webpack-bundle-1.0.0.tgz#576a50bb7c53d1d6a5c1647939c93ae2cbb90eea"
 
 is-windows@^1.0.0, is-windows@^1.0.1, is-windows@^1.0.2:
   version "1.0.2"
@@ -4799,12 +4756,12 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-material-ui@^0.19.2:
-  version "0.19.4"
-  resolved "https://registry.yarnpkg.com/material-ui/-/material-ui-0.19.4.tgz#ca9cdca8aa8bb594dfac5db38ec9ff045a323587"
+material-ui@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/material-ui/-/material-ui-0.20.0.tgz#85411bb59c916c9c7703f29dcffc44e3a67d5111"
   dependencies:
     babel-runtime "^6.23.0"
-    inline-style-prefixer "^3.0.2"
+    inline-style-prefixer "^3.0.8"
     keycode "^2.1.8"
     lodash.merge "^4.6.0"
     lodash.throttle "^4.1.1"
@@ -6062,13 +6019,20 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.0.0, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0:
+prop-types@^15.5.0, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.7, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1:
   version "15.6.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
   dependencies:
     fbjs "^0.8.16"
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
+
+prop-types@~15.5.7:
+  version "15.5.10"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.5.10.tgz#2797dfc3126182e3a95e3dfbb2e893ddd7456154"
+  dependencies:
+    fbjs "^0.8.9"
+    loose-envify "^1.3.1"
 
 proxy-addr@~2.0.3:
   version "2.0.3"
@@ -6214,7 +6178,7 @@ rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-ace@^5.2.0:
+react-ace@^5.10.0:
   version "5.10.0"
   resolved "https://registry.yarnpkg.com/react-ace/-/react-ace-5.10.0.tgz#e328b37ac52759f700be5afdb86ada2f5ec84c5e"
   dependencies:
@@ -6223,17 +6187,11 @@ react-ace@^5.2.0:
     lodash.isequal "^4.1.1"
     prop-types "^15.5.8"
 
-react-addons-test-utils@^15.4.1:
+react-addons-test-utils@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/react-addons-test-utils/-/react-addons-test-utils-15.6.2.tgz#c12b6efdc2247c10da7b8770d185080a7b047156"
 
-"react-addons-transition-group@^0.14.0 || ^15.0.0":
-  version "15.6.0"
-  resolved "https://registry.yarnpkg.com/react-addons-transition-group/-/react-addons-transition-group-15.6.0.tgz#0f220b9f9597db3a80a88dbd6fe805fc644ce21c"
-  dependencies:
-    react-transition-group "^1.2.0"
-
-react-append-to-body@^2.0.13:
+react-append-to-body@^2.0.20:
   version "2.0.20"
   resolved "https://registry.yarnpkg.com/react-append-to-body/-/react-append-to-body-2.0.20.tgz#902668a8b4ee404aa2d74ff30bd74c8bcba85a03"
   dependencies:
@@ -6246,14 +6204,14 @@ react-css-themr@^2.1.2:
     hoist-non-react-statics "^1.2.0"
     invariant "^2.2.1"
 
-react-dom@^15.0.0:
-  version "15.6.2"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.6.2.tgz#41cfadf693b757faf2708443a1d1fd5a02bef730"
+react-dom@^16.2.0:
+  version "16.2.0"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.2.0.tgz#69003178601c0ca19b709b33a83369fe6124c044"
   dependencies:
-    fbjs "^0.8.9"
+    fbjs "^0.8.16"
     loose-envify "^1.1.0"
-    object-assign "^4.1.0"
-    prop-types "^15.5.10"
+    object-assign "^4.1.1"
+    prop-types "^15.6.0"
 
 react-event-listener@^0.5.1:
   version "0.5.3"
@@ -6264,7 +6222,7 @@ react-event-listener@^0.5.1:
     prop-types "^15.6.0"
     warning "^3.0.0"
 
-react-flexbox-grid@^1.1.3:
+react-flexbox-grid@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/react-flexbox-grid/-/react-flexbox-grid-1.1.5.tgz#405fea87eb735d54d161be9bb09c7930910bf8cc"
   dependencies:
@@ -6290,15 +6248,13 @@ react-hot-loader@^4.0.0:
     prop-types "^15.6.0"
     shallowequal "^1.0.2"
 
-react-loadable@^4.0.5:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/react-loadable/-/react-loadable-4.0.5.tgz#225eba40a0e67cc5698bcb5db6e783f0d3a9e729"
+react-loadable@^5.3.1:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/react-loadable/-/react-loadable-5.3.1.tgz#9699e9a08fed49bacd69caaa282034b62a76bcdd"
   dependencies:
-    import-inspector "^2.0.0"
-    is-webpack-bundle "^1.0.0"
-    webpack-require-weak "^1.0.1"
+    prop-types "^15.5.0"
 
-react-redux@^5.0.6:
+react-redux@^5.0.7:
   version "5.0.7"
   resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-5.0.7.tgz#0dc1076d9afb4670f993ffaef44b8f8c1155a4c8"
   dependencies:
@@ -6309,9 +6265,11 @@ react-redux@^5.0.6:
     loose-envify "^1.1.0"
     prop-types "^15.6.0"
 
-react-resize-detector@0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/react-resize-detector/-/react-resize-detector-0.3.3.tgz#ca07443072324843586666d9443a6356da7c0501"
+react-resize-detector@0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/react-resize-detector/-/react-resize-detector-0.4.1.tgz#19f8b993e1e869e2879344e20dc23c4fac28b256"
+  dependencies:
+    prop-types "^15.5.8"
 
 react-router@^3.0.0:
   version "3.2.1"
@@ -6332,25 +6290,20 @@ react-side-effect@^1.1.0:
     exenv "^1.2.1"
     shallowequal "^1.0.1"
 
-react-smooth@0.1.20:
-  version "0.1.20"
-  resolved "https://registry.yarnpkg.com/react-smooth/-/react-smooth-0.1.20.tgz#0527eb60d0ee529e98720127aea5d3fbd2e59fb7"
+react-smooth@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/react-smooth/-/react-smooth-0.3.0.tgz#b67665d7b9820257e34279c15e02e8e5131ebe99"
   dependencies:
     lodash "^4.16.4"
+    prop-types "^15.5.8"
     raf "^3.2.0"
-    react-addons-transition-group "^0.14.0 || ^15.0.0"
+    react-transition-group "^1.1.1"
 
 react-style-proptype@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-style-proptype/-/react-style-proptype-3.0.0.tgz#89e0b646f266c656abb0f0dd8202dbd5036c31e6"
   dependencies:
     prop-types "^15.5.4"
-
-react-tap-event-plugin@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/react-tap-event-plugin/-/react-tap-event-plugin-2.0.1.tgz#316beb3bc6556e29ec869a7293e89c826a9074d2"
-  dependencies:
-    fbjs "^0.8.6"
 
 react-toolbox@^2.0.0-beta.12:
   version "2.0.0-beta.12"
@@ -6363,24 +6316,14 @@ react-toolbox@^2.0.0-beta.12:
     react-style-proptype "^3.0.0"
     react-transition-group "^1.1.3"
 
-react-tooltip@^3.3.0:
+react-tooltip@^3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/react-tooltip/-/react-tooltip-3.4.0.tgz#037f38f797c3e6b1b58d2534ccc8c2c76af4f52d"
   dependencies:
     classnames "^2.2.5"
     prop-types "^15.6.0"
 
-react-transition-group@^1.1.3, react-transition-group@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-1.2.0.tgz#b51fc921b0c3835a7ef7c571c79fc82c73e9204f"
-  dependencies:
-    chain-function "^1.0.0"
-    dom-helpers "^3.2.0"
-    loose-envify "^1.3.1"
-    prop-types "^15.5.6"
-    warning "^3.0.0"
-
-react-transition-group@^1.2.1:
+react-transition-group@^1.1.1, react-transition-group@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-1.2.1.tgz#e11f72b257f921b213229a774df46612346c7ca6"
   dependencies:
@@ -6390,15 +6333,24 @@ react-transition-group@^1.2.1:
     prop-types "^15.5.6"
     warning "^3.0.0"
 
-react@^15.0.0:
-  version "15.6.2"
-  resolved "https://registry.yarnpkg.com/react/-/react-15.6.2.tgz#dba0434ab439cfe82f108f0f511663908179aa72"
+react-transition-group@^1.1.3:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-1.2.0.tgz#b51fc921b0c3835a7ef7c571c79fc82c73e9204f"
   dependencies:
-    create-react-class "^15.6.0"
-    fbjs "^0.8.9"
+    chain-function "^1.0.0"
+    dom-helpers "^3.2.0"
+    loose-envify "^1.3.1"
+    prop-types "^15.5.6"
+    warning "^3.0.0"
+
+react@^16.2.0:
+  version "16.2.0"
+  resolved "https://registry.yarnpkg.com/react/-/react-16.2.0.tgz#a31bd2dab89bff65d42134fa187f24d054c273ba"
+  dependencies:
+    fbjs "^0.8.16"
     loose-envify "^1.1.0"
-    object-assign "^4.1.0"
-    prop-types "^15.5.10"
+    object-assign "^4.1.1"
+    prop-types "^15.6.0"
 
 read-chunk@^2.1.0:
   version "2.1.0"
@@ -6513,22 +6465,23 @@ recast@^0.14.1:
     private "~0.1.5"
     source-map "~0.6.1"
 
-recharts-scale@0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/recharts-scale/-/recharts-scale-0.2.1.tgz#378f543ed17c3245e4d9afb10aaf6298240d2fcb"
+recharts-scale@0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/recharts-scale/-/recharts-scale-0.3.0.tgz#d17e8c4055dbbeb0d65435c9142ee0fb9054758a"
 
-recharts@^0.20.0:
-  version "0.20.8"
-  resolved "https://registry.yarnpkg.com/recharts/-/recharts-0.20.8.tgz#7675c6c75c4888a577063679273508bd79d007f4"
+recharts@^0.22.5:
+  version "0.22.5"
+  resolved "https://registry.yarnpkg.com/recharts/-/recharts-0.22.5.tgz#9ba3d5c120299b3db7275d281f9a31fa004de26c"
   dependencies:
     classnames "2.2.5"
     core-js "2.4.1"
     d3-scale "1.0.4"
     d3-shape "1.0.4"
     lodash "~4.17.4"
-    react-resize-detector "0.3.3"
-    react-smooth "0.1.20"
-    recharts-scale "0.2.1"
+    prop-types "~15.5.7"
+    react-resize-detector "0.4.1"
+    react-smooth "0.3.0"
+    recharts-scale "0.3.0"
     reduce-css-calc "1.3.0"
 
 rechoir@^0.6.2:
@@ -6567,9 +6520,9 @@ reduce-function-call@^1.0.1:
   dependencies:
     balanced-match "^0.4.2"
 
-redux-saga@^0.15.6:
-  version "0.15.6"
-  resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-0.15.6.tgz#8638dc522de6c6c0a496fe8b2b5466287ac2dc4d"
+redux-saga@^0.16.0:
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-0.16.0.tgz#0a231db0a1489301dd980f6f2f88d8ced418f724"
 
 redux@^3.7.2:
   version "3.7.2"
@@ -8057,12 +8010,6 @@ webpack-merge@^4.1.0:
   resolved "https://registry.yarnpkg.com/webpack-merge/-/webpack-merge-4.1.2.tgz#5d372dddd3e1e5f8874f5bf5a8e929db09feb216"
   dependencies:
     lodash "^4.17.5"
-
-webpack-require-weak@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/webpack-require-weak/-/webpack-require-weak-1.0.1.tgz#a6a8e60871bebbe5b085a915ab0af633a412433f"
-  dependencies:
-    is-webpack-bundle "^1.0.0"
 
 webpack-sources@^1.0.1:
   version "1.0.1"

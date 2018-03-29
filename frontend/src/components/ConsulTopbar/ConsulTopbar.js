@@ -47,7 +47,7 @@ class ConsulTopbar extends PureComponent {
         anchorOrigin={{ horizontal: "right", vertical: "top" }}
       >
         {this.props.consulRegions.map(region => {
-          return <MenuItem key={region} primaryText={region} onTouchTap={() => this.onChangeRegion(region)} />
+          return <MenuItem key={region} primaryText={region} onClick={() => this.onChangeRegion(region)} />
         })}
       </IconMenu>
     )

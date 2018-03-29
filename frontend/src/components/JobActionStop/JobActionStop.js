@@ -18,8 +18,8 @@ class JobActionStop extends React.Component {
 
   render() {
     const actions = [
-      <FlatButton label="Cancel" primary onTouchTap={this.handleCancel} />,
-      <FlatButton label="Stop job" backgroundColor={red400} onTouchTap={this.handleSubmit} />
+      <FlatButton label="Cancel" primary onClick={this.handleCancel} />,
+      <FlatButton label="Stop job" backgroundColor={red400} onClick={this.handleSubmit} />
     ]
 
     return (

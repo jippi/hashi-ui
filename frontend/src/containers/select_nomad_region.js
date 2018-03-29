@@ -35,7 +35,7 @@ class SelectNomadRegion extends Component {
                 <ListItem
                   leftIcon={<FontIcon className="material-icons">public</FontIcon>}
                   primaryText={regionName}
-                  onTouchTap={() => this._onClick(regionName)}
+                  onClick={() => this._onClick(regionName)}
                 />
               )
             })}

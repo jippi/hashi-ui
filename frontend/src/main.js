@@ -1,7 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import { Provider } from "react-redux"
-import injectTapEventPlugin from "react-tap-event-plugin"
 
 import browserHistory from "./history"
 import AppRouter from "./router"
@@ -14,14 +13,6 @@ import ErrorApp from "./components/error_app"
 
 let retries = 0
 let retryInterval
-let tapsEventInjected = false
-
-function injectTapEvents() {
-  if (!tapsEventInjected) {
-    injectTapEventPlugin()
-    tapsEventInjected = true
-  }
-}
 
 function renderApp(store) {
   clearInterval(retryInterval)
@@ -37,8 +28,6 @@ function renderApp(store) {
 }
 
 function bootApp() {
-  injectTapEvents()
-
   configureStore()
     .then(store => {
       renderApp(store)
