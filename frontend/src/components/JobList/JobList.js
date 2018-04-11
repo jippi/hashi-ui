@@ -86,7 +86,7 @@ class JobList extends Component {
                 <TableRowColumn style={columnFormat}>{job.Priority}</TableRowColumn>
                 <TableRowColumn style={columnFormat}>{job.Status}</TableRowColumn>
                 <TableRowColumn style={columnFormat}>
-                  <JobHealth job={job} />
+                { job.Type == "service" ? <JobHealth jobID={job.ID} /> : null }
                 </TableRowColumn>
                 <TableRowColumn style={columnFormat}>{this.taskGroupCount(job)}</TableRowColumn>
                 {getJobStatisticsRow(job)}

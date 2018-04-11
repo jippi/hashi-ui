@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { PureComponent } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import FontIcon from "material-ui/FontIcon"
@@ -13,40 +13,27 @@ const JobHealthCell = ({ rowIndex, dispatch, jobHealth, data, ...props }) => (
 )
 export { JobHealthCell }
 
-class JobHealth extends Component {
+class JobHealth extends PureComponent {
   componentDidMount() {
-    if (this.props.job.Type != "service") {
-      return
-    }
-
     this.props.dispatch({
       type: NOMAD_WATCH_JOB_HEALTH,
       payload: {
-        id: this.props.job.ID
+        id: this.props.jobID
       }
     })
   }
 
   componentWillUnmount() {
-    if (this.props.job.Type != "service") {
-      return
-    }
-
     this.props.dispatch({
       type: NOMAD_UNWATCH_JOB_HEALTH,
       payload: {
-        id: this.props.job.ID
+        id: this.props.jobID
       }
     })
   }
 
   render() {
-    const jobID = this.props.job.ID
-    const health = this.props.jobHealth[jobID]
-
-    if (this.props.job.Type != "service") {
-      return null
-    }
+    const health = this.props.health
 
     if (!health) {
       return (
@@ -78,14 +65,14 @@ class JobHealth extends Component {
   }
 }
 
-function mapStateToProps({ jobHealth }) {
-  return { jobHealth }
+function mapStateToProps({ jobHealth }, { jobID }) {
+  return { health: jobHealth[jobID] }
 }
 
 JobHealth.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  job: PropTypes.object.isRequired,
-  jobHealth: PropTypes.object.isRequired
+  health: PropTypes.object,
+  jobID: PropTypes.string.isRequired,
 }
 
 export default connect(mapStateToProps)(JobHealth)
