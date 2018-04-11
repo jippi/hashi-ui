@@ -276,13 +276,9 @@ func (c *connection) process(action structs.Action) {
 	//
 	// Nomad Jobs
 	//
-	case nomad_jobs.WatchList:
-		fallthrough // same as filtered
-	case nomad_jobs.WatchListFiltered:
+	case nomad_jobs.WatchList, nomad_jobs.WatchListFiltered:
 		c.watch(nomad_jobs.NewList(action, c.nomadClient, c.newNomadQueryOptions()))
-	case nomad_jobs.UnwatchListFiltered:
-		fallthrough // same as filtered
-	case nomad_jobs.UnwatchList:
+	case nomad_jobs.UnwatchList, nomad_jobs.UnwatchListFiltered:
 		c.unwatch(nomad_jobs.NewList(action, c.nomadClient, c.newNomadQueryOptions()))
 	case nomad_jobs.WatchInfo:
 		c.watch(nomad_jobs.NewInfo(action, c.nomadClient, c.newNomadQueryOptions()))
