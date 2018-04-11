@@ -151,8 +151,8 @@ class NomadMainNav extends PureComponent {
     return <SelectableList value={this.getActiveMenu()}>
         <ListItem key="cluster" primaryText="Cluster" value="cluster" href={this.getRoute("cluster")} onClick={clickHandler("cluster")} />
         <ListItem key="jobs" primaryText="Jobs" value="jobs" href={this.getRoute("jobs")} onClick={clickHandler("jobs")} />
-        <ListItem key="jobs-service" primaryText=" ⇢ Service" value="jobs-service" href={this.getRoute("jobs-service")} onClick={clickHandler("jobs-service")} />
         <ListItem key="jobs-batch" primaryText=" ⇢ Batch" value="jobs-batch" href={this.getRoute("jobs-batch")} onClick={clickHandler("jobs-batch")} />
+        <ListItem key="jobs-service" primaryText=" ⇢ Service" value="jobs-service" href={this.getRoute("jobs-service")} onClick={clickHandler("jobs-service")} />
         <ListItem key="jobs-system" primaryText=" ⇢ System" value="jobs-system" href={this.getRoute("jobs-system")} onClick={clickHandler("jobs-system")} />
         <ListItem key="deployments" primaryText="Deployments" value="deployments" href={this.getRoute("deployments")} onClick={clickHandler("deployments")} />
         <ListItem key="allocations" primaryText="Allocations" value="allocations" href={this.getRoute("allocations")} onClick={clickHandler("allocations")} />
