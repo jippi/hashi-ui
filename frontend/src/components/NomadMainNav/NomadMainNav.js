@@ -25,6 +25,18 @@ class NomadMainNav extends PureComponent {
         route = `${prefix}/jobs`
         break
 
+      case "jobs-service":
+        route = `${prefix}/jobs?job_type=service`
+        break
+
+      case "jobs-batch":
+        route = `${prefix}/jobs?job_type=batch`
+        break
+
+      case "jobs-system":
+        route = `${prefix}/jobs?job_type=system`
+        break
+
       case "deployments":
         route = `${prefix}/deployments`
         break
@@ -64,9 +76,22 @@ class NomadMainNav extends PureComponent {
     const location = this.props.location
 
     const prefix = `/nomad/${this.props.router.params.region}`
+    const query = location.query || {}
 
     if (location.pathname.startsWith(prefix + "/cluster")) {
       return "cluster"
+    }
+
+    if (location.pathname.startsWith(prefix) && query["job_type"] == "service") {
+      return "jobs-service"
+    }
+
+    if (location.pathname.startsWith(prefix) && query["job_type"] == "batch") {
+      return "jobs-batch"
+    }
+
+    if (location.pathname.startsWith(prefix) && query["job_type"] == "system") {
+      return "jobs-system"
     }
 
     if (location.pathname.startsWith(prefix + "/jobs")) {
@@ -138,6 +163,27 @@ class NomadMainNav extends PureComponent {
           value="jobs"
           href={this.getRoute("jobs")}
           onClick={clickHandler("jobs")}
+        />
+        <ListItem
+          key="jobs-service"
+          primaryText="-> Service"
+          value="jobs-service"
+          href={this.getRoute("jobs-service")}
+          onClick={clickHandler("jobs-service")}
+        />
+        <ListItem
+          key="jobs-batch"
+          primaryText="-> Batch"
+          value="jobs-batch"
+          href={this.getRoute("jobs-batch")}
+          onClick={clickHandler("jobs-batch")}
+        />
+        <ListItem
+          key="jobs-system"
+          primaryText="-> System"
+          value="jobs-system"
+          href={this.getRoute("jobs-system")}
+          onClick={clickHandler("jobs-system")}
         />
         <ListItem
           key="deployments"
