@@ -148,87 +148,19 @@ class NomadMainNav extends PureComponent {
       }
     }
 
-    return (
-      <SelectableList value={this.getActiveMenu()}>
-        <ListItem
-          key="cluster"
-          primaryText="Cluster"
-          value="cluster"
-          href={this.getRoute("cluster")}
-          onClick={clickHandler("cluster")}
-        />
-        <ListItem
-          key="jobs"
-          primaryText="Jobs"
-          value="jobs"
-          href={this.getRoute("jobs")}
-          onClick={clickHandler("jobs")}
-        />
-        <ListItem
-          key="jobs-service"
-          primaryText="-> Service"
-          value="jobs-service"
-          href={this.getRoute("jobs-service")}
-          onClick={clickHandler("jobs-service")}
-        />
-        <ListItem
-          key="jobs-batch"
-          primaryText="-> Batch"
-          value="jobs-batch"
-          href={this.getRoute("jobs-batch")}
-          onClick={clickHandler("jobs-batch")}
-        />
-        <ListItem
-          key="jobs-system"
-          primaryText="-> System"
-          value="jobs-system"
-          href={this.getRoute("jobs-system")}
-          onClick={clickHandler("jobs-system")}
-        />
-        <ListItem
-          key="deployments"
-          primaryText="Deployments"
-          value="deployments"
-          href={this.getRoute("deployments")}
-          onClick={clickHandler("deployments")}
-        />
-        <ListItem
-          key="allocations"
-          primaryText="Allocations"
-          value="allocations"
-          href={this.getRoute("allocations")}
-          onClick={clickHandler("allocations")}
-        />
-        <ListItem
-          key="evaluations"
-          primaryText="Evaluations"
-          value="evaluations"
-          href={this.getRoute("evaluations")}
-          onClick={clickHandler("evaluations")}
-        />
-        <ListItem
-          key="clients"
-          primaryText="Clients"
-          value="clients"
-          href={this.getRoute("clients")}
-          onClick={clickHandler("clients")}
-        />
-        <ListItem
-          key="servers"
-          primaryText="Servers"
-          value="servers"
-          href={this.getRoute("servers")}
-          onClick={clickHandler("servers")}
-        />
-        <ListItem
-          key="system"
-          primaryText="System"
-          value="system"
-          href={this.getRoute("system")}
-          onClick={clickHandler("system")}
-        />
+    return <SelectableList value={this.getActiveMenu()}>
+        <ListItem key="cluster" primaryText="Cluster" value="cluster" href={this.getRoute("cluster")} onClick={clickHandler("cluster")} />
+        <ListItem key="jobs" primaryText="Jobs" value="jobs" href={this.getRoute("jobs")} onClick={clickHandler("jobs")} />
+        <ListItem key="jobs-service" primaryText=" ⇢ Service" value="jobs-service" href={this.getRoute("jobs-service")} onClick={clickHandler("jobs-service")} />
+        <ListItem key="jobs-batch" primaryText=" ⇢ Batch" value="jobs-batch" href={this.getRoute("jobs-batch")} onClick={clickHandler("jobs-batch")} />
+        <ListItem key="jobs-system" primaryText=" ⇢ System" value="jobs-system" href={this.getRoute("jobs-system")} onClick={clickHandler("jobs-system")} />
+        <ListItem key="deployments" primaryText="Deployments" value="deployments" href={this.getRoute("deployments")} onClick={clickHandler("deployments")} />
+        <ListItem key="allocations" primaryText="Allocations" value="allocations" href={this.getRoute("allocations")} onClick={clickHandler("allocations")} />
+        <ListItem key="evaluations" primaryText="Evaluations" value="evaluations" href={this.getRoute("evaluations")} onClick={clickHandler("evaluations")} />
+        <ListItem key="clients" primaryText="Clients" value="clients" href={this.getRoute("clients")} onClick={clickHandler("clients")} />
+        <ListItem key="servers" primaryText="Servers" value="servers" href={this.getRoute("servers")} onClick={clickHandler("servers")} />
+        <ListItem key="system" primaryText="System" value="system" href={this.getRoute("system")} onClick={clickHandler("system")} />
       </SelectableList>
-    )
   }
 
   render() {
