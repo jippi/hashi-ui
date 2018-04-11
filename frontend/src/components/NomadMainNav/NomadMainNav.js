@@ -78,19 +78,23 @@ class NomadMainNav extends PureComponent {
     const prefix = `/nomad/${this.props.router.params.region}`
     const query = location.query || {}
 
+    if (!query["job_type"] && this.props.jobType) {
+      query["job_type"] = this.props.jobType
+    }
+
     if (location.pathname.startsWith(prefix + "/cluster")) {
       return "cluster"
     }
 
-    if (location.pathname.startsWith(prefix) && query["job_type"] == "service") {
+    if (location.pathname.startsWith(prefix + "/jobs") && query["job_type"] == "service") {
       return "jobs-service"
     }
 
-    if (location.pathname.startsWith(prefix) && query["job_type"] == "batch") {
+    if (location.pathname.startsWith(prefix + "/jobs") && query["job_type"] == "batch") {
       return "jobs-batch"
     }
 
-    if (location.pathname.startsWith(prefix) && query["job_type"] == "system") {
+    if (location.pathname.startsWith(prefix + "/jobs") && query["job_type"] == "system") {
       return "jobs-system"
     }
 
@@ -176,8 +180,8 @@ NomadMainNav.propTypes = {
   dispatch: PropTypes.func.isRequired
 }
 
-function mapStateToProps() {
-  return {}
+function mapStateToProps({ job }) {
+  return { jobType: job.Type || undefined }
 }
 
 export default connect(mapStateToProps)(withRouter(NomadMainNav))
