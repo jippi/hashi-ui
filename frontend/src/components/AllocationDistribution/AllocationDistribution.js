@@ -23,8 +23,9 @@ class AllocationDistribution extends Component {
       Lost: 0
     }
 
-    if (this.props.job.JobSummary !== null) {
-      const summary = this.props.job.JobSummary.Summary
+    if (this.props.summary !== null) {
+      const summary = this.props.summary
+
       Object.keys(summary).forEach(taskGroupID => {
         counter.Queued += summary[taskGroupID].Queued
         counter.Complete += summary[taskGroupID].Complete
@@ -72,7 +73,7 @@ class AllocationDistribution extends Component {
 
     if (this.state.active) {
       tt = (
-        <ReactTooltip id={`job-stats-${this.props.job.ID}`} className="tt" type="light">
+        <ReactTooltip id={`job-stats-${this.props.jobID}`} className="tt" type="light">
           <ol>
             {data.map(x => {
               return (
@@ -96,7 +97,7 @@ class AllocationDistribution extends Component {
       <div>
         <div style={{ height: 20 }} className="chart distribution-bar">
           {tt}
-          <svg data-tip data-for={`job-stats-${this.props.job.ID}`}>
+          <svg data-tip data-for={`job-stats-${this.props.jobID}`}>
             <g className="bars">
               {data.map(x => {
                 let mouseenter = e => {

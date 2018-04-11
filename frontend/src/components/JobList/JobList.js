@@ -20,31 +20,13 @@ const flexibleWidth = {
 
 const summaryLabels = ["Starting", "Running", "Queued", "Complete", "Failed", "Lost"]
 
-const getJobStatisticsHeader = () => {
-  return (
-    <TableHeaderColumn style={flexibleWidth} key={`statistics-header`}>
-      Allocation Status
-    </TableHeaderColumn>
-  )
-}
-
-const getJobStatisticsRow = job => {
-  return (
-    <TableRowColumn style={flexibleWidth} key={`${job.ID}-statistics`}>
-      <AllocationDistribution job={job} />
-    </TableRowColumn>
-  )
-}
-
 class JobList extends Component {
   taskGroupCount(job) {
-    let taskGroupCount = "N/A"
-
     if (job.JobSummary !== null) {
-      taskGroupCount = Object.keys(job.JobSummary.Summary).length
+      return Object.keys(job.JobSummary.Summary).length
     }
 
-    return taskGroupCount
+    return "N/A"
   }
 
   failedTaskCount(job) {
@@ -71,14 +53,13 @@ class JobList extends Component {
             <TableHeaderColumn style={columnFormat}>Status</TableHeaderColumn>
             <TableHeaderColumn style={columnFormat}>In Sync</TableHeaderColumn>
             <TableHeaderColumn style={columnFormat}>Groups</TableHeaderColumn>
-            {getJobStatisticsHeader()}
+            <TableHeaderColumn style={flexibleWidth}>Allocation Status</TableHeaderColumn>
             <TableHeaderColumn style={columnFormat}># Lost</TableHeaderColumn>
           </TableRow>
         </TableHeader>
         <TableBody>
           {this.props.jobs.map(job => {
-            return (
-              <TableRow key={job.ID}>
+            return <TableRow key={job.ID}>
                 <TableRowColumn style={flexibleWidth}>
                   <JobLink jobId={job.ID} />
                 </TableRowColumn>
@@ -86,13 +67,14 @@ class JobList extends Component {
                 <TableRowColumn style={columnFormat}>{job.Priority}</TableRowColumn>
                 <TableRowColumn style={columnFormat}>{job.Status}</TableRowColumn>
                 <TableRowColumn style={columnFormat}>
-                { job.Type == "service" ? <JobHealth jobID={job.ID} /> : null }
+                  {job.Type == "service" ? <JobHealth jobID={job.ID} /> : null}
                 </TableRowColumn>
                 <TableRowColumn style={columnFormat}>{this.taskGroupCount(job)}</TableRowColumn>
-                {getJobStatisticsRow(job)}
+                <TableRowColumn style={flexibleWidth} key={`${job.ID}-statistics`}>
+                  <AllocationDistribution jobID={job.ID} summary={job.JobSummary.Summary} />
+                </TableRowColumn>
                 <TableRowColumn style={columnFormat}>{this.failedTaskCount(job)}</TableRowColumn>
               </TableRow>
-            )
           })}
         </TableBody>
       </Table>
