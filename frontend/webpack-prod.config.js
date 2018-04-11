@@ -81,16 +81,21 @@ const config = {
       { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, use: "url-loader?limit=10000&mimetype=image/svg+xml" }
     ]
   },
-
+  optimization: {
+    splitChunks: {
+      chunks: "all",
+      name: false,
+    },
+  },
   plugins: [
-    new webpack.DefinePlugin({'process.env': JSON.stringify('production')}),
-    new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify('production')}),
+    new webpack.DefinePlugin({ "process.env": JSON.stringify("production") }),
+    new webpack.DefinePlugin({ "process.env.NODE_ENV": JSON.stringify("production") }),
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       debug: false
     }),
     new UglifyJsPlugin({
-      sourceMap: true,
+      sourceMap: true
     }),
     new HtmlWebpackPlugin({
       title: "Hashi-UI",
