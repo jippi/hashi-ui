@@ -345,6 +345,12 @@
 			"revisionTime": "2017-06-20T10:48:52Z"
 		},
 		{
+			"checksumSHA1": "RAVVMwyiwnOGnYFoEFnZL38ydTQ=",
+			"path": "github.com/zserge/webview",
+			"revision": "02aa1dcf62a15f2c1e2197a07642e9c474ac32fa",
+			"revisionTime": "2018-03-25T11:24:30Z"
+		},
+		{
 			"checksumSHA1": "ppPg0bIlBAVJy0Pn13BfBnkp9V4=",
 			"path": "golang.org/x/crypto/blake2b",
 			"revision": "0efb9460aaf800c6376acf625be2853bceac2e06",

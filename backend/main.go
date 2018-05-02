@@ -14,6 +14,7 @@ import (
 	consul_helper "github.com/jippi/hashi-ui/backend/consul/helper"
 	nomad_helper "github.com/jippi/hashi-ui/backend/nomad/helper"
 	log "github.com/sirupsen/logrus"
+	"github.com/zserge/webview"
 )
 
 var (
@@ -218,17 +219,21 @@ func main() {
 		}
 	})
 
-	log.Infof("Listening ...")
-	var err error
-	if cfg.HttpsEnable {
-		if cfg.ServerCert == "" || cfg.ServerKey == "" {
-			log.Fatal("Using https protocol but server certificate or key were not specified.")
+	go func() {
+		log.Infof("Listening ...")
+		var err error
+		if cfg.HttpsEnable {
+			if cfg.ServerCert == "" || cfg.ServerKey == "" {
+				log.Fatal("Using https protocol but server certificate or key were not specified.")
+			}
+			err = http.ListenAndServeTLS(cfg.ListenAddress, cfg.ServerCert, cfg.ServerKey, router)
+		} else {
+			err = http.ListenAndServe(cfg.ListenAddress, router)
 		}
-		err = http.ListenAndServeTLS(cfg.ListenAddress, cfg.ServerCert, cfg.ServerKey, router)
-	} else {
-		err = http.ListenAndServe(cfg.ListenAddress, router)
-	}
-	if err != nil {
-		log.Fatal(err)
-	}
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	webview.Open("Hashi-UI", "http://"+cfg.ListenAddress, 1024, 1024, true)
 }
