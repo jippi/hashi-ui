@@ -106,6 +106,7 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 | `HTTPS_ENABLE`          | `https-enable`            | `false`                     | Use HTTPS instead of HTTP for Hashi-UI |
 | `SERVER_CERT`           | `server-cert`             | `<empty>`                   | Server certificate to use when HTTPS is enabled |
 | `SERVER_KEY`            | `server-key`              | `<empty>`                   | Server key to use when HTTPS is enabled |
+| `SITE_TITLE`            | `site-title`              | `<empty>`                   | Free-form text to be prepended to title-bar; eg. "Staging" |
 
 ## Nomad Configuration
 
