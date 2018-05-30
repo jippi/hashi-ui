@@ -71,12 +71,16 @@ var (
 
 	flagServerKey = flag.String("server-key", "",
 		"Server key to use when https protocol is enabled. "+FlagDefault(defaultConfig.ServerKey))
-
+	
 	flagNomadColor = flag.String("nomad-color", "",
 		"Set the main color for nomad related screens. "+FlagDefault(defaultConfig.NomadColor))
 
 	flagConsulColor = flag.String("consul-color", "",
 		"Set the main color for consul related screens. "+FlagDefault(defaultConfig.ConsulColor))
+
+	flagSiteTitle = flag.String("site-title", "",
+		"Free-form text to be prepended to title-bar; eg. 'Staging'. "+FlagDefault(defaultConfig.SiteTitle))
+	
 )
 
 // Config for the hashi-ui server
@@ -88,6 +92,7 @@ type Config struct {
 	HttpsEnable   bool
 	ServerCert    string
 	ServerKey     string
+	SiteTitle     string
 
 	NomadEnable      bool
 	NomadAddress     string
@@ -195,6 +200,11 @@ func ParseAppEnvConfig(c *Config) {
 	if ok {
 		c.ServerKey = serverKey
 	}
+
+	siteTitle, ok := syscall.Getenv("SITE_TITLE")
+	if ok {
+		c.SiteTitle = siteTitle
+	}
 }
 
 // ParseAppFlagConfig ...
@@ -221,6 +231,10 @@ func ParseAppFlagConfig(c *Config) {
 
 	if *flagServerKey != "" {
 		c.ServerKey = *flagServerKey
+	}
+
+	if *flagSiteTitle != "" {
+		c.SiteTitle = *flagSiteTitle
 	}
 
 }
