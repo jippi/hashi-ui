@@ -115,14 +115,14 @@ func (w *health) Do() (*structs.Response, error) {
 				return structs.NewErrorResponse(err)
 			}
 
-			for _, taskGroup := range allocation.Job.TaskGroups {
+			for taskGroupIndex, taskGroup := range allocation.Job.TaskGroups {
 				if *taskGroup.Name != allocation.TaskGroup {
 					continue
 				}
 
-				for _, task := range taskGroup.Tasks {
+				for taskIndex, task := range taskGroup.Tasks {
 					for _, service := range task.Services {
-						sHash := serviceHash(allocation.ID, task.Name, service, allocation)
+						sHash := serviceHash(allocation.ID, task.Name, service, allocation, taskGroupIndex, taskIndex)
 						for _, serviceCheck := range service.Checks {
 							for _, consulCheck := range consulChecks {
 								if !strings.Contains(consulCheck.ServiceID, sHash) {
@@ -130,7 +130,7 @@ func (w *health) Do() (*structs.Response, error) {
 								}
 
 								role := strings.Split(consulCheck.ServiceID, "-")[1]
-								w.hashes = append(w.hashes, checkHash(fmt.Sprintf("_nomad-%s-%s", role, sHash), serviceCheck))
+								w.hashes = append(w.hashes, checkHash(fmt.Sprintf("_nomad-%s-%s", role, sHash), serviceCheck, allocation, taskGroupIndex, taskIndex))
 							}
 						}
 					}
@@ -219,10 +219,10 @@ func boolToPtr(b bool) *bool {
 	return &b
 }
 
-func checkHash(serviceID string, sc nomad.ServiceCheck) string {
+func checkHash(serviceID string, sc nomad.ServiceCheck, a *nomad.Allocation, taskGroupIndex int, taskIndex int) string {
 	h := sha1.New()
 	io.WriteString(h, serviceID)
-	io.WriteString(h, sc.Name)
+	io.WriteString(h, simlpeInterpolation(sc.Name, a, taskGroupIndex, taskIndex))
 	io.WriteString(h, sc.Type)
 	io.WriteString(h, sc.Command)
 	io.WriteString(h, strings.Join(sc.Args, ""))
@@ -257,15 +257,15 @@ func checkHash(serviceID string, sc nomad.ServiceCheck) string {
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
-func serviceHash(allocID, taskName string, s *nomad.Service, a *nomad.Allocation) string {
+func serviceHash(allocID, taskName string, s *nomad.Service, a *nomad.Allocation, taskGroupIndex int, taskIndex int) string {
 	h := sha1.New()
 	io.WriteString(h, allocID)
-	io.WriteString(h, simlpeInterpolation(taskName, a))
-	io.WriteString(h, simlpeInterpolation(s.Name, a))
+	io.WriteString(h, simlpeInterpolation(taskName, a, taskGroupIndex, taskIndex))
+	io.WriteString(h, simlpeInterpolation(s.Name, a, taskGroupIndex, taskIndex))
 	io.WriteString(h, s.PortLabel)
 	io.WriteString(h, s.AddressMode)
 	for _, tag := range s.Tags {
-		io.WriteString(h, simlpeInterpolation(tag, a))
+		io.WriteString(h, simlpeInterpolation(tag, a, taskGroupIndex, taskIndex))
 	}
 
 	// Base32 is used for encoding the hash as sha1 hashes can always be
@@ -275,17 +275,18 @@ func serviceHash(allocID, taskName string, s *nomad.Service, a *nomad.Allocation
 	return b32.EncodeToString(h.Sum(nil))
 }
 
-func simlpeInterpolation(s string, a *nomad.Allocation) string {
-	for k, v := range interpolations(a) {
+func simlpeInterpolation(s string, a *nomad.Allocation, taskGroupIndex int, taskIndex int) string {
+	for k, v := range interpolations(a, taskGroupIndex, taskIndex) {
 		s = strings.Replace(s, fmt.Sprintf("${%s}", k), v, -1)
 	}
 	return s
 }
 
-func interpolations(a *nomad.Allocation) map[string]string {
+func interpolations(a *nomad.Allocation, taskGroupIndex int, taskIndex int) map[string]string {
 	res := make(map[string]string)
 	res["NOMAD_ALLOC_ID"] = a.ID
 	res["NOMAD_JOB_NAME"] = *a.Job.Name
+	res["NOMAD_TASK_NAME"] = a.Job.TaskGroups[taskGroupIndex].Tasks[taskIndex].Name
 	res["NOMAD_GROUP_NAME"] = a.TaskGroup
 	res["NOMAD_ALLOC_INDEX"] = allocIndex.FindStringSubmatch(a.Name)[1]
 	return res
