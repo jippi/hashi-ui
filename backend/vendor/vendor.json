@@ -187,78 +187,90 @@
 		{
 			"checksumSHA1": "JfDgoMtev66pAMpiMEV3H4fNsnU=",
 			"path": "github.com/hashicorp/nomad/acl",
-			"revision": "71f89bb1bbe37453b6698d945e36efd2eab8bebe",
-			"revisionTime": "2018-01-25T00:12:21Z"
+			"revision": "75c5fb48c53cfa95926a941a55b3f06553be2d0f",
+			"revisionTime": "2018-06-11T20:49:28Z",
+			"version": "v0.8.4",
+			"versionExact": "v0.8.4"
 		},
 		{
-			"checksumSHA1": "LeZjMj9Dg/2WWnDuU8VeGaWqGMw=",
+			"checksumSHA1": "pdqq5BTfhfiVKFmbfWrrbU+nHkE=",
 			"path": "github.com/hashicorp/nomad/api",
-			"revision": "2f245ac7fc9b916eb4af8a62a471dcd0b468a8c8",
-			"revisionTime": "2017-12-20T01:06:39Z",
-			"version": "v0.7.1",
-			"versionExact": "v0.7.1"
+			"revision": "75c5fb48c53cfa95926a941a55b3f06553be2d0f",
+			"revisionTime": "2018-06-11T20:49:28Z",
+			"version": "v0.8.4",
+			"versionExact": "v0.8.4"
 		},
 		{
 			"checksumSHA1": "fqswK1Rf5F7cRNG+UHgY/gQFC78=",
 			"path": "github.com/hashicorp/nomad/api/contexts",
-			"revision": "2f245ac7fc9b916eb4af8a62a471dcd0b468a8c8",
-			"revisionTime": "2017-12-20T01:06:39Z",
-			"version": "v0.7.1",
-			"versionExact": "v0.7.1"
+			"revision": "75c5fb48c53cfa95926a941a55b3f06553be2d0f",
+			"revisionTime": "2018-06-11T20:49:28Z",
+			"version": "v0.8.4",
+			"versionExact": "v0.8.4"
 		},
 		{
-			"checksumSHA1": "NsAqYGxyhCKfHIrKd5oFsEzhA7Y=",
+			"checksumSHA1": "kc17FtLJc0ZNuYc1bdAoiVSkChc=",
 			"path": "github.com/hashicorp/nomad/helper",
-			"revision": "2f245ac7fc9b916eb4af8a62a471dcd0b468a8c8",
-			"revisionTime": "2017-12-20T01:06:39Z",
-			"version": "v0.7.1",
-			"versionExact": "v0.7.1"
+			"revision": "75c5fb48c53cfa95926a941a55b3f06553be2d0f",
+			"revisionTime": "2018-06-11T20:49:28Z",
+			"version": "v0.8.4",
+			"versionExact": "v0.8.4"
 		},
 		{
 			"checksumSHA1": "qB1zM2M1IuhWi7L8uNcnOiCrog0=",
 			"path": "github.com/hashicorp/nomad/helper/args",
-			"revision": "2f245ac7fc9b916eb4af8a62a471dcd0b468a8c8",
-			"revisionTime": "2017-12-20T01:06:39Z",
-			"version": "v0.7.1",
-			"versionExact": "v0.7.1"
+			"revision": "75c5fb48c53cfa95926a941a55b3f06553be2d0f",
+			"revisionTime": "2018-06-11T20:49:28Z",
+			"version": "v0.8.4",
+			"versionExact": "v0.8.4"
 		},
 		{
 			"checksumSHA1": "KtK2/d4wBHjMqdR/SAa6cSDmxQ0=",
 			"path": "github.com/hashicorp/nomad/helper/flatmap",
-			"revision": "2f245ac7fc9b916eb4af8a62a471dcd0b468a8c8",
-			"revisionTime": "2017-12-20T01:06:39Z",
-			"version": "v0.7.1",
-			"versionExact": "v0.7.1"
+			"revision": "75c5fb48c53cfa95926a941a55b3f06553be2d0f",
+			"revisionTime": "2018-06-11T20:49:28Z",
+			"version": "v0.8.4",
+			"versionExact": "v0.8.4"
+		},
+		{
+			"checksumSHA1": "4uxeaVmaruTNnjT9fv7Ej5HnN+0=",
+			"path": "github.com/hashicorp/nomad/helper/testlog",
+			"revision": "75c5fb48c53cfa95926a941a55b3f06553be2d0f",
+			"revisionTime": "2018-06-11T20:49:28Z",
+			"version": "v0.8.4",
+			"versionExact": "v0.8.4"
 		},
 		{
 			"checksumSHA1": "mSCo/iZUEOSpeX5NsGZZzFMJqto=",
 			"path": "github.com/hashicorp/nomad/helper/uuid",
-			"revision": "2f245ac7fc9b916eb4af8a62a471dcd0b468a8c8",
-			"revisionTime": "2017-12-20T01:06:39Z",
-			"version": "v0.7.1",
-			"versionExact": "v0.7.1"
+			"revision": "75c5fb48c53cfa95926a941a55b3f06553be2d0f",
+			"revisionTime": "2018-06-11T20:49:28Z",
+			"version": "v0.8.4",
+			"versionExact": "v0.8.4"
 		},
 		{
-			"checksumSHA1": "Z0YlJcx0UqyujpldA9Z/KAXs17E=",
+			"checksumSHA1": "Kh3X9Oqg5P6QVMp3qCDfghg+EgI=",
 			"path": "github.com/hashicorp/nomad/nomad/state",
-			"revision": "71f89bb1bbe37453b6698d945e36efd2eab8bebe",
-			"revisionTime": "2018-01-25T00:12:21Z"
+			"revision": "75c5fb48c53cfa95926a941a55b3f06553be2d0f",
+			"revisionTime": "2018-06-11T20:49:28Z",
+			"version": "v0.8.4",
+			"versionExact": "v0.8.4"
 		},
 		{
-			"checksumSHA1": "yQtpxhTltTnehNdAQnmL6betUtA=",
+			"checksumSHA1": "53UPUX27bgrhwht0eBTRO5TewyM=",
 			"path": "github.com/hashicorp/nomad/nomad/structs",
-			"revision": "2f245ac7fc9b916eb4af8a62a471dcd0b468a8c8",
-			"revisionTime": "2017-12-20T01:06:39Z",
-			"version": "v0.7.1",
-			"versionExact": "v0.7.1"
+			"revision": "75c5fb48c53cfa95926a941a55b3f06553be2d0f",
+			"revisionTime": "2018-06-11T20:49:28Z",
+			"version": "v0.8.4",
+			"versionExact": "v0.8.4"
 		},
 		{
-			"checksumSHA1": "xXcokYVCSasaOg7JzVw/965bb+8=",
+			"checksumSHA1": "jZmauZ2kaFkM8L+R3WoFfmt75Z8=",
 			"path": "github.com/hashicorp/nomad/scheduler",
-			"revision": "2f245ac7fc9b916eb4af8a62a471dcd0b468a8c8",
-			"revisionTime": "2017-12-20T01:06:39Z",
-			"version": "v0.7.1",
-			"versionExact": "v0.7.1"
+			"revision": "75c5fb48c53cfa95926a941a55b3f06553be2d0f",
+			"revisionTime": "2018-06-11T20:49:28Z",
+			"version": "v0.8.4",
+			"versionExact": "v0.8.4"
 		},
 		{
 			"checksumSHA1": "bYn+HDmt7YLFvEV6DagMup8mkZE=",

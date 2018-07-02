@@ -17,7 +17,21 @@ class ClientActionMenu extends Component {
             type: NOMAD_DRAIN_CLIENT,
             payload: {
               id: this.props.node.ID,
-              action: "enable"
+              action_type: "set_drain",
+              drain: "on",
+            }
+          })
+          break
+
+        case "drain_on_ignore_system_jobs":
+          this.props.dispatch({
+            type: NOMAD_DRAIN_CLIENT,
+            payload: {
+              id: this.props.node.ID,
+              action_type: "set_drain",
+              ignore_system_jobs: "on",
+              eligible: "on",
+              drain: "on",
             }
           })
           break
@@ -27,17 +41,35 @@ class ClientActionMenu extends Component {
             type: NOMAD_DRAIN_CLIENT,
             payload: {
               id: this.props.node.ID,
-              action: "disable"
+              action_type: "set_drain",
             }
           })
+          break
 
+        case "eligibility_off":
+          this.props.dispatch({
+            type: NOMAD_DRAIN_CLIENT,
+            payload: {
+              id: this.props.node.ID,
+              action_type: "set_eligibility",
+              eligible: "off"
+            }
+          })
+          break
+
+        case "eligibility_on":
+          this.props.dispatch({
+            type: NOMAD_DRAIN_CLIENT,
+            payload: {
+              id: this.props.node.ID,
+              action_type: "set_eligibility",
+              eligible: "on"
+            }
+          })
           break
 
         case "remove":
-          this.props.dispatch({
-            type: NOMAD_REMOVE_CLIENT,
-            payload: this.props.node.Name
-          })
+          this.props.dispatch({ type: NOMAD_REMOVE_CLIENT, payload: this.props.node.Name })
           break
       }
     }
@@ -58,7 +90,7 @@ class ClientActionMenu extends Component {
       )
     }
 
-    return (
+    return [
       <MenuItem
         primaryText="Enable Drain mode"
         rightIcon={
@@ -67,8 +99,29 @@ class ClientActionMenu extends Component {
           </FontIcon>
         }
         onClick={this.handleClick("drain_on")}
+      />,
+      <MenuItem
+        primaryText="Enable Drain mode (ignore system)"
+        rightIcon={
+          <FontIcon className="material-icons" color={red500}>
+            check_box
+          </FontIcon>
+        }
+        onClick={this.handleClick("drain_on_ignore_system_jobs")}
       />
-    )
+    ]
+  }
+
+  getSchedulingEligibilityMenu() {
+    if (this.props.node.SchedulingEligibility == "eligible") {
+      return <MenuItem primaryText="Disable Scheduling Eligibility" rightIcon={<FontIcon className="material-icons" color={green500}>
+              check_box
+            </FontIcon>} onClick={this.handleClick("eligibility_off")} />
+    }
+
+    return <MenuItem primaryText="Enable Scheduling Eligibility" rightIcon={<FontIcon className="material-icons" color={red500}>
+            check_box
+          </FontIcon>} onClick={this.handleClick("eligibility_on")} />
   }
 
   getForceRemoveMenu() {
@@ -98,19 +151,13 @@ class ClientActionMenu extends Component {
       </IconButton>
     )
 
-    return (
-      <span>
-        <IconMenu
-          iconButtonElement={icon}
-          style={{ background: green500, borderRadius: "50%" }}
-          anchorOrigin={{ horizontal: "left", vertical: "top" }}
-          targetOrigin={{ horizontal: "left", vertical: "top" }}
-        >
+    return <span>
+        <IconMenu iconButtonElement={icon} style={{ background: green500, borderRadius: "50%" }} anchorOrigin={{ horizontal: "left", vertical: "top" }} targetOrigin={{ horizontal: "left", vertical: "top" }}>
           {this.getDrainMenu()}
+          {this.getSchedulingEligibilityMenu()}
           {this.getForceRemoveMenu()}
         </IconMenu>
       </span>
-    )
   }
 }
 

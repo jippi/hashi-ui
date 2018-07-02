@@ -5,7 +5,7 @@ import MetaPayload from "../MetaPayload/MetaPayload"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import { Card, CardTitle, CardText } from "material-ui/Card"
 
-const nodeProps = ["ID", "Name", "Status", "Datacenter", "Drain", "HTTPAddr", "NodeClass"]
+const nodeProps = ["ID", "Name", "Status", "Datacenter", "Drain", "SchedulingEligibility", "HTTPAddr", "NodeClass"]
 
 const withPrefix = function withPrefix(obj, prefix) {
   const result = {}
