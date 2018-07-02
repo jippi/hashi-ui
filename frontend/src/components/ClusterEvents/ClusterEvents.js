@@ -22,7 +22,7 @@ class ClusterEvents extends Component {
     this.props.allocations.forEach(allocation => {
       if (allocation.TaskStates != null) {
         Object.keys(allocation.TaskStates).forEach(task => {
-          allocation.TaskStates[task].Events.reverse().forEach(event => {
+          (allocation.TaskStates[task].Events || []).reverse().forEach(event => {
             if (taskEvents.length === 10) return
             const eventID = `${task}.${event.Time}`
             taskEvents.push(
