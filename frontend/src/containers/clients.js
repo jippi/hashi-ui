@@ -34,6 +34,7 @@ class Clients extends Component {
                   <TableHeaderColumn>Name</TableHeaderColumn>
                   <TableHeaderColumn>Status</TableHeaderColumn>
                   <TableHeaderColumn>Drain</TableHeaderColumn>
+                  <TableHeaderColumn>Eligibility</TableHeaderColumn>
                   <TableHeaderColumn>Datacenter</TableHeaderColumn>
                   <TableHeaderColumn>Class</TableHeaderColumn>
                   <TableHeaderColumn>CPU</TableHeaderColumn>
@@ -41,8 +42,7 @@ class Clients extends Component {
               </TableHeader>
               <TableBody>
                 {this.props.nodes.map(node => {
-                  return (
-                    <TableRow key={node.ID}>
+                  return <TableRow key={node.ID}>
                       <TableRowColumn>
                         <ClientLink clientId={node.ID} clients={this.props.nodes} />
                       </TableRowColumn>
@@ -53,11 +53,13 @@ class Clients extends Component {
                       <TableRowColumn>
                         <FormatBoolean value={node.Drain} />
                       </TableRowColumn>
+                      <TableRowColumn>
+                        <FormatBoolean value={node.SchedulingEligibility == "eligible"} />
+                      </TableRowColumn>
                       <TableRowColumn>{node.Datacenter}</TableRowColumn>
                       <TableRowColumn>{node.NodeClass ? node.NodeClass : "<none>"}</TableRowColumn>
                       <TableRowColumn>{node.Stats.cpu}%</TableRowColumn>
                     </TableRow>
-                  )
                 })}
               </TableBody>
             </Table>

@@ -258,14 +258,18 @@ func checkHash(serviceID string, sc nomad.ServiceCheck) string {
 }
 
 func serviceHash(allocID, taskName string, s *nomad.Service, a *nomad.Allocation) string {
+	extra := map[string]string{
+		"NOMAD_TASK_NAME": taskName,
+	}
+
 	h := sha1.New()
 	io.WriteString(h, allocID)
-	io.WriteString(h, simlpeInterpolation(taskName, a))
-	io.WriteString(h, simlpeInterpolation(s.Name, a))
+	io.WriteString(h, simlpeInterpolation(taskName, a, extra))
+	io.WriteString(h, simlpeInterpolation(s.Name, a, extra))
 	io.WriteString(h, s.PortLabel)
 	io.WriteString(h, s.AddressMode)
 	for _, tag := range s.Tags {
-		io.WriteString(h, simlpeInterpolation(tag, a))
+		io.WriteString(h, simlpeInterpolation(tag, a, extra))
 	}
 
 	// Base32 is used for encoding the hash as sha1 hashes can always be
@@ -275,10 +279,15 @@ func serviceHash(allocID, taskName string, s *nomad.Service, a *nomad.Allocation
 	return b32.EncodeToString(h.Sum(nil))
 }
 
-func simlpeInterpolation(s string, a *nomad.Allocation) string {
+func simlpeInterpolation(s string, a *nomad.Allocation, extra map[string]string) string {
 	for k, v := range interpolations(a) {
 		s = strings.Replace(s, fmt.Sprintf("${%s}", k), v, -1)
 	}
+
+	for k, v := range extra {
+		s = strings.Replace(s, fmt.Sprintf("${%s}", k), v, -1)
+	}
+
 	return s
 }
 

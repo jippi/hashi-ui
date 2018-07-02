@@ -1,6 +1,8 @@
 package nodes
 
 import (
+	"time"
+
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
@@ -10,10 +12,13 @@ const (
 )
 
 type drain struct {
-	action     structs.Action
-	client     *api.Client
-	id         string
-	actionType string
+	action           structs.Action
+	client           *api.Client
+	id               string
+	actionType       string
+	markEligible     bool
+	drain            bool
+	ignoreSystemJobs bool
 }
 
 func NewDrain(action structs.Action, client *api.Client) *drain {
@@ -24,8 +29,6 @@ func NewDrain(action structs.Action, client *api.Client) *drain {
 }
 
 func (w *drain) Do() (*structs.Response, error) {
-	var err error
-
 	if w.id == "" {
 		return structs.NewErrorResponse("Missing client id")
 	}
@@ -34,11 +37,17 @@ func (w *drain) Do() (*structs.Response, error) {
 		return structs.NewErrorResponse("Missing action type")
 	}
 
+	var err error
+
 	switch w.actionType {
-	case "enable":
-		_, err = w.client.Nodes().ToggleDrain(w.id, true, nil)
-	case "disable":
-		_, err = w.client.Nodes().ToggleDrain(w.id, false, nil)
+	case "set_eligibility":
+		_, err = w.client.Nodes().ToggleEligibility(w.id, w.markEligible, nil)
+	case "set_drain":
+		var drain *api.DrainSpec
+		if w.drain {
+			drain = &api.DrainSpec{Deadline: 1 * time.Hour, IgnoreSystemJobs: w.ignoreSystemJobs}
+		}
+		_, err = w.client.Nodes().UpdateDrain(w.id, drain, true, nil)
 	default:
 		return structs.NewErrorResponse("Invalid action: %s", w.actionType)
 	}
@@ -52,7 +61,7 @@ func (w *drain) Do() (*structs.Response, error) {
 
 func (w *drain) Key() string {
 	w.parse()
-	return "/node/" + w.id + "/drain/" + w.actionType
+	return "/node/" + w.id + "/drain/"
 }
 
 func (w *drain) IsMutable() bool {
@@ -70,8 +79,19 @@ func (w *drain) parse() {
 		w.id = x.(string)
 	}
 
-	if x, ok := payload["action"]; ok {
+	if x, ok := payload["action_type"]; ok {
 		w.actionType = x.(string)
 	}
 
+	if x, ok := payload["eligible"]; ok {
+		w.markEligible = ("on" == x.(string))
+	}
+
+	if x, ok := payload["drain"]; ok {
+		w.drain = ("on" == x.(string))
+	}
+
+	if x, ok := payload["ignore_system_jobs"]; ok {
+		w.markEligible = ("yes" == x.(string))
+	}
 }
