@@ -46,6 +46,7 @@ func main() {
 	}
 	log.Infof("| server-certificate   : %-50s |", cfg.ServerCert)
 	log.Infof("| server-key       	  : %-50s |", cfg.ServerKey)
+	log.Infof("| site-title       	  : %-50s |", cfg.SiteTitle)
 	log.Infof("| proxy-address   	  : %-50s |", cfg.ProxyAddress)
 	log.Infof("| log-level       	  : %-50s |", cfg.LogLevel)
 
@@ -181,6 +182,7 @@ func main() {
 
 			response = append(response, fmt.Sprintf("window.NOMAD_COLOR='%s'", cfg.NomadColor))
 			response = append(response, fmt.Sprintf("window.CONSUL_COLOR='%s'", cfg.ConsulColor))
+			response = append(response, fmt.Sprintf("window.SITE_TITLE='%s'", cfg.SiteTitle))
 
 			enabledServices := make([]string, 0)
 			if cfg.ConsulEnable {

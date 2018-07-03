@@ -16,6 +16,7 @@ func TestConfig_correctDefaulValues(t *testing.T) {
 		NomadAddress:     "http://127.0.0.1:4646",
 		NomadHideEnvData: false,
 		NomadColor:       "#4b9a7d",
+		SiteTitle:        "",
 
 		ConsulReadOnly: false,
 		ConsulAddress:  "127.0.0.1:8500",
