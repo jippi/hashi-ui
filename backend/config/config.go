@@ -71,7 +71,7 @@ var (
 
 	flagServerKey = flag.String("server-key", "",
 		"Server key to use when https protocol is enabled. "+FlagDefault(defaultConfig.ServerKey))
-	
+
 	flagNomadColor = flag.String("nomad-color", "",
 		"Set the main color for nomad related screens. "+FlagDefault(defaultConfig.NomadColor))
 
@@ -80,7 +80,6 @@ var (
 
 	flagSiteTitle = flag.String("site-title", "",
 		"Free-form text to be prepended to title-bar; eg. 'Staging'. "+FlagDefault(defaultConfig.SiteTitle))
-	
 )
 
 // Config for the hashi-ui server
@@ -148,6 +147,7 @@ func DefaultConfig() *Config {
 		LogLevel:      "info",
 		ListenAddress: "0.0.0.0:3000",
 		HttpsEnable:   false,
+		SiteTitle:     "",
 
 		NomadReadOnly:    false,
 		NomadAddress:     "http://127.0.0.1:4646",
