@@ -19,8 +19,7 @@ class Clients extends Component {
   }
 
   render() {
-    return (
-      <div>
+    return <div>
         <Helmet>
           <title>Clients - Nomad - Hashi-UI</title>
         </Helmet>
@@ -37,6 +36,7 @@ class Clients extends Component {
                   <TableHeaderColumn>Eligibility</TableHeaderColumn>
                   <TableHeaderColumn>Datacenter</TableHeaderColumn>
                   <TableHeaderColumn>Class</TableHeaderColumn>
+                  <TableHeaderColumn>Version</TableHeaderColumn>
                   <TableHeaderColumn>CPU</TableHeaderColumn>
                 </TableRow>
               </TableHeader>
@@ -58,6 +58,7 @@ class Clients extends Component {
                       </TableRowColumn>
                       <TableRowColumn>{node.Datacenter}</TableRowColumn>
                       <TableRowColumn>{node.NodeClass ? node.NodeClass : "<none>"}</TableRowColumn>
+                      <TableRowColumn>{node.Version}</TableRowColumn>
                       <TableRowColumn>{node.Stats.cpu}%</TableRowColumn>
                     </TableRow>
                 })}
@@ -66,7 +67,6 @@ class Clients extends Component {
           </CardText>
         </Card>
       </div>
-    )
   }
 }
 
