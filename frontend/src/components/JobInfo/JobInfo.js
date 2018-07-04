@@ -104,12 +104,12 @@ class JobInfo extends Component {
 
                     const result = []
                     result.push(
-                      <dt>
+                      <dt key="{jobProp}-key">
                         {jobProp}
                       </dt>
                     )
                     result.push(
-                      <dd>
+                      <dd key="{jobProp}-value">
                         {jobPropValue}
                       </dd>
                     )

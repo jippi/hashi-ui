@@ -24,7 +24,16 @@ func NewForceEvaluate(action structs.Action, client *api.Client) *forceEvaluate 
 }
 
 func (w *forceEvaluate) Do() (*structs.Response, error) {
-	_, _, err := w.client.Jobs().ForceEvaluate(w.action.Payload.(string), nil)
+	params := w.action.Payload.(map[string]interface{})
+
+	jobID := params["job"].(string)
+	reschedule := false
+
+	if r, ok := params["reschedule"].(bool); ok {
+		reschedule = r
+	}
+
+	_, _, err := w.client.Jobs().EvaluateWithOpts(jobID, api.EvalOptions{ForceReschedule: reschedule}, nil)
 	if err != nil {
 		return structs.NewErrorResponse(err)
 	}
@@ -33,7 +42,16 @@ func (w *forceEvaluate) Do() (*structs.Response, error) {
 }
 
 func (w *forceEvaluate) Key() string {
-	return fmt.Sprintf("/job/%s/evaluate", w.action.Payload.(string))
+	params := w.action.Payload.(map[string]interface{})
+
+	jobID := params["job"].(string)
+	reschedule := false
+
+	if r, ok := params["reschedule"].(bool); ok {
+		reschedule = r
+	}
+
+	return fmt.Sprintf("/job/%s/evaluate?reschedule=%v", jobID, reschedule)
 }
 
 func (w *forceEvaluate) IsMutable() bool {

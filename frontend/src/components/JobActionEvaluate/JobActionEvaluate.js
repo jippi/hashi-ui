@@ -12,7 +12,12 @@ class JobActionEvaluate extends React.Component {
   componentWillUpdate(nextProps) {
     if (nextProps.jobDialog === "evaluate") {
       this.props.dispatch({ type: NOMAD_JOB_HIDE_DIALOG })
-      this.props.dispatch({ type: NOMAD_EVALUATE_JOB, payload: this.props.job.ID })
+      this.props.dispatch({ type: NOMAD_EVALUATE_JOB, payload: { job: this.props.job.ID } })
+    }
+
+    if (nextProps.jobDialog === "evaluate-reschedule") {
+      this.props.dispatch({ type: NOMAD_JOB_HIDE_DIALOG })
+      this.props.dispatch({ type: NOMAD_EVALUATE_JOB, payload: { job: this.props.job.ID, reschedule: true } })
     }
   }
 
