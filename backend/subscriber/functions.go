@@ -1,6 +1,9 @@
 package subscriber
 
 import (
+	"time"
+
+	"github.com/jippi/hashi-ui/backend/config"
 	"github.com/jippi/hashi-ui/backend/structs"
 	log "github.com/sirupsen/logrus"
 )
@@ -27,7 +30,7 @@ type Keyer interface {
 }
 
 // Watch is a generic watcher for Nomad
-func Watch(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Action, destroyCh chan interface{}) {
+func Watch(w Watcher, s Subscription, logger *log.Entry, cfg *config.Config, send chan *structs.Action, destroyCh chan interface{}) {
 	watchKey := w.Key()
 
 	// Check if we are already subscribed
@@ -44,6 +47,8 @@ func Watch(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Acti
 	}()
 	logger.Infof("Started watching %s", watchKey)
 
+	firstRun := true
+
 	// spin up the actual worker in a Go routine to not block outer loop
 	go func() {
 		for {
@@ -53,6 +58,12 @@ func Watch(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Acti
 			case <-subscribeCh:
 				return
 			default:
+				if !firstRun && cfg.ThrottleUpdateDuration != nil {
+					logger.Debugf("[%s] Sleeping %s before running task", watchKey, *cfg.ThrottleUpdateDuration)
+					time.Sleep(*cfg.ThrottleUpdateDuration)
+				}
+				firstRun = false
+
 				logger.Debugf("[%s] Running task", watchKey)
 				response, err := w.Do()
 				if err != nil {

@@ -18,6 +18,7 @@ import (
 
 var (
 	GitCommit string // Filled in by the compiler
+	AppConfig *config.Config
 )
 
 func startLogging(logLevel string) {
@@ -34,60 +35,68 @@ func main() {
 	cfg := config.DefaultConfig()
 	cfg.Parse()
 
+	AppConfig = cfg
+
 	startLogging(cfg.LogLevel)
 
-	log.Infof("-----------------------------------------------------------------------------")
-	log.Infof("|                             HASHI UI                                      |")
-	log.Infof("-----------------------------------------------------------------------------")
+	log.Infof("----------------------------------------------------------------------------------")
+	log.Infof("|                                 HASHI UI                                       |")
+	log.Infof("----------------------------------------------------------------------------------")
 	if !cfg.HttpsEnable {
-		log.Infof("| listen-address       : http://%-43s |", cfg.ListenAddress)
+		log.Infof("| listen-address            : http://%-43s |", cfg.ListenAddress)
 	} else {
-		log.Infof("| listen-address      : https://%-43s  |", cfg.ListenAddress)
+		log.Infof("| listen-address            : https://%-43s  |", cfg.ListenAddress)
 	}
-	log.Infof("| server-certificate   : %-50s |", cfg.ServerCert)
-	log.Infof("| server-key       	  : %-50s |", cfg.ServerKey)
-	log.Infof("| site-title       	  : %-50s |", cfg.SiteTitle)
-	log.Infof("| proxy-address   	  : %-50s |", cfg.ProxyAddress)
-	log.Infof("| log-level       	  : %-50s |", cfg.LogLevel)
+	log.Infof("| server-certificate        : %-50s |", cfg.ServerCert)
+	log.Infof("| server-key       	       : %-50s |", cfg.ServerKey)
+	log.Infof("| site-title       	       : %-50s |", cfg.SiteTitle)
+	log.Infof("| proxy-address   	       : %-50s |", cfg.ProxyAddress)
+	log.Infof("| log-level       	       : %-50s |", cfg.LogLevel)
+
+	if cfg.ThrottleUpdateDuration != nil {
+		log.Infof("| throttle-update-duration  : %-50s |", cfg.ThrottleUpdateDuration)
+	} else {
+		log.Infof("| throttle-update-duration  : %-50s |", "0s")
+	}
 
 	// Nomad
-	log.Infof("| nomad-enable     	  : %-50t |", cfg.NomadEnable)
+	log.Infof("| nomad-enable     	       : %-50t |", cfg.NomadEnable)
 	if cfg.NomadReadOnly {
-		log.Infof("| nomad-read-only      : %-50s |", "Yes")
+		log.Infof("| nomad-read-only           : %-50s |", "Yes")
 	} else {
-		log.Infof("| nomad-read-only      : %-50s |", "No (Hashi-UI can change Nomad state)")
+		log.Infof("| nomad-read-only           : %-50s |", "No (Hashi-UI can change Nomad state)")
 	}
-	log.Infof("| nomad-address        : %-50s |", cfg.NomadAddress)
-	log.Infof("| nomad-acl-token     : %-50s |", cfg.NomadACLToken)
-	log.Infof("| nomad-ca-cert        : %-50s |", cfg.NomadCACert)
-	log.Infof("| nomad-client-cert    : %-50s |", cfg.NomadClientCert)
-	log.Infof("| nomad-client-key     : %-50s |", cfg.NomadClientKey)
-	log.Infof("| nomad-skip-verify    : %-50t |", cfg.NomadSkipVerify)
-	log.Infof("| nomad-hide-env-data  : %-50v |", cfg.NomadHideEnvData)
+	log.Infof("| nomad-address             : %-50s |", cfg.NomadAddress)
+	log.Infof("| nomad-acl-token           : %-50s |", cfg.NomadACLToken)
+	log.Infof("| nomad-ca-cert             : %-50s |", cfg.NomadCACert)
+	log.Infof("| nomad-client-cert         : %-50s |", cfg.NomadClientCert)
+	log.Infof("| nomad-client-key          : %-50s |", cfg.NomadClientKey)
+	log.Infof("| nomad-skip-verify         : %-50t |", cfg.NomadSkipVerify)
+	log.Infof("| nomad-hide-env-data       : %-50v |", cfg.NomadHideEnvData)
 	if cfg.NomadSkipVerify {
-		log.Infof("| nomad-skip-verify    : %-50s |", "Yes")
+		log.Infof("| nomad-skip-verify         : %-50s |", "Yes")
 	} else {
-		log.Infof("| nomad-skip-verify    : %-50s |", "No")
+		log.Infof("| nomad-skip-verify         : %-50s |", "No")
 	}
 	if cfg.NomadAllowStale {
-		log.Infof("| nomad-allow-stale    : %-50s |", "Yes")
+		log.Infof("| nomad-allow-stale         : %-50s |", "Yes")
 	} else {
-		log.Infof("| nomad-allow-stale    : %-50s |", "No")
+		log.Infof("| nomad-allow-stale         : %-50s |", "No")
 	}
-	log.Infof("| nomad-color          : %-50s |", cfg.NomadColor)
+	log.Infof("| nomad-color               : %-50s |", cfg.NomadColor)
 
 	// Consul
-	log.Infof("| consul-enable     	  : %-50t |", cfg.ConsulEnable)
+	log.Infof("| consul-enable     	       : %-50t |", cfg.ConsulEnable)
 	if cfg.ConsulReadOnly {
-		log.Infof("| consul-read-only     : %-50s |", "Yes")
+		log.Infof("| consul-read-only          : %-50s |", "Yes")
 	} else {
-		log.Infof("| consul-read-only     : %-50s |", "No (Hashi-UI can change Consul state)")
+		log.Infof("| consul-read-only          : %-50s |", "No (Hashi-UI can change Consul state)")
 	}
-	log.Infof("| consul-address       : %-50s |", cfg.ConsulAddress)
-	log.Infof("| consul-acl-token     : %-50s |", cfg.ConsulACLToken)
-	log.Infof("| consul-color         : %-50s |", cfg.ConsulColor)
+	log.Infof("| consul-address            : %-50s |", cfg.ConsulAddress)
+	log.Infof("| consul-acl-token          : %-50s |", cfg.ConsulACLToken)
+	log.Infof("| consul-color              : %-50s |", cfg.ConsulColor)
 
-	log.Infof("-----------------------------------------------------------------------------")
+	log.Infof("----------------------------------------------------------------------------------")
 	log.Infof("")
 
 	if !cfg.NomadEnable && !cfg.ConsulEnable {
