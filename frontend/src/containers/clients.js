@@ -47,17 +47,23 @@ class Clients extends Component {
       clients = clients.filter(client => (client.Drain ? "true" : "false") == query.drain)
     }
 
+    if ("version" in query) {
+      clients = clients.filter(client => client.Version.indexOf(query.version) != -1)
+    }
+
     if ("eligibility" in query) {
-      clients = clients.filter(client => (client.SchedulingEligibility == "eligible" ? "true" : "false") == query.eligibility)
+      clients = clients.filter(
+        client => (client.SchedulingEligibility == "eligible" ? "true" : "false") == query.eligibility
+      )
     }
 
     return clients
   }
 
-  idFilter() {
+  versionFilter() {
     return (
-      <Col key="client-id-filter-pane" xs={12} sm={6} md={6} lg={2}>
-        <FilterFreetext query="client_id" label="ID" />
+      <Col key="client-version-filter-pane" xs={12} sm={6} md={6} lg={2}>
+        <FilterFreetext query="version" label="Version" />
       </Col>
     )
   }
@@ -118,12 +124,7 @@ class Clients extends Component {
 
     return (
       <Col key="client-drain-filter-pane" xs={12} sm={6} md={6} lg={2}>
-        <SelectField
-          floatingLabelText={title}
-          maxHeight={200}
-          value={query.drain || undefined}
-          onChange={handleChange}
-        >
+        <SelectField floatingLabelText={title} maxHeight={200} value={query.drain || undefined} onChange={handleChange}>
           <MenuItem />
           <MenuItem value="true" primaryText="On" />
           <MenuItem value="false" primaryText="Off" />
@@ -140,17 +141,25 @@ class Clients extends Component {
       this.props.router.push({ pathname: location.pathname, query: { ...query, eligibility: value } })
     }
 
-    return <Col key="client-eligibility-filter-pane" xs={12} sm={6} md={6} lg={2}>
-      <SelectField floatingLabelText={title} maxHeight={200} value={query.eligibility || undefined} onChange={handleChange}>
+    return (
+      <Col key="client-eligibility-filter-pane" xs={12} sm={6} md={6} lg={2}>
+        <SelectField
+          floatingLabelText={title}
+          maxHeight={200}
+          value={query.eligibility || undefined}
+          onChange={handleChange}
+        >
           <MenuItem />
           <MenuItem value="true" primaryText="On" />
           <MenuItem value="false" primaryText="Off" />
         </SelectField>
       </Col>
+    )
   }
 
   render() {
-    return <div>
+    return (
+      <div>
         <Helmet>
           <title>Clients - Nomad - Hashi-UI</title>
         </Helmet>
@@ -159,12 +168,12 @@ class Clients extends Component {
           <CardText>
             <Grid fluid style={{ padding: 0, margin: 0 }}>
               <Row>
-                {this.idFilter()}
                 {this.nameFilter()}
                 {this.statusFilter()}
                 {this.drainFilter()}
                 {this.eligibilityFilter()}
                 {this.classFilter()}
+                {this.versionFilter()}
               </Row>
             </Grid>
           </CardText>
@@ -175,7 +184,6 @@ class Clients extends Component {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHeaderColumn>ID</TableHeaderColumn>
                   <TableHeaderColumn>Name</TableHeaderColumn>
                   <TableHeaderColumn>Status</TableHeaderColumn>
                   <TableHeaderColumn>Drain</TableHeaderColumn>
@@ -188,11 +196,11 @@ class Clients extends Component {
               </TableHeader>
               <TableBody>
                 {this.filteredClients().map(node => {
-                  return <TableRow key={node.ID}>
+                  return (
+                    <TableRow key={node.ID}>
                       <TableRowColumn>
                         <ClientLink clientId={node.ID} clients={this.props.nodes} />
                       </TableRowColumn>
-                      <TableRowColumn>{node.Name}</TableRowColumn>
                       <TableRowColumn>
                         <NodeStatus value={node.Status} />
                       </TableRowColumn>
@@ -207,12 +215,14 @@ class Clients extends Component {
                       <TableRowColumn>{node.Version}</TableRowColumn>
                       <TableRowColumn>{node.Stats.cpu}%</TableRowColumn>
                     </TableRow>
+                  )
                 })}
               </TableBody>
             </Table>
           </CardText>
         </Card>
       </div>
+    )
   }
 }
 
