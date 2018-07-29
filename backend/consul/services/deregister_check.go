@@ -30,7 +30,7 @@ func NewDeregisterCheck(action structs.Action, cfg *config.Config, client *api.C
 	}
 }
 
-func (w *deregisterCheck) Do() (*structs.Response, error) {
+func (w *deregisterCheck) Do() (structs.Response, error) {
 	_, port, _ := net.SplitHostPort(w.cfg.ConsulAddress)
 	if port == "" {
 		port = "80"

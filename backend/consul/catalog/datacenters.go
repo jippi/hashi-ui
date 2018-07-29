@@ -22,10 +22,10 @@ func NewDatacenters(action structs.Action, client *api.Client) *datacenters {
 	}
 }
 
-func (w *datacenters) Do() (*structs.Response, error) {
+func (w *datacenters) Do() (structs.Response, error) {
 	keys, err := w.client.Catalog().Datacenters()
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	return structs.NewResponse(fetchedDatacenters, keys), nil

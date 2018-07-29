@@ -21,7 +21,7 @@ func NewForceGC(action structs.Action, client *api.Client) *forceGC {
 	}
 }
 
-func (w *forceGC) Do() (*structs.Response, error) {
+func (w *forceGC) Do() (structs.Response, error) {
 	err := w.client.System().GarbageCollect()
 	if err != nil {
 		return structs.NewErrorResponse(err)

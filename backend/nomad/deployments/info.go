@@ -28,14 +28,14 @@ func NewInfo(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *info) Do() (*structs.Response, error) {
+func (w *info) Do() (structs.Response, error) {
 	deployment, meta, err := w.client.Deployments().Info(w.action.Payload.(string), w.query)
 	if err != nil {
 		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 
 	return structs.NewResponseWithIndex(fetchedInfo, deployment, meta.LastIndex)

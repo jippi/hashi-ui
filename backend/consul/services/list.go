@@ -38,7 +38,7 @@ func NewList(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *list) Do() (*structs.Response, error) {
+func (w *list) Do() (structs.Response, error) {
 	var services InternalServices
 	meta, err := w.client.Raw().Query("/v1/internal/ui/services", &services, w.query)
 	if err != nil {
@@ -46,7 +46,7 @@ func (w *list) Do() (*structs.Response, error) {
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 
 	return structs.NewResponseWithIndex(fetchedList, services, meta.LastIndex)

@@ -28,7 +28,7 @@ func NewDrain(action structs.Action, client *api.Client) *drain {
 	}
 }
 
-func (w *drain) Do() (*structs.Response, error) {
+func (w *drain) Do() (structs.Response, error) {
 	if w.id == "" {
 		return structs.NewErrorResponse("Missing client id")
 	}

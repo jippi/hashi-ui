@@ -23,7 +23,7 @@ func NewEvaluateAllJobs(action structs.Action, client *api.Client) *evaluateAllJ
 	}
 }
 
-func (w *evaluateAllJobs) Do() (*structs.Response, error) {
+func (w *evaluateAllJobs) Do() (structs.Response, error) {
 	jobs, _, err := w.client.Jobs().List(nil)
 	if err != nil {
 		return structs.NewErrorResponse(err)

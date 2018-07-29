@@ -21,7 +21,7 @@ func NewRemove(action structs.Action, client *api.Client) *remove {
 	}
 }
 
-func (w *remove) Do() (*structs.Response, error) {
+func (w *remove) Do() (structs.Response, error) {
 	ID := w.action.Payload.(string)
 
 	err := w.client.Agent().ForceLeave(ID)

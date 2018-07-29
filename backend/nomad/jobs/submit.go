@@ -26,7 +26,7 @@ func NewSubmit(action structs.Action, client *api.Client, cfg *config.Config) *s
 	}
 }
 
-func (w *submit) Do() (*structs.Response, error) {
+func (w *submit) Do() (structs.Response, error) {
 	if w.cfg.NomadHideEnvData {
 		return structs.NewErrorResponse("Can't update job, the hashi-ui setting 'nomad-hide-env-data' will delete all your env{} clauses")
 	}

@@ -22,7 +22,7 @@ func NewDelete(action structs.Action, client *api.Client) *delete {
 	}
 }
 
-func (w *delete) Do() (*structs.Response, error) {
+func (w *delete) Do() (structs.Response, error) {
 	params, ok := w.action.Payload.(map[string]interface{})
 	if !ok {
 		return structs.NewErrorResponse("Could not decode payload")

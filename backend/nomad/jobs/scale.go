@@ -23,7 +23,7 @@ func NewScale(action structs.Action, client *api.Client) *scale {
 	}
 }
 
-func (w *scale) Do() (*structs.Response, error) {
+func (w *scale) Do() (structs.Response, error) {
 	params := w.action.Payload.(map[string]interface{})
 
 	jobID := params["job"].(string)
@@ -32,13 +32,13 @@ func (w *scale) Do() (*structs.Response, error) {
 
 	job, _, err := w.client.Jobs().Info(jobID, nil)
 	if err != nil {
-		return nil, fmt.Errorf("Could not find job: %s", err)
+		return structs.NewErrorResponse("Could not find job: %s", err)
 	}
 	job.Canonicalize()
 
 	originalCount, err := getTaskGroupCount(job, taskGroupID)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	switch scaleAction {
@@ -53,21 +53,21 @@ func (w *scale) Do() (*structs.Response, error) {
 	case "restart": // special case, as its a two step process
 		setTaskGroupCount(job, taskGroupID, 0)
 		if err := updateJob(w.client, job); err != nil {
-			return nil, err
+			return structs.NewErrorResponse(err)
 		}
 
 		setTaskGroupCount(job, taskGroupID, originalCount)
 		if err := updateJob(w.client, job); err != nil {
-			return nil, err
+			return structs.NewErrorResponse(err)
 		}
 
 		return structs.NewSuccessResponse("Successfully restarted task group")
 	default:
-		return nil, fmt.Errorf("Invalid action: %s", scaleAction)
+		return structs.NewErrorResponse("Invalid action: %s", scaleAction)
 	}
 
 	if err := updateJob(w.client, job); err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	newCount, _ := getTaskGroupCount(job, taskGroupID)
@@ -83,7 +83,7 @@ func (w *scale) Do() (*structs.Response, error) {
 		return structs.NewSuccessResponse("Successfully stopped task group %s:%s", jobID, taskGroupID)
 	}
 
-	return nil, nil
+	return structs.NewNoopResponse()
 }
 
 func (w *scale) Key() string {

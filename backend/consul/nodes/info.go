@@ -28,7 +28,7 @@ func NewInfo(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *info) Do() (*structs.Response, error) {
+func (w *info) Do() (structs.Response, error) {
 	var node internalNode
 	meta, err := w.client.Raw().Query(fmt.Sprintf("/v1/internal/ui/node/%s", w.action.Payload.(string)), &node, w.query)
 	if err != nil {
@@ -36,7 +36,7 @@ func (w *info) Do() (*structs.Response, error) {
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 
 	return structs.NewResponseWithIndex(fetchedInfo, node, meta.LastIndex)

@@ -23,7 +23,7 @@ func NewForceEvaluate(action structs.Action, client *api.Client) *forceEvaluate 
 	}
 }
 
-func (w *forceEvaluate) Do() (*structs.Response, error) {
+func (w *forceEvaluate) Do() (structs.Response, error) {
 	params := w.action.Payload.(map[string]interface{})
 
 	jobID := params["job"].(string)

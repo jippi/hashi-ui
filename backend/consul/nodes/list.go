@@ -26,15 +26,15 @@ func NewList(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *list) Do() (*structs.Response, error) {
+func (w *list) Do() (structs.Response, error) {
 	var nodes internalNodes
 	meta, err := w.client.Raw().Query("/v1/internal/ui/nodes", &nodes, w.query)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 
 	return structs.NewResponseWithIndex(fetchedList, nodes, meta.LastIndex)

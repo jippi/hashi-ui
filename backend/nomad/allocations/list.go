@@ -30,14 +30,14 @@ func NewList(action structs.Action, shallow bool, client *api.Client, query *api
 	}
 }
 
-func (w *list) Do() (*structs.Response, error) {
+func (w *list) Do() (structs.Response, error) {
 	allocations, meta, err := w.client.Allocations().List(w.query)
 	if err != nil {
 		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 
 	if w.shallow {

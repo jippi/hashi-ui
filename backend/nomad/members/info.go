@@ -30,7 +30,7 @@ func NewInfo(action structs.Action, cfg *config.Config, client *api.Client) *inf
 	}
 }
 
-func (w *info) Do() (*structs.Response, error) {
+func (w *info) Do() (structs.Response, error) {
 	id := w.action.Payload.(string)
 
 	checksum, members, err := membersWithID(w.client, w.cfg)
@@ -40,7 +40,7 @@ func (w *info) Do() (*structs.Response, error) {
 
 	if checksum == w.checksum {
 		time.Sleep(5 * time.Second)
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 
 	w.checksum = checksum

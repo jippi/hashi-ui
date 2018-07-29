@@ -31,7 +31,7 @@ func NewList(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *list) Do() (*structs.Response, error) {
+func (w *list) Do() (structs.Response, error) {
 	w.filter(w.query)
 
 	jobs, meta, err := w.client.Jobs().List(w.query)
@@ -40,7 +40,7 @@ func (w *list) Do() (*structs.Response, error) {
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 
 	actionType := fetchedList

@@ -26,13 +26,13 @@ func NewCHangeStatus(action structs.Action, client *api.Client) *changeStatus {
 	}
 }
 
-func (w *changeStatus) Do() (*structs.Response, error) {
+func (w *changeStatus) Do() (structs.Response, error) {
 	if w.id == "" {
-		return nil, fmt.Errorf("Missing deployment id")
+		return structs.NewErrorResponse("Missing deployment id")
 	}
 
 	if w.actionType == "" {
-		return nil, fmt.Errorf("Missing action type")
+		return structs.NewErrorResponse("Missing action type")
 	}
 
 	var err error

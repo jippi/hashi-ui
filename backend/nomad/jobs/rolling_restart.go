@@ -2,9 +2,10 @@ package jobs
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/structs"
-	"time"
 )
 
 const (
@@ -23,7 +24,7 @@ func NewRollingRestart(action structs.Action, client *api.Client) *rollingRestar
 	}
 }
 
-func (w *rollingRestart) Do() (*structs.Response, error) {
+func (w *rollingRestart) Do() (structs.Response, error) {
 	origJob, _, err := w.client.Jobs().Info(w.action.Payload.(string), nil)
 	if err != nil {
 		return structs.NewErrorResponse(err)

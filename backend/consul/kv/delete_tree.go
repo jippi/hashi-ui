@@ -21,7 +21,7 @@ func NewDeleteTree(action structs.Action, client *api.Client) *deleteTree {
 	}
 }
 
-func (w *deleteTree) Do() (*structs.Response, error) {
+func (w *deleteTree) Do() (structs.Response, error) {
 	key := w.action.Payload.(string)
 
 	_, err := w.client.KV().DeleteTree(key, &api.WriteOptions{})

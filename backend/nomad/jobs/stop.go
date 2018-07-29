@@ -23,7 +23,7 @@ func NewStop(action structs.Action, client *api.Client) *stop {
 	}
 }
 
-func (w *stop) Do() (*structs.Response, error) {
+func (w *stop) Do() (structs.Response, error) {
 	_, _, err := w.client.Jobs().Deregister(w.action.Payload.(string), false, nil)
 	if err != nil {
 		return structs.NewErrorResponse(err)

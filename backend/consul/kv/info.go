@@ -25,14 +25,14 @@ func NewInfo(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *info) Do() (*structs.Response, error) {
+func (w *info) Do() (structs.Response, error) {
 	pair, meta, err := w.client.KV().Get(w.action.Payload.(string), w.query)
 	if err != nil {
 		return structs.NewErrorResponse(err.Error())
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 
 	return structs.NewResponseWithIndex(fetchedInfo, pair, meta.LastIndex)

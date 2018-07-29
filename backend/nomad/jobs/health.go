@@ -41,7 +41,7 @@ func NewHealth(action structs.Action, client *api.Client, jobQuery *api.QueryOpt
 	}
 }
 
-func (w *health) Do() (*structs.Response, error) {
+func (w *health) Do() (structs.Response, error) {
 	// read the job
 	job, jobMeta, err := w.client.Jobs().Info(w.id, w.jobQuery)
 	if err != nil {
@@ -51,14 +51,14 @@ func (w *health) Do() (*structs.Response, error) {
 	// read the allocations
 	allocations, allocMeta, err := w.client.Jobs().Allocations(w.id, false, w.allocQuery)
 	if err != nil {
-		return nil, err
+		return structs.NewErrorResponse(err)
 	}
 
 	// if any changed, update status
 	jobChanged := helper.QueryChanged(w.jobQuery, jobMeta)
 	allocChanged := helper.QueryChanged(w.allocQuery, allocMeta)
 	if !jobChanged && !allocChanged {
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 
 	// calculate stats

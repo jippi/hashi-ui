@@ -31,7 +31,7 @@ func NewInfo(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *info) Do() (*structs.Response, error) {
+func (w *info) Do() (structs.Response, error) {
 	var job *api.Job
 	var err error
 	var meta *api.QueryMeta
@@ -55,7 +55,7 @@ func (w *info) Do() (*structs.Response, error) {
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 
 	return structs.NewResponseWithIndex(fetchedInfo, job, meta.LastIndex)

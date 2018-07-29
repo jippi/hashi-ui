@@ -33,7 +33,7 @@ func NewDestroy(action structs.Action, cfg *config.Config, client *api.Client, o
 	}
 }
 
-func (w *destroy) Do() (*structs.Response, error) {
+func (w *destroy) Do() (structs.Response, error) {
 	_, port, _ := net.SplitHostPort(w.cfg.ConsulAddress)
 	if port == "" {
 		port = "80"

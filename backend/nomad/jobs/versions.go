@@ -28,14 +28,14 @@ func NewVersions(action structs.Action, client *api.Client, query *api.QueryOpti
 	}
 }
 
-func (w *versions) Do() (*structs.Response, error) {
+func (w *versions) Do() (structs.Response, error) {
 	versions, _, meta, err := w.client.Jobs().Versions(w.action.Payload.(string), false, w.query)
 	if err != nil {
 		return structs.NewErrorResponse(err)
 	}
 
 	if !helper.QueryChanged(w.query, meta) {
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 
 	response := make([]*uint64, 0)

@@ -26,13 +26,13 @@ func NewList(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *list) Do() (*structs.Response, error) {
+func (w *list) Do() (structs.Response, error) {
 	sessions, meta, err := w.client.Session().List(w.query)
 	if err != nil {
 		return structs.NewErrorResponse(err)
 	}
 	if !helper.QueryChanged(w.query, meta) {
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 	return structs.NewResponseWithIndex(fetchedList, sessions, meta.LastIndex)
 }

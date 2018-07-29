@@ -7,7 +7,7 @@ import (
 
 // Watcher interface
 type Watcher interface {
-	Do() (*structs.Response, error)
+	Do() (structs.Response, error)
 	Key() string
 	IsMutable() bool
 	BackendType() string
@@ -15,7 +15,7 @@ type Watcher interface {
 
 // Streamer interface
 type Streamer interface {
-	Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan interface{}) (*structs.Response, error)
+	Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan interface{}) (structs.Response, error)
 	Key() string
 	IsMutable() bool
 	BackendType() string
@@ -66,8 +66,8 @@ func Watch(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Acti
 					return
 				}
 
-				if response != nil {
-					actions := response.Actions()
+				actions := response.Actions()
+				if len(actions) > 0 {
 					logger.Debugf("[%s] Sending %d replies", watchKey, len(actions))
 					replies(actions, send)
 				} else {
@@ -136,8 +136,9 @@ func Once(w Watcher, s Subscription, logger *log.Entry, send chan *structs.Actio
 		return
 	}
 
-	if response != nil {
-		replies(response.Actions(), send)
+	actions := response.Actions()
+	if len(actions) > 0 {
+		replies(actions, send)
 	}
 }
 
@@ -180,8 +181,9 @@ func Stream(w Streamer, s Subscription, logger *log.Entry, send chan *structs.Ac
 		return
 	}
 
-	if response != nil {
-		replies(response.Actions(), send)
+	actions := response.Actions()
+	if len(actions) > 0 {
+		replies(actions, send)
 		return
 	}
 }

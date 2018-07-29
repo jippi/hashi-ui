@@ -35,17 +35,17 @@ func NewStats(action structs.Action, client *api.Client, query *api.QueryOptions
 	}
 }
 
-func (w *stats) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan interface{}) (*structs.Response, error) {
+func (w *stats) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan interface{}) (structs.Response, error) {
 	ticker := time.NewTicker(*w.interval)   // fetch stats once in a while
 	timer := time.NewTimer(0 * time.Second) // fetch stats right away
 
 	for {
 		select {
 		case <-destroyCh:
-			return nil, nil
+			return structs.NewNoopResponse()
 
 		case <-subscribeCh:
-			return nil, nil
+			return structs.NewNoopResponse()
 
 		case <-timer.C:
 			if err := w.work(w.client, send, subscribeCh); err != nil {

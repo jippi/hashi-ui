@@ -60,7 +60,7 @@ func NewHealth(action structs.Action, nomad *nomad.Client, consul *consul.Client
 	}
 }
 
-func (w *health) Do() (*structs.Response, error) {
+func (w *health) Do() (structs.Response, error) {
 	if w.consul == nil {
 		return structs.NewErrorResponse("")
 	}
@@ -103,7 +103,7 @@ func (w *health) Do() (*structs.Response, error) {
 	}
 
 	if !consul_helper.QueryChanged(w.consulQuery, meta) {
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 
 	if !w.fetched {

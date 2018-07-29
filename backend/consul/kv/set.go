@@ -1,8 +1,6 @@
 package kv
 
 import (
-	"fmt"
-
 	"github.com/hashicorp/consul/api"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
@@ -23,10 +21,10 @@ func NewSet(action structs.Action, client *api.Client) *set {
 	}
 }
 
-func (w *set) Do() (*structs.Response, error) {
+func (w *set) Do() (structs.Response, error) {
 	params, ok := w.action.Payload.(map[string]interface{})
 	if !ok {
-		return nil, fmt.Errorf("Could not decode payload")
+		return structs.NewErrorResponse("Could not decode payload")
 	}
 
 	key := params["path"].(string)

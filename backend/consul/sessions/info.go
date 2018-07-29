@@ -2,6 +2,7 @@ package sessions
 
 import (
 	"fmt"
+
 	"github.com/hashicorp/consul/api"
 	"github.com/jippi/hashi-ui/backend/consul/helper"
 	"github.com/jippi/hashi-ui/backend/structs"
@@ -27,13 +28,13 @@ func NewInfo(action structs.Action, client *api.Client, opt *api.QueryOptions) *
 	}
 }
 
-func (w *info) Do() (*structs.Response, error) {
+func (w *info) Do() (structs.Response, error) {
 	session, meta, err := w.client.Session().Info(w.action.Payload.(string), w.opt)
 	if err != nil {
 		return structs.NewErrorResponse(err)
 	}
 	if !helper.QueryChanged(w.opt, meta) {
-		return nil, nil
+		return structs.NewNoopResponse()
 	}
 	return structs.NewResponseWithIndex(fetchedInfo, session, meta.LastIndex)
 }

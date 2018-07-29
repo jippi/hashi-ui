@@ -30,7 +30,7 @@ func NewDir(action structs.Action, client *api.Client, query *api.QueryOptions) 
 	}
 }
 
-func (w *dir) Do() (*structs.Response, error) {
+func (w *dir) Do() (structs.Response, error) {
 	if w.alloc == nil {
 		alloc, _, err := w.client.Allocations().Info(w.id, w.query)
 		if err != nil {

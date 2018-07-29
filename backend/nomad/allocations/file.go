@@ -41,7 +41,7 @@ func NewFile(action structs.Action, client *api.Client) *file {
 }
 
 // Do will watch the /job/:id endpoint for changes
-func (w *file) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan interface{}) (*structs.Response, error) {
+func (w *file) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan interface{}) (structs.Response, error) {
 	alloc, _, err := w.client.Allocations().Info(w.id, nil)
 	if err != nil {
 		return structs.NewErrorResponse(err)
@@ -125,13 +125,13 @@ func (w *file) Do(send chan *structs.Action, subscribeCh chan interface{}, destr
 	for {
 		select {
 		case <-cancel:
-			return nil, nil
+			return structs.NewNoopResponse()
 
 		case <-destroyCh:
-			return nil, nil
+			return structs.NewNoopResponse()
 
 		case <-subscribeCh:
-			return nil, nil
+			return structs.NewNoopResponse()
 
 		case line := <-lines:
 			send <- &structs.Action{

@@ -40,7 +40,7 @@ func NewList(action structs.Action, client *api.Client, query *api.QueryOptions)
 	}
 }
 
-func (w *list) Do() (*structs.Response, error) {
+func (w *list) Do() (structs.Response, error) {
 	nodes, meta, err := w.client.Nodes().List(w.query)
 	if err != nil {
 		return structs.NewErrorResponse(err)

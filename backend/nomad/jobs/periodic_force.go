@@ -23,7 +23,7 @@ func NewPeriodicForce(action structs.Action, client *api.Client) *periodicForce 
 	}
 }
 
-func (w *periodicForce) Do() (*structs.Response, error) {
+func (w *periodicForce) Do() (structs.Response, error) {
 	_, _, err := w.client.Jobs().PeriodicForce(w.action.Payload.(string), nil)
 	if err != nil {
 		return structs.NewErrorResponse(err)

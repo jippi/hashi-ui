@@ -2,6 +2,7 @@ package jobs
 
 import (
 	"fmt"
+
 	"github.com/hashicorp/nomad/api"
 	"github.com/jippi/hashi-ui/backend/structs"
 )
@@ -27,7 +28,7 @@ func boolToPtr(b bool) *bool {
 	return &b
 }
 
-func (w *restart) Do() (*structs.Response, error) {
+func (w *restart) Do() (structs.Response, error) {
 	origJob, _, err := w.client.Jobs().Info(w.action.Payload.(string), nil)
 	if err != nil {
 		return structs.NewErrorResponse(err)

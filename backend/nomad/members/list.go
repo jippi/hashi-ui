@@ -35,16 +35,16 @@ func NewList(action structs.Action, cfg *config.Config, client *api.Client) *lis
 	}
 }
 
-func (w *list) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan interface{}) (*structs.Response, error) {
+func (w *list) Do(send chan *structs.Action, subscribeCh chan interface{}, destroyCh chan interface{}) (structs.Response, error) {
 	ticker := time.NewTicker(5 * time.Second)
 	timer := time.NewTimer(0 * time.Second)
 
 	for {
 		select {
 		case <-subscribeCh:
-			return nil, nil
+			return structs.NewNoopResponse()
 		case <-destroyCh:
-			return nil, nil
+			return structs.NewNoopResponse()
 		case <-timer.C:
 			w.update(w.client, send)
 		case <-ticker.C:

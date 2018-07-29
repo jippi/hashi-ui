@@ -49,23 +49,27 @@ func (r *Response) AddSuccess(payload interface{}) {
 }
 
 // NewResponse will create a new Response instance
-func NewResponse(kind string, payload interface{}) *Response {
-	response := &Response{}
+func NewResponse(kind string, payload interface{}) Response {
+	response := Response{}
 	response.Add(&Action{Type: kind, Payload: payload})
 
 	return response
 }
 
 // NewResponseWithIndex will create a new response with an action with Index value
-func NewResponseWithIndex(kind string, payload interface{}, index uint64) (*Response, error) {
-	response := &Response{}
+func NewResponseWithIndex(kind string, payload interface{}, index uint64) (Response, error) {
+	response := Response{}
 	response.Add(&Action{Type: kind, Payload: payload, Index: index})
 
 	return response, nil
 }
 
+func NewNoopResponse() (Response, error) {
+	return Response{}, nil
+}
+
 // NewErrorResponse will return a Response with error message attached
-func NewErrorResponse(msg interface{}, data ...interface{}) (*Response, error) {
+func NewErrorResponse(msg interface{}, data ...interface{}) (Response, error) {
 	var message string
 
 	switch msg.(type) {
@@ -77,12 +81,12 @@ func NewErrorResponse(msg interface{}, data ...interface{}) (*Response, error) {
 		panic(fmt.Sprintf("Unknown type %T for ErrorResponse", message))
 	}
 
-	return nil, fmt.Errorf(message, data...)
+	return Response{}, fmt.Errorf(message, data...)
 }
 
 // NewSuccessResponse will return a new Response with a Success message attached and no error
-func NewSuccessResponse(msg string, data ...interface{}) (*Response, error) {
-	response := &Response{}
+func NewSuccessResponse(msg string, data ...interface{}) (Response, error) {
+	response := Response{}
 	response.AddSuccess(fmt.Sprintf(msg, data...))
 
 	return response, nil

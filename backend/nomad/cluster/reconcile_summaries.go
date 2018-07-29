@@ -21,7 +21,7 @@ func NewReconsileSummaries(action structs.Action, client *api.Client) *reconsile
 	}
 }
 
-func (w *reconsileSummaries) Do() (*structs.Response, error) {
+func (w *reconsileSummaries) Do() (structs.Response, error) {
 	err := w.client.System().ReconcileSummaries()
 	if err != nil {
 		return structs.NewErrorResponse(err)
