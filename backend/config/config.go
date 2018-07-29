@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 )
 
 var (
@@ -80,18 +81,22 @@ var (
 
 	flagSiteTitle = flag.String("site-title", "",
 		"Free-form text to be prepended to title-bar; eg. 'Staging'. "+FlagDefault(defaultConfig.SiteTitle))
+
+	flagThrottleUpdate = flag.String("throttle-update-frequency", "",
+		"Duration to sleep between updates when watching resources. Useful to throttle update frequencies on busy clusters. Example: 5s "+FlagDefault(""))
 )
 
 // Config for the hashi-ui server
 type Config struct {
-	LogLevel      string
-	ProxyAddress  string
-	ProxyPath     string
-	ListenAddress string
-	HttpsEnable   bool
-	ServerCert    string
-	ServerKey     string
-	SiteTitle     string
+	LogLevel               string
+	ProxyAddress           string
+	ProxyPath              string
+	ListenAddress          string
+	HttpsEnable            bool
+	ServerCert             string
+	ServerKey              string
+	SiteTitle              string
+	ThrottleUpdateDuration *time.Duration
 
 	NomadEnable      bool
 	NomadAddress     string
@@ -157,6 +162,8 @@ func DefaultConfig() *Config {
 		ConsulReadOnly: false,
 		ConsulAddress:  "127.0.0.1:8500",
 		ConsulColor:    "#694a9c",
+
+		ThrottleUpdateDuration: nil,
 	}
 }
 
@@ -205,6 +212,15 @@ func ParseAppEnvConfig(c *Config) {
 	if ok {
 		c.SiteTitle = siteTitle
 	}
+
+	throttle, ok := syscall.Getenv("UPDATE_THROTTLE_DURATION")
+	if ok {
+		v, err := time.ParseDuration(throttle)
+		if err != nil {
+			log.Fatalf("Could not parse UPDATE_THROTTLE_DURATION: %s", err)
+		}
+		c.ThrottleUpdateDuration = &v
+	}
 }
 
 // ParseAppFlagConfig ...
@@ -237,6 +253,13 @@ func ParseAppFlagConfig(c *Config) {
 		c.SiteTitle = *flagSiteTitle
 	}
 
+	if *flagThrottleUpdate != "" {
+		v, err := time.ParseDuration(*flagThrottleUpdate)
+		if err != nil {
+			log.Fatalf("Could not parse --throttle-update-frequency: %s", err)
+		}
+		c.ThrottleUpdateDuration = &v
+	}
 }
 
 // ParseNomadEnvConfig ...

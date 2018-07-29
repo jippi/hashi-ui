@@ -451,7 +451,7 @@ func (c *connection) watch(w subscriber.Watcher) {
 		return
 	}
 
-	go subscriber.Watch(w, c.subscriptions, c.logger, c.sendCh, c.destroyCh)
+	go subscriber.Watch(w, c.subscriptions, c.logger, c.config, c.sendCh, c.destroyCh)
 }
 
 // once will start a one-off execution of a watcher in a new Go routine

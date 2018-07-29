@@ -98,15 +98,16 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 
 ## General Configuration
 
-| Environment        	  |CLI (`--flag`)            | Default                 	    | Description                                                                                                      |
-|-------------------------|---------------------------|---------------------------- |------------------------------------------------------------------------------------------------------------------|
-| `LOG_LEVEL` 	          | `log-level`               | `info`                  	| Log level to use while running the hashi-ui server - (`critical`, `error`, `warning`, `notice`, `info`, `debug`) |
-| `PROXY_ADDRESS`         | `proxy-address` 	      | `<empty>`               	| (optional) The base URL of the UI when running behind a reverse proxy (ie: example.com/nomad/)                   |
-| `LISTEN_ADDRESS`        | `listen-address`          | `0.0.0.0:3000`              | The IP + PORT to listen on |
-| `HTTPS_ENABLE`          | `https-enable`            | `false`                     | Use HTTPS instead of HTTP for Hashi-UI |
-| `SERVER_CERT`           | `server-cert`             | `<empty>`                   | Server certificate to use when HTTPS is enabled |
-| `SERVER_KEY`            | `server-key`              | `<empty>`                   | Server key to use when HTTPS is enabled |
-| `SITE_TITLE`            | `site-title`              | `<empty>`                   | Free-form text to be prepended to title-bar; eg. "Staging" |
+| Environment        	       | CLI (`--flag`)              | Default                 	    | Description                                                                                                      |
+|----------------------------|-----------------------------|---------------------------- |------------------------------------------------------------------------------------------------------------------|
+| `LOG_LEVEL` 	             | `log-level`                 | `info`                  	| Log level to use while running the hashi-ui server - (`critical`, `error`, `warning`, `notice`, `info`, `debug`) |
+| `PROXY_ADDRESS`            | `proxy-address` 	           | `<empty>`               	| (optional) The base URL of the UI when running behind a reverse proxy (ie: example.com/nomad/)                   |
+| `LISTEN_ADDRESS`           | `listen-address`            | `0.0.0.0:3000`              | The IP + PORT to listen on |
+| `HTTPS_ENABLE`             | `https-enable`              | `false`                     | Use HTTPS instead of HTTP for Hashi-UI |
+| `SERVER_CERT`              | `server-cert`               | `<empty>`                   | Server certificate to use when HTTPS is enabled |
+| `SERVER_KEY`               | `server-key`                | `<empty>`                   | Server key to use when HTTPS is enabled |
+| `SITE_TITLE`               | `site-title`                | `<empty>`                   | Free-form text to be prepended to title-bar; eg. "Staging" |
+| `UPDATE_THROTTLE_DURATION` | `throttle-update-duration`  | `<empty>`                   | Duration to sleep before polling Nomad/Consul for updates. Useful in busy clusters ([example: `5s`, `250ms`](https://golang.org/pkg/time/#ParseDuration)) |
 
 ## Nomad Configuration
 
