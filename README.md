@@ -1,5 +1,7 @@
 Hashi UI [![Build Status](https://travis-ci.org/jippi/hashi-ui.svg?branch=master)](https://travis-ci.org/jippi/hashi-ui)
 ========
+[![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/jippi/hashi-ui.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jippi/hashi-ui/context:javascript)
+[![Total Alerts](https://img.shields.io/lgtm/alerts/g/jippi/hashi-ui.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jippi/hashi-ui/alerts)
 
 [![Join the chat at https://gitter.im/hashi-ui/Lobby](https://badges.gitter.im/hashi-ui/Lobby.svg)](https://gitter.im/hashi-ui/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Docker Stars](https://img.shields.io/docker/stars/jippi/hashi-ui.svg)](https://hub.docker.com/r/jippi/hashi-ui/)
