@@ -408,8 +408,8 @@ func (c *connection) process(action structs.Action) {
 		c.stream(nomad_cluster.NewStats(action, c.nomadClient))
 	case nomad_cluster.UnwatchStats:
 		c.unwatch(nomad_cluster.NewStats(action, c.nomadClient))
-	case fetchNomadRegions:
-		// go c.fetchRegions()
+	case nomad_cluster.Regions:
+		c.once(nomad_cluster.NewRegions(action, c.nomadClient))
 
 	default:
 		c.logger.Errorf("Unknown action: %s", action.Type)
