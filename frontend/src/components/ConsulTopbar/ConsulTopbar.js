@@ -26,7 +26,7 @@ class ConsulTopbar extends PureComponent {
 
   handleChangeRegion(region) {
     this.props.dispatch({
-      type: SET_CONSUL_REGION,
+      type: CONSUL_SET_REGION,
       payload: region
     })
   }
