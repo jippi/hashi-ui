@@ -1,3 +1,23 @@
+# build-env container
+FROM golang:1.10-stretch AS build-env
+
+RUN apt-get update -q -y && \
+    apt-get install -q -y apt-transport-https ca-certificates gnupg && \
+    apt-key adv --fetch-keys https://dl.yarnpkg.com/debian/pubkey.gpg && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list && \
+    # https://github.com/yarnpkg/yarn/issues/6914
+    curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
+    apt-get update -q -y && \
+    apt-get install -q -y yarn nodejs
+
+RUN go get -u github.com/kardianos/govendor && \
+    go install github.com/kardianos/govendor
+
+ADD . /go/src/github.com/jippi/hashi-ui
+WORKDIR /go/src/github.com/jippi/hashi-ui
+RUN make -j rebuild
+
+# application container
 FROM alpine
 
 # we need ca-certificates for any external https communication
@@ -6,6 +26,6 @@ RUN apk --update upgrade && \
     update-ca-certificates && \
     rm -rf /var/cache/apk/*
 
-ADD ./backend/build/hashi-ui-linux-amd64 /hashi-ui
+COPY --from=build-env /go/src/github.com/jippi/hashi-ui/backend/build/hashi-ui-linux-amd64 /hashi-ui
 EXPOSE 3000
 CMD ["/hashi-ui"]
