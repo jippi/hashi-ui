@@ -73,7 +73,7 @@ var (
 	flagNewRelicAppName = flag.String("new-relic-app-name", "",
 		"NewRelic application name. "+FlagDefault(defaultConfig.NewRelicAppName))
 
-	flagNewRelicLicenseKey = flag.String("new-relic-licence-key", "",
+	flagNewRelicLicenseKey = flag.String("new-relic-license-key", "",
 		"NewRelic license key. "+FlagDefault(defaultConfig.NewRelicLicenseKey))
 
 	flagServerCert = flag.String("server-cert", "",
@@ -238,7 +238,7 @@ func ParseAppEnvConfig(c *Config) {
 		c.NewRelicAppName = newRelicAppName
 	}
 
-	newRelicLicenseKey, ok := syscall.Getenv("NEW_RELIC_LICENCE_KEY")
+	newRelicLicenseKey, ok := syscall.Getenv("NEW_RELIC_LICENSE_KEY")
 	if ok {
 		c.NewRelicLicenseKey = newRelicLicenseKey
 	}
