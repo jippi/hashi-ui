@@ -67,6 +67,15 @@ var (
 	flagHttpsEnable = flag.Bool("https-enable", false,
 		"Use https protocol instead. "+FlagDefault(strconv.FormatBool(defaultConfig.HttpsEnable)))
 
+	flagNewRelicEnable = flag.Bool("new-relic-enable", false,
+		"Enable NewRelic monitoring. "+FlagDefault(strconv.FormatBool(defaultConfig.NewRelicEnable)))
+
+	flagNewRelicAppName = flag.String("new-relic-app-name", "",
+		"NewRelic application name. "+FlagDefault(defaultConfig.NewRelicAppName))
+
+	flagNewRelicLicenseKey = flag.String("new-relic-license-key", "",
+		"NewRelic license key. "+FlagDefault(defaultConfig.NewRelicLicenseKey))
+
 	flagServerCert = flag.String("server-cert", "",
 		"Server certificate to use when https protocol is enabled. "+FlagDefault(defaultConfig.ServerCert))
 
@@ -93,6 +102,9 @@ type Config struct {
 	ProxyPath              string
 	ListenAddress          string
 	HttpsEnable            bool
+	NewRelicEnable         bool
+	NewRelicAppName        string
+	NewRelicLicenseKey     string
 	ServerCert             string
 	ServerKey              string
 	SiteTitle              string
@@ -163,6 +175,9 @@ func DefaultConfig() *Config {
 		ConsulAddress:  "127.0.0.1:8500",
 		ConsulColor:    "#694a9c",
 
+		NewRelicEnable:  false,
+		NewRelicAppName: "hashi-ui",
+
 		ThrottleUpdateDuration: nil,
 	}
 }
@@ -213,6 +228,21 @@ func ParseAppEnvConfig(c *Config) {
 		c.SiteTitle = siteTitle
 	}
 
+	newRelicEnable, ok := syscall.Getenv("NEW_RELIC_ENABLE")
+	if ok {
+		c.NewRelicEnable = newRelicEnable != "0"
+	}
+
+	newRelicAppName, ok := syscall.Getenv("NEW_RELIC_APP_NAME")
+	if ok {
+		c.NewRelicAppName = newRelicAppName
+	}
+
+	newRelicLicenseKey, ok := syscall.Getenv("NEW_RELIC_LICENSE_KEY")
+	if ok {
+		c.NewRelicLicenseKey = newRelicLicenseKey
+	}
+
 	throttle, ok := syscall.Getenv("UPDATE_THROTTLE_DURATION")
 	if ok {
 		v, err := time.ParseDuration(throttle)
@@ -239,6 +269,18 @@ func ParseAppFlagConfig(c *Config) {
 
 	if *flagHttpsEnable {
 		c.HttpsEnable = *flagHttpsEnable
+	}
+
+	if *flagNewRelicEnable {
+		c.NewRelicEnable = *flagNewRelicEnable
+	}
+
+	if *flagNewRelicAppName != "" {
+		c.NewRelicAppName = *flagNewRelicAppName
+	}
+
+	if *flagNewRelicLicenseKey != "" {
+		c.NewRelicLicenseKey = *flagNewRelicLicenseKey
 	}
 
 	if *flagServerCert != "" {

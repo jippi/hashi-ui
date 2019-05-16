@@ -18,6 +18,9 @@ func TestConfig_correctDefaulValues(t *testing.T) {
 		NomadColor:       "#4b9a7d",
 		SiteTitle:        "",
 
+		NewRelicEnable:  false,
+		NewRelicAppName: "hashi-ui",
+
 		ConsulReadOnly: false,
 		ConsulAddress:  "127.0.0.1:8500",
 		ConsulColor:    "#694a9c",
