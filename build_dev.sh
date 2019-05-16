@@ -31,18 +31,18 @@ find ${DIR}/backend/vendor/* -type d -exec rm -rf {} +
 rm ${DIR}/backend/bindata_assetfs.go
 
 echo "=> loading build dependencies ..."
-go get -u github.com/kardianos/govendor
+go get -u github.com/golang/dep/cmd/dep
 go get -u github.com/jteeuwen/go-bindata/...
 go get -u github.com/elazarl/go-bindata-assetfs/...
 go get github.com/mitchellh/go-ps
 
-echo "=> govendor sync ..."
-govendor sync
+echo "=> dep ensure -vendor-only ..."
+dep ensure -vendor-only sync
 
 echo "=> packaging assets ..."
 go-bindata-assetfs -prefix ${DIR}/frontend ${DIR}/frontend/build/...
 
 echo "=> building ${BUILDNAME} ..."
-CGO_ENABLED=0 govendor build -o "${BUILDNAME}" -ldflags "${GO_LDFLAGS}"
+CGO_ENABLED=0 go build -o "${BUILDNAME}" -ldflags "${GO_LDFLAGS}"
 
 echo "=> done"

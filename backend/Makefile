@@ -1,6 +1,6 @@
 VETARGS?=-all
 EXTERNAL_TOOLS=\
-	github.com/kardianos/govendor \
+	github.com/golang/dep/cmd/dep \
 	github.com/jteeuwen/go-bindata/... \
 	github.com/elazarl/go-bindata-assetfs/...
 
@@ -23,7 +23,7 @@ GET_GOARCH = $(word 2,$(subst -, ,$1))
 BINARIES = $(addprefix $(BUILD_DIR)/hashi-ui-, $(GOBUILD))
 $(BINARIES): $(BUILD_DIR)/hashi-ui-%: $(BUILD_DIR) bindata_assetfs.go
 	@echo "=> building $@ ..."
-	GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 govendor build -o $@ -ldflags $(GO_LDFLAGS)
+	GOOS=$(call GET_GOOS,$*) GOARCH=$(call GET_GOARCH,$*) CGO_ENABLED=0 go build -o $@ -ldflags $(GO_LDFLAGS)
 
 .PHONY: install
 install:
@@ -35,8 +35,8 @@ install:
 	@echo "=> installing go-ps library..."
 	go get github.com/mitchellh/go-ps
 
-	@echo "=> govendor sync..."
-	govendor sync
+	@echo "=> dep ensure -vendor-only..."
+	dep ensure -vendor-only
 
 .PHONY: fmt
 fmt:

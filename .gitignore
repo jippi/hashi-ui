@@ -1,6 +1,7 @@
 frontend/node_modules
 backend/vendor
 backend/backend
+backend/bindata.go
 
 .tern-port
 .sass-cache

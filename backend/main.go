@@ -13,6 +13,7 @@ import (
 	"github.com/jippi/hashi-ui/backend/config"
 	consul_helper "github.com/jippi/hashi-ui/backend/consul/helper"
 	nomad_helper "github.com/jippi/hashi-ui/backend/nomad/helper"
+	newrelic "github.com/newrelic/go-agent"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -52,6 +53,8 @@ func main() {
 	log.Infof("| site-title       	       : %-50s |", cfg.SiteTitle)
 	log.Infof("| proxy-address   	       : %-50s |", cfg.ProxyAddress)
 	log.Infof("| log-level       	       : %-50s |", cfg.LogLevel)
+	log.Infof("| new-relic-enable  	       : %-50v |", cfg.NewRelicEnable)
+	log.Infof("| new-relic-app-name	       : %-50s |", cfg.NewRelicAppName)
 
 	if cfg.ThrottleUpdateDuration != nil {
 		log.Infof("| throttle-update-duration  : %-50s |", cfg.ThrottleUpdateDuration)
@@ -106,6 +109,17 @@ func main() {
 	myAssetFS := assetFS()
 	router := mux.NewRouter()
 
+	var app newrelic.Application
+
+	if cfg.NewRelicEnable {
+		config := newrelic.NewConfig(cfg.NewRelicAppName, cfg.NewRelicLicenseKey)
+		var err error
+		app, err = newrelic.NewApplication(config)
+		if err != nil {
+			log.Fatalf("Could not create NewRelic application: %v", err)
+		}
+	}
+
 	// create clients
 	var nomadClient *nomad.Client
 	var consulClient *consul.Client
@@ -141,31 +155,31 @@ func main() {
 	// setup http handlers
 
 	if cfg.NomadEnable {
-		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		router.HandleFunc(newrelic.WrapHandleFunc(app, "/", func(w http.ResponseWriter, r *http.Request) {
 			log.Infof("Redirecting / to /nomad")
 			w.Write([]byte("<script>document.location.href='" + cfg.ProxyPath + "nomad'</script>"))
 			return
-		})
+		}))
 
-		router.HandleFunc("/ws/nomad", NomadHandler(cfg, nomadClient, consulClient))
-		router.HandleFunc("/ws/nomad/{region}", NomadHandler(cfg, nomadClient, consulClient))
-		router.HandleFunc("/api/nomad/{region}", NomadAPIHandler(cfg, nomadClient, consulClient))
-		router.HandleFunc("/nomad/{region}/download/{path:.*}", NomadDownloadFile(cfg))
+		router.HandleFunc(newrelic.WrapHandleFunc(app, "/ws/nomad", NomadHandler(cfg, nomadClient, consulClient)))
+		router.HandleFunc(newrelic.WrapHandleFunc(app, "/ws/nomad/{region}", NomadHandler(cfg, nomadClient, consulClient)))
+		router.HandleFunc(newrelic.WrapHandleFunc(app, "/api/nomad/{region}", NomadAPIHandler(cfg, nomadClient, consulClient)))
+		router.HandleFunc(newrelic.WrapHandleFunc(app, "/nomad/{region}/download/{path:.*}", NomadDownloadFile(cfg)))
 	}
 
 	if cfg.ConsulEnable {
 		if !cfg.NomadEnable {
-			router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			router.HandleFunc(newrelic.WrapHandleFunc(app, "/", func(w http.ResponseWriter, r *http.Request) {
 				log.Infof("Redirecting / to /consul")
 				http.Redirect(w, r, cfg.ProxyPath+"consul", 302)
-			})
+			}))
 		}
 
-		router.HandleFunc("/ws/consul", ConsulHandler(cfg, nomadClient, consulClient))
-		router.HandleFunc("/ws/consul/{region}", ConsulHandler(cfg, nomadClient, consulClient))
+		router.HandleFunc(newrelic.WrapHandleFunc(app, "/ws/consul", ConsulHandler(cfg, nomadClient, consulClient)))
+		router.HandleFunc(newrelic.WrapHandleFunc(app, "/ws/consul/{region}", ConsulHandler(cfg, nomadClient, consulClient)))
 	}
 
-	router.HandleFunc("/_status", StatusHandler(cfg, nomadClient, consulClient))
+	router.HandleFunc(newrelic.WrapHandleFunc(app, "/_status", StatusHandler(cfg, nomadClient, consulClient)))
 
 	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		responseFile := "/index.html"
