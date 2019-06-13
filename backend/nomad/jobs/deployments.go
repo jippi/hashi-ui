@@ -29,7 +29,7 @@ func NewDeployments(action structs.Action, client *api.Client, query *api.QueryO
 }
 
 func (w *deployments) Do() (structs.Response, error) {
-	deployments, meta, err := w.client.Jobs().Deployments(w.action.Payload.(string), w.query)
+	deployments, meta, err := w.client.Jobs().Deployments(w.action.Payload.(string), true, w.query)
 	if err != nil {
 		return structs.NewErrorResponse(err)
 	}
