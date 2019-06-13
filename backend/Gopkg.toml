@@ -31,11 +31,11 @@
 
 [[constraint]]
   name = "github.com/hashicorp/consul"
-  version = "1.5.0"
+  version = "1.5.1"
 
 [[constraint]]
   name = "github.com/hashicorp/nomad"
-  version = "0.8.7"
+  version = "0.9.3"
 
 [[constraint]]
   name = "github.com/newrelic/go-agent"
