@@ -1,5 +1,5 @@
 # build-env container
-FROM golang:1.10-stretch AS build-env
+FROM golang:1.12-stretch AS build-env
 
 RUN apt-get update -q -y && \
     apt-get install -q -y apt-transport-https ca-certificates gnupg && \
