@@ -60,7 +60,8 @@ class AllocationInfo extends Component {
                     </TableRowColumn>
                     <TableRowColumn style={{ width: 180 }}>{element.Type}</TableRowColumn>
                     <TableRowColumn>
-                      {element.Message ||
+                      {element.DisplayMessage ||
+                        element.Message ||
                         element.SetupError ||
                         element.DriverError ||
                         element.DriverMessage ||
