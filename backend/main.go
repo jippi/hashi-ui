@@ -107,7 +107,7 @@ func main() {
 	}
 
 	myAssetFS := assetFS()
-	router := mux.NewRouter().PathPrefix(cfg.ProxyPath).Subrouter()
+	router := mux.NewRouter()
 
 	var app newrelic.Application
 
