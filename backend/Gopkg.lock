@@ -93,15 +93,15 @@
   version = "v0.5.1"
 
 [[projects]]
-  digest = "1:848cf7f9c8f8824c0419ebbd4537e8b71f9668eace568045cf4d6690864f3de0"
+  digest = "1:9e82e75cd58d8910431c81af170504bea17d9f23a5c210e6245f2671538e5e4b"
   name = "github.com/hashicorp/nomad"
   packages = [
     "api",
     "api/contexts",
   ]
   pruneopts = "UT"
-  revision = "e0fce4603bdc0e42578e5ede3b1fbafe6499d9bb"
-  version = "v0.9.3"
+  revision = "6c4863c5f61b0cdfb609927f6f67e17d90454197"
+  version = "v0.9.4"
 
 [[projects]]
   digest = "1:acc81e4e4289587b257ccdfccbc6eaf16d4c2fb57dda73c6bb349bf50f02501f"
