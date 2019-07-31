@@ -35,7 +35,7 @@
 
 [[constraint]]
   name = "github.com/hashicorp/nomad"
-  version = "0.9.3"
+  version = "0.9.4"
 
 [[constraint]]
   name = "github.com/newrelic/go-agent"
