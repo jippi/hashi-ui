@@ -79,7 +79,7 @@ class ClientActionMenu extends Component {
     if (this.props.node.Drain) {
       return (
         <MenuItem
-          primaryText="Disable Drain mode"
+          primaryText="Stop Draining node"
           rightIcon={
             <FontIcon className="material-icons" color={green500}>
               check_box
@@ -92,7 +92,7 @@ class ClientActionMenu extends Component {
 
     return [
       <MenuItem
-        primaryText="Enable Drain mode"
+        primaryText="Start Draining node"
         rightIcon={
           <FontIcon className="material-icons" color={red500}>
             check_box
@@ -101,7 +101,7 @@ class ClientActionMenu extends Component {
         onClick={this.handleClick("drain_on")}
       />,
       <MenuItem
-        primaryText="Enable Drain mode (ignore system)"
+        primaryText="Start Draining (ignore system)"
         rightIcon={
           <FontIcon className="material-icons" color={red500}>
             check_box
@@ -114,12 +114,12 @@ class ClientActionMenu extends Component {
 
   getSchedulingEligibilityMenu() {
     if (this.props.node.SchedulingEligibility == "eligible") {
-      return <MenuItem primaryText="Disable Scheduling Eligibility" rightIcon={<FontIcon className="material-icons" color={green500}>
+      return <MenuItem primaryText="Disable node for scheduling" rightIcon={<FontIcon className="material-icons" color={green500}>
               check_box
             </FontIcon>} onClick={this.handleClick("eligibility_off")} />
     }
 
-    return <MenuItem primaryText="Enable Scheduling Eligibility" rightIcon={<FontIcon className="material-icons" color={red500}>
+    return <MenuItem primaryText="Enable node for scheduling" rightIcon={<FontIcon className="material-icons" color={red500}>
             check_box
           </FontIcon>} onClick={this.handleClick("eligibility_on")} />
   }
