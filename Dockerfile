@@ -1,5 +1,7 @@
 # build-env container
-FROM golang:1.12-stretch AS build-env
+FROM golang:1.13 AS build-env
+
+ENV CGO_ENABLED=0 GO111MODULE=on GOPROXY=https://proxy.golang.org
 
 RUN apt-get update -q -y && \
     apt-get install -q -y apt-transport-https ca-certificates gnupg && \
@@ -9,9 +11,6 @@ RUN apt-get update -q -y && \
     curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
     apt-get update -q -y && \
     apt-get install -q -y yarn nodejs
-
-RUN go get -u github.com/kardianos/govendor && \
-    go install github.com/kardianos/govendor
 
 ADD . /go/src/github.com/jippi/hashi-ui
 WORKDIR /go/src/github.com/jippi/hashi-ui

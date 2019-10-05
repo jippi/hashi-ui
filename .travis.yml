@@ -1,28 +1,40 @@
-sudo: required
-
 language: go
 
 go:
-  - "1.12"
+  - "1.13"
 
-services:
-  - docker
+node_js:
+  - "12"
 
 cache:
   yarn: true
   directories:
-    - backend/vendor
+    - $HOME/.cache/go-build
+    - $HOME/gopath/pkg/mod
     - frontend/node_modules
 
 env:
   global:
+    - CGO_ENABLED=0
+    - DOCKER_BUILDKIT=1
+    - GO111MODULE=on
     - GOBUILD="linux-amd64 windows-amd64 darwin-amd64"
+    - GOPROXY=https://proxy.golang.org
+
     # DOCKER_USER
     - secure: "XB/5pW++k4w4tx7rIYuuNW89Q784QYczG++lpQk1X/OGKCtJBfV2Ul7yU04KgRmxJDmAF/LCcpigxqrHcpUKo2o7p9jYNxQVMNpCbKA4ZMvuNumJa/2Li6c4kf4LJD4Yhg5LLYw9HmsOgLjCQ/dDOVhGgprkmzDWBBfJVDBte+SfqnDS5TM87d7gN40LRHBIIhiiJZlhrnjnKEgAnvNwxaZ1Oa1ncItt8WzCn8FjKzzUhTKFvEQhIX4he0USGypWUOy2Wgaqupkzwns14Z8fZ5C8o4qmgx6ZuEl6E6WmkF/rDT2FruMcE3K7eVLFYgl+aqi48L7o8bOXTFAkv+UjlcJGu8DvsBDTnr6bZ4e+dbzY3KxCZT3VyjteRfTMyv9Op7oVgt+oxR6vWgliofZk7T1rDCO1NUJpn1kooKQlZsE5SfQuHFiNxRlLuaRV5ZdANH9vonqdEyZC3OUWO3LqQYRhXakqe2uP+bjt85t/SIQZMGX1MLnU0T1HzPF3TaMMtr4SKt9gJPdyIxlXk8nagTdk6fRxRr6SHPKI9XiHS00hMFhQTiwpbRohJ7XnOwCGxs5aYsNYAml303vceuBvSUFAUn0F+Pm0REWwVNK+9MoGA3tlWgyW3DUkd3ZymhXjhmbR04wYQnIzcWdSTvpNmx3laDknyfOu4HVmzBBjQow="
     # DOCKER_EMAIL
     - secure: "Gy8e7tCRReU2JMd/QaDzRnXxqMndIFMk8g8JGm33IBUFl5hDJ/fPdzfPlk8gB6fwHM73vJMaR/QIxTWsgieznXnZTU7OZ9+TbYq5LvX7Y36rgLdSAhR4z3AQUE+gziDZvVF0d2LJ0VVVgrIP6QQ2MsRtnJbN4h3HhxLLeSaDAJw+PuMK9995YozELdCYAX/LJ9JK+/vA4Ub54y7h8dH39n3HyWyTuv3cFJ4IyBuO7xZ5GYDNAeLxww2XuYGu5d/xEfNn+4JXHAgGoVvnOAfy9A78E+o4fbPH8Fyubsfd5IGv5EgUnuP4Ec9ZcfxwtUIXyzhTlgTmlCKwtCFiBdKp6TsGx4QG4oKbr3VH7saSZc+O+pn4JHY9ZDs66mPY9aiTczCYdng4en4ut1jWhFAumLPO06Ndj7W3Tgmq6l/6AfK6QhcOeRHlLElIoTla5MZHQw+g1W/td3QObYXsGDP3QT+q0Xg5PNTspRxII4ouF5P3Ua9HhpM93TNQYNOta38szb/xhgzqbXpHb9nSPkgdyo+KX1vcYJiSyfxacNjmATvm9Gl6RaEVvF+NXRj0AN4vtOcFsTWW0OfTDTQJXJeYJfdvcmfsOevAclJ7rj4jv0HlUNbRuYQljo8XN29+Z5PQfJXRprK7lfKKUZHELhC4FQxDDqRLnMLs4TrsnHyGe5s="
     # DOCKER_PASS
     - secure: "aBtrLU/ItEku0MXqff6zi8MeBCzbaXucvAgO0769MtO7YB9h3EwD/FwCk/NkstxphJgSdGrZuhWctazbplsjbG5/NTVvSe9tAeikjGzoMSRx0LgTnOc3QZSaXbKyITD66Psd5sWh50Jf2n6PxDer4wdJu74Cql9ZEnytqh4jQDyptPa3Tm38vnsCvIS/cayL/xZeYa3naUO1ydj4Jt6+rBJL03nawj7kC6r5n2Mwm6HAYGePdcSi+x/7vegTbux9Kp/7TWqCprGUqbMLY8zCvqPCNnPPYqYpqVkE5X6ajURYucXUDL/ievxW1ixdvyOVo1dL8L2P0TGdKNz9Beydhs+OUMAno4BtPzUEu6GSqlNmDyE+j9HajtjSAMCRGjT7rbXoFUCTczGJNTUO++4LFVJ0LWz6EO8z7wP6+wDGoDa0xpvCn7OXR6ss4jyc7mLJ7H87SSYxZhN5ZjbukVbhizM3ts81/0qODwVY/D1DxhWjm8MzC3JRxgfkBZfZzDGHHIrLg2qjD2rTrkNijcUAVlg77KEaGeYugXEd34VKlLrMDyjXGoBqXkGoL86h7BJB5pay2MHrpfJk3QSLSouThtnn9zXYE1Mk7rUpZMNL5j2niGZqPoGGxWoPXjzXWGQ4UOrhblErOuAzf51AsLt3eu0qIRFfWyLdUoHvT7IeEAs="
+
+# We depend on Docker 19.03 or newer for per-Dockerfile Dockerignore
+# https://docs.travis-ci.com/user/docker/#installing-a-newer-docker-version
+before_install:
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
 
 script:
   - GOBUILD=${GOBUILD} make -j build
