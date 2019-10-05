@@ -60,7 +60,7 @@ class AppTopbar extends PureComponent {
         anchorOrigin={{ horizontal: "right", vertical: "top" }}
       >
         {this.props.nomadRegions.map(region => {
-          return <MenuItem primaryText={region} onClick={() => this._onChangeNomadRegion(region)} />
+          return <MenuItem key={region} primaryText={region} onClick={() => this._onChangeNomadRegion(region)} />
         })}
       </IconMenu>
     )
