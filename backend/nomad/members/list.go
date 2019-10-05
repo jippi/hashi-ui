@@ -104,7 +104,10 @@ func membersWithID(client *api.Client, cfg *config.Config) (string, []*AgentMemb
 	regions, _ := client.Regions().List()
 
 	for _, region := range regions {
-		regionClient, _ := helper.NewRegionClient(cfg, region)
+		regionClient, err := helper.NewRegionClient(cfg, region)
+		if err != nil {
+			return "", nil, err
+		}
 
 		leader, err := regionClient.Status().Leader()
 		if err != nil {
