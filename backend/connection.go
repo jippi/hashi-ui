@@ -26,7 +26,7 @@ import (
 	nomad_nodes "github.com/jippi/hashi-ui/backend/nomad/nodes"
 	"github.com/jippi/hashi-ui/backend/structs"
 	"github.com/jippi/hashi-ui/backend/subscriber"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 	log "github.com/sirupsen/logrus"
 )
 
