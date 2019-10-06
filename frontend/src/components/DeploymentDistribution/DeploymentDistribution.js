@@ -1,7 +1,5 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
-import ReactTooltip from "react-tooltip"
-import AppendedReactTooltip from "../AppendedReactTooltip/AppendedReactTooltip"
 
 const sumAggregate = (total, val) => total + val
 const mapBy = (val, key) => {
@@ -145,25 +143,19 @@ class DeploymentDistribution extends Component {
 
     if (this.state.active) {
       tt = (
-        <AppendedReactTooltip
-          id={`deployment-${this.props.type}-stats-${this.props.deployment.ID}`}
-          className="chart tt"
-          type="light"
-        >
-          <ol>
-            {data.map(x => {
-              return (
-                <li key={x.label}>
-                  <span className="label">
-                    <span className={`color-swatch ${x.className}`} />
-                    {x.label}
-                  </span>
-                  <span className="value">{x.tooltip || x.value}</span>
-                </li>
-              )
-            })}
-          </ol>
-        </AppendedReactTooltip>
+        <ol>
+          {data.map(x => {
+            return (
+              <li key={x.label}>
+                <span className="label">
+                  <span className={`color-swatch ${x.className}`} />
+                  {x.label}
+                </span>
+                <span className="value">{x.tooltip || x.value}</span>
+              </li>
+            )
+          })}
+        </ol>
       )
     }
 

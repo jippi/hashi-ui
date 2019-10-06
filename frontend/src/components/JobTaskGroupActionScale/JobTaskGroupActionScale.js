@@ -2,8 +2,11 @@ import React from "react"
 import PropTypes from "prop-types"
 import FontIcon from "material-ui/FontIcon"
 import { connect } from "react-redux"
-import { green500, orange500 } from "material-ui/styles/colors"
+const green500 = green['500'];
+const orange500 = orange['500'];
 import { NOMAD_CHANGE_TASK_GROUP_COUNT } from "../../sagas/event"
+import Tooltip from "@material-ui/core/Tooltip"
+import { green, orange } from '@material-ui/core/colors';
 
 const scaleUp = ({ job, taskGroup, dispatch }) => {
   dispatch({
@@ -30,25 +33,27 @@ const scaleDown = ({ job, taskGroup, dispatch }) => {
 const JobTaskGroupActionScale = ({ job, taskGroup, dispatch }) => {
   return (
     <span>
-      <FontIcon
-        title="Increase task group count by 1"
-        color={green500}
-        onClick={() => scaleUp({ job, taskGroup, dispatch })}
-        className="material-icons"
-        style={{ cursor: "pointer" }}
-      >
-        arrow_upward
-      </FontIcon>
+      <Tooltip title="Increase task group count by 1">
+        <FontIcon
+          color={green500}
+          onClick={() => scaleUp({ job, taskGroup, dispatch })}
+          className="material-icons"
+          style={{ cursor: "pointer" }}
+        >
+          arrow_upward
+        </FontIcon>
+      </Tooltip>
 
-      <FontIcon
-        color={orange500}
-        title="Decrease task group count by 1"
-        onClick={() => scaleDown({ job, taskGroup, dispatch })}
-        className="material-icons"
-        style={{ cursor: "pointer" }}
-      >
-        arrow_downward
-      </FontIcon>
+      <Tooltip title="Decrease task group count by 1">
+        <FontIcon
+          color={orange500}
+          onClick={() => scaleDown({ job, taskGroup, dispatch })}
+          className="material-icons"
+          style={{ cursor: "pointer" }}
+        >
+          arrow_downward
+        </FontIcon>
+      </Tooltip>
     </span>
   )
 }

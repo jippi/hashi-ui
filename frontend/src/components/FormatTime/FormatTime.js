@@ -1,8 +1,8 @@
 import React, { PureComponent } from "react"
 import PropTypes from "prop-types"
-import AppendedReactTooltip from "../AppendedReactTooltip/AppendedReactTooltip"
 import distanceInWordsStrict from "date-fns/distance_in_words_strict"
 import format from "date-fns/format"
+import Tooltip from "@material-ui/core/Tooltip"
 
 const nanosecondLength = 19
 
@@ -33,41 +33,31 @@ class FormatTime extends PureComponent {
     if (display === "relative") {
       if (inTable) {
         return (
-          <div ref="valueDiv" data-tip={format(_time, timeFormat)}>
-            {timeDiff}
-          </div>
+          <Tooltip title={format(_time, timeFormat)}>
+            <span>{timeDiff}</span>
+          </Tooltip>
         )
       }
 
       return (
-        <span>
-          <AppendedReactTooltip id={`time-${identifier}`}>
-            {format(_time, timeFormat)}
-          </AppendedReactTooltip>
-          <span data-tip data-for={`time-${identifier}`}>
-            {timeDiff}
-          </span>
-        </span>
+        <Tooltip title={format(_time, timeFormat)}>
+          <span>{timeDiff}</span>
+        </Tooltip>
       )
     }
 
     if (inTable) {
       return (
-        <div ref="valueDiv" data-tip={timeDiff}>
-          {format(_time, timeFormat)}}
-        </div>
+        <Tooltip title={timeDiff}>
+          <span>{format(_time, timeFormat)}</span>
+        </Tooltip>
       )
     }
 
     return (
-      <span>
-        <AppendedReactTooltip id={`time-${identifier}`}>
-          {timeDiff}
-        </AppendedReactTooltip>
-        <span data-tip data-for={`time-${identifier}`}>
-          {_time.format(timeFormat)}
-        </span>
-      </span>
+      <Tooltip title={timeDiff}>
+        <span>{_time.format(timeFormat)}</span>
+      </Tooltip>
     )
   }
 }

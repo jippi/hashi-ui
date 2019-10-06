@@ -73,11 +73,11 @@ class UtilizationAreaChart extends Component {
 
           <div style={{ marginTop: "1rem", margin: "0 auto", display: "table" }}>
             <dl key={this.props.title} className="metrics" style={{ width: 250 }}>
-              {this.props.items.map(item => {
+              {this.props.items.map((item, i) => {
                 let value = data[data.length - 1][item.name]
                 return [
-                  <dt style={{ color: item.stroke }}>{item.name}</dt>,
-                  <dd style={{ color: item.stroke, textAlign: "right" }}>{formatNumber(value)}</dd>
+                  <dt key={ item.name + i + "dt" } style={{ color: item.stroke }}>{item.name}</dt>,
+                  <dd key={ item.name + i + "dd" } style={{ color: item.stroke, textAlign: "right" }}>{formatNumber(value)}</dd>
                 ]
               })}
               {label}

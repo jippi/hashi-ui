@@ -5,8 +5,11 @@ import IconMenu from "material-ui/IconMenu"
 import IconButton from "material-ui/IconButton"
 import FontIcon from "material-ui/FontIcon"
 import MenuItem from "material-ui/MenuItem"
-import { red500, green500 } from "material-ui/styles/colors"
+const red500 = red['500'];
+const green500 = green['500'];
 import { NOMAD_DRAIN_CLIENT, NOMAD_REMOVE_CLIENT } from "../../sagas/event"
+
+import { red, green } from '@material-ui/core/colors';
 
 class ClientActionMenu extends Component {
   handleClick = key => {
@@ -92,6 +95,7 @@ class ClientActionMenu extends Component {
 
     return [
       <MenuItem
+        key="start-drain"
         primaryText="Start Draining node"
         rightIcon={
           <FontIcon className="material-icons" color={red500}>
@@ -101,6 +105,7 @@ class ClientActionMenu extends Component {
         onClick={this.handleClick("drain_on")}
       />,
       <MenuItem
+        key="start-drain-no-system"
         primaryText="Start Draining (ignore system)"
         rightIcon={
           <FontIcon className="material-icons" color={red500}>

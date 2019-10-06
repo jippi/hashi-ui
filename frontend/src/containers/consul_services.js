@@ -11,7 +11,10 @@ import Paper from "material-ui/Paper"
 import RaisedButton from "material-ui/RaisedButton"
 import TextField from "material-ui/TextField"
 import Checkbox from "material-ui/Checkbox"
-import { red500, green500, orange500, grey200 } from "material-ui/styles/colors"
+const red500 = red['500'];
+const green500 = green['500'];
+const orange500 = orange['500'];
+const grey200 = grey['200'];
 import {
   CONSUL_WATCH_SERVICES,
   CONSUL_UNWATCH_SERVICES,
@@ -20,6 +23,8 @@ import {
   CONSUL_DEREGISTER_SERVICE_CHECK,
   CONSUL_DEREGISTER_SERVICE
 } from "../sagas/event"
+
+import { red, green, orange, grey } from '@material-ui/core/colors';
 
 class ConsulServices extends Component {
   constructor(props) {

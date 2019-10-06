@@ -2,7 +2,12 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 import FontIcon from "material-ui/FontIcon"
 import { NOMAD_WATCH_ALLOCATION_HEALTH, NOMAD_UNWATCH_ALLOCATION_HEALTH } from "../../sagas/event"
-import { green500, red500, grey200 } from "material-ui/styles/colors"
+import { green, red, grey } from '@material-ui/core/colors';
+import Tooltip from "@material-ui/core/Tooltip"
+
+const green500 = green['500'];
+const red500 = red['500'];
+const grey200 = grey['200'];
 
 class AllocationConsulHealth extends Component {
   componentDidMount() {
@@ -75,9 +80,11 @@ class AllocationConsulHealth extends Component {
 
     if (!health) {
       return (
-        <FontIcon style={style} title="Unknown Consul Health" color={grey200} className="material-icons">
-          help_outline
-        </FontIcon>
+        <Tooltip title="Unknown Consul Health">
+          <FontIcon style={style} color={grey200} className="material-icons">
+            help_outline
+          </FontIcon>
+        </Tooltip>
       )
     }
 
@@ -85,17 +92,21 @@ class AllocationConsulHealth extends Component {
 
     if (health.Healthy) {
       icon = (
-        <FontIcon style={style} title="All Consul Health checks OK" color={green500} className="material-icons">
-          {health.Total > 1 ? "done_all" : "done"}
-        </FontIcon>
+        <Tooltip title="All Consul Health checks OK">
+          <FontIcon style={style} color={green500} className="material-icons">
+            {health.Total > 1 ? "done_all" : "done"}
+          </FontIcon>
+        </Tooltip>
       )
     }
 
     if (health.Healthy == false) {
       icon = (
-        <FontIcon style={style} color={red500} className="material-icons">
-          clear
-        </FontIcon>
+        <Tooltip title="Consul Health checks OK">
+          <FontIcon style={style} color={red500} className="material-icons">
+            clear
+          </FontIcon>
+        </Tooltip>
       )
     }
 

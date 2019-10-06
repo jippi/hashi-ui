@@ -6,13 +6,14 @@ import IconMenu from "material-ui/IconMenu"
 import IconButton from "material-ui/IconButton"
 import FontIcon from "material-ui/FontIcon"
 import MenuItem from "material-ui/MenuItem"
-import { green500 } from "material-ui/styles/colors"
+const green500 = green['500'];
 import JobEditRawJSON from "../JobEditRawJSON/JobEditRawJSON"
 import JobActionStop from "../JobActionStop/JobActionStop"
 import JobActionStopStart from "../JobActionStopStart/JobActionStopStart"
 import JobActionRollingRestart from "../JobActionRollingRestart/JobActionRollingRestart"
 import JobActionEvaluate from "../JobActionEvaluate/JobActionEvaluate"
 import { NOMAD_JOB_SHOW_DIALOG } from "../../sagas/event"
+import { green } from '@material-ui/core/colors';
 class JobActionMenu extends PureComponent {
   handleClick = key => {
     return () => {

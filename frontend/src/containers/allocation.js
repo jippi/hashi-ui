@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Helmet } from "react-helmet"
-import { orange500 } from "material-ui/styles/colors"
+const orange500 = orange['500'];
 import FontIcon from "material-ui/FontIcon"
 import AllocationTopbar from "../components/AllocationTopbar/AllocationTopbar"
 import JobLink from "../components/JobLink/JobLink"
@@ -12,6 +12,8 @@ import ClientLink from "../components/ClientLink/ClientLink"
 import { Link, withRouter } from "react-router"
 import { NOMAD_WATCH_ALLOC, NOMAD_UNWATCH_ALLOC, NOMAD_FETCH_NODE } from "../sagas/event"
 import { default as shortenUUID } from "../helpers/uuid"
+
+import { orange } from '@material-ui/core/colors';
 
 class Allocation extends Component {
   componentWillMount() {

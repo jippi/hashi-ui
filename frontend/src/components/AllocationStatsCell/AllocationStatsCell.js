@@ -1,11 +1,11 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
-import ReactTooltip from "react-tooltip"
 import FontIcon from "material-ui/FontIcon"
-import { grey200 } from "material-ui/styles/colors"
-import AppendedReactTooltip from "../AppendedReactTooltip/AppendedReactTooltip"
+const grey200 = grey['200'];
 import { NOMAD_WATCH_ALLOC_STATS, NOMAD_UNWATCH_ALLOC_STATS } from "../../sagas/event"
+
+import { grey } from '@material-ui/core/colors';
 
 const sumAggregate = (total, val) => total + val
 const mapBy = (val, key) => {
@@ -52,23 +52,21 @@ class AllocationStatsUnit extends Component {
 
     if (this.state.active) {
       tt = (
-        <AppendedReactTooltip id={`alloc-stats-${this.props.ID}`} className="chart tt" type="light">
-          <ol>
-            {data.map(x => {
-              return (
-                <li key={x.label}>
-                  <span className="label">
-                    <span className={`color-swatch ${x.className}`} />
-                    {x.label}
-                  </span>
-                  <span className="value">
-                    {x.used} {this.props.suffix} ({x.percent}%)
-                  </span>
-                </li>
-              )
-            })}
-          </ol>
-        </AppendedReactTooltip>
+        <ol>
+          {data.map(x => {
+            return (
+              <li key={x.label}>
+                <span className="label">
+                  <span className={`color-swatch ${x.className}`} />
+                  {x.label}
+                </span>
+                <span className="value">
+                  {x.used} {this.props.suffix} ({x.percent}%)
+                </span>
+              </li>
+            )
+          })}
+        </ol>
       )
     }
 

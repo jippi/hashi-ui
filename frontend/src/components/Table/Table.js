@@ -17,12 +17,7 @@ class Table extends MaterialTable {
 
     style: {
       tableLayout: "auto",
-    },
-
-    bodyStyle: {
-      overflowX: "inherit",
-      overflowY: "inherit",
-    },
+    }
   }
 
   render() {

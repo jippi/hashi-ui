@@ -3,11 +3,15 @@ import PropTypes from "prop-types"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import { connect } from "react-redux"
 import { NOMAD_WATCH_CLIENT_STATS, NOMAD_UNWATCH_CLIENT_STATS } from "../../sagas/event"
-import { green500, blue500 } from "material-ui/styles/colors"
-import { green200, blue200 } from "material-ui/styles/colors"
+const green500 = green['500'];
+const blue500 = blue['500'];
+const green200 = green['200'];
+const blue200 = blue['200'];
 import { Card, CardTitle, CardText } from "material-ui/Card"
 import DiskUtilizationTable from "../DiskUtilizationTable/DiskUtilizationTable"
 import UtilizationAreaChart from "../UtilizationAreaChart/UtilizationAreaChart"
+
+import { green, blue } from '@material-ui/core/colors';
 
 class ClientStats extends Component {
   constructor(props) {

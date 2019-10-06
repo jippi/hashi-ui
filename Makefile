@@ -1,3 +1,8 @@
+export DOCKER_BUILDKIT=1
+export CGO_ENABLED=0
+export GO111MODULE=on
+export GOPROXY=https://proxy.golang.org
+
 .PHONY: frontend
 frontend:
 	@echo "=> building frontend ..."
@@ -33,7 +38,6 @@ clean:
 PHONY: dist-clean
 dist-clean:
 	@echo "=> dist-cleaning ..."
-	$(MAKE) -j -C backend dist-clean
 	$(MAKE) -j -C frontend dist-clean
 
 .PHONY: docker
@@ -43,3 +47,8 @@ docker:
 	docker build -f travis.Dockerfile -t jippi/hashi-ui:$(COMMIT) .
 	docker tag jippi/hashi-ui:$(COMMIT) jippi/hashi-ui:$(TAG)
 	docker push jippi/hashi-ui:$(TAG)
+
+.PHONY: docker-dev
+docker-dev:
+	@echo "=> build Docker image ..."
+	docker build -f travis.Dockerfile -t jippi/hashi-ui:local-dev .

@@ -9,7 +9,7 @@ import Subheader from "material-ui/Subheader"
 import RaisedButton from "material-ui/RaisedButton"
 import Paper from "material-ui/Paper"
 import TextField from "material-ui/TextField"
-import { red500 } from "material-ui/styles/colors"
+const red500 = red['500'];
 import {
   CONSUL_WATCH_SESSIONS,
   CONSUL_UNWATCH_SESSIONS,
@@ -18,6 +18,8 @@ import {
   CONSUL_DESTROY_SESSION,
   CONSUL_DESTROYED_SESSION
 } from "../sagas/event"
+
+import { red } from '@material-ui/core/colors';
 
 class ConsulSessions extends Component {
   constructor(props) {

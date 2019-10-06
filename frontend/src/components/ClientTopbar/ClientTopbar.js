@@ -1,7 +1,8 @@
 import FontIcon from "material-ui/FontIcon"
 import React, { PureComponent } from "react"
 import PropTypes from "prop-types"
-import { BottomNavigation, BottomNavigationItem } from "material-ui/BottomNavigation"
+import BottomNavigation from "@material-ui/core/BottomNavigation"
+import BottomNavigationAction from "@material-ui/core/BottomNavigationAction"
 import { withRouter } from "react-router"
 
 const infoIcon = <FontIcon className="material-icons">info_outline</FontIcon>
@@ -45,27 +46,26 @@ class _ClientTopbar extends PureComponent {
 
   getStyle() {
     return {
-      borderBottom: "1px solid #e0e0e0",
-      marginBottom: 10
+      clear: "both",
     }
   }
 
   render() {
     return (
-      <BottomNavigation selectedIndex={this.getActiveTab()} style={this.getStyle()}>
-        <BottomNavigationItem label="Info" icon={infoIcon} onClick={() => this.handleActive("info")} />
-        <BottomNavigationItem label="Stats" icon={statsIcon} onClick={() => this.handleActive("stats")} />
-        <BottomNavigationItem
+      <BottomNavigation showLabels value={this.getActiveTab()} style={this.getStyle()}>
+        <BottomNavigationAction label="Info" icon={infoIcon} onClick={() => this.handleActive("info")} />
+        <BottomNavigationAction label="Stats" icon={statsIcon} onClick={() => this.handleActive("stats")} />
+        <BottomNavigationAction
           label="Allocations"
           icon={allocationIcon}
           onClick={() => this.handleActive("allocations")}
         />
-        <BottomNavigationItem
+        <BottomNavigationAction
           label="Evaluations"
           icon={evaluationIcon}
           onClick={() => this.handleActive("evaluations")}
         />
-        <BottomNavigationItem label="Raw" icon={rawIcon} onClick={() => this.handleActive("raw")} />
+        <BottomNavigationAction label="Raw" icon={rawIcon} onClick={() => this.handleActive("raw")} />
       </BottomNavigation>
     )
   }

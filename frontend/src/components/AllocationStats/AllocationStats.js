@@ -2,9 +2,16 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import { connect } from "react-redux"
-import { green500, blue500, orange500, green200, blue200, orange200 } from "material-ui/styles/colors"
+const green500 = green['500'];
+const blue500 = blue['500'];
+const orange500 = orange['500'];
+const green200 = green['200'];
+const blue200 = blue['200'];
+const orange200 = orange['200'];
 import { NOMAD_WATCH_ALLOC_STATS, NOMAD_UNWATCH_ALLOC_STATS } from "../../sagas/event"
 import UtilizationAreaChart from "../UtilizationAreaChart/UtilizationAreaChart"
+
+import { green, blue, orange } from '@material-ui/core/colors';
 
 class StatsSet extends Component {
   render() {

@@ -1,7 +1,9 @@
 import React from "react"
 import PropTypes from "prop-types"
 import FontIcon from "material-ui/FontIcon"
-import { green500, red500 } from "material-ui/styles/colors"
+import { green, red } from '@material-ui/core/colors';
+const green500 = green['500'];
+const red500 = red['500'];
 
 const FormatBoolean = ({ title, value, withIcon, withText, withColor, trueText, falseText, falseIcon, trueIcon }) => {
   let color

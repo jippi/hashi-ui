@@ -1,6 +1,5 @@
-import React, { Component } from "react"
-import PropTypes from "prop-types"
-import ReactTooltip from "react-tooltip"
+import React, { Fragment, Component } from "react"
+import Tooltip from "@material-ui/core/Tooltip"
 
 const sumAggregate = (total, val) => total + val
 const mapBy = (val, key) => {
@@ -73,7 +72,7 @@ class AllocationDistribution extends Component {
 
     if (this.state.active) {
       tt = (
-        <ReactTooltip id={`job-stats-${this.props.jobID}`} className="tt" type="light">
+        <Fragment>
           <ol>
             {data.map(x => {
               return (
@@ -82,56 +81,55 @@ class AllocationDistribution extends Component {
                     <span className={`color-swatch ${x.className}`} />
                     {x.label}
                   </span>
-                  <span className="value">
-                    {x.value}
-                  </span>
+                  <span className="value">{x.value}</span>
                 </li>
               )
             })}
           </ol>
-        </ReactTooltip>
+        </Fragment>
       )
     }
 
     return (
       <div>
-        <div style={{ height: 20 }} className="chart distribution-bar">
-          {tt}
-          <svg data-tip data-for={`job-stats-${this.props.jobID}`}>
-            <g className="bars">
-              {data.map(x => {
-                let mouseenter = e => {
-                  self.setState({ active: x.label })
-                }
-                let mouseleave = e => {
-                  self.setState({ active: null })
-                }
+        <Tooltip title={tt}>
+          <div style={{ height: 20 }} className="chart distribution-bar">
+            <svg data-tip data-for={`job-stats-${this.props.jobID}`}>
+              <g className="bars">
+                {data.map(x => {
+                  let mouseenter = e => {
+                    self.setState({ active: x.label })
+                  }
+                  let mouseleave = e => {
+                    self.setState({ active: null })
+                  }
 
-                let className = x.className
+                  let className = x.className
 
-                if (self.state.active) {
-                  className = className + (self.state.active == x.label ? " active" : " inactive")
-                }
+                  if (self.state.active) {
+                    className = className + (self.state.active == x.label ? " active" : " inactive")
+                  }
 
-                let el = (
-                  <rect
-                    key={x.label}
-                    width={x.percent + "%"}
-                    height={20}
-                    x={percentSum + "%"}
-                    className={className}
-                    onMouseEnter={mouseenter}
-                    onMouseLeave={mouseleave}
-                  />
-                )
+                  let el = (
+                    <rect
+                      key={x.label}
+                      width={x.percent + "%"}
+                      height={20}
+                      x={percentSum + "%"}
+                      className={className}
+                      onMouseEnter={mouseenter}
+                      onMouseLeave={mouseleave}
+                    />
+                  )
 
-                percentSum += x.percent
-                return el
-              })}
-            </g>
-            <rect width="100%" height="100%" className="border" />
-          </svg>
-        </div>
+                  percentSum += x.percent
+                  return el
+                })}
+              </g>
+              <rect width="100%" height="100%" className="border" />
+            </svg>
+          </div>
+        </Tooltip>
       </div>
     )
   }

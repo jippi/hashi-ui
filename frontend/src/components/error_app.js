@@ -1,10 +1,14 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
-import { red500, green800, green900 } from "material-ui/styles/colors"
+const red500 = red['500'];
+const green800 = green['800'];
+const green900 = green['900'];
 import getMuiTheme from "material-ui/styles/getMuiTheme"
 import AppBar from "material-ui/AppBar"
 import { Card, CardTitle, CardText } from "material-ui/Card"
+
+import { red, green } from '@material-ui/core/colors';
 
 const muiTheme = getMuiTheme({
   palette: {

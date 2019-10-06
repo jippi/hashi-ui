@@ -11,7 +11,7 @@ import RaisedButton from "material-ui/RaisedButton"
 import FlatButton from "material-ui/FlatButton"
 import Subheader from "material-ui/Subheader"
 import Dialog from "material-ui/Dialog"
-import { red500 } from "material-ui/styles/colors"
+const red500 = red['500'];
 import {
   CONSUL_SET_KV_PAIR,
   CONSUL_GET_KV_PAIR,
@@ -21,6 +21,8 @@ import {
   CONSUL_CLEAR_KV_PAIR,
   CONSUL_DELETE_KV_PAIR
 } from "../sagas/event"
+
+import { red } from '@material-ui/core/colors';
 
 class ConsulKV extends Component {
   constructor(props) {

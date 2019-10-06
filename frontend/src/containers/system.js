@@ -4,9 +4,11 @@ import { connect } from "react-redux"
 import { Helmet } from "react-helmet"
 import { Card, CardTitle, CardText } from "material-ui/Card"
 import { Grid, Row, Col } from "react-flexbox-grid"
-import { green500 } from "material-ui/styles/colors"
+const green500 = green['500'];
 import FontIcon from "material-ui/FontIcon"
 import { NOMAD_FORCE_GC, NOMAD_RECONCILE_SYSTEM, NOMAD_EVALUATE_ALL_JOBS } from "../sagas/event"
+
+import { green } from '@material-ui/core/colors';
 
 class System extends Component {
   gc() {

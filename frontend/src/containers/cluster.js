@@ -2,14 +2,16 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Helmet } from "react-helmet"
-import { green500, blue500 } from "material-ui/styles/colors"
-import { green200, blue200 } from "material-ui/styles/colors"
+import { green, blue } from '@material-ui/core/colors';
+const green500 = green['500'];
+const blue500 = blue['500'];
+const green200 = green['200'];
+const blue200 = blue['200'];
 import { Grid, Row, Col } from "react-flexbox-grid"
 import Progressbar from "../components/Progressbar/Progressbar"
 import ClusterEvents from "../components/ClusterEvents/ClusterEvents"
 import ClusterStatistics from "../components/ClusterStatistics/ClusterStatistics"
 import UtilizationAreaChart from "../components/UtilizationAreaChart/UtilizationAreaChart"
-
 import {
   NOMAD_WATCH_JOBS,
   NOMAD_UNWATCH_JOBS,

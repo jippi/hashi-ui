@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Helmet } from "react-helmet"
-import { orange500 } from "material-ui/styles/colors"
+const orange500 = orange['500'];
 import FontIcon from "material-ui/FontIcon"
 import DeploymentTopbar from "../components/DeploymentTopbar/DeploymentTopbar"
 import JobLink from "../components/JobLink/JobLink"
@@ -10,6 +10,8 @@ import DeploymentLink from "../components/DeploymentLink/DeploymentLink"
 import ClientLink from "../components/ClientLink/ClientLink"
 import { NOMAD_WATCH_DEPLOYMENT, NOMAD_UNWATCH_DEPLOYMENT } from "../sagas/event"
 import { Link, withRouter } from "react-router"
+
+import { orange } from '@material-ui/core/colors';
 
 class Deployment extends Component {
   componentWillMount() {

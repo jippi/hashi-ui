@@ -2,8 +2,12 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
 import FontIcon from "material-ui/FontIcon"
-import { green500, red500, orange500 } from "material-ui/styles/colors"
+const green500 = green['500'];
+const red500 = red['500'];
+const orange500 = orange['500'];
 import { NOMAD_CHANGE_DEPLOYMENT_STATUS } from "../../sagas/event"
+
+import { green, red, orange } from '@material-ui/core/colors';
 
 class DeploymentAction extends Component {
   sendUpdate(action) {

@@ -4,7 +4,8 @@ import Dialog from "material-ui/Dialog"
 import FlatButton from "material-ui/FlatButton"
 import { connect } from "react-redux"
 import { NOMAD_STOP_JOB, NOMAD_JOB_HIDE_DIALOG } from "../../sagas/event"
-import { red400 } from "material-ui/styles/colors"
+import { red } from '@material-ui/core/colors';
+const red400 = red['400'];
 
 class JobActionStop extends React.Component {
   handleSubmit = () => {

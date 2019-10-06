@@ -1,7 +1,8 @@
 import FontIcon from "material-ui/FontIcon"
 import React, { PureComponent } from "react"
 import PropTypes from "prop-types"
-import { BottomNavigation, BottomNavigationItem } from "material-ui/BottomNavigation"
+import BottomNavigation from "@material-ui/core/BottomNavigation"
+import BottomNavigationAction from "@material-ui/core/BottomNavigationAction"
 import { withRouter } from "react-router"
 
 const infoIcon = <FontIcon className="material-icons">info_outline</FontIcon>
@@ -69,19 +70,18 @@ class _JobTopbar extends PureComponent {
 
   getStyle() {
     return {
-      borderBottom: "1px solid #e0e0e0",
-      marginBottom: 10
+      clear: "both",
     }
   }
 
   render() {
     let options = []
     options.push(
-      <BottomNavigationItem key="info" label="Info" icon={infoIcon} onClick={() => this.handleActive("info")} />
+      <BottomNavigationAction key="info" label="Info" icon={infoIcon} onClick={() => this.handleActive("info")} />
     )
 
     options.push(
-      <BottomNavigationItem
+      <BottomNavigationAction
         key="groups"
         label="Groups"
         icon={taskGroupIcon}
@@ -91,7 +91,7 @@ class _JobTopbar extends PureComponent {
 
     if (this.props.job.Periodic || this.props.job.ParameterizedJob) {
       options.push(
-        <BottomNavigationItem
+        <BottomNavigationAction
           key="children"
           label="Children"
           icon={executionIcon}
@@ -102,7 +102,7 @@ class _JobTopbar extends PureComponent {
 
     if (!("version" in this.props.location.query) && !this.props.job.Periodic && !this.props.job.ParameterizedJob) {
       options.push(
-        <BottomNavigationItem
+        <BottomNavigationAction
           key="deployments"
           label="Deployments"
           icon={deploymentIcon}
@@ -112,7 +112,7 @@ class _JobTopbar extends PureComponent {
 
       if (!this.props.job.Periodic && !this.props.job.ParameterizedJob) {
         options.push(
-          <BottomNavigationItem
+          <BottomNavigationAction
             key="allocations"
             label="Allocations"
             icon={allocationIcon}
@@ -121,7 +121,7 @@ class _JobTopbar extends PureComponent {
         )
 
         options.push(
-          <BottomNavigationItem
+          <BottomNavigationAction
             key="evaluations"
             label="Evaluations"
             icon={evaluationIcon}
@@ -132,11 +132,11 @@ class _JobTopbar extends PureComponent {
     }
 
     options.push(
-      <BottomNavigationItem key="raw" label="Raw" icon={rawIcon} onClick={() => this.handleActive("raw")} />
+      <BottomNavigationAction key="raw" label="Raw" icon={rawIcon} onClick={() => this.handleActive("raw")} />
     )
 
     return (
-      <BottomNavigation selectedIndex={this.getActiveTab()} style={this.getStyle()}>
+      <BottomNavigation showLabels value={this.getActiveTab()} style={this.getStyle()}>
         {options}
       </BottomNavigation>
     )

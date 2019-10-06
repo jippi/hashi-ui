@@ -1,6 +1,9 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { blue500, green500, red500 } from "material-ui/styles/colors"
+import { blue, green, red } from '@material-ui/core/colors';
+const blue500 = blue['500'];
+const green500 = green['500'];
+const red500 = red['500'];
 
 const NodeStatus = ({ value }) => {
   switch (value) {

@@ -4,7 +4,10 @@ import { connect } from "react-redux"
 import FontIcon from "material-ui/FontIcon"
 import { Column, Cell } from "fixed-data-table-2"
 import { NOMAD_UNWATCH_JOB_HEALTH, NOMAD_WATCH_JOB_HEALTH } from "../../sagas/event"
-import { green500, red500, grey200 } from "material-ui/styles/colors"
+import { green, red, grey } from '@material-ui/core/colors';
+const green500 = green['500'];
+const red500 = red['500'];
+const grey200 = grey['200'];
 
 const JobHealthCell = ({ rowIndex, dispatch, jobHealth, data, ...props }) => (
   <Cell rowIndex={rowIndex} data={data} {...props}>

@@ -2,8 +2,10 @@ import React from "react"
 import PropTypes from "prop-types"
 import FontIcon from "material-ui/FontIcon"
 import { connect } from "react-redux"
-import { orange500 } from "material-ui/styles/colors"
+const orange500 = orange['500'];
 import { NOMAD_CHANGE_TASK_GROUP_COUNT } from "../../sagas/event"
+import Tooltip from "@material-ui/core/Tooltip"
+import { orange } from '@material-ui/core/colors';
 
 const restart = ({ job, taskGroup, dispatch }) => {
   dispatch({
@@ -18,15 +20,16 @@ const restart = ({ job, taskGroup, dispatch }) => {
 
 const JobTaskGroupActionRestart = ({ job, taskGroup, dispatch }) => {
   return (
-    <FontIcon
-      title={"Set count to 0 and restore it to" + taskGroup.Count}
-      color={orange500}
-      onClick={() => restart({ job, taskGroup, dispatch })}
-      className="material-icons"
-      style={{ cursor: "pointer" }}
-    >
-      refresh
-    </FontIcon>
+    <Tooltip title={"Set count to 0 and restore it to" + taskGroup.Count}>
+      <FontIcon
+        color={orange500}
+        onClick={() => restart({ job, taskGroup, dispatch })}
+        className="material-icons"
+        style={{ cursor: "pointer" }}
+      >
+        refresh
+      </FontIcon>
+    </Tooltip>
   )
 }
 

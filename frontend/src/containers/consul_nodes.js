@@ -8,7 +8,9 @@ import { Grid, Row, Col } from "react-flexbox-grid"
 import FontIcon from "material-ui/FontIcon"
 import Subheader from "material-ui/Subheader"
 import Paper from "material-ui/Paper"
-import { red500, green500, orange500 } from "material-ui/styles/colors"
+const red500 = red['500'];
+const green500 = green['500'];
+const orange500 = orange['500'];
 import RaisedButton from "material-ui/RaisedButton"
 import {
   CONSUL_WATCH_NODES,
@@ -18,6 +20,8 @@ import {
   CONSUL_DEREGISTER_SERVICE_CHECK,
   CONSUL_DEREGISTER_SERVICE
 } from "../sagas/event"
+
+import { red, green, orange } from '@material-ui/core/colors';
 
 class ConsulNodes extends Component {
   constructor(props) {

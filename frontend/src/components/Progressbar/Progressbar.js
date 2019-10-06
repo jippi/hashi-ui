@@ -1,8 +1,13 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { ResponsiveContainer, PieChart, Pie, Cell, Sector } from "recharts"
-import { green500, red500, blue500, yellow500 } from "material-ui/styles/colors"
+const green500 = green['500'];
+const red500 = red['500'];
+const blue500 = blue['500'];
+const yellow500 = yellow['500'];
 import { Card, CardTitle, CardText } from "material-ui/Card"
+
+import { green, red, blue, yellow } from '@material-ui/core/colors';
 
 //
 // borrowed from http://recharts.org/examples#CustomActiveShapePieChart

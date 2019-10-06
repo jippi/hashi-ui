@@ -1,7 +1,12 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import FontIcon from "material-ui/FontIcon"
-import { amber500, green500, red500, orange500 } from "material-ui/styles/colors"
+import { amber, green, red, orange } from '@material-ui/core/colors';
+import Tooltip from "@material-ui/core/Tooltip"
+const amber500 = amber['500'];
+const green500 = green['500'];
+const red500 = red['500'];
+const orange500 = orange['500'];
 
 //
 // map of ClientStatus and nested below the DesiredStatus
@@ -10,64 +15,84 @@ import { amber500, green500, red500, orange500 } from "material-ui/styles/colors
 const clientStatusColor = {
   pending: {
     run: (
-      <FontIcon title="Pending -> run" color={amber500} className="material-icons">
-        schedule
-      </FontIcon>
+      <Tooltip title="Pending -> run">
+        <FontIcon color={amber500} className="material-icons">
+          schedule
+        </FontIcon>
+      </Tooltip>
     ),
     default: (
-      <FontIcon title="Pending" className="material-icons">
-        schedule
-      </FontIcon>
+      <Tooltip title="Pending">
+        <FontIcon className="material-icons">schedule</FontIcon>
+      </Tooltip>
     )
   },
   running: {
     stop: (
-      <FontIcon title="Running but been told to stop" color={amber500} className="material-icons">
-        stop
-      </FontIcon>
+      <Tooltip title="Running but been told to stop">
+        <FontIcon color={amber500} className="material-icons">
+          stop
+        </FontIcon>
+      </Tooltip>
     ),
     run: (
-      <FontIcon title="Running" color={green500} className="material-icons">
-        play_arrow
-      </FontIcon>
+      <Tooltip title="Running">
+        <FontIcon color={green500} className="material-icons">
+          play_arrow
+        </FontIcon>
+      </Tooltip>
     ),
     default: (
-      <FontIcon title="Running but is transitioning to another state" className="material-icons">
-        play_arrow
-      </FontIcon>
+      <Tooltip title="Running but is transitioning to another state">
+        <FontIcon className="material-icons">play_arrow</FontIcon>
+      </Tooltip>
     )
   },
   failed: {
     default: (
-      <FontIcon title="Failed and not replaced" color={red500} className="material-icons">
-        error
-      </FontIcon>
+      <Tooltip title="Failed and not replaced">
+        <FontIcon color={red500} className="material-icons">
+          error
+        </FontIcon>
+      </Tooltip>
     ),
     replaced: (
-      <FontIcon title="Failed and was replaced with a healthy allocation" color={orange500} className="material-icons">
-        error
-      </FontIcon>
+      <Tooltip title="Failed and was replaced with a healthy allocation">
+        <FontIcon color={orange500} className="material-icons">
+          error
+        </FontIcon>
+      </Tooltip>
     )
   },
   lost: {
     default: (
-      <FontIcon title="Lost and not replaced" color={red500} className="material-icons">
-        cached
-      </FontIcon>
+      <Tooltip title="Lost and not replaced">
+        <FontIcon color={red500} className="material-icons">
+          cached
+        </FontIcon>
+      </Tooltip>
     ),
     replaced: (
-      <FontIcon title="Lost and was replaced with a healhy allocation" color={orange500} className="material-icons">
-        cached
-      </FontIcon>
+      <Tooltip title="Lost and was replaced with a healhy allocation">
+        <FontIcon color={orange500} className="material-icons">
+          cached
+        </FontIcon>
+      </Tooltip>
     )
   },
   complete: {
     stop: (
-      <FontIcon color={green500} className="material-icons">
-        check
-      </FontIcon>
+      <Tooltip title="Stopped">
+        <FontIcon color={green500} className="material-icons">
+          check
+        </FontIcon>
+      </Tooltip>
     ),
-    default: <FontIcon className="material-icons">stop</FontIcon>
+    default: (
+      <Tooltip title="Stopped">
+        <FontIcon className="material-icons">stop</FontIcon>
+      </Tooltip>
+    )
   }
 }
 

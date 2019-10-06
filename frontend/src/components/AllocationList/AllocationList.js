@@ -1,13 +1,11 @@
-import React, { PureComponent, Component } from "react"
+import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { Grid, Row, Col } from "react-flexbox-grid"
 import FontIcon from "material-ui/FontIcon"
 import { withRouter } from "react-router"
-import { Card, CardHeader, CardText } from "material-ui/Card"
+import { Card, CardText } from "material-ui/Card"
 import SelectField from "material-ui/SelectField"
-import TextField from "material-ui/TextField"
 import MenuItem from "material-ui/MenuItem"
-import ReactTooltip from "react-tooltip"
 import { Table, Column, Cell } from "fixed-data-table-2"
 import AllocationStatusIcon from "../AllocationStatusIcon/AllocationStatusIcon"
 import AllocationLink from "../AllocationLink/AllocationLink"
@@ -18,8 +16,8 @@ import FormatTime from "../FormatTime/FormatTime"
 import FormatBoolean from "../FormatBoolean/FormatBoolean"
 import AllocationConsulHealthCell from "../AllocationConsulHealthCell/AllocationConsulHealthCell"
 import AllocationStatsCell from "../AllocationStatsCell/AllocationStatsCell"
+import Tooltip from "@material-ui/core/Tooltip"
 
-const nodeIdToNameCache = {}
 const allocIdRegexp = /\[(\d+)\]/
 
 const getAllocationNumberFromName = allocationName => {
@@ -30,15 +28,7 @@ const getAllocationNumberFromName = allocationName => {
 /* eslint-disable react/prop-types */
 
 const AllocationStatusIconCell = ({ rowIndex, data, ...props }) => (
-  <Cell
-    {...props}
-    onMouseEnter={() => {
-      ReactTooltip.show()
-    }}
-    onMouseLeave={() => {
-      ReactTooltip.hide()
-    }}
-  >
+  <Cell {...props}>
     <AllocationStatusIcon allocation={data[rowIndex]} allocations={data} rowIndex={rowIndex} />
   </Cell>
 )
@@ -56,6 +46,7 @@ const JobLinkCell = ({ rowIndex, data, ...props }) => (
     </JobLink>
   </Cell>
 )
+
 const DeploymentHealthCell = ({ rowIndex, data, ...props }) => {
   if (!data[rowIndex].DeploymentStatus) {
     return null
@@ -83,15 +74,7 @@ const ClientLinkCell = ({ rowIndex, data, clients, ...props }) => (
 )
 
 const AgeCell = ({ rowIndex, data, ...props }) => (
-  <Cell
-    {...props}
-    onMouseEnter={() => {
-      ReactTooltip.show()
-    }}
-    onMouseLeave={() => {
-      ReactTooltip.hide()
-    }}
-  >
+  <Cell {...props}>
     <FormatTime inTable identifier={data[rowIndex].ID} time={data[rowIndex].CreateTime} />
   </Cell>
 )
@@ -101,10 +84,14 @@ const StatusCell = ({ rowIndex, data, ...props }) => <Cell {...props}>{data[rowI
 const ActionsCell = ({ rowIndex, data, ...props }) => (
   <Cell {...props}>
     <AllocationLink allocationId={data[rowIndex].ID} linkAppend="/stats">
-      <FontIcon className="material-icons">show_chart</FontIcon>
+      <Tooltip title="Allocation statistics">
+        <FontIcon className="material-icons">show_chart</FontIcon>
+      </Tooltip>
     </AllocationLink>
     <AllocationLink allocationId={data[rowIndex].ID} linkAppend="/files" linkQuery={{ path: "/alloc/logs/" }}>
-      <FontIcon className="material-icons">format_align_left</FontIcon>
+      <Tooltip title="Allocation logs">
+        <FontIcon className="material-icons">format_align_left</FontIcon>
+      </Tooltip>
     </AllocationLink>
   </Cell>
 )

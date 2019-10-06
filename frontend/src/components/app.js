@@ -3,11 +3,12 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { withRouter } from "react-router"
 import MuiThemeProvider from "material-ui/styles/MuiThemeProvider"
-import { red500, green800, green900 } from "material-ui/styles/colors"
+const red500 = red['500'];
+const green800 = green['800'];
+const green900 = green['900'];
 import getMuiTheme from "material-ui/styles/getMuiTheme"
 import AppBar from "material-ui/AppBar"
-import Divider from "material-ui/Divider"
-import MenuItem from "material-ui/MenuItem"
+import Divider from "@material-ui/core/Divider"
 import FlatButton from "material-ui/FlatButton"
 import NomadTopbar from "./NomadTopbar/NomadTopbar"
 import NomadMainNav from "./NomadMainNav/NomadMainNav"
@@ -16,6 +17,8 @@ import ConsulTopbar from "./ConsulTopbar/ConsulTopbar"
 import NotificationsBar from "./NotificationsBar/NotificationsBar"
 import { NOMAD_COLOR, CONSUL_COLOR } from "../config.js"
 import { APP_DRAWER_OPEN, APP_DRAWER_CLOSE, CONSUL_UNKNOWN_REGION, NOMAD_UNKNOWN_REGION } from "../sagas/event"
+
+import { red, green } from '@material-ui/core/colors';
 
 class App extends Component {
   constructor() {
@@ -148,20 +151,20 @@ class App extends Component {
               {navbar}
               <Divider />
               {changeAppBar}
-              <div
-                style={{
-                  fontSize: "small",
-                  position: "absolute",
-                  bottom: 0,
-                  color: "grey",
-                  width: 200,
-                  textAlign: "center"
-                }}
-              >
-                version: {window.GIT_HASH || "webpack-dev"}
-              </div>
             </div>
             <div style={{ float: "right", width: this.state.width }}>{this.props.children}</div>
+            <div style={{ clear: "both" }}></div>
+          </div>
+          <div
+            style={{
+              float: "left",
+              fontSize: "small",
+              color: "grey",
+              width: 200,
+              textAlign: "center"
+            }}
+          >
+            version: {window.GIT_HASH || "webpack-dev"}
           </div>
         </div>
       </MuiThemeProvider>

@@ -3,11 +3,13 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 import { Helmet } from "react-helmet"
 import { Card, CardText } from "material-ui/Card"
-import { green500 } from "material-ui/styles/colors"
+const green500 = green['500'];
 import FontIcon from "material-ui/FontIcon"
 import { NOMAD_WATCH_MEMBERS, NOMAD_UNWATCH_MEMBERS } from "../sagas/event"
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "../components/Table"
 import ServerLink from "../components/ServerLink/ServerLink"
+
+import { green } from '@material-ui/core/colors';
 
 class Servers extends Component {
   componentDidMount() {
