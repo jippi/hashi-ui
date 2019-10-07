@@ -7,7 +7,7 @@ require (
 	github.com/cnf/structhash v0.0.0-20180104161610-62a607eb0224
 	github.com/elazarl/go-bindata-assetfs v1.0.0
 	github.com/go-bindata/go-bindata v3.1.2+incompatible
-	github.com/gorilla/mux v1.7.2
+	github.com/gorilla/mux v1.7.3
 	github.com/gorilla/websocket v1.4.1
 	github.com/hashicorp/consul/api v1.2.0
 	github.com/hashicorp/go-immutable-radix v1.1.0 // indirect
