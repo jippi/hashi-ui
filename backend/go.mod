@@ -18,7 +18,7 @@ require (
 	github.com/hashicorp/nomad/api v0.0.0-20191003141308-550e1b1a1e76
 	github.com/hashicorp/serf v0.8.3 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
-	github.com/newrelic/go-agent v2.13.0+incompatible
+	github.com/newrelic/go-agent v2.14.0+incompatible
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.4.2
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
