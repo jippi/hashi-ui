@@ -9,9 +9,9 @@ $script = <<SCRIPT
     sudo apt-get update
     sudo apt-get install -y yarn nodejs unzip docker-engine
     sudo usermod -aG docker vagrant
-    curl -sO https://storage.googleapis.com/golang/go1.9.linux-amd64.tar.gz
-    sudo tar -C /usr/local -xzf go1.9.linux-amd64.tar.gz
-    sudo rm go1.9.linux-amd64.tar.gz
+    curl -sO https://storage.googleapis.com/golang/go1.13.linux-amd64.tar.gz
+    sudo tar -C /usr/local -xzf go1.13.linux-amd64.tar.gz
+    sudo rm go1.13.linux-amd64.tar.gz
     echo 'export GOPATH=$HOME/work' >> ~/.profile
     mkdir -p work/{pkg,bin}
     echo 'export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin' >> ~/.profile
