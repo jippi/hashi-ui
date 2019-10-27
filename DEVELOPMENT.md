@@ -63,7 +63,8 @@ Run `make -j build` in the root directory to get all dependencies and binaries s
 
 If the work you plan to do only involve the frontend, run a command similar to this to get the Go server API available:
 `NOMAD_LOG_LEVEL=debug NOMAD_ADDR=http://localhost:4646 ./backend/build/hashi-ui-darwin-amd64 --nomad-enable`. You can
-enable the Consul UI by setting the `CONSUL_ADDR` environment variable and passing the `--consul-enable` flag.
+enable the Consul UI by setting the `CONSUL_ADDR` environment variable and passing the `--consul-enable` flag:
+`NOMAD_LOG_LEVEL=debug NOMAD_ADDR=http://localhost:4646 CONSUL_ADDR=http://localhost:8500 ./backend/build/hashi-ui-darwin-amd64 --nomad-enable --consul-enable`.
 
 Once the hashi-ui server is running, go to the `frontend/` directory and run `yarn start`.
 Once its running you can access http://0.0.0.0:3333/nomad or http://0.0.0.0:3333/consul for the hot-reloading reactjs
