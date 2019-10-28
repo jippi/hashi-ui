@@ -10,24 +10,18 @@
 
 The following assumptions are made for local development:
 
-- the project is checked out into `$GOPATH/src/github.com/jippi/hashi-ui`
-- `go` in a recent version (I use `1.9.0` but older 1.8 might also work)
-- `node` in a recent version (I use `7.2.1` but older versions should work too)
-- `yarn` is installed (`brew install yarn` on OS X)
-
-## Go configuration
-
-I use environment like this for Go development
+- `go` in a recent version (`1.13+`)
+  - you already have `GOPATH`. If not, just run the following:
 
 ```
 export GOPATH=$HOME/src/go-lang
+mkdir -p $GOPATH
 export PATH=$PATH:$GOPATH/bin
-
-mkdir -p ~/src/go-lang/src/github.com/jippi
-cd ~/src/go-lang/src/github.com/jippi
-git clone git@github.com:jippi/hashi-ui.git
-cd hashi-ui
 ```
+
+- `node` in a recent version (I use `7.2.1` but older versions should work too)
+- `yarn` is installed (`brew install yarn` on OS X)
+
 ## Vagrant
 
 The option to use Vagrant is also an available. Vagrant must be previously installed. See the Vagrant [docs](https://www.vagrantup.com/docs/getting-started/) for how to get started.
@@ -63,7 +57,8 @@ Run `make -j build` in the root directory to get all dependencies and binaries s
 
 If the work you plan to do only involve the frontend, run a command similar to this to get the Go server API available:
 `NOMAD_LOG_LEVEL=debug NOMAD_ADDR=http://localhost:4646 ./backend/build/hashi-ui-darwin-amd64 --nomad-enable`. You can
-enable the Consul UI by setting the `CONSUL_ADDR` environment variable and passing the `--consul-enable` flag.
+enable the Consul UI by setting the `CONSUL_ADDR` environment variable and passing the `--consul-enable` flag:
+`NOMAD_LOG_LEVEL=debug NOMAD_ADDR=http://localhost:4646 CONSUL_ADDR=http://localhost:8500 ./backend/build/hashi-ui-darwin-amd64 --nomad-enable --consul-enable`.
 
 Once the hashi-ui server is running, go to the `frontend/` directory and run `yarn start`.
 Once its running you can access http://0.0.0.0:3333/nomad or http://0.0.0.0:3333/consul for the hot-reloading reactjs
