@@ -67,7 +67,7 @@
     "recharts": "^0.22.5",
     "redux": "^3.7.2",
     "redux-saga": "^0.16.0",
-    "uglifyjs-webpack-plugin": "^1.2.4"
+    "uglifyjs-webpack-plugin": "^2.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^9.7.2",
