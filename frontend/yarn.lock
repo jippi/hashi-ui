@@ -3660,17 +3660,17 @@ eslint-config-prettier@^2.4.0:
   dependencies:
     get-stdin "^5.0.1"
 
-eslint-config-standard-jsx@^4.0.0:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/eslint-config-standard-jsx/-/eslint-config-standard-jsx-4.0.2.tgz#009e53c4ddb1e9ee70b4650ffe63a7f39f8836e1"
-  integrity sha512-F8fRh2WFnTek7dZH9ZaE0PCBwdVGkwVWZmizla/DDNOmg7Tx6B/IlK5+oYpiX29jpu73LszeJj5i1axEZv6VMw==
-
-eslint-config-standard-react@^5.0.0:
+eslint-config-standard-jsx@^5.0.0:
   version "5.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-standard-react/-/eslint-config-standard-react-5.0.0.tgz#64c7b8140172852be810a53d48ee87649ff178e3"
-  integrity sha1-ZMe4FAFyhSvoEKU9SO6HZJ/xeOM=
+  resolved "https://registry.yarnpkg.com/eslint-config-standard-jsx/-/eslint-config-standard-jsx-5.0.0.tgz#4abfac554f38668e0078c664569e7b2384e5d2aa"
+  integrity sha512-rLToPAEqLMPBfWnYTu6xRhm2OWziS2n40QFqJ8jAM8NSVzeVKTa3nclhsU4DpPJQRY60F34Oo1wi/71PN/eITg==
+
+eslint-config-standard-react@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-standard-react/-/eslint-config-standard-react-7.0.0.tgz#8fa0af7a3451ddcb26277e30999fc760df0f4b93"
+  integrity sha512-NeVmGhjr/1xDuSsUj9Pscjs86pvMkzi7VawKZLk31TWVuy3fLDyYa6yfw9ikspzeBKQRZ/VP0X1RQWQZataD8w==
   dependencies:
-    eslint-config-standard-jsx "^4.0.0"
+    eslint-config-standard-jsx "^5.0.0"
 
 eslint-config-standard@^10.2.1:
   version "10.2.1"
