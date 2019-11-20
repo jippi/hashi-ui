@@ -65,7 +65,7 @@
     "react-toolbox": "^2.0.0-beta.12",
     "react-tooltip": "^3.11.1",
     "recharts": "^0.22.5",
-    "redux": "^3.7.2",
+    "redux": "^4.0.4",
     "redux-saga": "^0.16.0",
     "uglifyjs-webpack-plugin": "^2.2.0"
   },
