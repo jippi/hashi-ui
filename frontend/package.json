@@ -37,7 +37,7 @@
   "license": "MIT ",
   "dependencies": {
     "@material-ui/codemod": "^4.5.0",
-    "@material-ui/core": "^4.5.0",
+    "@material-ui/core": "^4.6.1",
     "@material-ui/icons": "^4.4.3",
     "babel-plugin-lodash": "^3.3.2",
     "babel-plugin-recharts": "^1.1.1",
