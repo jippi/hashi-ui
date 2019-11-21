@@ -56,7 +56,7 @@
     "react": "^16.2.0",
     "react-ace": "^5.10.0",
     "react-append-to-body": "^2.0.20",
-    "react-dom": "^16.4.2",
+    "react-dom": "^16.12.0",
     "react-flexbox-grid": "^1.1.5",
     "react-helmet": "^5.2.0",
     "react-loadable": "^5.3.1",
