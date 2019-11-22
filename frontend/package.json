@@ -47,7 +47,7 @@
     "chart.js": "^2.7.2",
     "clsx": "^1.0.4",
     "date-fns": "^1.29.0",
-    "deepmerge": "^2.1.0",
+    "deepmerge": "^4.2.2",
     "fixed-data-table-2": "^0.8.11",
     "flexboxgrid": "^6.3.1",
     "json-formatter-js": "^2.2.0",
