@@ -13,7 +13,7 @@ require (
 	github.com/hashicorp/go-immutable-radix v1.1.0 // indirect
 	github.com/hashicorp/go-msgpack v0.5.5 // indirect
 	github.com/hashicorp/go-rootcerts v1.0.1 // indirect
-	github.com/hashicorp/golang-lru v0.5.3
+	github.com/hashicorp/golang-lru v0.5.4
 	github.com/hashicorp/memberlist v0.1.5 // indirect
 	github.com/hashicorp/nomad/api v0.0.0-20191003141308-550e1b1a1e76
 	github.com/hashicorp/serf v0.8.3 // indirect
