@@ -1,4 +1,5 @@
 Hashi UI [![Build Status](https://travis-ci.org/jippi/hashi-ui.svg?branch=master)](https://travis-ci.org/jippi/hashi-ui)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjippi%2Fhashi-ui.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjippi%2Fhashi-ui?ref=badge_shield)
 ========
 [![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/jippi/hashi-ui.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jippi/hashi-ui/context:javascript)
 [![Total Alerts](https://img.shields.io/lgtm/alerts/g/jippi/hashi-ui.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/jippi/hashi-ui/alerts)
@@ -200,3 +201,7 @@ Open browser and visit [http://127.0.0.1:3000](http://127.0.0.1:3000).
 If you would like to contribute (Thanks ! <3) please open a pull-request with your code change or a RFC issue.
 
 See [DEVELOPMENT.md](https://github.com/jippi/hashi-ui/blob/master/DEVELOPMENT.md) for information on how to get started with hacking on hashi-ui.
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fjippi%2Fhashi-ui.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fjippi%2Fhashi-ui?ref=badge_large)
