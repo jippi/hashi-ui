@@ -114,7 +114,28 @@ const JobNumLostCell = ({ rowIndex, data: jobs, ... props }) => {
 
 
 class JobList extends Component {
+  updateDimensions = () => {
+    this.setState({
+      width: window.innerWidth,
+      height: window.innerHeight
+    })
+  }
+
+  componentWillMount = () => {
+    this.updateDimensions()
+  }
+
+  componentDidMount = () => {
+    window.addEventListener("resize", this.resizeHandler)
+  }
+
+  componentWillUnmount = () => {
+    window.removeEventListener("resize", this.resizeHandler)
+  }
+
   render() {
+    const width = this.state.width - 240;
+    const height = Math.max(this.state.height - 165, 300)
     return (
       <Table>
         <TableHeader>
