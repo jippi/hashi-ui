@@ -43,7 +43,6 @@ dist-clean:
 .PHONY: docker
 docker:
 	@echo "=> build and push Docker image ..."
-	@docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
 	docker build -f travis.Dockerfile -t jippi/hashi-ui:$(COMMIT) .
 	docker tag jippi/hashi-ui:$(COMMIT) jippi/hashi-ui:$(TAG)
 	docker push jippi/hashi-ui:$(TAG)
