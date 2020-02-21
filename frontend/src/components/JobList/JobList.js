@@ -20,28 +20,28 @@ const flexibleWidth = {
 
 const summaryLabels = ["Starting", "Running", "Queued", "Complete", "Failed", "Lost"]
 
-class JobList extends Component {
-  taskGroupCount(job) {
+const taskGroupCount = job => {
     if (job.JobSummary !== null) {
       return Object.keys(job.JobSummary.Summary).length
     }
 
     return "N/A"
+}
+
+const failedTaskCount = job => {
+  let counter = 0
+
+  if (job.JobSummary !== null) {
+    const summary = job.JobSummary.Summary
+    Object.keys(job.JobSummary.Summary).forEach(taskGroupID => {
+      counter += summary[taskGroupID].Lost
+    })
   }
 
-  failedTaskCount(job) {
-    let counter = 0
+  return counter
+}
 
-    if (job.JobSummary !== null) {
-      const summary = job.JobSummary.Summary
-      Object.keys(job.JobSummary.Summary).forEach(taskGroupID => {
-        counter += summary[taskGroupID].Lost
-      })
-    }
-
-    return counter
-  }
-
+class JobList extends Component {
   render() {
     return (
       <Table>
@@ -69,11 +69,11 @@ class JobList extends Component {
                 <TableRowColumn style={columnFormat}>
                   {job.Type == "service" ? <JobHealth jobID={job.ID} /> : null}
                 </TableRowColumn>
-                <TableRowColumn style={columnFormat}>{this.taskGroupCount(job)}</TableRowColumn>
+                <TableRowColumn style={columnFormat}>{taskGroupCount(job)}</TableRowColumn>
                 <TableRowColumn style={flexibleWidth} key={`${job.ID}-statistics`}>
                   <AllocationDistribution jobID={job.ID} summary={job.JobSummary.Summary} />
                 </TableRowColumn>
-                <TableRowColumn style={columnFormat}>{this.failedTaskCount(job)}</TableRowColumn>
+                <TableRowColumn style={columnFormat}>{failedTaskCount(job)}</TableRowColumn>
               </TableRow>
           })}
         </TableBody>
