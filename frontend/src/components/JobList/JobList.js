@@ -39,7 +39,7 @@ const JobTypeCell = ({ rowIndex, data: jobs, ... props }) => {
   const job = jobs[rowIndex];
   return (
     <Cell {...props}>
-      <JobLink jobId={job.Type} />
+      {job.Type}
     </Cell>
   )
 }
@@ -48,7 +48,7 @@ const JobPriorityCell = ({ rowIndex, data: jobs, ... props }) => {
   const job = jobs[rowIndex];
   return (
     <Cell {...props}>
-      <JobLink jobId={job.Priority} />
+      {job.Priority}
     </Cell>
   )
 }
@@ -57,7 +57,7 @@ const JobStatusCell = ({ rowIndex, data: jobs, ... props }) => {
   const job = jobs[rowIndex];
   return (
     <Cell {...props}>
-      <JobLink jobId={job.Status} />
+      {job.Status}
     </Cell>
   )
 }
