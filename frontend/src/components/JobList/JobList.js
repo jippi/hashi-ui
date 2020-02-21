@@ -124,11 +124,11 @@ class JobList extends Component {
   }
 
   componentDidMount = () => {
-    window.addEventListener("resize", this.resizeHandler)
+    window.addEventListener("resize", this.updateDimensions)
   }
 
   componentWillUnmount = () => {
-    window.removeEventListener("resize", this.resizeHandler)
+    window.removeEventListener("resize", this.updateDimensions)
   }
 
   render() {
