@@ -18,8 +18,6 @@ const flexibleWidth = {
   whiteSpace: "normal"
 }
 
-const summaryLabels = ["Starting", "Running", "Queued", "Complete", "Failed", "Lost"]
-
 const taskGroupCount = job => {
     if (job.JobSummary !== null) {
       return Object.keys(job.JobSummary.Summary).length
