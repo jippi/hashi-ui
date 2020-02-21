@@ -18,19 +18,34 @@ export { JobHealthCell }
 
 class JobHealth extends PureComponent {
   componentDidMount() {
+    this.watch(this.props.jobID);
+  }
+
+  componentWillUnmount() {
+    this.unwatch(this.props.jobID);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.jobID !== this.props.jobID) {
+      this.unwatch(prevProps.jobID);
+      this.watch(this.props.jobID);
+    }
+  }
+
+  unwatch = jobID => {
     this.props.dispatch({
-      type: NOMAD_WATCH_JOB_HEALTH,
+      type: NOMAD_UNWATCH_JOB_HEALTH,
       payload: {
-        id: this.props.jobID
+        id: jobID
       }
     })
   }
 
-  componentWillUnmount() {
+  watch = jobID => {
     this.props.dispatch({
-      type: NOMAD_UNWATCH_JOB_HEALTH,
+      type: NOMAD_WATCH_JOB_HEALTH,
       payload: {
-        id: this.props.jobID
+        id: jobID
       }
     })
   }
