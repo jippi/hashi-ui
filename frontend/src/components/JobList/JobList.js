@@ -1,6 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "../Table"
+import { Cell } from "fixed-data-table-2";
 import JobLink from "../JobLink/JobLink"
 import AllocationDistribution from "../AllocationDistribution/AllocationDistribution"
 import JobHealth from "../JobHealth/JobHealth"
@@ -38,6 +39,79 @@ const failedTaskCount = job => {
 
   return counter
 }
+
+const JobNameCell = ({ rowIndex, data: jobs, ... props }) => {
+  const job = jobs[rowIndex];
+  return (
+    <Cell {...props}>
+      <JobLink jobId={job.ID} />
+    </Cell>
+  )
+}
+
+const JobTypeCell = ({ rowIndex, data: jobs, ... props }) => {
+  const job = jobs[rowIndex];
+  return (
+    <Cell {...props}>
+      <JobLink jobId={job.Type} />
+    </Cell>
+  )
+}
+
+const JobPriorityCell = ({ rowIndex, data: jobs, ... props }) => {
+  const job = jobs[rowIndex];
+  return (
+    <Cell {...props}>
+      <JobLink jobId={job.Priority} />
+    </Cell>
+  )
+}
+
+const JobStatusCell = ({ rowIndex, data: jobs, ... props }) => {
+  const job = jobs[rowIndex];
+  return (
+    <Cell {...props}>
+      <JobLink jobId={job.Status} />
+    </Cell>
+  )
+}
+
+const JobInSyncCell = ({ rowIndex, data: jobs, ... props }) => {
+  const job = jobs[rowIndex];
+  return (
+    <Cell {...props}>
+      {job.Type == "service" ? <JobHealth jobID={job.ID} /> : null}
+    </Cell>
+  )
+}
+
+const JobGroupsCell = ({ rowIndex, data: jobs, ... props }) => {
+  const job = jobs[rowIndex];
+  return (
+    <Cell {...props}>
+      {taskGroupCount(job)}
+    </Cell>
+  )
+}
+
+const JobAllocationStatusCell = ({ rowIndex, data: jobs, ... props }) => {
+  const job = jobs[rowIndex];
+  return (
+    <Cell {...props}>
+      <AllocationDistribution jobID={job.ID} summary={job.JobSummary.Summary} />
+    </Cell>
+  )
+}
+
+const JobNumLostCell = ({ rowIndex, data: jobs, ... props }) => {
+  const job = jobs[rowIndex];
+  return (
+    <Cell {...props}>
+      {this.failedTaskCount(job)}
+    </Cell>
+  )
+}
+
 
 class JobList extends Component {
   render() {
