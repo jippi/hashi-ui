@@ -32,6 +32,8 @@ require (
 	github.com/googleapis/gnostic v0.4.1 // indirect
 	github.com/gophercloud/gophercloud v0.8.0 // indirect
 	github.com/gorilla/mux v1.7.4
+	github.com/gorilla/pat v1.0.1 // indirect
+	github.com/gorilla/sessions v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.1
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/hashicorp/consul v1.7.0 // indirect
