@@ -65,7 +65,7 @@ func NewConnection(socket socket, nomadClient *nomad.Client, consulClient *consu
 		destroyCh:     make(chan interface{}),
 		connectionID:  connectionID,
 		logger:        logger,
-		sendCh:        make(chan *structs.Action, 100),
+		sendCh:        make(chan *structs.Action, 500),
 		socket:        socket,
 		subscriptions: &subscriber.Manager{},
 	}
