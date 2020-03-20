@@ -40,6 +40,17 @@ func main() {
 
 	startLogging(cfg.LogLevel)
 
+	if os.Getenv("LOG_FORMAT") == "json" {
+		log.SetFormatter(&logrus.JSONFormatter{
+			FieldMap: logrus.FieldMap{
+				logrus.FieldKeyTime:  "@timestamp",
+				logrus.FieldKeyLevel: "@level",
+				logrus.FieldKeyMsg:   "@message",
+			},
+		})
+	}
+}
+
 	log.Infof("----------------------------------------------------------------------------------")
 	log.Infof("|                                 HASHI UI                                       |")
 	log.Infof("----------------------------------------------------------------------------------")

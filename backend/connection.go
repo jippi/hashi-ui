@@ -30,18 +30,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-log := logrus.New()
-if os.Getenv("LOG_FORMAT") == "json" {
-	log.SetFormatter(&logrus.JSONFormatter{
-		FieldMap: logrus.FieldMap{
-			logrus.FieldKeyTime:  "@timestamp",
-			logrus.FieldKeyLevel: "@level",
-			logrus.FieldKeyMsg:   "@message",
-		},
-	})
-}
-}
-
 // used to keep random `Index` in writePump when sending back actions over the wire
 // this will ensure that redux will process events as they are unique / different from each other
 var random = rand.New(rand.NewSource(time.Now().UnixNano()))
