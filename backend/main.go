@@ -49,7 +49,6 @@ func main() {
 			},
 		})
 	}
-}
 
 	log.Infof("----------------------------------------------------------------------------------")
 	log.Infof("|                                 HASHI UI                                       |")
@@ -60,12 +59,12 @@ func main() {
 		log.Infof("| listen-address            : https://%-43s  |", cfg.ListenAddress)
 	}
 	log.Infof("| server-certificate        : %-50s |", cfg.ServerCert)
-	log.Infof("| server-key       	       : %-50s |", cfg.ServerKey)
-	log.Infof("| site-title       	       : %-50s |", cfg.SiteTitle)
-	log.Infof("| proxy-address   	       : %-50s |", cfg.ProxyAddress)
-	log.Infof("| log-level       	       : %-50s |", cfg.LogLevel)
-	log.Infof("| new-relic-enable  	       : %-50v |", cfg.NewRelicEnable)
-	log.Infof("| new-relic-app-name	       : %-50s |", cfg.NewRelicAppName)
+	log.Infof("| server-key                : %-50s |", cfg.ServerKey)
+	log.Infof("| site-title                : %-50s |", cfg.SiteTitle)
+	log.Infof("| proxy-address             : %-50s |", cfg.ProxyAddress)
+	log.Infof("| log-level                 : %-50s |", cfg.LogLevel)
+	log.Infof("| new-relic-enable          : %-50v |", cfg.NewRelicEnable)
+	log.Infof("| new-relic-app-name        : %-50s |", cfg.NewRelicAppName)
 
 	if cfg.ThrottleUpdateDuration != nil {
 		log.Infof("| throttle-update-duration  : %-50s |", cfg.ThrottleUpdateDuration)
@@ -74,7 +73,7 @@ func main() {
 	}
 
 	// Nomad
-	log.Infof("| nomad-enable     	       : %-50t |", cfg.NomadEnable)
+	log.Infof("| nomad-enable              : %-50t |", cfg.NomadEnable)
 	if cfg.NomadReadOnly {
 		log.Infof("| nomad-read-only           : %-50s |", "Yes")
 	} else {
@@ -100,7 +99,7 @@ func main() {
 	log.Infof("| nomad-color               : %-50s |", cfg.NomadColor)
 
 	// Consul
-	log.Infof("| consul-enable     	       : %-50t |", cfg.ConsulEnable)
+	log.Infof("| consul-enable             : %-50t |", cfg.ConsulEnable)
 	if cfg.ConsulReadOnly {
 		log.Infof("| consul-read-only          : %-50s |", "Yes")
 	} else {
