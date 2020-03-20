@@ -41,11 +41,11 @@ func main() {
 	startLogging(cfg.LogLevel)
 
 	if os.Getenv("LOG_FORMAT") == "json" {
-		log.SetFormatter(&logrus.JSONFormatter{
-			FieldMap: logrus.FieldMap{
-				logrus.FieldKeyTime:  "@timestamp",
-				logrus.FieldKeyLevel: "@level",
-				logrus.FieldKeyMsg:   "@message",
+		log.SetFormatter(&log.JSONFormatter{
+			FieldMap: log.FieldMap{
+				log.FieldKeyTime:  "@timestamp",
+				log.FieldKeyLevel: "@level",
+				log.FieldKeyMsg:   "@message",
 			},
 		})
 	}
