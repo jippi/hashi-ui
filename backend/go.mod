@@ -34,7 +34,7 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/gorilla/pat v1.0.1 // indirect
 	github.com/gorilla/sessions v1.2.0 // indirect
-	github.com/gorilla/websocket v1.4.1
+	github.com/gorilla/websocket v1.4.2
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/hashicorp/consul v1.7.0 // indirect
 	github.com/hashicorp/consul/api v1.4.0
@@ -48,7 +48,7 @@ require (
 	github.com/hashicorp/hil v0.0.0-20190212132231-97b3a9cdfa93 // indirect
 	github.com/hashicorp/mdns v1.0.3 // indirect
 	github.com/hashicorp/memberlist v0.1.7 // indirect
-	github.com/hashicorp/nomad/api v0.0.0-20191003141308-550e1b1a1e76
+	github.com/hashicorp/nomad/api v0.0.0-20200429125404-d913f055030f
 	github.com/hashicorp/raft-boltdb v0.0.0-20191021154308-4207f1bf0617 // indirect
 	github.com/hashicorp/yamux v0.0.0-20190923154419-df201c70410d // indirect
 	github.com/imdario/mergo v0.3.8 // indirect
