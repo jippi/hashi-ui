@@ -23,7 +23,7 @@ require (
 	github.com/denverdino/aliyungo v0.0.0-20200205005422-4667008d9805 // indirect
 	github.com/digitalocean/godo v1.30.0 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
-	github.com/elazarl/go-bindata-assetfs v1.0.0
+	github.com/elazarl/go-bindata-assetfs v1.0.1
 	github.com/envoyproxy/go-control-plane v0.9.4 // indirect
 	github.com/go-bindata/go-bindata v3.1.2+incompatible
 	github.com/go-ole/go-ole v1.2.4 // indirect
