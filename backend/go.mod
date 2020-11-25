@@ -55,7 +55,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/linode/linodego v0.12.2 // indirect
 	github.com/mitchellh/hashstructure v1.0.0 // indirect
-	github.com/newrelic/go-agent v2.15.0+incompatible
+	github.com/newrelic/go-agent v2.16.3+incompatible
 	github.com/packethost/packngo v0.2.0 // indirect
 	github.com/pierrec/lz4 v2.4.1+incompatible // indirect
 	github.com/posener/complete v1.2.3 // indirect
