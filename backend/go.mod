@@ -37,7 +37,7 @@ require (
 	github.com/gorilla/websocket v1.4.1
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/hashicorp/consul v1.7.0 // indirect
-	github.com/hashicorp/consul/api v1.4.0
+	github.com/hashicorp/consul/api v1.8.0
 	github.com/hashicorp/go-checkpoint v0.5.0 // indirect
 	github.com/hashicorp/go-discover v0.0.0-20200108194735-7698de1390a1 // indirect
 	github.com/hashicorp/go-memdb v1.0.4 // indirect
@@ -47,7 +47,6 @@ require (
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/hashicorp/hil v0.0.0-20190212132231-97b3a9cdfa93 // indirect
 	github.com/hashicorp/mdns v1.0.3 // indirect
-	github.com/hashicorp/memberlist v0.1.7 // indirect
 	github.com/hashicorp/nomad/api v0.0.0-20191003141308-550e1b1a1e76
 	github.com/hashicorp/raft-boltdb v0.0.0-20191021154308-4207f1bf0617 // indirect
 	github.com/hashicorp/yamux v0.0.0-20190923154419-df201c70410d // indirect
