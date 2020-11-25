@@ -64,7 +64,7 @@ require (
 	github.com/renier/xmlrpc v0.0.0-20191022213033-ce560eccbd00 // indirect
 	github.com/satori/go.uuid v1.2.0
 	github.com/shirou/gopsutil v2.20.1+incompatible // indirect
-	github.com/sirupsen/logrus v1.4.2
+	github.com/sirupsen/logrus v1.7.0
 	github.com/softlayer/softlayer-go v1.0.0 // indirect
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/tencentcloud/tencentcloud-sdk-go v3.0.121+incompatible // indirect
