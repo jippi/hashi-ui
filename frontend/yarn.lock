@@ -1655,10 +1655,10 @@ babel-plugin-lodash@^3.3.2:
     lodash "^4.17.10"
     require-package-name "^2.0.1"
 
-babel-plugin-recharts@^1.1.1:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-recharts/-/babel-plugin-recharts-1.2.0.tgz#4c62f93e6d36b195242a08ef9c57f4a82de99e75"
-  integrity sha512-v8yt/GSVeGN9g7bsLIO2kp6pjSwOM+cMSJoW+Bp7Kn7mo5hJVp0NzmNTxGJGvKvu+sve8SH180C/8PdUQsjo2w==
+babel-plugin-recharts@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/babel-plugin-recharts/-/babel-plugin-recharts-1.2.1.tgz#bfa8c723148cbafad0796abeb36f94f0ac397011"
+  integrity sha512-bIPmjP3TrF2RJk0jDBG+91aTVyLuK48T4Nqekvs/B6MdzPmHXBKB+q+8xXCSRth08Wck+X5ylgSTcr3Ab1egvw==
   dependencies:
     "@babel/traverse" "^7.1.0"
     "@babel/types" "^7.1.0"
