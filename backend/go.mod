@@ -37,7 +37,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/hashicorp/consul v1.7.0 // indirect
-	github.com/hashicorp/consul/api v1.8.0
+	github.com/hashicorp/consul/api v1.8.1
 	github.com/hashicorp/go-checkpoint v0.5.0 // indirect
 	github.com/hashicorp/go-discover v0.0.0-20200108194735-7698de1390a1 // indirect
 	github.com/hashicorp/go-memdb v1.0.4 // indirect
