@@ -46,7 +46,7 @@
     "babel-runtime": "^6.26.0",
     "chart.js": "^2.7.2",
     "clsx": "^1.0.4",
-    "date-fns": "^1.29.0",
+    "date-fns": "^2.19.0",
     "deepmerge": "^4.2.2",
     "fixed-data-table-2": "^0.8.11",
     "flexboxgrid": "^6.3.1",
