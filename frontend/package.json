@@ -44,7 +44,7 @@
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
-    "chart.js": "^2.7.2",
+    "chart.js": "^2.9.4",
     "clsx": "^1.0.4",
     "date-fns": "^1.29.0",
     "deepmerge": "^4.2.2",
