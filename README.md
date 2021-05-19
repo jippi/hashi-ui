@@ -117,6 +117,7 @@ hashi-ui can be controlled by both ENV or CLI flags as described below
 |-------------------------|---------------------------|-----------------------------|------------------------------------------------------------------------------------------------------------------|
 | `NOMAD_ENABLE`          | `nomad-enable`      	  | `false` 	                | Use `--nomad.enable` or env `NOMAD_ENABLE=1` to enable Nomad backend                                             |
 | `NOMAD_ADDR`            | `nomad-address`      	  | `http://127.0.0.1:4646` 	| Protocol + Host + Port for your Nomad instance                                                                   |
+| `NOMAD_NAMESPACE`            | `nomad-namespace`      	  | `default` 	| Nomad Namespace to use (optional)                                                                   |
 | `NOMAD_ACL_TOKEN`  	  | `nomad-acl-token`   	  | `<empty>` 		          	| The Nomad access token to use (optional)                                                                        |
 | `NOMAD_READ_ONLY`    	  | `nomad-read-only`   	  | `false` 		        	| Should hash-ui allowed to modify Nomad state (stop/start jobs and so forth)	                                   |
 | `NOMAD_CACERT`      	  | `nomad-ca-cert`      	  | `<empty>`   	            | (optional) path to a CA Cert file (remember to use `https://` in `NOMAD_ADDR` if you enable TLS)                 |

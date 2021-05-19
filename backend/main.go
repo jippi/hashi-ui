@@ -81,6 +81,7 @@ func main() {
 	}
 	log.Infof("| nomad-address             : %-50s |", cfg.NomadAddress)
 	log.Infof("| nomad-acl-token           : %-50s |", cfg.NomadACLToken)
+	log.Infof("| nomad-namespace           : %-50s |", cfg.NomadNamespace)
 	log.Infof("| nomad-ca-cert             : %-50s |", cfg.NomadCACert)
 	log.Infof("| nomad-client-cert         : %-50s |", cfg.NomadClientCert)
 	log.Infof("| nomad-client-key          : %-50s |", cfg.NomadClientKey)

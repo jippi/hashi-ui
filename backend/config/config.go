@@ -29,6 +29,9 @@ var (
 	flagNomadACLToken = flag.String("nomad-acl-token", "", "An ACL token to use when talking to Nomad. "+
 		"Overrides the NOMAD_ACL_TOKEN environment variable if set. "+FlagDefault(defaultConfig.NomadACLToken))
 
+	flagNomadNamespace = flag.String("nomad-namespace", "", "Nomad namespace to use. "+
+		"Overrides the NOMAD_NAMESPACE environment variable if set. "+FlagDefault(defaultConfig.NomadNamespace))
+
 	flagNomadCACert = flag.String("nomad-ca-cert", "", "Path to the Nomad TLS CA Cert File. "+
 		"Overrides the NOMAD_CACERT environment variable if set. "+FlagDefault(defaultConfig.NomadCACert))
 
@@ -113,6 +116,7 @@ type Config struct {
 	NomadEnable      bool
 	NomadAddress     string
 	NomadACLToken    string
+	NomadNamespace   string
 	NomadCACert      string
 	NomadClientCert  string
 	NomadClientKey   string
@@ -326,6 +330,11 @@ func ParseNomadEnvConfig(c *Config) {
 		c.NomadACLToken = nomadAclToken
 	}
 
+	nomadNamespace, ok := syscall.Getenv("NOMAD_NAMESPACE")
+	if ok {
+		c.NomadNamespace = nomadNamespace
+	}
+
 	listenPort, ok := syscall.Getenv("NOMAD_PORT_http")
 	if ok {
 		c.ListenAddress = fmt.Sprintf("0.0.0.0:%s", listenPort)
@@ -393,6 +402,10 @@ func ParseNomadFlagConfig(c *Config) {
 
 	if *flagNomadACLToken != "" {
 		c.NomadACLToken = *flagNomadACLToken
+	}
+
+	if *flagNomadNamespace!= "" {
+		c.NomadNamespace = *flagNomadNamespace
 	}
 
 	if *flagNomadCACert != "" {
