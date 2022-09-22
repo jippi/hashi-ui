@@ -20,7 +20,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/miekg/dns v1.1.27 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
-	github.com/newrelic/go-agent v2.16.3+incompatible
+	github.com/newrelic/go-agent v3.19.2+incompatible
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.7.0
