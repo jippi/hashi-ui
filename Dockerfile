@@ -1,5 +1,5 @@
 # build-env container
-FROM golang:1.16.5 AS build-env
+FROM golang:1.20.0 AS build-env
 
 ENV CGO_ENABLED=0 GO111MODULE=on GOPROXY=https://proxy.golang.org
 
